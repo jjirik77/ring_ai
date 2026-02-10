@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability in Prediction Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            position: absolute;
+            z-index: 50;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        input[type=range] {
+            accent-color: #4f46e5;
+        }
+
+        .distribution-bar {
+            transition: height 0.3s ease-out, background-color 0.3s;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Probability in Prediction Lab</h1>
+                <p class="text-slate-500 mt-1 max-w-xl">How do Machine Learning models handle uncertainty? Adjust the variables below to explore the trade-offs of binary classification.</p>
+            </div>
+            <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
+                <button onclick="setScenario('spam')" id="btn-spam" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md">📩 Spam Filter</button>
+                <button onclick="setScenario('medical')" id="btn-medical" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50">🏥 Medical Test</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- LEFT: Controls & Math -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- Variable Inputs -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-8">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Laboratory Variables</h2>
+                    
+                    <!-- Base Rate -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-bold text-slate-700" id="label-baserate">Prevalence (Base Rate)</label>
+                            <span id="val-baserate" class="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600 font-bold">10%</span>
+                        </div>
+                        <input type="range" id="input-baserate" min="1" max="50" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        <p class="text-[10px] text-slate-400 italic" id="hint-baserate">Probability that a random sample is positive.</p>
+                    </div>
+
+                    <!-- Threshold -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-bold text-slate-700">Decision Threshold ($\tau$)</label>
+                            <span id="val-threshold" class="text-xs font-mono bg-indigo-100 px-2 py-1 rounded text-indigo-700 font-bold">0.50</span>
+                        </div>
+                        <input type="range" id="input-threshold" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        <p class="text-[10px] text-slate-400 italic">Score required to predict a "Positive" result.</p>
+                    </div>
+                </div>
+
+                <!-- Distribution Visualization -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Signal Distribution</h2>
+                    <div class="h-44 relative mb-2" id="histogram-container">
+                        <!-- Labels for clarity -->
+                        <div class="absolute top-2 left-2 text-[8px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none">Actual Positives</div>
+                        <div class="absolute bottom-2 left-2 text-[8px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none">Actual Negatives</div>
+                        
+                        <div class="h-full w-full relative" id="histogram">
+                             <!-- Threshold line preserved inside -->
+                             <div id="threshold-line" class="absolute h-full w-0.5 bg-indigo-600 z-10 transition-all shadow-[0_0_10px_rgba(79,70,229,0.5)]" style="left: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-400 border-t pt-2 uppercase tracking-tighter font-bold">
+                        <span>Score 0.0</span>
+                        <span>Score 1.0</span>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                            <span class="w-2 h-2 rounded-full bg-slate-300"></span> Actual Neg
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Actual Pos
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Matrix -->
+                <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-500">Confusion Matrix</h2>
+                        <div class="text-[10px] text-slate-400 font-mono">N=100</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
+                            <div class="text-2xl font-bold text-emerald-400" id="mat-tn">0</div>
+                            <div class="text-[10px] uppercase text-slate-400 tracking-wider">True Neg (TN)</div>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
+                            <div class="text-2xl font-bold text-red-400" id="mat-fp">0</div>
+                            <div class="text-[10px] uppercase text-slate-400 tracking-wider font-bold">False Pos (FP)</div>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
+                            <div class="text-2xl font-bold text-amber-500" id="mat-fn">0</div>
+                            <div class="text-[10px] uppercase text-slate-400 tracking-wider">False Neg (FN)</div>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 relative group">
+                            <div class="text-2xl font-bold text-indigo-400" id="mat-tp">0</div>
+                            <div class="text-[10px] uppercase text-slate-400 tracking-wider font-bold">True Pos (TP)</div>
+                        </div>
+                    </div>
+
+                    <!-- Derived Metrics -->
+                    <div class="space-y-4 border-t border-slate-800 pt-4">
+                        <div class="flex justify-between items-center">
+                            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-indigo-300">Precision</div>
+                            <div id="metric-precision" class="font-mono text-sm text-indigo-300">0.000</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest text-amber-300">Recall</div>
+                            <div id="metric-recall" class="font-mono text-sm text-amber-300">0.000</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Interactive Grid -->
+            <div class="lg:col-span-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 min-h-[600px] flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <span id="grid-title">Inbox Analysis</span>
+                        </h2>
+                        <div class="flex gap-4 text-[11px] font-bold uppercase tracking-tight items-center">
+                            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-slate-50 border border-slate-200"></span> Neg</div>
+                            <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-amber-400"></span> Pos</div>
+                            <div class="h-4 w-px bg-slate-200"></div>
+                            <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full border-2 border-indigo-600 bg-white"></span> Predicted</div>
+                        </div>
+                    </div>
+
+                    <!-- Grid -->
+                    <div id="grid-container" class="grid grid-cols-5 sm:grid-cols-10 gap-3 mb-8">
+                        <!-- Items generated by JS -->
+                    </div>
+
+                    <!-- Real-time Insights -->
+                    <div class="mt-auto p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-indigo-600 p-2 rounded-lg text-white shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Model Reasoning</h3>
+                                <p id="insight-text" class="text-sm text-slate-600 leading-relaxed">The Gaussian overlap shows that some items are ambiguous. Adjust the threshold to prioritize either catching positives or avoiding false alarms.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Math Info (Dynamic Footer) -->
+        <div id="educational-footer" class="mt-8 grid md:grid-cols-3 gap-6">
+            <!-- Content swapped via JS -->
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentScenario = 'spam';
+        let data = [];
+        const CONFIG = {
+            spam: {
+                title: "Inbox Analysis",
+                itemLabel: "Email",
+                posTerm: "Spam",
+                negTerm: "Safe",
+                baseRateLabel: "Spam Prevalence",
+                insightNeutral: "A 0.50 threshold treats false alarms and missed spam as equally costly.",
+                insightFP: "High False Positives: You're blocking real messages. This usually ruins user trust.",
+                insightFN: "High False Negatives: Too much spam is getting through. Try a lower threshold.",
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 1-2.22 0L3 8z"></path><rect width="18" height="14" x="3" y="5" rx="2"></rect></svg>',
+                footer: `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Why treat output as probability?</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Models don't "see" objects; they see features. Features like "contains the word GIFT" are found in both spam and real emails. The probability reflects this ambiguity.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Spam Base Rates</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Most people's inboxes are 90%+ safe. When an event is rare, even a 1% error rate by the AI can result in a lot of annoying "False Positives" relative to the amount of spam caught.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">The Cost of Annoyance</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">In email, a False Positive is a "disaster" for user trust. We usually set a <b>high</b> threshold to ensure that only very obvious spam is blocked, even if some junk gets through.</p>
+                    </div>
+                `
+            },
+            medical: {
+                title: "Diagnostic Screening",
+                itemLabel: "Patient",
+                posTerm: "Diseased",
+                negTerm: "Healthy",
+                baseRateLabel: "Disease Prevalence",
+                insightNeutral: "Clinical thresholds often skew low to maximize Recall (catching cases).",
+                insightFP: "False Positives in medicine lead to patient anxiety and invasive follow-ups.",
+                insightFN: "Critical Risk: You are missing sick patients. You likely need a lower threshold.",
+                icon: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M19 11h6m-3-3v6"></path></svg>',
+                footer: `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Screening vs. Diagnostic</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Screening tests are meant to catch everyone who *might* be sick. We accept a higher probability of error to ensure we don't miss anyone in the first step.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Base Rate Fallacy</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">If only 1 in 1,000 people have a disease, a 99% accurate test will still produce 10 False Positives for every 1 True Positive. This is a critical concept for healthcare providers.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Life or Death Risk</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Missing a cancer diagnosis (False Negative) is much worse than a false alarm. In medical tests, we often set a <b>low</b> threshold to maximize Recall, accepting the cost of False Positives.</p>
+                    </div>
+                `
+            }
+        };
+
+        const elBaserate = document.getElementById('input-baserate');
+        const elThreshold = document.getElementById('input-threshold');
+        const elValBaserate = document.getElementById('val-baserate');
+        const elValThreshold = document.getElementById('val-threshold');
+        const elHistogram = document.getElementById('histogram');
+        const elGrid = document.getElementById('grid-container');
+        const elInsight = document.getElementById('insight-text');
+        const elThreshLine = document.getElementById('threshold-line');
+        const elEduFooter = document.getElementById('educational-footer');
+
+        const matrix = {
+            tn: document.getElementById('mat-tn'),
+            fp: document.getElementById('mat-fp'),
+            fn: document.getElementById('mat-fn'),
+            tp: document.getElementById('mat-tp'),
+            precision: document.getElementById('metric-precision'),
+            recall: document.getElementById('metric-recall')
+        };
+
+        function setScenario(type) {
+            currentScenario = type;
+            document.getElementById('btn-spam').className = type === 'spam' ? 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md' : 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50';
+            document.getElementById('btn-medical').className = type === 'medical' ? 'px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md' : 'px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:bg-slate-50';
+            
+            document.getElementById('grid-title').innerText = CONFIG[type].title;
+            document.getElementById('label-baserate').innerText = CONFIG[type].baseRateLabel;
+            
+            // Swap footer content
+            elEduFooter.innerHTML = CONFIG[type].footer;
+
+            generateData();
+        }
+
+        function generateData() {
+            const baseRate = parseInt(elBaserate.value) / 100;
+            data = [];
+            for (let i = 0; i < 100; i++) {
+                const isPositive = Math.random() < baseRate;
+                let prob = isPositive ? gaussianRandom(0.70, 0.15) : gaussianRandom(0.30, 0.15);
+                prob = Math.max(0.00, Math.min(1.00, prob));
+                data.push({ id: i + 1, isPositive, prob });
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            const threshold = parseInt(elThreshold.value) / 100;
+            elValBaserate.innerText = `${elBaserate.value}%`;
+            elValThreshold.innerText = threshold.toFixed(2);
+            elThreshLine.style.left = `${elThreshold.value}%`;
+
+            let stats = { tp: 0, fp: 0, tn: 0, fn: 0 };
+            elGrid.innerHTML = '';
+            
+            data.forEach(item => {
+                const predicted = item.prob >= threshold;
+                if (predicted && item.isPositive) stats.tp++;
+                else if (predicted && !item.isPositive) stats.fp++;
+                else if (!predicted && !item.isPositive) stats.tn++;
+                else if (!predicted && item.isPositive) stats.fn++;
+
+                const card = document.createElement('div');
+                card.className = `has-tooltip relative h-10 w-full rounded-lg border-2 flex items-center justify-center cursor-default transition-all duration-200
+                    ${item.isPositive ? 'bg-amber-400 border-amber-500 text-amber-900' : 'bg-slate-50 border-slate-200 text-slate-400'}
+                    ${predicted ? 'ring-2 ring-indigo-600 ring-offset-2' : ''}
+                `;
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip bg-slate-900 text-white text-[10px] py-1 px-3 rounded shadow-xl whitespace-nowrap z-50';
+                tooltip.innerHTML = `
+                    <div class="font-bold border-b border-slate-700 pb-1 mb-1">ID #${item.id}</div>
+                    Truth: ${item.isPositive ? CONFIG[currentScenario].posTerm : CONFIG[currentScenario].negTerm}<br>
+                    Confidence: ${(item.prob * 100).toFixed(1)}%<br>
+                    Decision: ${predicted ? 'POSITIVE' : 'NEGATIVE'}
+                `;
+
+                const iconWrapper = document.createElement('div');
+                iconWrapper.innerHTML = CONFIG[currentScenario].icon;
+                if (predicted) {
+                   iconWrapper.classList.add('text-indigo-600');
+                   if (item.isPositive) iconWrapper.classList.replace('text-indigo-600', 'text-white');
+                }
+                
+                card.appendChild(iconWrapper);
+                card.appendChild(tooltip);
+                elGrid.appendChild(card);
+            });
+
+            matrix.tn.innerText = stats.tn;
+            matrix.fp.innerText = stats.fp;
+            matrix.fn.innerText = stats.fn;
+            matrix.tp.innerText = stats.tp;
+            matrix.precision.innerText = (stats.tp / (stats.tp + stats.fp) || 0).toFixed(3);
+            matrix.recall.innerText = (stats.tp / (stats.tp + stats.fn) || 0).toFixed(3);
+
+            renderHistogram(threshold);
+
+            let insight = CONFIG[currentScenario].insightNeutral;
+            if (stats.fp > stats.tp && stats.fp > 0) insight = CONFIG[currentScenario].insightFP;
+            else if (stats.fn > stats.tp && stats.fn > 0) insight = CONFIG[currentScenario].insightFN;
+            elInsight.innerHTML = insight;
+        }
+
+        /**
+         * Enhanced Mirrored Population Histogram
+         * Shows the Actual Positive population going UP and Actual Negative going DOWN.
+         * Explicitly visualizes how the threshold line creates TP, FP, TN, FN regions.
+         */
+        function renderHistogram(threshold) {
+            const binCount = 30;
+            const binWidth = 1 / binCount;
+            const bins = Array.from({ length: binCount }, () => ({ pos: 0, neg: 0 }));
+
+            data.forEach(d => {
+                const binIdx = Math.min(binCount - 1, Math.floor(d.prob / binWidth));
+                if (d.isPositive) bins[binIdx].pos++;
+                else bins[binIdx].neg++;
+            });
+
+            // Find max for scaling
+            const maxVal = Math.max(...bins.map(b => Math.max(b.pos, b.neg)), 1);
+            
+            // Clean up and restore line
+            const line = elThreshLine.cloneNode(true);
+            elHistogram.innerHTML = '';
+            elHistogram.appendChild(line);
+
+            // Container for the two halves
+            const wrapper = document.createElement('div');
+            wrapper.className = 'absolute inset-0 flex flex-col pointer-events-none';
+            
+            // Top Half: Actual Positives
+            const topHalf = document.createElement('div');
+            topHalf.className = 'flex-1 flex items-end gap-[1px] border-b border-slate-200/50 relative';
+            
+            // Bottom Half: Actual Negatives
+            const bottomHalf = document.createElement('div');
+            bottomHalf.className = 'flex-1 flex items-start gap-[1px] relative';
+
+            bins.forEach((b, i) => {
+                const binCenter = (i + 0.5) * binWidth;
+                const isAboveThreshold = binCenter >= threshold;
+
+                // Positive Bar (Pointing UP)
+                const pBar = document.createElement('div');
+                pBar.style.height = `${(b.pos / maxVal) * 100}%`;
+                // Color mapping: Above threshold = TP (Indigo), Below = FN (Amber, semi-faded)
+                pBar.className = `flex-1 rounded-t-[1px] transition-all duration-300 ${isAboveThreshold ? 'bg-indigo-500' : 'bg-amber-400 opacity-40'}`;
+                topHalf.appendChild(pBar);
+
+                // Negative Bar (Pointing DOWN)
+                const nBar = document.createElement('div');
+                nBar.style.height = `${(b.neg / maxVal) * 100}%`;
+                // Color mapping: Above threshold = FP (Red), Below = TN (Slate, semi-faded)
+                nBar.className = `flex-1 rounded-b-[1px] transition-all duration-300 ${isAboveThreshold ? 'bg-red-400' : 'bg-slate-300 opacity-40'}`;
+                bottomHalf.appendChild(nBar);
+            });
+
+            // Add subtle quadrant labels
+            const addLabel = (parent, text, alignClass) => {
+                const l = document.createElement('div');
+                l.innerText = text;
+                l.className = `absolute text-[7px] font-bold text-slate-400 tracking-tighter pointer-events-none uppercase ${alignClass}`;
+                parent.appendChild(l);
+            }
+
+            addLabel(topHalf, "FN", "bottom-1 left-2");
+            addLabel(topHalf, "TP", "bottom-1 right-2");
+            addLabel(bottomHalf, "TN", "top-1 left-2");
+            addLabel(bottomHalf, "FP", "top-1 right-2");
+
+            wrapper.appendChild(topHalf);
+            wrapper.appendChild(bottomHalf);
+            elHistogram.appendChild(wrapper);
+        }
+
+        function gaussianRandom(mean = 0, stdev = 1) {
+            const u = 1 - Math.random(), v = Math.random();
+            const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            return z * stdev + mean;
+        }
+
+        elBaserate.addEventListener('input', generateData);
+        elThreshold.addEventListener('input', updateUI);
+        
+        // Initial setup
+        window.onload = () => setScenario('spam');
+    </script>
+</body>
+</html>
