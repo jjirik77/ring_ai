@@ -3,409 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student SOC-in-a-Box | Academy Professional</title>
+    <title>SOCBox | Academy Professional IR Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --soc-bg: #0f172a;
-            --soc-sidebar: #1e293b;
-            --soc-border: #334155;
+            --soc-bg: #020617;
+            --soc-deep-ink: #0a0a0a;
+            --soc-cyber-white: #e2e8f0;
+            --soc-card: #0f172a;
+            --soc-border: #1e293b;
             --soc-accent: #38bdf8;
-            --severity-low: #22c55e;
-            --severity-medium: #eab308;
-            --severity-high: #f97316;
             --severity-critical: #ef4444;
+            --severity-high: #f97316;
+            --severity-medium: #eab308;
+            --severity-low: #22c55e;
         }
 
         body {
             background-color: var(--soc-bg);
-            color: #f1f5f9;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-image: radial-gradient(circle, #111827 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
+            letter-spacing: -0.01em;
         }
 
-        .scrollbar-custom::-webkit-scrollbar { width: 6px; height: 6px; }
-        .scrollbar-custom::-webkit-scrollbar-track { background: var(--soc-bg); }
-        .scrollbar-custom::-webkit-scrollbar-thumb { background: var(--soc-border); border-radius: 10px; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
 
-        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Custom Scrollbar */
+        .scrollbar-custom::-webkit-scrollbar { width: 4px; height: 4px; }
+        .scrollbar-custom::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-custom::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover { background: var(--soc-accent); }
+
+        /* HUD Components */
+        .nav-link { 
+            @apply flex items-center gap-3 px-6 py-3 text-slate-500 hover:text-white hover:bg-sky-500/5 transition-all cursor-pointer border-r-2 border-transparent; 
+        }
+        .nav-link.active { 
+            @apply text-sky-400 bg-sky-500/10 border-sky-500 font-bold; 
+        }
+
+        .btn-action {
+            @apply px-4 py-2 rounded-lg font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 disabled:opacity-30;
+        }
+        .btn-primary { background: var(--soc-accent); color: var(--soc-bg); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
+        .btn-primary:hover { background: #7dd3fc; transform: translateY(-1px); }
+        
+        .btn-secondary { @apply bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700; }
+
+        /* REDESIGNED BUTTON-LIKE PHASE STEPPER */
+        .phase-container {
+            @apply flex gap-3 p-4 bg-slate-950 border-b border-slate-800 shadow-inner;
+        }
+        .phase-step { 
+            @apply flex-1 py-3 px-2 text-[10px] font-black text-center transition-all uppercase tracking-widest cursor-pointer rounded-xl border-2 flex flex-col justify-center items-center gap-1 shadow-md;
+            border-color: #1e293b;
+            background: #0f172a;
+            color: #475569;
+        }
+        .phase-step:hover:not(.phase-inactive) {
+            @apply border-slate-500 text-slate-300 bg-slate-800;
+        }
+        .phase-step.phase-current { 
+            border-color: var(--soc-accent); 
+            color: white; 
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+        .phase-step.phase-complete { 
+            border-color: #22c55e; 
+            color: #22c55e; 
+            background: rgba(34, 197, 94, 0.05);
+        }
+        .phase-step.phase-inactive { 
+            opacity: 0.3; 
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Severity Glow Badges */
+        .badge { @apply px-2.5 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border; }
+        .badge-crit { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); }
+        .badge-high { background: rgba(249, 115, 22, 0.1); color: #f97316; border-color: rgba(249, 115, 22, 0.4); }
+        .badge-med { background: rgba(234, 179, 8, 0.1); color: #eab308; border-color: rgba(234, 179, 8, 0.4); }
+        .badge-low { background: rgba(34, 197, 94, 0.1); color: #22c55e; border-color: rgba(34, 197, 94, 0.4); }
+
+        .drawer-transition { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .drawer-hidden { transform: translateX(100%); }
 
-        .btn-soc { @apply px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 border border-transparent disabled:opacity-50 disabled:cursor-not-allowed active:scale-95; }
-        .btn-primary { @apply bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-900/20; }
-        .btn-secondary { @apply bg-slate-700 hover:bg-slate-600 text-slate-200; }
-        .btn-danger { @apply bg-red-600/20 border-red-600/50 text-red-500 hover:bg-red-600 hover:text-white; }
-        .btn-outline { @apply border-slate-600 hover:border-sky-500 text-slate-300; }
-
-        .badge { @apply px-2 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider; }
-        .badge-critical { background-color: var(--severity-critical); color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
-        .badge-high { background-color: var(--severity-high); color: white; }
-        .badge-medium { background-color: var(--severity-medium); color: black; }
-        .badge-low { background-color: var(--severity-low); color: white; }
-
-        .nav-link { @apply flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer border-l-4 border-transparent font-medium; }
-        .nav-link.active { @apply text-sky-400 bg-slate-800 border-sky-500 shadow-inner font-bold; }
-
-        .phase-step { @apply flex-1 py-3 text-[10px] font-black text-center border-b-4 transition-all uppercase tracking-widest; }
-        .phase-inactive { @apply border-slate-800 text-slate-600; }
-        .phase-current { @apply border-sky-500 text-sky-400 bg-sky-900/10; }
-        .phase-complete { @apply border-green-500 text-green-500; }
-
-        .artifact-file { @apply p-3 bg-slate-950 border border-slate-800 rounded text-xs font-mono text-slate-400 hover:text-sky-400 hover:border-sky-600 cursor-pointer transition-all flex items-center gap-2; }
-        .artifact-file.active { @apply border-sky-500 text-sky-400 bg-sky-900/20 shadow-md; }
-        
-        .code-block { @apply p-4 bg-black border border-slate-800 rounded-xl text-[11px] text-green-500 font-mono overflow-y-auto scrollbar-custom shadow-inner leading-relaxed border-l-4 border-l-green-900/50; }
-        
-        .toast-animate { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .alert-row:hover { background-color: rgba(56, 189, 248, 0.05); }
-
-        /* HIGH READABILITY FORM INPUTS */
+        /* High Visibility Technical Inputs */
         .form-input { 
-            @apply w-full rounded-lg p-3 text-sm outline-none transition-all font-mono font-bold shadow-md;
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 2px solid #94a3b8;
+            @apply w-full rounded-xl p-3 text-sm outline-none transition-all font-mono font-bold border-2;
+            background-color: var(--soc-cyber-white) !important;
+            color: var(--soc-deep-ink) !important;
+            border-color: #cbd5e1;
         }
-        .form-input:focus {
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        .form-input:focus { border-color: var(--soc-accent); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); }
+        .form-input:disabled { background-color: #94a3b8 !important; border-color: #64748b; color: #1e293b !important; cursor: not-allowed; opacity: 0.8; }
+
+        .case-card {
+            @apply relative overflow-hidden transition-all duration-500 hover:-translate-y-1 border border-slate-800 rounded-[2.5rem];
+            background: linear-gradient(165deg, #0f172a 0%, #020617 100%);
         }
-        .form-label { @apply text-[11px] font-black uppercase text-sky-400 mb-2 block tracking-widest; }
-        ::placeholder { color: #64748b !important; font-weight: 500; }
+        
+        .scanline {
+            width: 100%; height: 2px;
+            background: rgba(56, 189, 248, 0.05);
+            position: absolute; top: 0; left: 0;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
 <body class="h-screen flex flex-col">
 
-    <!-- Global Header -->
-    <header class="h-14 border-b border-slate-700 flex items-center justify-between px-6 bg-slate-900 z-50 shadow-lg">
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-sky-600 rounded flex items-center justify-center font-bold italic shadow-inner">S</div>
-                <h1 class="text-lg font-bold tracking-tight">SOC<span class="text-sky-500">Box</span> <span class="text-xs font-normal text-slate-500 italic tracking-tighter">Academy</span></h1>
+    <!-- HUD BAR -->
+    <header class="h-14 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md flex items-center justify-between px-6 z-50">
+        <div class="flex items-center gap-10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <svg class="w-5 h-5 text-slate-950" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>
+                </div>
+                <h1 class="text-base font-black tracking-tighter text-white uppercase">SOC<span class="text-sky-500">Box</span></h1>
             </div>
-            <div class="h-6 w-[1px] bg-slate-700 mx-2"></div>
-            <div id="mission-hud" class="hidden flex items-center gap-4 bg-slate-800/60 px-4 py-1.5 rounded-full border border-sky-900/50">
-                <span class="text-[10px] font-black text-sky-400 uppercase tracking-widest">Active Training:</span>
-                <span id="mission-title-hud" class="text-xs text-slate-200 font-bold uppercase tracking-tighter"></span>
-                <div class="w-24 h-1 bg-slate-700 rounded-full overflow-hidden">
-                    <div id="mission-progress-bar" class="h-full bg-sky-500 transition-all duration-1000 shadow-[0_0_8px_rgba(56,189,248,0.8)]" style="width: 0%"></div>
+
+            <div id="mission-hud" class="hidden h-8 items-center gap-4 bg-slate-900/80 px-4 rounded-full border border-slate-800">
+                <span class="text-[9px] font-black uppercase text-slate-500 tracking-widest font-black">Simulation.Active</span>
+                <span id="mission-title-hud" class="text-[10px] font-black uppercase text-sky-400"></span>
+                <div class="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
+                    <div id="mission-progress-bar" class="h-full bg-sky-500 transition-all duration-1000" style="width: 0%"></div>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center gap-6">
-            <div class="text-xs text-slate-400 font-mono tracking-tighter" id="current-time">00:00:00 UTC</div>
-            <select id="role-selector" class="bg-slate-800 border border-slate-700 text-[10px] font-black uppercase px-3 py-1 rounded outline-none cursor-pointer hover:border-sky-500 transition-all shadow-inner">
-                <option value="student">Tier 1 Analyst</option>
-                <option value="senior">Tier 2 Analyst</option>
-                <option value="manager">SOC Manager</option>
-            </select>
-            <div class="flex items-center gap-3 border-l border-slate-700 pl-4 text-right">
-                <div>
-                    <div class="text-xs font-black text-slate-100 uppercase tracking-tighter" id="user-name">A. Student</div>
-                    <div class="text-[9px] text-slate-500 uppercase font-black tracking-widest" id="user-role-label">Tier 1</div>
+        <div class="flex items-center gap-8">
+            <div class="text-right">
+                <div class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mono" id="current-time">00:00:00 UTC</div>
+            </div>
+            <div class="h-6 w-px bg-slate-800"></div>
+            <div class="flex items-center gap-4">
+                <select id="role-selector" class="bg-slate-900 border border-slate-700 text-[9px] font-black uppercase px-3 py-1.5 rounded-md outline-none cursor-pointer hover:border-sky-500 transition-all text-slate-400">
+                    <option value="student">Analyst Tier 1</option>
+                    <option value="senior">Incident Handler</option>
+                    <option value="manager">SOC Lead</option>
+                </select>
+                <div class="flex items-center gap-3 border-l border-slate-800 pl-4 font-black">
+                    <div class="text-[10px] font-black text-white uppercase" id="user-name">Core_Analyst</div>
+                    <div class="w-7 h-7 bg-sky-500/10 rounded border border-sky-500/30 flex items-center justify-center font-black text-[9px] text-sky-400">AC</div>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-40">
-            <div class="flex-1 py-4 overflow-y-auto scrollbar-hide">
-                <div class="px-4 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Monitoring</div>
-                <div class="nav-link active" data-tab="alerts" onclick="UI.switchView('alerts')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>Alerts Queue</span>
-                    <span id="nav-alert-count" class="ml-auto bg-sky-900/50 text-sky-400 text-[10px] px-1.5 py-0.5 rounded font-black">0</span>
-                </div>
-                <div class="nav-link" data-tab="incidents" onclick="UI.switchView('incidents')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    <span>Investigations</span>
-                    <span id="nav-incident-count" class="ml-auto bg-orange-900/50 text-orange-400 text-[10px] px-1.5 py-0.5 rounded hidden font-black">0</span>
-                </div>
-                <div id="nav-dashboard" class="nav-link hidden" data-tab="dashboard" onclick="UI.switchView('dashboard')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                    <span>Metrics Console</span>
-                </div>
+        <!-- SIDEBAR -->
+        <aside class="w-20 lg:w-64 bg-slate-950 border-r border-slate-800 flex flex-col z-40">
+            <div class="flex-1 py-6 flex flex-col gap-1">
+                <div class="px-6 mb-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.5em] hidden lg:block">Tactical</div>
                 
-                <div class="px-4 mt-10 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Intel</div>
-                <div class="nav-link" data-tab="kb" onclick="UI.switchView('kb')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                    <span>Playbook Library</span>
+                <div class="nav-link active" data-tab="alerts" onclick="UI.switchView('alerts')">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span class="hidden lg:block uppercase text-[11px] font-black tracking-widest font-black">Alert Queue</span>
+                    <span id="nav-alert-count" class="ml-auto bg-sky-500 text-slate-950 text-[9px] px-1.5 py-0.5 rounded-md font-black hidden lg:block">0</span>
                 </div>
+
+                <div class="nav-link" data-tab="incidents" onclick="UI.switchView('incidents')">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span class="hidden lg:block uppercase text-[11px] font-black tracking-widest font-black">Investigations</span>
+                </div>
+
+                <div id="nav-dashboard" class="nav-link hidden" data-tab="dashboard" onclick="UI.switchView('dashboard')">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="hidden lg:block uppercase text-[11px] font-black tracking-widest font-black">Command Hub</span>
+                </div>
+
+                <div class="mt-8 px-6 mb-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.5em] hidden lg:block font-black">Intelligence</div>
+
+                <div class="nav-link" data-tab="kb" onclick="UI.switchView('kb')">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <span class="hidden lg:block uppercase text-[11px] font-black tracking-widest font-black">Playbooks</span>
+                </div>
+
                 <div class="nav-link" data-tab="missions" onclick="UI.switchView('missions')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                    <span>Learning Scenarios</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    <span class="hidden lg:block uppercase text-[11px] font-black tracking-widest font-black">Scenarios</span>
                 </div>
             </div>
-            <div class="p-4 border-t border-slate-800">
-                <button id="toggle-feed-btn" onclick="Engine.toggleFeed()" class="w-full text-[10px] font-black uppercase py-3 bg-slate-800 rounded-lg border border-slate-700 text-slate-400 hover:text-white transition-all shadow-inner">Pause Simulation</button>
+
+            <div class="p-4 border-t border-slate-900">
+                <button id="toggle-feed-btn" onclick="Engine.toggleFeed()" class="w-full flex items-center justify-center lg:justify-start gap-3 p-3 rounded-xl bg-slate-900/50 text-slate-500 hover:text-white transition-all font-black">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest hidden lg:block">System Online</span>
+                </button>
             </div>
         </aside>
 
-        <!-- Main Content Workspace -->
-        <main class="flex-1 bg-slate-950 overflow-hidden relative">
-            <div id="view-container" class="h-full overflow-y-auto p-8 scrollbar-custom">
+        <!-- MAIN WORKSPACE -->
+        <main class="flex-1 bg-slate-950 overflow-hidden relative p-8">
+            <div id="view-container" class="h-full overflow-y-auto pr-2 scrollbar-custom">
                 
-                <!-- ALERTS TAB -->
-                <section id="view-alerts" class="tab-view">
-                    <div class="flex items-center justify-between mb-8 uppercase tracking-tighter">
-                        <div>
-                            <h2 class="text-3xl font-black text-white">Sensor Events console</h2>
-                            <p class="text-slate-500 text-xs font-medium tracking-widest mt-1">Direct SIEM telemetry ingest</p>
+                <!-- VIEW: ALERTS -->
+                <section id="view-alerts" class="tab-view space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-baseline gap-4">
+                            <h2 class="text-3xl font-black text-white uppercase tracking-tighter font-black">Event Stream</h2>
+                            <p class="text-[10px] text-slate-500 font-bold tracking-[0.3em] uppercase font-black">Sensor Feed v4.1</p>
                         </div>
-                        <input type="text" id="alert-search" oninput="Engine.renderAlerts()" placeholder="Search entity/source..." class="bg-slate-900 border border-slate-800 rounded-xl px-5 py-2.5 text-sm outline-none focus:border-sky-500 w-96 transition-all shadow-inner font-medium text-slate-300">
+                        <input type="text" id="alert-search" oninput="Engine.renderAlerts()" placeholder="FILTER LOGS..." class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-[10px] font-black tracking-widest uppercase outline-none focus:border-sky-500 w-80 text-white shadow-inner font-black">
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-800/50 text-slate-500 font-black uppercase tracking-widest border-b border-slate-800">
+                    <div class="bg-slate-900/30 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-900/80 border-b border-slate-800 text-[10px] font-black text-slate-500 uppercase tracking-widest font-black">
                                 <tr>
-                                    <th class="px-8 py-5">Risk</th>
-                                    <th class="px-8 py-5">Time</th>
-                                    <th class="px-8 py-5">Rule Description</th>
-                                    <th class="px-8 py-5">Source Asset</th>
-                                    <th class="px-8 py-5">Triage</th>
+                                    <th class="px-8 py-4">Severity</th>
+                                    <th class="px-8 py-4">Timestamp</th>
+                                    <th class="px-8 py-4">Detection Logic</th>
+                                    <th class="px-8 py-4">Target Entity</th>
+                                    <th class="px-8 py-4 text-right">Commit</th>
                                 </tr>
                             </thead>
-                            <tbody id="alerts-table-body" class="divide-y divide-slate-800 font-bold uppercase tracking-tighter"></tbody>
+                            <tbody id="alerts-table-body"></tbody>
                         </table>
                     </div>
                 </section>
 
-                <!-- INCIDENTS TAB -->
-                <section id="view-incidents" class="tab-view hidden">
-                    <h2 class="text-3xl font-black tracking-tighter text-white uppercase tracking-widest mb-8">Case Investigation Files</h2>
-                    <div id="incident-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-                    <div id="no-incidents" class="text-center py-32 bg-slate-900/30 border-2 border-dashed border-slate-800 rounded-3xl text-slate-600">
-                        <p class="text-lg font-black uppercase opacity-20 tracking-[0.3em]">Investigation Queue Empty</p>
+                <!-- VIEW: INCIDENTS -->
+                <section id="view-incidents" class="tab-view hidden space-y-8">
+                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter font-black">Case Records</h2>
+                    <div id="incident-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    <div id="no-incidents" class="text-center py-40 border-2 border-dashed border-slate-800 rounded-[3rem] opacity-20 uppercase font-black tracking-widest">No Active Records</div>
+                </section>
+
+                <!-- VIEW: DASHBOARD -->
+                <section id="view-dashboard" class="tab-view hidden space-y-8">
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-slate-800 relative group">
+                            <div class="text-[10px] font-black text-sky-500 uppercase mb-2 tracking-widest font-black">Events Processed</div>
+                            <div class="text-6xl font-black text-white mono tracking-tighter font-black" id="kpi-total">0</div>
+                        </div>
+                        <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-slate-800 group">
+                            <div class="text-[10px] font-black text-orange-500 uppercase mb-2 tracking-widest font-black">Active Cases</div>
+                            <div class="text-6xl font-black text-white mono tracking-tighter font-black" id="kpi-active">0</div>
+                        </div>
+                        <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-slate-800 group">
+                            <div class="text-[10px] font-black text-emerald-500 uppercase mb-2 tracking-widest font-black">Cases Resolved</div>
+                            <div class="text-6xl font-black text-white mono tracking-tighter font-black" id="kpi-resolved">0</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-10 rounded-[3rem] h-80">
+                        <h3 class="text-[10px] font-black uppercase text-slate-500 mb-8 tracking-[0.3em] font-black">Telemetry volume Distribution</h3>
+                        <div id="severity-chart" class="h-full flex items-end gap-10 font-black uppercase"></div>
                     </div>
                 </section>
 
-                <!-- DASHBOARD TAB -->
-                <section id="view-dashboard" class="tab-view hidden">
-                    <h2 class="text-3xl font-black mb-8 tracking-tighter text-white uppercase text-center">Manager Oversight</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 uppercase">
-                        <div class="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-lg group relative overflow-hidden">
-                            <div class="text-[11px] text-slate-500 mb-2 tracking-[0.2em] font-black">Session Alerts Ingested</div>
-                            <div class="text-6xl text-sky-400 font-black" id="kpi-total">0</div>
-                        </div>
-                        <div class="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-lg group relative overflow-hidden">
-                            <div class="text-[11px] text-slate-500 mb-2 tracking-[0.2em] font-black">Open Cases</div>
-                            <div class="text-6xl text-orange-500 font-black" id="kpi-active">0</div>
-                        </div>
-                        <div class="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-lg group relative overflow-hidden">
-                            <div class="text-[11px] text-slate-500 mb-2 tracking-[0.2em] font-black">Resolved Cases</div>
-                            <div class="text-6xl text-green-500 font-black" id="kpi-resolved">0</div>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-10 rounded-[3rem] shadow-xl">
-                        <h3 class="text-xs font-black uppercase text-slate-500 mb-10 tracking-[0.3em]">Volume by Severity</h3>
-                        <div id="severity-chart" class="h-80 flex items-end gap-12 px-12 pb-6 border-b border-slate-800"></div>
-                    </div>
-                </section>
-
-                <!-- KB TAB -->
-                <section id="view-kb" class="tab-view hidden h-full pb-10">
+                <!-- VIEW: KB -->
+                <section id="view-kb" class="tab-view hidden h-full">
                     <div class="grid grid-cols-4 gap-8 h-full">
-                        <div class="col-span-1 bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-xl overflow-y-auto scrollbar-custom">
-                            <h4 class="text-[10px] font-black text-slate-500 uppercase mb-6 tracking-widest border-b border-slate-800 pb-3">Standard Operating Procedures</h4>
-                            <div id="playbook-list" class="space-y-1.5"></div>
+                        <div class="col-span-1 bg-slate-900 border border-slate-800 rounded-3xl p-6 overflow-y-auto scrollbar-custom">
+                            <h4 class="text-[10px] font-black text-slate-600 uppercase mb-6 tracking-widest font-black">Protocol Library</h4>
+                            <div id="playbook-list" class="space-y-2 font-black uppercase font-black"></div>
                         </div>
-                        <div id="kb-content" class="col-span-3 bg-slate-900 rounded-[2.5rem] p-16 border border-slate-800 overflow-y-auto scrollbar-custom shadow-inner">
-                            <p class="text-xl text-slate-700 font-black uppercase tracking-[0.2em] text-center mt-20 opacity-20">Select Protocol</p>
+                        <div id="kb-content" class="col-span-3 bg-slate-900 border border-slate-800 rounded-[3rem] p-16 overflow-y-auto scrollbar-custom">
+                            <div class="h-full flex flex-col items-center justify-center opacity-10">
+                                <svg class="w-20 h-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                <p class="text-xl font-black uppercase tracking-[0.5em] font-black">Select Standard SOP</p>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- MISSIONS TAB -->
-                <section id="view-missions" class="tab-view hidden">
-                    <h2 class="text-3xl font-black mb-10 tracking-tighter text-white uppercase text-center">Academy Scenarios</h2>
-                    <div id="missions-list" class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto"></div>
+                <!-- VIEW: MISSIONS -->
+                <section id="view-missions" class="tab-view hidden font-black uppercase">
+                    <div id="missions-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-black uppercase"></div>
                 </section>
             </div>
 
-            <!-- MODAL: TRIAGE DRAWER -->
-            <div id="alert-drawer" class="fixed top-14 right-0 bottom-0 w-[600px] bg-slate-900 border-l border-slate-700 shadow-2xl z-[60] drawer-transition drawer-hidden flex flex-col">
-                <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-900 shadow-md">
-                    <div class="flex items-center gap-4">
-                        <span id="drawer-sev" class="badge">---</span>
-                        <h3 class="font-black text-white uppercase tracking-widest text-xs">Event Intake Review</h3>
-                    </div>
-                    <button onclick="UI.closeDrawer()" class="text-slate-500 hover:text-white p-2 rounded-full hover:bg-slate-800 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+            <!-- TRIAGE DRAWER -->
+            <div id="alert-drawer" class="fixed top-14 right-0 bottom-0 w-[550px] bg-slate-900 border-l border-slate-800 shadow-2xl z-[60] drawer-transition drawer-hidden flex flex-col">
+                <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-950/50 backdrop-blur-md font-black uppercase">
+                    <span id="drawer-sev" class="badge">---</span>
+                    <button onclick="UI.closeDrawer()" class="text-slate-500 hover:text-white transition-all"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </div>
-                <div class="flex-1 overflow-y-auto p-12 space-y-10 scrollbar-custom">
-                    <div>
-                        <h2 id="drawer-title" class="text-3xl font-black text-white mb-2 leading-tight uppercase tracking-tighter">---</h2>
-                        <div class="text-[10px] font-mono text-slate-500 font-black uppercase tracking-widest border-b border-slate-800 pb-3 flex justify-between">
+                <div class="flex-1 overflow-y-auto p-12 space-y-10 scrollbar-custom font-black uppercase">
+                    <div class="space-y-2 font-black uppercase">
+                        <h2 id="drawer-title" class="text-4xl font-black text-white uppercase tracking-tighter leading-none font-black uppercase">---</h2>
+                        <div class="flex justify-between text-[10px] font-black uppercase text-slate-500 mono border-b border-slate-800 pb-2 font-black uppercase">
                             <span id="drawer-id">---</span>
                             <span id="drawer-time">---</span>
                         </div>
                     </div>
-                    <div class="bg-slate-950 border border-slate-800 p-8 rounded-2xl shadow-inner border-l-4 border-l-sky-500 relative">
-                        <pre id="drawer-logs" class="text-xs font-mono text-sky-500/80 whitespace-pre-wrap leading-relaxed"></pre>
+                    <div class="bg-black/60 p-8 rounded-2xl border border-slate-800 shadow-inner border-l-4 border-l-sky-500 relative">
+                        <div class="scanline"></div>
+                        <pre id="drawer-logs" class="text-xs font-mono text-sky-400 whitespace-pre-wrap uppercase leading-relaxed font-black"></pre>
                     </div>
-                    <div class="grid grid-cols-2 gap-5 font-black uppercase tracking-widest text-[10px]">
-                        <button onclick="Engine.mockResearch()" class="btn-soc btn-outline flex items-center justify-center gap-3 py-5 bg-slate-800/50 hover:bg-sky-500/10 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            Run OSINT Lookup
-                        </button>
-                        <button onclick="Engine.handleAlertAction('fp')" class="btn-soc btn-secondary py-5">Mark False Positive</button>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="Engine.mockResearch()" class="btn-action btn-secondary py-5 font-black uppercase">Reputation Check</button>
+                        <button onclick="Engine.handleAlertAction('fp')" class="btn-action bg-slate-700 text-white py-5 font-black uppercase">Dismiss Noise</button>
                     </div>
-                    <div id="intel-results" class="hidden bg-sky-950/20 border border-sky-800/50 p-8 rounded-3xl animate-pulse">
-                        <h4 class="text-[11px] font-black text-sky-400 uppercase mb-4 tracking-widest">External intelligence Match</h4>
-                        <div id="intel-text" class="text-xs text-sky-200/70 font-bold leading-relaxed">Cross-referencing databases...</div>
+                    <div id="intel-results" class="hidden bg-sky-500/5 border border-sky-500/20 p-6 rounded-2xl border-l-4 border-l-sky-500">
+                        <p id="intel-text" class="text-xs text-slate-300 leading-relaxed font-bold italic font-black uppercase"></p>
                     </div>
-                    <div class="space-y-4 pt-8 border-t border-slate-800">
-                        <button onclick="Engine.handleAlertAction('escalate')" class="w-full btn-soc btn-primary py-6 text-sm font-black uppercase tracking-widest shadow-2xl">Open Investigation Case</button>
-                    </div>
+                    <button onclick="Engine.handleAlertAction('escalate')" class="w-full btn-action btn-primary py-6 text-sm font-black uppercase tracking-widest shadow-xl font-black uppercase">Launch Tactical Case</button>
                 </div>
             </div>
 
-            <!-- MODAL: INVESTIGATION LIFECYCLE -->
+            <!-- INVESTIGATION WORKSPACE -->
             <div id="incident-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/98 hidden">
-                <div class="bg-slate-900 border border-slate-700 w-full max-w-7xl h-[94vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
-                    <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-900 shadow-md">
-                        <div class="flex items-center gap-8">
-                            <span id="modal-inc-id" class="text-xs font-mono text-slate-500 font-black uppercase tracking-widest bg-slate-800 px-3 py-1 rounded">---</span>
-                            <h2 id="modal-inc-title" class="text-2xl font-black text-white tracking-tighter uppercase font-black">---</h2>
+                <div id="modal-content" class="bg-slate-900 border border-slate-800 w-full max-w-7xl h-[94vh] rounded-[3rem] flex flex-col overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+                    
+                    <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-950/50 backdrop-blur-lg font-black uppercase">
+                        <div class="flex items-center gap-6">
+                            <span id="modal-inc-id" class="text-[10px] font-black mono text-slate-500 bg-slate-900 px-3 py-1 rounded-lg font-black uppercase">---</span>
+                            <h2 id="modal-inc-title" class="text-2xl font-black text-white tracking-tighter uppercase font-black uppercase">---</h2>
                         </div>
-                        <button onclick="UI.closeIncidentModal()" class="text-slate-500 hover:text-white p-3 rounded-full hover:bg-slate-800 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+                        <button onclick="UI.closeIncidentModal()" class="text-slate-500 hover:text-white transition-all font-black uppercase font-black uppercase"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
                     </div>
-                    <div class="flex bg-slate-950 border-b border-slate-800 shadow-inner overflow-hidden">
-                        <div id="phase-1" class="phase-step phase-current">1. ID</div>
-                        <div id="phase-2" class="phase-step phase-inactive">2. Containment</div>
-                        <div id="phase-3" class="phase-step phase-inactive">3. Eradication</div>
-                        <div id="phase-4" class="phase-step phase-inactive">4. Recovery</div>
-                        <div id="phase-5" class="phase-step phase-inactive">5. Lessons</div>
+
+                    <!-- REDESIGNED BUTTON-LIKE STEPPER -->
+                    <div class="phase-container">
+                        <div id="phase-1" class="phase-step phase-current" onclick="Engine.renderPhase(1)">
+                            <span class="text-[8px] opacity-60">Phase 01</span>
+                            <span>Identification</span>
+                        </div>
+                        <div id="phase-2" class="phase-step" onclick="Engine.renderPhase(2)">
+                            <span class="text-[8px] opacity-60">Phase 02</span>
+                            <span>Containment</span>
+                        </div>
+                        <div id="phase-3" class="phase-step" onclick="Engine.renderPhase(3)">
+                            <span class="text-[8px] opacity-60">Phase 03</span>
+                            <span>Eradication</span>
+                        </div>
+                        <div id="phase-4" class="phase-step" onclick="Engine.renderPhase(4)">
+                            <span class="text-[8px] opacity-60">Phase 04</span>
+                            <span>Recovery</span>
+                        </div>
+                        <div id="phase-5" class="phase-step" onclick="Engine.renderPhase(5)">
+                            <span class="text-[8px] opacity-60">Phase 05</span>
+                            <span>Report</span>
+                        </div>
                     </div>
+
                     <div class="flex-1 overflow-hidden flex">
-                        <div class="flex-1 p-12 overflow-y-auto scrollbar-custom border-r border-slate-800 space-y-12 bg-slate-900/10">
-                            <div class="bg-sky-900/10 border border-sky-800/50 p-8 rounded-3xl shadow-inner border-l-8 border-l-sky-500">
-                                <h4 class="text-sky-400 text-[10px] font-black uppercase tracking-widest mb-2 italic tracking-tighter font-black font-black font-black">Current Objective:</h4>
-                                <p id="phase-desc" class="text-sm text-sky-200/80 leading-relaxed font-bold"></p>
+                        <!-- LEFT: EVIDENCE (Intake) -->
+                        <div class="w-[450px] bg-slate-950/50 border-r border-slate-800 p-12 flex flex-col font-black uppercase">
+                            <h4 class="text-[10px] font-black text-slate-600 uppercase mb-8 tracking-[0.4em] font-black uppercase">Artifact Vault</h4>
+                            <div id="artifact-list" class="space-y-3 mb-10 overflow-y-auto scrollbar-custom pr-2"></div>
+                            <div id="artifact-content-viewer" class="hidden flex-1 flex flex-col overflow-hidden animate-in fade-in slide-in-from-left-6">
+                                <span id="viewing-filename" class="text-[10px] font-black text-sky-500 mono underline mb-4"></span>
+                                <pre id="artifact-text" class="code-block h-full shadow-2xl overflow-y-auto scrollbar-custom uppercase text-[11px] p-6 bg-black border border-slate-800 rounded-2xl text-sky-400 font-black"></pre>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: WORK AREA (Output) -->
+                        <div class="flex-1 p-12 overflow-y-auto scrollbar-custom space-y-12 font-black uppercase">
+                            <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-inner border-l-8 border-l-sky-500 font-black uppercase font-black uppercase">
+                                <p id="phase-desc" class="text-sm text-slate-300 font-semibold leading-relaxed italic font-black uppercase"></p>
                             </div>
 
-                            <!-- Phase 1: Technical Discovery Form -->
-                            <div id="technical-form" class="hidden grid grid-cols-2 gap-8 bg-slate-950 p-10 rounded-[2rem] border border-slate-800 shadow-2xl">
-                                <div>
-                                    <label class="form-label">Source IP (Forensic)</label>
-                                    <input type="text" id="form-ip" class="form-input" placeholder="0.0.0.0">
-                                </div>
-                                <div>
-                                    <label class="form-label">Compromised User</label>
-                                    <input type="text" id="form-user" class="form-input" placeholder="username">
-                                </div>
-                                <div>
-                                    <label class="form-label">Target Port</label>
-                                    <input type="text" id="form-port" class="form-input" placeholder="80, 443, etc.">
-                                </div>
-                                <div>
-                                    <label class="form-label">Evidence Match (Keyword)</label>
-                                    <input type="text" id="form-cmd" class="form-input" placeholder="curl, success, etc.">
-                                </div>
+                            <div id="technical-form" class="hidden grid grid-cols-2 gap-6 bg-slate-950 p-10 rounded-[2.5rem] border border-slate-800">
+                                <div><label class="form-label font-black uppercase">Source IP</label><input type="text" id="form-ip" class="form-input" placeholder="0.0.0.0"></div>
+                                <div><label class="form-label font-black uppercase">Compromised User</label><input type="text" id="form-user" class="form-input" placeholder="user_auth"></div>
+                                <div><label class="form-label font-black uppercase">Access Port</label><input type="text" id="form-port" class="form-input" placeholder="e.g. 443"></div>
+                                <div><label class="form-label font-black uppercase">Evidence Keyword</label><input type="text" id="form-cmd" class="form-input" placeholder="e.g. success"></div>
                             </div>
 
-                            <!-- Phase 2: Containment Panel -->
-                            <div id="containment-panel" class="hidden space-y-6 bg-slate-950 p-10 rounded-[2rem] border border-slate-800 shadow-2xl text-center">
-                                <h4 class="text-xs font-black text-sky-400 uppercase tracking-widest border-b border-sky-900/50 pb-2">Active Response Controls</h4>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <button onclick="Engine.executeContainment('Blocked Source IP at Firewall')" class="btn-soc btn-danger uppercase text-[10px] py-4 font-black">Block Source IP</button>
-                                    <button onclick="Engine.executeContainment('Isolated Endpoint from Network')" class="btn-soc btn-danger uppercase text-[10px] py-4 font-black">Isolate Host</button>
-                                    <button onclick="Engine.executeContainment('Revoked User Session Tokens')" class="btn-soc btn-outline uppercase text-[10px] py-4 font-black">Revoke Sessions</button>
-                                    <button onclick="Engine.executeContainment('Forced Password Reset')" class="btn-soc btn-outline uppercase text-[10px] py-4 font-black">Reset Credentials</button>
-                                </div>
+                            <div id="containment-panel" class="hidden grid grid-cols-2 gap-4 bg-slate-950 p-10 rounded-[2.5rem] border border-slate-800">
+                                <button id="btn-block-ip" onclick="Engine.executeContainment('Blocked IP at Edge')" class="btn-action bg-rose-600 text-white py-6 font-black uppercase font-black uppercase">Block Source IP</button>
+                                <button id="btn-isolate-host" onclick="Engine.executeContainment('Isolated Endpoint')" class="btn-action bg-rose-600 text-white py-6 font-black uppercase font-black uppercase">Isolate Target Host</button>
+                                <button id="btn-revoke-sessions" onclick="Engine.executeContainment('Revoked Tokens')" class="btn-action btn-secondary py-6 font-black uppercase font-black uppercase">Revoke Auth Tokens</button>
+                                <button id="btn-reset-creds" onclick="Engine.executeContainment('Forced Reset')" class="btn-action btn-secondary py-6 font-black uppercase font-black uppercase">Force Password Reset</button>
                             </div>
 
-                            <div class="space-y-6">
-                                <div class="flex justify-between items-center">
-                                    <h4 class="text-[11px] font-black uppercase text-slate-500 tracking-widest">Investigation Log & findings</h4>
-                                    <div class="flex flex-col items-end gap-1">
-                                        <span id="validation-hint" class="text-[10px] text-yellow-500 font-black hidden flex items-center gap-3 animate-pulse border border-yellow-500/50 px-4 py-2 rounded-full uppercase font-black font-black font-black font-black">
-                                            Forensic Mismatch
-                                        </span>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center px-2">
+                                    <div class="flex items-center gap-3 font-black uppercase">
+                                        <h4 class="text-[10px] font-black uppercase text-slate-500 tracking-widest font-black uppercase font-black uppercase">Analyst Analysis Log</h4>
+                                        <span id="char-count" class="text-[9px] font-black mono text-slate-600 px-2 py-0.5 rounded-full border border-slate-800">0/35</span>
                                     </div>
+                                    <span id="validation-hint" class="text-[9px] text-rose-500 font-black hidden animate-pulse border border-rose-500/30 px-3 py-1 rounded-full uppercase font-black uppercase font-black uppercase font-black uppercase">Insufficient Detail</span>
                                 </div>
                                 
-                                <div id="submission-hint" class="hidden bg-sky-900/20 border-l-4 border-sky-500 p-6 rounded-xl space-y-3">
-                                    <h5 class="text-sky-400 font-black uppercase text-[10px] tracking-widest font-black italic underline decoration-sky-800">Forensic Guidance Revealed</h5>
-                                    <p id="hint-text" class="text-xs text-slate-300 leading-relaxed font-bold"></p>
-                                    <div class="bg-black/40 p-4 rounded-lg border border-sky-900/50">
-                                        <p class="text-[10px] text-sky-500 font-black uppercase mb-1">Required data for progression:</p>
-                                        <p id="hint-values" class="text-[11px] font-mono text-white font-black font-black font-black font-black font-black"></p>
-                                    </div>
+                                <div id="submission-hint" class="hidden bg-orange-500/5 border-l-4 border-orange-500 p-6 rounded-2xl font-black uppercase font-black uppercase font-black uppercase">
+                                    <h5 class="text-orange-400 font-black uppercase text-[10px] mb-2 italic font-black uppercase font-black uppercase font-black uppercase">Forensic Clue Identified</h5>
+                                    <p id="hint-text" class="text-xs text-slate-300 mb-4 font-bold leading-relaxed font-black uppercase font-black uppercase font-black uppercase"></p>
+                                    <p id="hint-values" class="text-[10px] font-mono text-white bg-black/40 p-4 rounded-xl border border-slate-800 font-black uppercase font-black uppercase font-black uppercase"></p>
                                 </div>
 
-                                <textarea id="phase-notes" placeholder="Analyze artifacts from the locker. Document your findings, containment actions, or lessons learned here..." class="w-full h-[350px] bg-black border border-slate-800 rounded-[2rem] p-10 text-sm outline-none focus:border-sky-500 text-slate-300 font-mono leading-loose shadow-inner scrollbar-custom"></textarea>
-                            </div>
-                        </div>
-                        <div class="w-[500px] p-12 bg-slate-900/50 overflow-y-auto scrollbar-custom space-y-12 border-l border-slate-800">
-                            <div id="artifact-explorer">
-                                <h4 class="text-[11px] font-black text-slate-500 uppercase mb-6 tracking-widest border-b border-slate-800 pb-4 flex items-center justify-between">
-                                    <span>Evidence Locker (Forensics)</span>
-                                    <span class="text-[10px] font-black italic text-slate-600 font-mono bg-slate-950 px-3 py-1 rounded border border-slate-800 shadow-inner uppercase tracking-tighter">locker_v3.6</span>
-                                </h4>
-                                <div id="artifact-list" class="space-y-4 mb-10"></div>
-                                <div id="artifact-content-viewer" class="mt-10 hidden animate-in fade-in slide-in-from-top-6 duration-700">
-                                    <div class="flex justify-between items-center mb-4 px-2">
-                                        <span id="viewing-filename" class="text-[11px] font-black text-sky-500 font-mono uppercase tracking-widest underline decoration-sky-900 decoration-4"></span>
-                                        <button onclick="UI.closeArtifactView()" class="text-[10px] font-black text-slate-600 hover:text-white uppercase tracking-widest bg-slate-800 px-3 py-1 rounded transition-colors">Close X</button>
-                                    </div>
-                                    <pre id="artifact-text" class="code-block h-[500px] shadow-2xl"></pre>
-                                </div>
+                                <textarea id="phase-notes" oninput="Engine.updateCharCount()" class="w-full h-[300px] bg-black border border-slate-800 rounded-[2rem] p-10 text-sm outline-none focus:border-sky-500 text-slate-300 font-mono shadow-inner font-black uppercase"></textarea>
                             </div>
                         </div>
                     </div>
-                    <div class="p-10 border-t border-slate-800 flex justify-between items-center bg-slate-900 shadow-2xl">
-                        <div class="text-xs text-slate-500 italic font-black uppercase tracking-widest opacity-40" id="phase-status-text">Forensic investigation required to advance.</div>
-                        <div class="flex gap-6">
-                            <button id="btn-next-phase" onclick="Engine.progressPhase()" class="btn-soc btn-primary py-5 px-16 flex items-center gap-4 font-black uppercase tracking-[0.2em] text-xs">
-                                Submit investigation data
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                            </button>
-                            <button id="btn-resolve" onclick="Engine.resolveIncident()" class="hidden btn-soc bg-green-600 hover:bg-green-500 text-white py-5 px-16 font-black uppercase tracking-[0.2em] shadow-lg shadow-green-900/40 text-xs">Resolve Case File</button>
+
+                    <div class="p-10 border-t border-slate-800 bg-slate-950 flex justify-between items-center">
+                        <span id="phase-status-text" class="text-[10px] font-black uppercase text-slate-600 tracking-widest font-black uppercase">SEC_OPS PROTOCOL ACTIVE</span>
+                        <div class="flex gap-4 font-black uppercase">
+                            <button id="btn-next-phase" onclick="Engine.progressPhase()" class="btn-action btn-primary py-5 px-12 flex items-center gap-3 font-black uppercase font-black uppercase">COMMIT FINDINGS <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></button>
+                            <button id="btn-resolve" onclick="Engine.resolveIncident()" class="hidden btn-action bg-emerald-600 text-white py-5 px-12 font-black uppercase shadow-emerald-500/20 shadow-lg font-black uppercase">FINALIZE ARCHIVE</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Toast Layer -->
             <div id="toast-container" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-4 pointer-events-none w-[450px]"></div>
         </main>
 
-        <!-- Right Side sidebar -->
-        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col hidden xl:flex shadow-2xl">
-            <div class="p-5 border-b border-slate-800 font-black text-[11px] uppercase tracking-[0.3em] text-slate-500 flex justify-between items-center bg-slate-900/50">
-                Console logs
-                <div class="flex gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-md shadow-green-900"></span>
-                </div>
-            </div>
-            <div id="activity-feed" class="flex-1 overflow-y-auto p-8 space-y-5 scrollbar-custom text-[11px] font-bold text-slate-400 tracking-tighter leading-relaxed"></div>
+        <!-- ACTIVITY FEED -->
+        <aside class="w-80 bg-slate-950 border-l border-slate-800 flex flex-col hidden xl:flex">
+            <div id="activity-feed" class="flex-1 overflow-y-auto p-8 space-y-4 scrollbar-custom text-[10px] mono text-slate-600"></div>
         </aside>
     </div>
 
     <script>
-        // --- DATA ARCHITECTURE ---
         const SEV_MAP = {
-            critical: { label: 'CRITICAL', class: 'badge-critical', val: 4, osint: "Indicator hit: Matches known Lazarus Group C2 node. Destination IP associated with data exfiltration campaigns." },
-            high: { label: 'HIGH', class: 'badge-high', val: 3, osint: "Reputation mismatch: Source IP relay node flagged for relay activity. russian-based proxy exit node." },
-            medium: { label: 'MEDIUM', class: 'badge-medium', val: 2, osint: "Neutral reputation score. Unusual activity detected on non-standard port." },
-            low: { label: 'LOW', class: 'badge-low', val: 1, osint: "Informational policy violation. login anomaly detected." }
+            critical: { label: 'CRITICAL', class: 'badge-crit', val: 4, osint: "Indicator hit: Matches known Lazarus Group C2 node. Associated with exfiltration campaigns." },
+            high: { label: 'HIGH', class: 'badge-high', val: 3, osint: "Malicious relay hit. Flagged by 45/90 engines for unauthorized data transfer." },
+            medium: { label: 'MEDIUM', class: 'badge-med', val: 2, osint: "Anomalous connection request on restricted administrative port." },
+            low: { label: 'LOW', class: 'badge-low', val: 1, osint: "Informational login anomaly from a known VPN provider." }
         };
 
         const PHASE_DEFS = [
-            { id: 1, name: 'Identification', desc: 'Identify IOCs. Review artifacts and document specific source IPs, users, and suspicious commands discovered.', keywords: ['ip', 'user', 'account', 'command', 'success', 'log', 'port', 'found', 'address', 'origin'] },
-            { id: 2, name: 'Containment', desc: 'Stop the threat. Block malicious IPs or isolate host. Document exactly what containment was executed.', keywords: ['isolate', 'block', 'contain', 'disable', 'firewall', 'stop', 'quarantine', 'disconnect'] },
-            { id: 3, name: 'Eradication', desc: 'Remove root cause. Document the deletion of malicious scripts or rotation of compromised keys.', keywords: ['delete', 'remove', 'clean', 'patch', 'rotate', 'update', 're-image', 'sanitized', 'wipe'] },
-            { id: 4, name: 'Recovery', desc: 'Restore normal operations and monitor. Document verification checks ensuring threat absence.', keywords: ['restore', 'monitor', 'verify', 'health', 'alert', 'back', 'online', 'resumed'] },
-            { id: 5, name: 'Lessons', desc: 'Summarize root cause and identify a preventive control.', keywords: ['cause', 'prevent', 'root', 'improve', 'training', 'policy', 'learned', 'report'] }
+            { id: 1, name: 'ID', desc: 'Identify Indicators of Compromise (IOCs). Match IP, User, and Payload details from artifacts.', keywords: ['ip', 'user', 'account', 'command', 'success', 'log', 'port', 'found', 'address', 'origin'] },
+            { id: 2, name: 'Contain', desc: 'Execute response actions using the Active Response Panel to mitigate lateral movement.', keywords: ['isolate', 'block', 'contain', 'disable', 'firewall', 'stop', 'quarantine', 'disconnect'] },
+            { id: 3, name: 'Remediate', desc: 'Remove root cause. Document malware cleanup or credential rotation procedures.', keywords: ['delete', 'remove', 'clean', 'patch', 'rotate', 'update', 're-image', 'sanitized', 'wipe'] },
+            { id: 4, name: 'Restore', desc: 'Verify system integrity and monitoring coverage before bringing assets back online.', keywords: ['restore', 'monitor', 'verify', 'health', 'alert', 'back', 'online', 'resumed'] },
+            { id: 5, name: 'Report', desc: 'Post-mortem. Summarize root cause and recommend long-term defensive improvements.', keywords: ['cause', 'prevent', 'root', 'improve', 'training', 'policy', 'learned', 'report'] }
         ];
 
         const ARTIFACT_POOLS = {
@@ -420,7 +445,7 @@
             "C2 Beaconing Pattern": [
                 { name: "netstat_dump.txt", content: "Proto  Local Address          Foreign Address        State          PID    User\nTCP    192.168.1.45:51234     185.220.101.5:443      ESTABLISHED    492    SYSTEM\nTCP    192.168.1.45:51235     185.220.101.5:443      ESTABLISHED    492    SYSTEM", 
                     validation: { ip: "185.220.101.5", user: "SYSTEM", port: "443", cmd: "established" },
-                    explanation: "The netstat output shows persistent outbound connections to the IP 185.220.101.5 on Port 443. The 'ESTABLISHED' state and the associated process PID (492) indicate active beaconing. The PID column confirms the process is running as the SYSTEM account."
+                    explanation: "The netstat output shows persistent outbound connections to the IP 185.220.101.5 on Port 443. The 'ESTABLISHED' state and the associated process PID (492) indicate active beaconing. The PID column confirms the process is running as the SYSTEM user."
                 },
                 { name: "proc_audit.json", content: "[ { \"pid\": 492, \"name\": \"svchost.exe\", \"user\": \"SYSTEM\", \"is_signed\": false, \"md5\": \"5e884898da28047151d0e56f8dc6292773603d0d\", \"cmd\": \"svchost.exe -host 185.220.101.5 -p 443\" } ]" },
                 { name: "dns_queries.log", content: "08:12:01 query: update-services.botnet-node.com type A class IN\n08:12:05 resolve: update-services.botnet-node.com at 185.220.101.5" }
@@ -428,7 +453,7 @@
             "SQL Injection Attempt": [
                 { name: "web_server.log", content: "08:10:12 192.168.10.5 GET /login.php?user=admin' OR '1'='1'-- HTTP/1.1 200 452\n08:10:15 192.168.10.5 GET /admin/dashboard.php HTTP/1.1 200 1202", 
                     validation: { ip: "192.168.10.5", user: "admin", port: "80", cmd: "sql" },
-                    explanation: "The web server logs capture an attacker using a common SQL injection payload (' OR '1'='1') to bypass the login logic. The subsequent successful 'GET' request to the admin dashboard confirms that the bypass was successful."
+                    explanation: "The web server logs capture an attacker using a common SQL injection payload (' OR '1'='1') to bypass the login logic. The subsequent successful 'GET' request to the admin dashboard confirms that the logical bypass was successful."
                 },
                 { name: "db_slow_queries.log", content: "Feb 15 08:10:12 [Query]: SELECT * FROM users WHERE username = 'admin' OR '1'='1' -- AND password = '...'; [Time]: 0.002s" }
             ],
@@ -442,71 +467,57 @@
             "Phishing URL Click": [
                 { name: "email_headers.eml", content: "From: IT Service Desk <support@micros0ft-updates.com>\nTo: julia.smith@acme-corp.com\nSubject: Password Expiry Notification\nX-Originating-IP: [103.45.12.89]\nAuthentication-Results: spf=fail dkim=none\nLink-URL: http://micros0ft-updates.com/portal/login.php",
                     validation: { ip: "103.45.12.89", user: "julia.smith", port: "80", cmd: "micros0ft" },
-                    explanation: "Analyzing the email headers reveals an originating IP from a suspicious range and an SPF failure. The link provided uses a look-alike domain (micros0ft with a zero) designed to harvest credentials from unsuspecting users."
-                },
-                { name: "proxy_server.log", content: "08:15:22 client=192.168.1.15 dest=micros0ft-updates.com action=ALLOWED bytes=4056" }
+                    explanation: "Analyzing the email headers reveals an originating IP from a suspicious range and an SPF failure. The link provided uses a look-alike domain (micros0ft with a zero) designed to harvest credentials."
+                }
             ],
             "Ransomware Staging": [
                 { name: "process_tree.log", content: "2026-02-15 09:00:12 cmd.exe /c vssadmin.exe delete shadows /all /quiet\n2026-02-15 09:00:15 powershell.exe -Command Stop-Service -Name 'WinDefend'\n2026-02-15 09:05:22 ransomware.exe --target C:\\Users\\Public\\Documents",
                     validation: { ip: "local", user: "service_user", port: "0", cmd: "vssadmin" },
-                    explanation: "The process tree shows a critical sequence associated with ransomware staging: the deletion of Volume Shadow Copies (backups) using vssadmin and the attempt to disable Windows Defender. These are proactive steps taken by attackers before beginning file encryption."
-                },
-                { name: "file_activity.csv", content: "Time,Action,Path,Extension\n09:06:01,CREATED,C:\\Users\\Public\\Doc1.docx.crypt0\n09:06:02,CREATED,C:\\Users\\Public\\Doc2.pdf.crypt0" }
+                    explanation: "The process tree shows a critical sequence associated with ransomware staging: the deletion of Volume Shadow Copies (backups) using vssadmin and the attempt to disable defenses."
+                }
             ],
             "Cloud Data Exfiltration": [
                 { name: "netflow_export.csv", content: "Time,SrcIP,DstIP,DstPort,BytesOut,Protocol\n08:45:10,192.168.1.15,52.45.10.11,443,4500000000,HTTPS",
                     validation: { ip: "52.45.10.11", user: "m.johnson", port: "443", cmd: "S3" },
-                    explanation: "Network flow logs show a massive outbound data transfer (4.5GB) to an AWS S3 bucket IP. Correlating this with user activity logs shows user 'm.johnson' was active during this window and had recently installed unauthorized sync tools."
-                },
-                { name: "m_johnson_activity.log", content: "08:40:01 user m.johnson installed rclone.exe\n08:44:55 user m.johnson executed rclone copy C:\\Finance s3:backup-bucket" }
+                    explanation: "Network flow logs show a massive outbound data transfer (4.5GB) to an AWS S3 bucket IP. Correlating this with user activity logs shows user 'm.johnson' was active and installed unauthorized sync tools."
+                }
             ],
             "Suspicious Persistence": [
                 { name: "scheduled_tasks.json", content: "[ { \"TaskName\": \"WindowsUpdateSync\", \"Author\": \"DOMAIN\\admin_svc\", \"Command\": \"C:\\Windows\\Temp\\svc_check.ps1\", \"Trigger\": \"At Startup\" } ]",
                     validation: { ip: "local", user: "admin_svc", port: "0", cmd: "temp" },
-                    explanation: "A new scheduled task named 'WindowsUpdateSync' was created using a domain admin service account. However, the command points to a script in the C:\\Windows\\Temp directory—a common 'living-off-the-land' persistence mechanism used to maintain access after a reboot."
-                },
-                { name: "temp_dir_listing.txt", content: "2026-02-15 07:12:01 12KB svc_check.ps1\n2026-02-15 07:12:05 4KB payload.exe" }
+                    explanation: "A new scheduled task named 'WindowsUpdateSync' was created using an admin account. The command points to a script in the C:\\Windows\\Temp directory—a common persistence mechanism."
+                }
             ]
         };
 
-        const SOP_LIBRARY = [
-            { id: 'pb1', title: 'NIST 800-61: Incident Handling', summary: 'The foundational standard for managing cyber incidents.', content: "1. Detection and Analysis: Review alerts, extract IOCs, and determine scope.\n2. Containment: Isolate systems to prevent further damage.\n3. Eradication: Remove the root cause (e.g., delete malware, rotate keys).\n4. Recovery: Safely restore normal operations.\n5. Post-Incident Activity: Document lessons learned." },
-            { id: 'pb2', title: 'SANS: Malware Response', summary: 'Checklist for identifying and cleaning malware outbreaks.', content: "1. Capture volatile memory if possible.\n2. Isolate host from the network immediately.\n3. Identify persistence mechanisms (e.g., scheduled tasks, registry keys).\n4. Wipe and re-image highly sensitive systems.\n5. Monitor for C2 beaconing during recovery." },
-            { id: 'pb3', title: 'Phishing & BEC SOP', summary: 'Standard methodology for email-based credential harvesting.', content: "1. Inspect full SMTP headers for originating IP and Return-Path.\n2. Verify SPF/DKIM/DMARC status.\n3. Block malicious sender domain and phishing URL at proxy.\n4. Identify and force MFA reset for all users who clicked.\n5. Purge the malicious email from all mailboxes." },
-            { id: 'pb4', title: 'Web Application Attack SOP', summary: 'Protocol for responding to SQLi and XSS attempts.', content: "1. Review WAF and web server logs for suspicious parameter strings (e.g., OR 1=1).\n2. Correlate with database error logs.\n3. Implement input sanitization or WAF block rules for the source IP.\n4. Audit database for unauthorized data extraction.\n5. Patch vulnerable code paths." }
-        ];
-
         const MISSIONS = [
-            { id: 'm1', type: 'Brute Force Attempt', title: 'Credential Spraying: Svc Account', difficulty: 'Beginner', desc: 'Identify a brute force attack origin and determine if persistence was established.' },
-            { id: 'm2', type: 'C2 Beaconing Pattern', title: 'Network Beacon: Finance Dept', difficulty: 'Intermediate', desc: 'Telemetry shows a workstation communicating with a high-risk IP. Isolate host.' },
-            { id: 'm3', type: 'SQL Injection Attempt', title: 'Web Exploit: Database Bypass', difficulty: 'Beginner', desc: 'Analyze web server logs for a SQL injection attempt and determine database impact.' },
-            { id: 'm4', type: 'PowerShell Obfuscation', title: 'LOLBins: Encoded PowerShell', difficulty: 'Hard', desc: 'Deconstruct a base64 encoded PowerShell command used to download a remote payload.' },
-            { id: 'm5', type: 'Phishing URL Click', title: 'Social Engineering: Phishing', difficulty: 'Intermediate', desc: 'Inspect email headers and proxy logs to identify a successful credential harvesting attempt.' },
-            { id: 'm6', type: 'Ransomware Staging', title: 'Ransomware: Defeat VSS', difficulty: 'Hard', desc: 'Investigate a sequence of commands targeting Volume Shadow Copies and system defenses.' },
-            { id: 'm7', type: 'Cloud Data Exfiltration', title: 'Exfiltration: Unauthorized S3', difficulty: 'Intermediate', desc: 'Identify a massive outbound data transfer to cloud storage and correlate local user activity.' },
-            { id: 'm8', type: 'Suspicious Persistence', title: 'Persistence: Shadow Update', difficulty: 'Intermediate', desc: 'Discover a malicious scheduled task created to maintain long-term access via temp scripts.' }
+            { id: 'm1', type: 'Brute Force Attempt', title: 'Brute Force Attack', difficulty: 'Beginner', desc: 'Identify a brute force attack origin and determine if persistence was established.' },
+            { id: 'm2', type: 'C2 Beaconing Pattern', title: 'C2 Beaconing Pattern', difficulty: 'Intermediate', desc: 'Telemetry shows a workstation communicating with a high-risk IP. Isolate host.' },
+            { id: 'm3', type: 'SQL Injection Attempt', title: 'SQL Injection Bypass', difficulty: 'Beginner', desc: 'Review web server logs for SQL injection logical bypasses.' },
+            { id: 'm4', type: 'PowerShell Obfuscation', title: 'PowerShell Forensics', difficulty: 'Hard', desc: 'Deconstruct encoded commands used to stage remote Trojans.' },
+            { id: 'm5', type: 'Phishing URL Click', title: 'BEC Triage', difficulty: 'Intermediate', desc: 'Trace a credential harvest from email headers to proxy server logs.' },
+            { id: 'm6', type: 'Ransomware Staging', title: 'Encryption Prevention', difficulty: 'Hard', desc: 'Spot the deletion of backups before encryption begins.' },
+            { id: 'm7', type: 'Cloud Data Exfiltration', title: 'Unauthorized Cloud Sync', difficulty: 'Intermediate', desc: 'Correlate high-volume outbound data flow with local sync tools.' },
+            { id: 'm8', type: 'Suspicious Persistence', title: 'Task Scheduler persistence', difficulty: 'Intermediate', desc: 'Find a hidden task designed to survive system reboots.' }
         ];
 
-        let state = {
-            alerts: [],
-            incidents: [],
-            activeAlert: null,
-            activeInc: null,
-            paused: false,
-            role: 'student',
-            stats: { processed: 0, resolved: 0 }
-        };
+        const SOP_LIBRARY = [
+            { id: 'pb1', title: 'NIST 800-61: Incident Handling', summary: 'Standard methodology for cyber incidents.', content: "1. Detection: Extract IOCs.\n2. Containment: Isolate assets.\n3. Eradication: Remove malware/compromised keys.\n4. Recovery: Safely restore.\n5. Post-Action: Final reporting." },
+            { id: 'pb2', title: 'SANS: Malware Response Checklist', summary: 'MAL identification and cleanup standard.', content: "1. Capture volatile memory.\n2. Isolate network.\n3. Identify persistence keys.\n4. Wipe and re-image.\n5. Monitor C2." },
+            { id: 'pb3', title: 'Phishing & BEC Response SOP', summary: 'Standard methodology for email attacks.', content: "1. Inspect SMTP headers.\n2. Verify SPF/DKIM.\n3. Block domain at proxy.\n4. Reset tokens for impacted users.\n5. Purge mailboxes." },
+            { id: 'pb4', title: 'Web Application Attack SOP', summary: 'Protocol for logical bypass attempts.', content: "1. Review WAF logs.\n2. Match with DB error logs.\n3. Block source IP.\n4. Audit data access.\n5. Patch code." }
+        ];
 
-        // --- UI TOOLS ---
+        let state = { alerts: [], incidents: [], activeAlert: null, activeInc: null, paused: false, role: 'student', stats: { processed: 0, resolved: 0 } };
+
+        // --- UI CORE ---
         const UI = {
             switchView(viewId) {
                 document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 const target = document.getElementById(`view-${viewId}`);
                 if (target) target.classList.remove('hidden');
-                const link = document.querySelector(`.nav-link[data-tab="${viewId}"]`);
-                if (link) link.classList.add('active');
-                
+                document.querySelector(`.nav-link[data-tab="${viewId}"]`)?.classList.add('active');
                 if (viewId === 'dashboard') Engine.updateDashboard();
                 if (viewId === 'incidents') Engine.renderIncidents();
             },
@@ -515,59 +526,46 @@
             closeArtifactView() {
                 const viewer = document.getElementById('artifact-content-viewer');
                 if (viewer) viewer.classList.add('hidden');
-                document.querySelectorAll('.artifact-file').forEach(f => f.classList.remove('active'));
+                document.querySelectorAll('.artifact-file').forEach(f => f.classList.remove('active', 'border-sky-500'));
             },
             notify(msg) {
                 const container = document.getElementById('toast-container');
                 if (!container) return;
                 const t = document.createElement('div');
-                t.className = "glass border-2 border-sky-500/50 text-white text-[11px] px-10 py-5 rounded-full shadow-2xl font-black tracking-widest flex items-center gap-4 toast-animate";
+                t.className = "glass-panel text-white text-[11px] px-8 py-4 rounded-2xl shadow-2xl font-black tracking-widest flex items-center gap-4 toast-animate font-black uppercase";
                 t.innerHTML = `<div class="w-3 h-3 bg-sky-500 rounded-full shadow-[0_0_10px_rgba(56,189,248,1)]"></div> ${msg.toUpperCase()}`;
                 container.appendChild(t);
                 setTimeout(() => t.remove(), 4000);
             }
         };
 
-        // --- CORE ENGINE ---
         const Engine = {
             spawnAlert(specificType = null) {
                 if (state.paused && !specificType) return;
                 const types = Object.keys(ARTIFACT_POOLS);
                 const type = specificType || types[Math.floor(Math.random() * types.length)];
                 const alert = {
-                    id: 'ALT-' + Math.floor(Math.random()*9000+1000),
-                    time: new Date().toLocaleTimeString(),
-                    title: type,
-                    sev: type === "C2 Beaconing Pattern" ? "critical" : (type === "Ransomware Staging" ? "critical" : "high"),
-                    asset: type === "C2 Beaconing Pattern" ? "WKSTN-FIN-45" : (type === "Brute Force Attempt" ? "SRV-DC-01" : "WKSTN-USR-02"),
-                    logs: "SIEM RULE MATCH: " + type + " detected. Analyze telemetry in triage console.",
-                    artifacts: ARTIFACT_POOLS[type],
-                    status: 'New'
+                    id: 'ALT-' + Math.floor(Math.random()*9000+1000), time: new Date().toLocaleTimeString(), title: type,
+                    sev: (type === "C2 Beaconing Pattern" || type === "Ransomware Staging") ? "critical" : "high",
+                    asset: (type === "C2 Beaconing Pattern") ? "WKSTN-FIN-45" : (type === "Brute Force Attempt" ? "SRV-DC-01" : "SRV-PROD-02"),
+                    artifacts: ARTIFACT_POOLS[type], status: 'New', logs: "SIEM_RULE_MATCH: " + type + " detected."
                 };
                 state.alerts.unshift(alert);
-                if (state.alerts.length > 30) state.alerts.pop();
+                if (state.alerts.length > 20) state.alerts.pop();
                 Engine.renderAlerts();
-                Engine.logActivity(`New SIEM Alert: ${alert.title}`, alert.sev);
+                Engine.logActivity(`DETECTION: ${alert.title}`, alert.sev);
                 Engine.updateDashboard();
             },
 
             renderAlerts() {
                 const tbody = document.getElementById('alerts-table-body');
                 if (!tbody) return;
-                const search = document.getElementById('alert-search')?.value.toLowerCase() || "";
-
                 tbody.innerHTML = '';
-                state.alerts.filter(a => a.title.toLowerCase().includes(search) || a.asset.toLowerCase().includes(search)).forEach(a => {
+                state.alerts.forEach(a => {
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-800/50 cursor-pointer group transition-all border-l-4 border-transparent hover:border-sky-500 alert-row";
+                    tr.className = "hover:bg-sky-500/5 cursor-pointer border-b border-slate-800 transition-all group font-black uppercase";
                     tr.onclick = () => Engine.openDrawer(a);
-                    tr.innerHTML = `
-                        <td class="px-8 py-5"><span class="badge ${SEV_MAP[a.sev].class}">${SEV_MAP[a.sev].label}</span></td>
-                        <td class="px-8 py-5 text-slate-500 font-mono tracking-tighter">${a.time}</td>
-                        <td class="px-8 py-5 font-black text-slate-100 uppercase tracking-tighter">${a.title}</td>
-                        <td class="px-8 py-5 text-sky-400 font-mono font-black">${a.asset}</td>
-                        <td class="px-8 py-5"><button class="btn-soc btn-primary py-1 px-3 text-[9px] uppercase tracking-widest font-black transition-transform">Process</button></td>
-                    `;
+                    tr.innerHTML = `<td class="px-8 py-4"><span class="badge ${SEV_MAP[a.sev].class}">${SEV_MAP[a.sev].label}</span></td><td class="px-8 py-4 text-slate-500 mono">${a.time}</td><td class="px-8 py-4 font-black text-white uppercase text-[11px] mono font-black uppercase">${a.title}</td><td class="px-8 py-4 text-sky-400 mono font-bold text-[11px] mono font-black uppercase">${a.asset}</td><td class="px-8 py-4 text-right"><button class="btn-action btn-primary opacity-0 group-hover:opacity-100 font-black uppercase">Intake</button></td>`;
                     tbody.appendChild(tr);
                 });
                 const navBadge = document.getElementById('nav-alert-count');
@@ -577,14 +575,11 @@
             openDrawer(alert) {
                 const drawer = document.getElementById('alert-drawer');
                 if (!drawer) return;
-                
                 const titleEl = document.getElementById('drawer-title');
                 const sevEl = document.getElementById('drawer-sev');
                 const logEl = document.getElementById('drawer-logs');
                 const idEl = document.getElementById('drawer-id');
                 const timeEl = document.getElementById('drawer-time');
-                const intelEl = document.getElementById('intel-results');
-
                 if (titleEl) titleEl.innerText = alert.title;
                 if (sevEl) {
                     sevEl.innerText = SEV_MAP[alert.sev].label;
@@ -593,115 +588,67 @@
                 if (logEl) logEl.innerText = alert.logs;
                 if (idEl) idEl.innerText = alert.id;
                 if (timeEl) timeEl.innerText = alert.time;
-                if (intelEl) intelEl.classList.add('hidden');
-                
+                document.getElementById('intel-results').classList.add('hidden');
                 drawer.classList.remove('drawer-hidden');
                 state.activeAlert = alert;
             },
 
             mockResearch() {
                 const box = document.getElementById('intel-results');
-                const text = document.getElementById('intel-text');
-                if (box && text) {
+                if (box) {
                     box.classList.remove('hidden');
-                    text.innerText = SEV_MAP[state.activeAlert.sev].osint;
+                    document.getElementById('intel-text').innerText = SEV_MAP[state.activeAlert.sev].osint;
                 }
             },
 
             handleAlertAction(action) {
                 state.stats.processed++;
                 if (action === 'escalate') {
-                    const inc = {
-                        id: 'INC-' + Math.floor(Math.random()*9000+1000),
-                        title: state.activeAlert.title,
-                        asset: state.activeAlert.asset,
-                        currentPhase: 1,
-                        phases: PHASE_DEFS.map(p => ({ ...p, notes: '', formData: {} })),
-                        artifacts: state.activeAlert.artifacts,
-                        groundTruth: state.activeAlert.artifacts[0].validation,
-                        explanation: state.activeAlert.artifacts[0].explanation,
-                        attempts: 0,
-                        status: 'Open'
-                    };
-                    state.incidents.unshift(inc);
+                    state.incidents.unshift({
+                        id: 'INC-' + Math.floor(Math.random()*9000+1000), title: state.activeAlert.title, asset: state.activeAlert.asset,
+                        currentPhase: 1, phases: PHASE_DEFS.map(p => ({ ...p, notes: '', formData: {} })),
+                        artifacts: state.activeAlert.artifacts, groundTruth: state.activeAlert.artifacts[0].validation,
+                        explanation: state.activeAlert.artifacts[0].explanation, attempts: 0, status: 'Open'
+                    });
                     state.activeAlert.status = 'Escalated';
                     UI.switchView('incidents');
-                    UI.notify("Investigation Case Opened.");
+                    UI.notify("Investigation Active");
                 } else {
-                    const inc = {
-                        id: 'INC-' + Math.floor(Math.random()*9000+1000),
-                        title: state.activeAlert.title,
-                        asset: state.activeAlert.asset,
-                        status: 'Resolved',
-                        resolution: 'False Positive',
-                        currentPhase: 5,
-                        phases: PHASE_DEFS.map(p => ({ ...p, notes: 'Marked as False Positive during triage analysis.', formData: {} })),
-                        artifacts: state.activeAlert.artifacts,
-                        groundTruth: state.activeAlert.artifacts[0].validation,
+                    state.incidents.unshift({
+                        id: 'INC-' + Math.floor(Math.random()*9000+1000), title: state.activeAlert.title, asset: state.activeAlert.asset,
+                        status: 'Resolved', resolution: 'False Positive', currentPhase: 1,
+                        phases: PHASE_DEFS.map((p, idx) => ({ ...p, notes: idx === 0 ? 'Marked as FP during triage.' : '', formData: {} })),
+                        artifacts: state.activeAlert.artifacts, groundTruth: state.activeAlert.artifacts[0].validation,
                         explanation: state.activeAlert.artifacts[0].explanation
-                    };
-                    state.incidents.unshift(inc);
+                    });
                     state.activeAlert.status = 'Closed';
-                    UI.notify("Marked as False Positive.");
+                    UI.notify("Signal Dismissed");
                 }
-                Engine.renderAlerts();
-                Engine.updateDashboard();
-                UI.closeDrawer();
+                Engine.renderAlerts(); Engine.updateDashboard(); UI.closeDrawer();
             },
 
             renderIncidents() {
                 const list = document.getElementById('incident-list');
-                const empty = document.getElementById('no-incidents');
                 if (!list) return;
-
                 list.innerHTML = '';
-                const allIncidents = state.incidents;
-                if (allIncidents.length > 0) { if (empty) empty.classList.add('hidden'); }
-                else { if (empty) empty.classList.remove('hidden'); }
+                if (state.incidents.length > 0) document.getElementById('no-incidents').classList.add('hidden');
+                else document.getElementById('no-incidents').classList.remove('hidden');
 
-                allIncidents.forEach(inc => {
-                    const card = document.createElement('div');
+                state.incidents.forEach(inc => {
                     const isResolved = inc.status === 'Resolved';
-                    card.className = `bg-slate-900 border border-slate-800 p-10 rounded-[2.5rem] hover:border-sky-500 transition-all cursor-pointer shadow-lg group relative overflow-hidden ${isResolved ? 'opacity-80' : ''}`;
+                    const card = document.createElement('div');
+                    card.className = `case-card border border-slate-800 p-8 hover:border-sky-500 cursor-pointer shadow-2xl group ${isResolved ? 'opacity-60' : ''}`;
                     card.onclick = () => Engine.openIncidentModal(inc);
                     
-                    const lastComp = inc.currentPhase > 1 ? PHASE_DEFS[inc.currentPhase-2].name : "None";
-                    
-                    let statusBadge = `<span class="text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-black">Last: ${lastComp}</span>`;
-                    if (inc.resolution === 'False Positive') {
-                        statusBadge = `<span class="text-slate-400 bg-slate-400/10 px-2 py-0.5 rounded border border-slate-400/20 font-black">FALSE POSITIVE</span>`;
-                    } else if (isResolved) {
-                        statusBadge = `<span class="text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded border border-blue-400/20 font-black">RESOLVED</span>`;
-                    }
+                    let statusBadge = `<span class="badge badge-med">Active</span>`;
+                    if (inc.resolution === 'False Positive') statusBadge = `<span class="badge bg-slate-800 text-slate-500 font-black uppercase">FP DISMISS</span>`;
+                    else if (isResolved) statusBadge = `<span class="badge badge-low font-black uppercase">Closed</span>`;
 
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-8 relative z-10 font-black uppercase text-[9px] tracking-widest">
-                            <span class="text-slate-500 font-black">${inc.id}</span>
-                            ${statusBadge}
-                        </div>
-                        <h4 class="font-black text-slate-100 mb-8 text-xl uppercase tracking-tighter leading-tight relative z-10 font-black">${inc.title}</h4>
-                        <div class="mb-4 relative z-10 font-black">
-                            <div class="flex justify-between text-[10px] font-black uppercase text-slate-500 mb-1">
-                                <span>${isResolved ? 'Status: Closed' : 'Active: ' + PHASE_DEFS[inc.currentPhase-1].name}</span>
-                                <span>${isResolved ? '5/5' : inc.currentPhase + '/5'}</span>
-                            </div>
-                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner font-black">
-                                <div class="bg-${isResolved ? (inc.resolution === 'False Positive' ? 'slate' : 'blue') : 'sky'}-500 h-full transition-all duration-1000 shadow-[0_0_12px_rgba(56,189,248,0.6)] font-black" style="width: ${isResolved ? 100 : inc.currentPhase * 20}%"></div>
-                            </div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 uppercase font-black flex justify-between items-center relative z-10 font-black">
-                            <span class="font-black">Asset: ${inc.asset}</span>
-                            <span class="text-sky-500 animate-pulse group-hover:underline uppercase tracking-widest font-black font-black font-black font-black font-black">${isResolved ? 'VIEW CASE >' : 'INVESTIGATE >'}</span>
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="flex justify-between items-start mb-6 uppercase text-[9px] font-black"><span class="text-slate-500 font-black uppercase">${inc.id}</span>${statusBadge}</div><h4 class="font-black text-white text-lg uppercase tracking-tighter mb-6 font-black uppercase font-black uppercase font-black uppercase">${inc.title}</h4><div class="space-y-2 mb-6 font-black uppercase"><div class="flex justify-between text-[9px] font-black uppercase text-slate-500 font-black"><span>Progress</span><span>${isResolved ? 'Completed' : inc.currentPhase + '/5'}</span></div><div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden shadow-inner"><div class="bg-${isResolved ? 'emerald' : 'sky'}-500 h-full transition-all duration-1000" style="width: ${isResolved ? 100 : (inc.currentPhase-1) * 20}%"></div></div></div><div class="flex justify-between items-center pt-4 border-t border-slate-800/50 uppercase text-[10px] font-black font-black font-black font-black uppercase"><span class="text-slate-600 font-black uppercase">${inc.asset}</span><span class="text-sky-400 tracking-widest font-black uppercase font-black uppercase font-black uppercase">${isResolved ? 'VIEW REPORT' : 'INVESTIGATE'} ></span></div>`;
                     list.appendChild(card);
                 });
                 const navBadge = document.getElementById('nav-incident-count');
-                if (navBadge) {
-                    const activeCount = state.incidents.filter(i => i.status !== 'Resolved').length;
-                    navBadge.innerText = activeCount;
-                    navBadge.classList.toggle('hidden', activeCount === 0);
-                }
+                if (navBadge) navBadge.innerText = state.incidents.filter(i => i.status !== 'Resolved').length;
             },
 
             openIncidentModal(inc) {
@@ -711,8 +658,8 @@
                 if (idEl) idEl.innerText = inc.id;
                 if (titleEl) titleEl.innerText = inc.title;
                 Engine.renderArtifactsList(inc.artifacts);
-                Engine.renderPhase(inc.currentPhase);
-                document.getElementById('incident-modal')?.classList.remove('hidden');
+                Engine.renderPhase(inc.status === 'Resolved' ? 1 : inc.currentPhase);
+                document.getElementById('incident-modal').classList.remove('hidden');
             },
 
             renderArtifactsList(artifacts) {
@@ -721,145 +668,120 @@
                 list.innerHTML = '';
                 artifacts.forEach(art => {
                     const div = document.createElement('div');
-                    div.className = "artifact-file";
-                    div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> ${art.name}`;
-                    div.onclick = (e) => {
-                        e.stopPropagation();
-                        const viewer = document.getElementById('artifact-content-viewer');
-                        const nameDisplay = document.getElementById('viewing-filename');
-                        const textDisplay = document.getElementById('artifact-text');
-                        if (viewer) viewer.classList.remove('hidden');
-                        if (nameDisplay) nameDisplay.innerText = art.name;
-                        if (textDisplay) textDisplay.innerText = art.content;
-                        document.querySelectorAll('.artifact-file').forEach(f => f.classList.remove('active'));
-                        div.classList.add('active');
+                    div.className = "artifact-file bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3 hover:bg-slate-800 transition-all cursor-pointer font-black uppercase";
+                    div.innerHTML = `<svg class="w-4 h-4 text-sky-500 font-black uppercase" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg> <span class="mono text-[11px] font-bold text-slate-400 font-black uppercase">${art.name}</span>`;
+                    div.onclick = () => {
+                        document.getElementById('artifact-content-viewer').classList.remove('hidden');
+                        document.getElementById('viewing-filename').innerText = art.name;
+                        document.getElementById('artifact-text').innerText = art.content;
+                        document.querySelectorAll('.artifact-file').forEach(f => f.classList.remove('border-sky-500'));
+                        div.classList.add('border-sky-500');
                     };
                     list.appendChild(div);
                 });
-                UI.closeArtifactView();
             },
 
             renderPhase(num) {
                 const phase = state.activeInc.phases[num-1];
-                const descEl = document.getElementById('phase-desc');
-                const notesEl = document.getElementById('phase-notes');
-                const hintEl = document.getElementById('validation-hint');
-                const sHintEl = document.getElementById('submission-hint');
-                const techForm = document.getElementById('technical-form');
-                const contPanel = document.getElementById('containment-panel');
-                
-                if (descEl) descEl.innerText = phase.desc;
-                if (notesEl) notesEl.value = phase.notes;
-                if (hintEl) hintEl.classList.add('hidden');
-                if (sHintEl) sHintEl.classList.add('hidden');
+                const isResolved = state.activeInc.status === 'Resolved';
+                const isCurrent = num === state.activeInc.currentPhase && !isResolved;
+                const isReadOnly = isResolved || !isCurrent;
 
-                if (num === 1) {
-                    techForm.classList.remove('hidden');
-                    document.getElementById('form-ip').value = phase.formData?.ip || "";
-                    document.getElementById('form-user').value = phase.formData?.user || "";
-                    document.getElementById('form-port').value = phase.formData?.port || "";
-                    document.getElementById('form-cmd').value = phase.formData?.cmd || "";
-                } else {
-                    techForm.classList.add('hidden');
+                const modal = document.getElementById('modal-content');
+                if (modal) {
+                   modal.style.boxShadow = isResolved ? "0 0 50px rgba(16, 185, 129, 0.1)" : "0 0 50px rgba(56, 189, 248, 0.1)";
+                   if (state.activeInc.resolution === 'False Positive') modal.style.boxShadow = "0 0 50px rgba(100, 116, 139, 0.1)";
                 }
 
-                if (num === 2) contPanel.classList.remove('hidden');
-                else contPanel.classList.add('hidden');
+                const notesEl = document.getElementById('phase-notes');
+                document.getElementById('phase-desc').innerText = phase.desc;
+                notesEl.value = phase.notes;
+                notesEl.readOnly = isReadOnly;
+                Engine.updateCharCount();
 
-                const isResolved = state.activeInc.status === 'Resolved';
+                if (num === 1) {
+                    document.getElementById('technical-form').classList.remove('hidden');
+                    const inputs = [document.getElementById('form-ip'), document.getElementById('form-user'), document.getElementById('form-port'), document.getElementById('form-cmd')];
+                    inputs[0].value = phase.formData?.ip || "";
+                    inputs[1].value = phase.formData?.user || "";
+                    inputs[2].value = phase.formData?.port || "";
+                    inputs[3].value = phase.formData?.cmd || "";
+                    inputs.forEach(i => i.disabled = isReadOnly);
+                } else document.getElementById('technical-form').classList.add('hidden');
+
+                if (num === 2) {
+                    document.getElementById('containment-panel').classList.remove('hidden');
+                    document.querySelectorAll('#containment-panel button').forEach(b => b.disabled = isReadOnly);
+                } else document.getElementById('containment-panel').classList.add('hidden');
 
                 for(let i=1; i<=5; i++) {
                     const el = document.getElementById(`phase-${i}`);
                     if (el) {
                         el.className = 'phase-step';
                         if (i === num) el.classList.add('phase-current');
-                        else if (i < num) el.classList.add('phase-complete');
-                        else el.classList.add('phase-inactive');
+                        else if (i < (isResolved ? 6 : state.activeInc.currentPhase)) el.classList.add('phase-complete');
+                        else if (i > state.activeInc.currentPhase) el.classList.add('phase-inactive');
                     }
                 }
 
-                const nextBtn = document.getElementById('btn-next-phase');
-                const resolveBtn = document.getElementById('btn-resolve');
-                if (nextBtn) nextBtn.style.display = (!isResolved && num < 5) ? 'flex' : 'none';
-                if (resolveBtn) resolveBtn.style.display = (!isResolved && num === 5) ? 'block' : 'none';
-                
-                const statusText = document.getElementById('phase-status-text');
-                if (statusText) statusText.innerText = isResolved ? "Summary view: Case is closed." : `Step ${num}: Progress through the ${phase.name} phase.`;
+                document.getElementById('btn-next-phase').style.display = (!isResolved && num < 5) ? 'flex' : 'none';
+                document.getElementById('btn-resolve').style.display = (!isResolved && num === 5) ? 'block' : 'none';
+                document.getElementById('phase-status-text').innerText = isResolved ? "Archived Forensic Record" : `Strategic Objective: ${phase.name}`;
+            },
+
+            updateCharCount() {
+                const len = document.getElementById('phase-notes').value.length;
+                const counter = document.getElementById('char-count');
+                if (!counter) return;
+                counter.innerText = `${len}/35`;
+                counter.className = len >= 35 ? "text-emerald-400 font-black mono text-[9px] px-2 py-0.5 rounded border border-emerald-500/30 font-black uppercase" : "text-orange-400 font-black mono text-[9px] px-2 py-0.5 rounded border border-orange-500/30 font-black uppercase";
             },
 
             executeContainment(action) {
                 const notes = document.getElementById('phase-notes');
-                if (!notes) return;
-                const timestamp = new Date().toLocaleTimeString();
-                notes.value += `\n[${timestamp}] ACTION: ${action}`;
-                UI.notify(`Action Executed: ${action}`);
+                if (!notes || notes.readOnly) return;
+                notes.value += `\n[${new Date().toLocaleTimeString()}] ACTION: ${action}`;
+                Engine.updateCharCount();
+                UI.notify(action);
             },
 
             progressPhase() {
                 const inc = state.activeInc;
-                const phase = PHASE_DEFS[inc.currentPhase-1];
-                const notes = document.getElementById('phase-notes')?.value || "";
-                const hint = document.getElementById('validation-hint');
-                const sHintEl = document.getElementById('submission-hint');
-
+                const notes = document.getElementById('phase-notes').value;
                 if (inc.currentPhase === 1) {
-                    const ip = document.getElementById('form-ip').value.trim();
-                    const user = document.getElementById('form-user').value.trim().toUpperCase();
-                    const port = document.getElementById('form-port').value.trim();
-                    const cmd = document.getElementById('form-cmd').value.trim().toLowerCase();
-
-                    const isMatch = ip === inc.groundTruth.ip && 
-                                    user === inc.groundTruth.user.toUpperCase() && 
-                                    port === inc.groundTruth.port && 
-                                    cmd.includes(inc.groundTruth.cmd.toLowerCase());
-
+                    const ip = document.getElementById('form-ip').value.trim(), user = document.getElementById('form-user').value.trim().toUpperCase(), port = document.getElementById('form-port').value.trim(), cmd = document.getElementById('form-cmd').value.trim().toLowerCase();
+                    const isMatch = ip === inc.groundTruth.ip && user === inc.groundTruth.user.toUpperCase() && port === inc.groundTruth.port && cmd.includes(inc.groundTruth.cmd.toLowerCase());
                     if (!isMatch || notes.length < 35) {
                         inc.attempts = (inc.attempts || 0) + 1;
-                        if (hint) {
-                            hint.classList.remove('hidden');
-                            if (isMatch && notes.length < 35) hint.innerText = "Technical Data Correct. Documentation analysis too short (min 35 chars).";
-                            else hint.innerText = "Forensic Mismatch: Check logs again.";
-                        }
-                        
-                        if (inc.attempts >= 3 && sHintEl) {
-                            sHintEl.classList.remove('hidden');
+                        const hintV = document.getElementById('validation-hint');
+                        if (hintV) hintV.classList.remove('hidden');
+                        if (inc.attempts >= 3) {
+                            const subH = document.getElementById('submission-hint');
+                            if (subH) subH.classList.remove('hidden');
                             document.getElementById('hint-text').innerText = inc.explanation;
-                            document.getElementById('hint-values').innerText = `IP: ${inc.groundTruth.ip} | User: ${inc.groundTruth.user} | Port: ${inc.groundTruth.port} | Evidence Keyword: ${inc.groundTruth.cmd}`;
+                            document.getElementById('hint-values').innerText = `IP: ${inc.groundTruth.ip} | User: ${inc.groundTruth.user} | Keyword: ${inc.groundTruth.cmd}`;
                         }
-                        
-                        UI.notify("Validation Failed.");
                         return;
                     }
                     inc.phases[0].formData = { ip, user, port, cmd };
                 }
-
                 inc.phases[inc.currentPhase-1].notes = notes;
-                inc.currentPhase++;
-                inc.attempts = 0;
+                inc.currentPhase++; inc.attempts = 0;
                 Engine.renderPhase(inc.currentPhase);
-                UI.notify(`Phase Success: ${PHASE_DEFS[inc.currentPhase-1].name}`);
-                Engine.logActivity(`${inc.id}: Progress to phase ${inc.currentPhase}`, 'info');
-                Engine.renderIncidents(); // Update step markings on card
+                UI.notify("Phase Committed"); Engine.renderIncidents();
             },
 
             resolveIncident() {
                 state.activeInc.status = 'Resolved';
                 state.stats.resolved++;
-                UI.notify("Case Finalized.");
-                Engine.logActivity(`Investigation Resolved: ${state.activeInc.id}`, 'low');
-                UI.closeIncidentModal();
-                Engine.renderIncidents();
-                Engine.updateDashboard();
+                UI.notify("Investigation Sealed");
+                UI.closeIncidentModal(); Engine.renderIncidents(); Engine.updateDashboard();
             },
 
             updateDashboard() {
-                const kTotal = document.getElementById('kpi-total');
-                const kActive = document.getElementById('kpi-active');
-                const kResolved = document.getElementById('kpi-resolved');
-                if (kTotal) kTotal.innerText = state.stats.processed;
-                if (kActive) kActive.innerText = state.incidents.filter(i => i.status !== 'Resolved').length;
-                if (kResolved) kResolved.innerText = state.stats.resolved;
-                
+                document.getElementById('kpi-total').innerText = state.stats.processed;
+                document.getElementById('kpi-active').innerText = state.incidents.filter(i => i.status !== 'Resolved').length;
+                document.getElementById('kpi-resolved').innerText = state.stats.resolved;
                 const chart = document.getElementById('severity-chart');
                 if (chart) {
                     chart.innerHTML = '';
@@ -868,8 +790,8 @@
                     Object.entries(dist).forEach(([key, val]) => {
                         const h = (val / max) * 100;
                         const b = document.createElement('div');
-                        b.className = "flex-1 flex flex-col items-center justify-end h-full relative group";
-                        b.innerHTML = `<div class="w-full bg-slate-800 rounded-t-2xl h-full shadow-inner"><div class="absolute bottom-0 w-full transition-all duration-700" style="height: ${h}%; background-color: var(--severity-${key})"></div></div><div class="text-[9px] font-black uppercase text-slate-500 mt-6 tracking-widest font-bold font-black font-black">${key}</div>`;
+                        b.className = "flex-1 flex flex-col items-center justify-end h-full relative font-black uppercase";
+                        b.innerHTML = `<div class="w-full bg-slate-800 rounded-t-lg h-full shadow-inner"><div class="absolute bottom-0 w-full transition-all duration-1000 rounded-t-lg" style="height: ${h}%; background-color: var(--severity-${key})"></div></div><div class="text-[8px] font-black uppercase text-slate-600 mt-3 tracking-widest font-black uppercase font-black uppercase">${key}</div>`;
                         chart.appendChild(b);
                     });
                 }
@@ -878,62 +800,43 @@
             logActivity(msg, sev) {
                 const feed = document.getElementById('activity-feed');
                 if (!feed) return;
-                const color = sev === 'critical' ? 'text-red-400 font-black' : (sev === 'high' ? 'text-orange-400 font-bold' : 'text-slate-500');
                 const d = document.createElement('div');
-                d.innerHTML = `<span class="text-slate-700 font-mono mr-2">${new Date().toLocaleTimeString()}</span> <span class="${color}">${msg}</span>`;
+                d.className = "border-l-2 border-slate-800 pl-4 py-1 font-black uppercase";
+                const color = sev === 'critical' ? 'text-rose-500' : (sev === 'high' ? 'text-orange-500' : 'text-slate-400');
+                d.innerHTML = `<span class="text-slate-700 mr-2 font-black">${new Date().toLocaleTimeString()}</span><span class="${color}">${msg}</span>`;
                 feed.prepend(d);
             },
 
             toggleFeed() {
                 state.paused = !state.paused;
                 const btn = document.getElementById('toggle-feed-btn');
-                if (btn) btn.innerText = state.paused ? 'Resume Telemetry Feed' : 'Pause Simulation';
-                Engine.logActivity(state.paused ? 'Sensor ingest suspended.' : 'Sensor ingest active.', 'info');
+                btn.querySelector('div').className = `w-2 h-2 rounded-full ${state.paused ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e]' : 'bg-emerald-500 shadow-[0_0_8px_#10b981]'}`;
+                btn.querySelector('span').innerText = state.paused ? 'Sensor Link Down' : 'Sensor Link Active';
             }
         };
 
-        // --- INIT ---
         window.onload = () => {
-            window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { UI.closeDrawer(); UI.closeIncidentModal(); } });
+            setInterval(() => { if (!state.paused && Math.random() > 0.95) Engine.spawnAlert(); }, 3000);
+            setInterval(() => { document.getElementById('current-time').innerText = new Date().toUTCString().split(' ')[4] + ' UTC'; }, 1000);
 
-            document.getElementById('role-selector').onchange = (e) => {
-                state.role = e.target.value;
-                document.getElementById('nav-dashboard')?.classList.toggle('hidden', state.role !== 'manager');
-                document.getElementById('user-role-label').innerText = state.role.toUpperCase();
-                if (state.role === 'manager') UI.switchView('dashboard');
-                else UI.switchView('alerts');
-                UI.notify('Authorization role updated.');
-            };
-
-            Engine.spawnAlert(); Engine.spawnAlert();
-            setInterval(() => {
-                const clk = document.getElementById('current-time');
-                if (clk) clk.innerText = new Date().toUTCString().split(' ')[4] + ' UTC';
-                if (!state.paused && Math.random() > 0.95) Engine.spawnAlert();
-            }, 3000);
-
-            const kbList = document.getElementById('playbook-list');
             SOP_LIBRARY.forEach(p => {
                 const d = document.createElement('div');
-                d.className = "p-3 text-[9px] font-black uppercase rounded-xl hover:bg-slate-800 cursor-pointer text-slate-400 transition-all border border-transparent hover:border-slate-700 font-bold font-black";
+                d.className = "p-3 text-[10px] font-black uppercase rounded-lg hover:bg-sky-500/10 cursor-pointer text-slate-500 transition-all border border-transparent hover:border-sky-500/30 font-black uppercase font-black uppercase";
                 d.innerText = p.title;
                 d.onclick = () => {
-                    const kbContent = document.getElementById('kb-content');
-                    if (kbContent) kbContent.innerHTML = `<h2 class="text-4xl font-black mb-4 tracking-tight text-white uppercase font-black font-black">${p.title}</h2><p class="text-sm text-slate-300 whitespace-pre-line leading-relaxed shadow-inner bg-slate-950 p-6 rounded-xl border border-slate-800 font-black font-black">${p.content}</p>`;
+                    document.getElementById('kb-content').innerHTML = `<h2 class="text-3xl font-black mb-4 text-white uppercase tracking-tighter underline decoration-sky-500 decoration-8 underline-offset-4 font-black uppercase font-black uppercase">${p.title}</h2><p class="text-[10px] text-slate-400 font-bold uppercase mb-10 tracking-widest font-black uppercase font-black uppercase">${p.summary}</p><pre class="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed bg-black/40 p-10 rounded-[2.5rem] border border-slate-800 font-bold font-black uppercase font-black uppercase">${p.content}</pre>`;
                 };
-                if (kbList) kbList.appendChild(d);
+                document.getElementById('playbook-list').appendChild(d);
             });
 
-            const missList = document.getElementById('missions-list');
             MISSIONS.forEach(m => {
                 const card = document.createElement('div');
-                card.className = "bg-slate-900 border border-slate-800 p-12 rounded-[2.5rem] flex flex-col hover:border-sky-500 transition-all shadow-2xl relative overflow-hidden";
-                card.innerHTML = `<h3 class="text-2xl font-black mb-4 text-slate-100 uppercase tracking-tighter font-black font-black font-black">${m.title}</h3><p class="text-sm text-slate-500 mb-12 font-bold leading-relaxed font-black font-black font-black font-black">${m.desc}</p><button onclick="Engine.spawnAlert('${m.type}'); UI.switchView('alerts'); UI.notify('Mission alerts injected.')" class="mt-auto btn-soc btn-primary w-full py-5 font-black uppercase tracking-[0.3em] text-[11px] font-black font-black font-black font-black font-black font-black font-black">Initiate Learning Scenario</button>`;
-                if (missList) missList.appendChild(card);
+                card.className = "case-card border border-slate-800 p-10 shadow-2xl flex flex-col group font-black uppercase";
+                card.innerHTML = `<h3 class="text-xl font-black text-white uppercase tracking-tighter mb-4 group-hover:text-sky-400 transition-colors font-black uppercase font-black uppercase">${m.title}</h3><p class="text-[11px] text-slate-500 mb-8 font-bold leading-relaxed font-black uppercase font-black uppercase">${m.desc}</p><button onclick="Engine.spawnAlert('${m.type}'); UI.switchView('alerts'); UI.notify('Attack Injected')" class="mt-auto btn-action btn-primary py-4 font-black uppercase font-black uppercase font-black uppercase">Initialize Lab</button>`;
+                document.getElementById('missions-list').appendChild(card);
             });
 
-            Engine.logActivity('SIEM Kernel Online.', 'info');
-            Engine.updateDashboard();
+            Engine.spawnAlert(); Engine.updateDashboard();
         };
     </script>
 </body>
