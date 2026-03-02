@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Digital Mirror: Privacy & Ads Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .step-indicator.active {
+            background: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ad-container {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            background: #1e293b;
+        }
+
+        .ad-container:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .dossier-item {
+            border-left: 2px solid #3b82f6;
+            padding-left: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .selectable-item {
+            transition: all 0.2s ease;
+        }
+
+        .selectable-item.selected {
+            background: #1d4ed8;
+            border-color: #60a5fa;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 md:p-8">
+
+    <!-- Header Section -->
+    <header class="w-full max-w-4xl text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent mb-2">
+            The Digital Mirror
+        </h1>
+        <p class="text-slate-400 italic">"If you aren't paying for the product, you ARE the product."</p>
+    </header>
+
+    <!-- Progress Tracker -->
+    <div class="w-full max-w-4xl mb-8 flex justify-between px-4 relative">
+        <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-700 -z-10 -translate-y-1/2"></div>
+        <div id="step-1-btn" class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs">1</div>
+        <div id="step-2-btn" class="step-indicator bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs">2</div>
+        <div id="step-3-btn" class="step-indicator bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs">3</div>
+        <div id="step-4-btn" class="step-indicator bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs">4</div>
+        <div id="step-5-btn" class="step-indicator bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all text-xs">5</div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl glass-card p-6 md:p-10 shadow-2xl relative overflow-hidden">
+        
+        <!-- Step 1: Character Creation -->
+        <section id="section-1" class="fade-in">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-blue-400">
+                <i class="fas fa-user-plus mr-3"></i> Phase 1: Build Your Character
+            </h2>
+            <p class="text-slate-400 mb-6 italic">Select a persona. Consider choosing a senior profile to see how their data is commodified differently.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Character Name</label>
+                    <input type="text" id="char-name" placeholder="e.g. Margaret or Jordan" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Age Range</label>
+                    <select id="char-age" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none">
+                        <option value="16">13 - 19 (Gen Z)</option>
+                        <option value="30">20 - 40 (Millennial)</option>
+                        <option value="55">41 - 64 (Gen X)</option>
+                        <option value="72">65 - 80 (Boomer)</option>
+                        <option value="85">80+ (Silent Generation)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Occupation / Role</label>
+                    <select id="char-role" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none">
+                        <option disabled>--- Youth / Student ---</option>
+                        <option>High School Student</option>
+                        <option>College Student</option>
+                        <option disabled>--- Professional ---</option>
+                        <option>Early Career Professional</option>
+                        <option>Small Business Owner</option>
+                        <option disabled>--- Senior / Retired ---</option>
+                        <option>Retired / Pensioner</option>
+                        <option>Part-time Consultant</option>
+                        <option>Grandparent / Family Caregiver</option>
+                        <option>Community Volunteer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Core Interest</label>
+                    <select id="char-interest" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none">
+                        <option>Gaming & Esports</option>
+                        <option>Investment & Finance</option>
+                        <option>Mental Health & Wellness</option>
+                        <option>Political Activism</option>
+                        <option>Gardening & Home Decor</option>
+                        <option>Travel & Cruises</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="nextStep(2)" class="mt-8 bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-full font-bold transition-all shadow-lg">
+                Proceed to Footprint <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </section>
+
+        <!-- Step 2: Digital Activity -->
+        <section id="section-2" class="hidden fade-in">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-emerald-400">
+                <i class="fas fa-fingerprint mr-3"></i> Phase 2: Online Behavior
+            </h2>
+            <p class="text-slate-400 mb-6">What has this character been doing online today? Every click tells a story.</p>
+            
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-slate-300">Social Media Platforms</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="togglePlatform(this, 'TikTok')">
+                        <i class="fab fa-tiktok"></i> <span>TikTok</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="togglePlatform(this, 'Facebook')">
+                        <i class="fab fa-facebook text-blue-500"></i> <span>Facebook</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="togglePlatform(this, 'Instagram')">
+                        <i class="fab fa-instagram text-pink-500"></i> <span>Instagram</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="togglePlatform(this, 'YouTube')">
+                        <i class="fab fa-youtube text-red-500"></i> <span>YouTube</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-slate-300">Specific Social Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="toggleAction(this, 'Liking Family Photos')">
+                        <i class="fas fa-heart text-red-400"></i> <span>Liking Family Photos</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="toggleAction(this, 'Posting News Articles')">
+                        <i class="fas fa-newspaper text-blue-400"></i> <span>Sharing News Articles</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="toggleAction(this, 'Watching How-to Videos')">
+                        <i class="fas fa-play-circle text-emerald-400"></i> <span>Watching "How-to" Videos</span>
+                    </div>
+                    <div class="selectable-item flex items-center space-x-3 bg-slate-800 p-3 rounded-lg border border-slate-700 cursor-pointer" onclick="toggleAction(this, 'Joining Community Groups')">
+                        <i class="fas fa-users text-purple-400"></i> <span>Joining Local Groups</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3 text-slate-300">Search Queries</h3>
+                    <textarea id="search-history" rows="3" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:outline-none" placeholder="e.g. 'best hearing aids', 'early retirement plans', 'how to reset iPad'"></textarea>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3 text-slate-300">Shopping/Cart</h3>
+                    <input type="text" id="recent-shop" placeholder="e.g. Blood Pressure Monitor, Knee Brace" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:outline-none">
+                </div>
+            </div>
+
+            <div class="flex space-x-4 mt-8">
+                <button onclick="nextStep(1)" class="bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-full font-bold transition-all">Back</button>
+                <button onclick="generateAds()" class="bg-emerald-600 hover:bg-emerald-500 px-8 py-3 rounded-full font-bold transition-all shadow-lg">
+                    Analyze My Profile <i class="fas fa-bolt ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 3: Expanded Dossier & Ads -->
+        <section id="section-3" class="hidden fade-in">
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl font-bold mb-2 flex items-center justify-center text-yellow-400">
+                    <i class="fas fa-shield-virus mr-3"></i> Phase 3: The Data Broker Dossier
+                </h2>
+                <p class="text-slate-400">This is the "Digital Twin" created to sell to the highest bidder.</p>
+            </div>
+
+            <!-- THE DOSSIER -->
+            <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 mb-10 shadow-inner">
+                <div class="flex items-center justify-between mb-8 border-b border-slate-800 pb-4">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-800 rounded-lg flex items-center justify-center text-2xl font-bold mr-4 shadow-lg border border-white/10">
+                            <span id="initial">M</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-2xl" id="profile-name">Margaret</h3>
+                            <div class="flex space-x-2 mt-1">
+                                <span class="bg-slate-800 text-[9px] px-2 py-0.5 rounded border border-slate-700 font-mono text-slate-500">ID: <span id="uuid">00-00-00</span></span>
+                                <span class="bg-emerald-500/10 text-emerald-500 text-[9px] px-2 py-0.5 rounded border border-emerald-500/20 font-bold uppercase tracking-tighter">Verified Lead</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hidden md:block text-right">
+                        <p class="text-[10px] text-slate-500 uppercase mb-1">Dossier Confidence Score</p>
+                        <div class="w-32 bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-[88%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Consumer Persona</h4>
+                        <p id="dossier-segment" class="text-blue-300 font-semibold text-sm">Target</p>
+                    </div>
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Financial Status</h4>
+                        <p id="dossier-income" class="text-emerald-300 font-semibold text-sm">Estimated</p>
+                    </div>
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Political Affinity (Inferred)</h4>
+                        <p id="dossier-affinity" class="text-red-300 font-semibold text-sm">Analyzing...</p>
+                    </div>
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Health Vulnerability Index</h4>
+                        <p id="dossier-health" class="text-orange-300 font-semibold text-sm">Low</p>
+                    </div>
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Likely Geography</h4>
+                        <p id="dossier-geo" class="text-indigo-300 font-semibold text-sm">Regional Cluster A</p>
+                    </div>
+                    <div class="dossier-item">
+                        <h4 class="text-xs text-slate-500 font-bold uppercase mb-1">Behavioral Triggers</h4>
+                        <p id="dossier-triggers" class="text-pink-300 font-semibold text-sm">Fear of Missing Out</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-800">
+                    <h4 class="text-xs text-slate-500 font-bold uppercase mb-2">Metadata Breadcrumbs Captured</h4>
+                    <div id="dossier-tokens" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <!-- THE ADS -->
+            <h3 class="text-xl font-bold mb-6 flex items-center text-slate-200">
+                <i class="fas fa-money-bill-wave mr-3 text-emerald-400"></i> Ad Space Auction Results
+            </h3>
+            <div id="ad-results" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Ad cards will be injected here -->
+            </div>
+
+            <div class="p-5 bg-yellow-900/10 border border-yellow-500/20 rounded-lg">
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    <strong class="text-yellow-500 uppercase tracking-widest text-[10px] block mb-1">How it works:</strong>
+                    The "Health Vulnerability Index" is calculated by scanning your search history for symptoms or medication names. Advertisers buy this data to target you with "miracle cures" or insurance plans when they know you are most worried.
+                </p>
+            </div>
+
+            <div class="flex space-x-4 mt-8">
+                <button onclick="nextStep(2)" class="bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-full font-bold transition-all">Refine Profile</button>
+                <button onclick="nextStep(4)" class="bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-full font-bold transition-all">Deep Reflection <i class="fas fa-brain ml-2"></i></button>
+            </div>
+        </section>
+
+        <!-- Step 4: Reflection -->
+        <section id="section-4" class="hidden fade-in">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-purple-400">
+                <i class="fas fa-microscope mr-3"></i> Phase 4: Critical Analysis
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="bg-slate-800/50 p-5 rounded-lg border border-slate-700">
+                    <h3 class="font-bold mb-2 text-blue-300">Targeting the Elderly</h3>
+                    <p class="text-slate-400 text-sm mb-4">Why might an advertiser find a "Grandparent" profile more valuable than a "High School Student"? How could they use information about "liking family photos" to sell a specific product?</p>
+                    <textarea class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm h-20 focus:ring-1 focus:ring-purple-400 outline-none" placeholder="Write your thoughts..."></textarea>
+                </div>
+                
+                <div class="bg-slate-800/50 p-5 rounded-lg border border-slate-700">
+                    <h3 class="font-bold mb-2 text-emerald-300">The Moral Cost</h3>
+                    <p class="text-slate-400 text-sm mb-4">If an insurance company buys your "Health Vulnerability Index" and sees you searched for heart symptoms, should they be allowed to raise your rates? Why or why not?</p>
+                    <textarea class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm h-20 focus:ring-1 focus:ring-purple-400 outline-none" placeholder="Write your thoughts..."></textarea>
+                </div>
+            </div>
+
+            <button onclick="nextStep(5)" class="mt-8 bg-purple-600 hover:bg-purple-500 px-8 py-3 rounded-full font-bold transition-all">Take Knowledge Check <i class="fas fa-check-double ml-2"></i></button>
+        </section>
+
+        <!-- Step 5: Final Assessment -->
+        <section id="section-5" class="hidden fade-in">
+            <h2 class="text-2xl font-bold mb-6 flex items-center text-red-400">
+                <i class="fas fa-graduation-cap mr-3"></i> Assessment: Digital Responsibility
+            </h2>
+            
+            <div id="quiz-container" class="space-y-6">
+                <!-- Q1 -->
+                <div class="quiz-item bg-slate-800/30 p-4 rounded-lg">
+                    <p class="font-semibold mb-3">1. How do data brokers "infer" things you didn't tell them (like your income or health)?</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">They hack into your bank account directly.</button>
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">By using algorithms to find patterns in your searches, likes, and location history.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">They don't; they only use data you type into forms.</button>
+                    </div>
+                </div>
+                <!-- Q2 -->
+                <div class="quiz-item bg-slate-800/30 p-4 rounded-lg">
+                    <p class="font-semibold mb-3">2. What is the primary purpose of a tracking "Cookie"?</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">To identify your device across different websites to build a persistent profile.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">To speed up your internet connection.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">To delete your browser history automatically.</button>
+                    </div>
+                </div>
+                <!-- Q3 -->
+                <div class="quiz-item bg-slate-800/30 p-4 rounded-lg">
+                    <p class="font-semibold mb-3">3. Why is "Sign in with Google/Facebook" considered a privacy risk?</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">It makes it too easy to forget your password.</button>
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">It allows that company to track your activity across every app you link to it.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">It uses more battery power on your phone.</button>
+                    </div>
+                </div>
+                <!-- Q4 -->
+                <div class="quiz-item bg-slate-800/30 p-4 rounded-lg">
+                    <p class="font-semibold mb-3">4. "Metadata" includes everything about a piece of data EXCEPT:</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">The actual content of the message or image.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">The location (GPS) where a photo was taken.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">The time and date a file was created.</button>
+                    </div>
+                </div>
+                <!-- Q5 -->
+                <div class="quiz-item bg-slate-800/30 p-4 rounded-lg">
+                    <p class="font-semibold mb-3">5. Which action is most effective for confusing a data broker's profile of you?</p>
+                    <div class="space-y-2">
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">Changing your profile picture frequently.</button>
+                        <button onclick="checkAnswer(this, true)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">Using a privacy-focused browser and blocking third-party cookies.</button>
+                        <button onclick="checkAnswer(this, false)" class="w-full text-left bg-slate-800 p-3 rounded hover:bg-slate-700 border border-slate-700 text-sm">Typing in all caps so the algorithms can't read your text.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="final-message" class="hidden mt-10 p-8 text-center border-t border-slate-700">
+                <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-emerald-400 mb-2">Digital Literacy Achieved</h3>
+                <p class="text-slate-400 mb-6">You have identified the invisible strings that move the digital world. Protect your data—it is your most valuable asset.</p>
+                <button onclick="location.reload()" class="bg-blue-600 px-10 py-3 rounded-full font-bold">Restart Lesson</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let currentStep = 1;
+        let selectedPlatforms = [];
+        let selectedActions = [];
+
+        function nextStep(step) {
+            if (step === 2 && currentStep === 1) {
+                if (!document.getElementById('char-name').value) {
+                    showToast("Identify your character first!");
+                    return;
+                }
+            }
+
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`section-${step}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.step-indicator').forEach((btn, idx) => {
+                if (idx < step) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+
+        function togglePlatform(el, platform) {
+            el.classList.toggle('selected');
+            if (selectedPlatforms.includes(platform)) {
+                selectedPlatforms = selectedPlatforms.filter(p => p !== platform);
+            } else {
+                selectedPlatforms.push(platform);
+            }
+        }
+
+        function toggleAction(el, action) {
+            el.classList.toggle('selected');
+            if (selectedActions.includes(action)) {
+                selectedActions = selectedActions.filter(p => p !== action);
+            } else {
+                selectedActions.push(action);
+            }
+        }
+
+        function generateAds() {
+            const name = document.getElementById('char-name').value;
+            const age = parseInt(document.getElementById('char-age').value);
+            const role = document.getElementById('char-role').value;
+            const interest = document.getElementById('char-interest').value;
+            const searches = document.getElementById('search-history').value.toLowerCase();
+            const shop = document.getElementById('recent-shop').value.toLowerCase();
+
+            // Profile Header
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('initial').innerText = name[0].toUpperCase();
+            document.getElementById('uuid').innerText = "DB-" + (Math.random()*100).toFixed(0) + "-SEC-" + age;
+
+            // Expanded Dossier Logic
+            let segment = "General Population";
+            if (age > 60) segment = "Golden Years Consumer / Asset Rich";
+            else if (age < 20) segment = "Gen-Z Trend Follower / Early Adopter";
+            else segment = "Working Professional / Credit Active";
+            
+            document.getElementById('dossier-segment').innerText = segment;
+
+            let income = "Moderate";
+            if (role.includes("Retired") || role.includes("Consultant")) income = "High Net Worth / Pensioner";
+            if (role.includes("Student")) income = "Limited Disposable Income";
+            document.getElementById('dossier-income').innerText = income;
+
+            // Political Affinity Logic
+            let affinity = "Neutral / Apolitical";
+            if (selectedActions.includes("Posting News Articles") || interest.includes("Social Justice") || interest.includes("Activism")) {
+                affinity = "Active / High Engagement";
+            }
+            document.getElementById('dossier-affinity').innerText = affinity;
+
+            // Health Vulnerability
+            let health = "Low Concern";
+            if (searches.includes("symptom") || searches.includes("pain") || searches.includes("doctor") || age > 65) {
+                health = age > 65 ? "High (Age-Related)" : "Emerging Concern";
+            }
+            document.getElementById('dossier-health').innerText = health;
+
+            document.getElementById('dossier-geo').innerText = "Tier 1 Metro Cluster";
+            document.getElementById('dossier-triggers').innerText = age > 60 ? "Family Security / Legacy" : "Social Validation / Speed";
+
+            // Metadata Tokens
+            const tokenContainer = document.getElementById('dossier-tokens');
+            tokenContainer.innerHTML = "";
+            const tokens = ["IP_LAT_LON", "DEVICE_FPRINT_01", "WIFI_SSID_LOG"];
+            if (selectedActions.length > 0) tokens.push("SOC_GRAPH_WEIGHTED");
+            if (searches) tokens.push("KW_INTENT_SCRAPE");
+            
+            tokens.forEach(t => {
+                const s = document.createElement('span');
+                s.className = "text-[9px] bg-slate-800 text-slate-400 px-2 py-1 rounded border border-slate-700 font-mono";
+                s.innerText = t;
+                tokenContainer.appendChild(s);
+            });
+
+            // Ad Generation Logic
+            const adsContainer = document.getElementById('ad-results');
+            adsContainer.innerHTML = "";
+            const adList = [];
+
+            // Ad 1: Senior Specific
+            if (age > 60) {
+                adList.push({
+                    title: "Protect Your Legacy, " + name,
+                    body: "Estate planning shouldn't be scary. Get our free 'Grandparent's Guide' to wealth protection.",
+                    label: "Financial / Senior"
+                });
+                adList.push({
+                    title: "Joint Pain? Try This.",
+                    body: "Our new formula is helping " + age + "-year-olds get back to gardening. 50% off for seniors.",
+                    label: "Health / Supplement"
+                });
+            } else {
+                adList.push({
+                    title: "The Future of " + interest,
+                    body: "Don't get left behind. Join the top 1% of performers in your field today.",
+                    label: "Productivity"
+                });
+            }
+
+            // Ad 2: Political Engagement (Dossier Based)
+            if (affinity === "Active / High Engagement") {
+                adList.push({
+                    title: name + ", Your Voice is Needed",
+                    body: "We notice you follow the latest news. Join our local campaign for social justice this weekend.",
+                    label: "Political / Activism"
+                });
+            }
+
+            // Ad 3: Health Vulnerability (Dossier Based)
+            if (health !== "Low Concern") {
+                adList.push({
+                    title: "Worried about recent symptoms?",
+                    body: "Our virtual doctors can see you in 15 minutes. Private, secure, and covered by most plans.",
+                    label: "Medical / Telehealth"
+                });
+            }
+
+            // Ad 4: Financial Targeting (Dossier Based)
+            if (income.includes("High")) {
+                adList.push({
+                    title: "Exclusive Private Portfolios",
+                    body: "Because your assets deserve better than the standard market. Schedule a private consultation.",
+                    label: "Luxury Finance"
+                });
+            } else {
+                adList.push({
+                    title: "Instant Cash for " + role + "s",
+                    body: "Payday is still a week away? Get up to $500 instantly with 0% interest for first-time users.",
+                    label: "Micro-Loan / Debt"
+                });
+            }
+
+            // Ad 5: Behavior Based
+            if (selectedActions.includes('Liking Family Photos')) {
+                adList.push({
+                    title: "Share More Memories",
+                    body: "Smart digital frames for the whole family. One-click sharing for " + name + "'s photos.",
+                    label: "Social / Tech"
+                });
+            }
+
+            if (shop) {
+                adList.push({
+                    title: "Still looking for " + shop + "?",
+                    body: "The price just dropped. Secure yours before it's gone forever.",
+                    label: "Urgency Retargeting"
+                });
+            }
+
+            adList.forEach(ad => {
+                const div = document.createElement('div');
+                div.className = "ad-container p-4 rounded-lg shadow-sm";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[8px] font-extrabold text-slate-500 uppercase tracking-widest">Sponsored Content</span>
+                        <span class="text-[9px] text-blue-400 font-bold bg-blue-400/10 px-2 py-0.5 rounded border border-blue-500/20">${ad.label}</span>
+                    </div>
+                    <h5 class="font-bold text-white mb-1">${ad.title}</h5>
+                    <p class="text-xs text-slate-400 leading-snug">${ad.body}</p>
+                `;
+                adsContainer.appendChild(div);
+            });
+
+            nextStep(3);
+        }
+
+        let answeredCount = 0;
+        function checkAnswer(btn, isCorrect) {
+            const btns = btn.parentElement.querySelectorAll('button');
+            btns.forEach(b => b.disabled = true);
+            if (isCorrect) {
+                btn.classList.add('bg-emerald-600', 'border-emerald-500', 'text-white');
+            } else {
+                btn.classList.add('bg-red-900', 'border-red-500', 'text-slate-300');
+            }
+            
+            answeredCount++;
+            if (answeredCount >= 5) {
+                document.getElementById('final-message').classList.remove('hidden');
+                document.getElementById('final-message').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = "fixed bottom-4 right-4 bg-red-600 px-6 py-3 rounded-full shadow-2xl z-50 fade-in font-bold text-sm";
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+    </script>
+</body>
+</html>
