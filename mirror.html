@@ -270,9 +270,9 @@
             <!-- AD TARGETING EXPLANATION -->
             <div id="ad-explanation-box" class="mb-10 p-5 bg-blue-900/20 border border-blue-500/30 rounded-xl w-full fade-in">
                 <h4 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 flex items-center">
-                    <i class="fas fa-bullseye mr-2"></i> How these platforms were linked:
+                    <i class="fas fa-bullseye mr-2"></i> Master Marketing Analysis:
                 </h4>
-                <p id="ad-logic-text" class="text-xs text-slate-300 leading-relaxed italic"></p>
+                <p id="ad-logic-text" class="text-xs text-slate-300 leading-relaxed whitespace-pre-line"></p>
             </div>
 
             <!-- THE ADS AUCTION -->
@@ -356,6 +356,7 @@
             const role = document.getElementById('char-role').value;
             const interest = document.getElementById('char-interest').value;
             const searches = document.getElementById('search-history').value.toLowerCase();
+            const shopItem = document.getElementById('recent-shop').value;
 
             // Update Dossier UI
             document.getElementById('res-name').innerText = name;
@@ -401,7 +402,6 @@
             const adContainer = document.getElementById('synthesized-ad-container');
             const logicTextEl = document.getElementById('ad-logic-text');
             
-            // Adjust container layout based on count
             if (selectedPlatforms.length === 1) {
                 adContainer.className = "mb-4 w-full max-w-lg mx-auto grid grid-cols-1 gap-6";
             } else {
@@ -409,77 +409,86 @@
             }
 
             let adsHtml = "";
+            const isGenZ = age < 25;
+            const isSenior = age >= 65;
+
             selectedPlatforms.slice(0, 4).forEach(platform => {
                 let headline = "", subheadline = "", cta = "", colorTheme = "", imageUrl = "";
                 
-                // Content synthesis per platform
                 if (platform === 'TikTok') {
                     colorTheme = "linear-gradient(to right, #000000, #ff0050, #00f2ea)";
-                    if (interest === 'gaming') {
-                        headline = "Level Up Your Stream";
-                        subheadline = "The viral gear every gamer is talking about.";
-                        cta = "Shop Now";
-                        imageUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80";
-                    } else if (interest === 'fitness') {
-                        headline = "Get Shredded Fast";
-                        subheadline = "Follow the challenge that's transforming profiles.";
-                        cta = "Start Routine";
-                        imageUrl = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=600&q=80";
+                    if (shopItem) {
+                        headline = `The ${shopItem} Hack?`;
+                        subheadline = "The viral video everyone is saving. See the truth before it's deleted.";
+                        cta = "Watch Now";
+                    } else if (interest === 'gaming') {
+                        headline = isGenZ ? "Your Stream is Mid" : "Pro Gaming Secrets";
+                        subheadline = "Level up with the hardware currently dominating the leaderboard.";
+                        cta = "Upgrade Now";
+                    } else if (isSenior) {
+                        headline = "TikTok for Grandparents";
+                        subheadline = "Join the 50+ community sharing life hacks and recipe secrets.";
+                        cta = "Explore Now";
                     } else {
-                        headline = "Unleash Your Creativity";
-                        subheadline = "Join the 1M+ creators making waves today.";
-                        cta = "Upload Video";
-                        imageUrl = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80";
+                        headline = "Viral Trend Alert";
+                        subheadline = "Don't be the last to know. Join the movement.";
+                        cta = "Join In";
                     }
+                    imageUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80";
                 } else if (platform === 'Facebook') {
                     colorTheme = "linear-gradient(to right, #1877f2, #0056b3)";
-                    if (role === 'caregiver' || selectedActions.includes('Family')) {
-                        headline = "Caregiver Support Hub";
-                        subheadline = "Connect with local families in your area.";
-                        cta = "Join Group";
-                        imageUrl = "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80";
+                    if (isSenior) {
+                        headline = "Safe Retirement Hub";
+                        subheadline = "Protect your legacy and connect with your neighborhood group.";
+                        cta = "Learn More";
+                    } else if (role === 'caregiver' || selectedActions.includes('Family')) {
+                        headline = "Caregiver's Circle";
+                        subheadline = "The #1 local community for families supporting loved ones.";
+                        cta = "Find Support";
                     } else {
-                        headline = "Communities Near You";
-                        subheadline = "Find your people and attend local events.";
-                        cta = "Discover Events";
-                        imageUrl = "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80";
+                        headline = "Local Marketplace Finds";
+                        subheadline = `Top deals on ${interest || 'items'} near your current location.`;
+                        cta = "See Deals";
                     }
+                    imageUrl = "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80";
                 } else if (platform === 'Instagram') {
                     colorTheme = "linear-gradient(to right, #833ab4, #fd1d1d, #fcb045)";
                     if (interest === 'travel') {
-                        headline = "The Escape You Deserve";
-                        subheadline = "Curated luxury excursions for the discerning explorer.";
-                        cta = "Book Escape";
-                        imageUrl = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80";
+                        headline = isSenior ? "Luxury Without the Stress" : "Escape the Grid";
+                        subheadline = "Curated excursions tailored to your lifestyle and budget.";
+                        cta = "Book Now";
+                    } else if (shopItem) {
+                        headline = `Aesthetics for your ${shopItem}`;
+                        subheadline = "Complete the look. Premium accessories for your recent browse.";
+                        cta = "Shop Collection";
                     } else {
-                        headline = "Aesthetic Perfection";
-                        subheadline = "Premium lifestyle tech designed for your feed.";
-                        cta = "Shop Style";
-                        imageUrl = "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=600&q=80";
+                        headline = "The Aesthetic Standard";
+                        subheadline = `Elevate your ${interest || 'daily'} routine with curated essentials.`;
+                        cta = "Discover";
                     }
+                    imageUrl = "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=600&q=80";
                 } else if (platform === 'LinkedIn') {
                     colorTheme = "linear-gradient(to right, #0077b5, #00a0dc)";
-                    if (role === 'tech' || role === 'business' || interest === 'finance') {
-                        headline = "Maximize Your Portfolio";
-                        subheadline = "Algorithmic trading insights for established pros.";
-                        cta = "Download Report";
-                        imageUrl = "https://images.unsplash.com/photo-1611974714851-eb6747139593?auto=format&fit=crop&w=600&q=80";
+                    if (role === 'tech' || interest === 'finance') {
+                        headline = "Future-Proof Your Wealth";
+                        subheadline = "Exclusive algorithmic insights for senior professionals.";
+                        cta = "View Report";
                     } else {
-                        headline = "Level Up Your Career";
-                        subheadline = "Identify your next big professional move.";
-                        cta = "View Openings";
-                        imageUrl = "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=600&q=80";
+                        headline = "Your Next Chapter";
+                        subheadline = `Strategic career paths for established ${role || 'pros'}.`;
+                        cta = "See Path";
                     }
+                    imageUrl = "https://images.unsplash.com/photo-1611974714851-eb6747139593?auto=format&fit=crop&w=600&q=80";
                 }
 
                 adsHtml += `
                     <div class="ad-container shadow-2xl flex flex-col fade-in">
                         <div class="relative w-full h-40 overflow-hidden">
                             <img src="${imageUrl}" alt="${platform} Ad" class="w-full h-full object-cover">
-                            <div class="absolute top-2 right-2 bg-black/50 text-white text-[9px] px-2 py-0.5 rounded uppercase font-bold">${platform} Sponsored</div>
+                            <div class="absolute top-2 right-2 bg-black/50 text-white text-[9px] px-2 py-0.5 rounded uppercase font-bold">${platform} Targeted</div>
                         </div>
                         <div class="p-5 flex-grow">
-                            <div class="text-[9px] font-bold text-sky-600 mb-1 uppercase tracking-tighter">Bidded specifically for your handle</div>
+                            <div class="text-[9px] font-bold text-sky-600 mb-1 uppercase tracking-tighter">Bidded for ${name}</div>
                             <h3 class="text-xl font-black leading-tight mb-2 text-slate-900">${headline}</h3>
                             <p class="text-slate-600 mb-4 text-xs">${subheadline}</p>
                             <button class="w-full py-2.5 rounded-lg font-bold text-white shadow-lg active:scale-95 transition-transform text-xs" style="background: ${colorTheme}">
@@ -492,7 +501,31 @@
 
             adContainer.innerHTML = adsHtml || "<p class='text-center text-slate-500 italic col-span-2'>No social handles detected for synthesis.</p>";
             
-            logicTextEl.innerText = `By linking your ${selectedPlatforms.join(', ')} handles, brokers merged your cross-app behavior. ${selectedPlatforms.includes('Facebook') ? 'Facebook tags your local support systems,' : ''} ${selectedPlatforms.includes('LinkedIn') ? 'LinkedIn verified your professional income,' : ''} and ${selectedPlatforms.includes('TikTok') ? 'TikTok mapped your high-frequency interests.' : ''} This allowed the auction engine to serve different, psychologically-targeted CTAs simultaneously across your digital identity.`;
+            // MASTER MARKETING EXPLANATION
+            let logicDetail = `Algorithm Breakdown for Students:\n\n`;
+            
+            // 1. Demographic Profiling
+            logicDetail += `1. Demographic Profiling: At ${age} years old, you are categorized as "${isSenior ? 'Legacy & Security' : isGenZ ? 'Attention & Trend' : 'Optimization & Growth'}". Marketers use this to decide whether to use "fear of missing out" or "peace of mind" as the emotional hook.\n\n`;
+            
+            // 2. Behavioral Intent
+            if (shopItem) {
+                logicDetail += `2. Behavioral Retargeting: Your search for "${shopItem}" moved you into a "High-Intent" bucket. Advertisers bid 3x more for your attention because they know you are in the final stage of a purchase decision.\n\n`;
+            } else {
+                logicDetail += `2. Psychographic Inference: Since no specific purchase was detected, we used your interest in "${interest}" and your role as a "${role}" to "infer" your needs. This is a statistical guess based on millions of similar profiles.\n\n`;
+            }
+
+            // 3. Cross-Platform Linking
+            if (selectedPlatforms.length > 1) {
+                logicDetail += `3. Cross-Platform Linking: By using ${selectedPlatforms.join(' and ')}, you enabled "Multi-Touch Attribution." This allows a brand to follow you from app to app, surrounding your digital life until the brand feels "everywhere," increasing the pressure to click.\n\n`;
+            }
+
+            // 4. Data Enrichment
+            const criticalActions = selectedActions.filter(a => impactMap[a] && (impactMap[a].weight === 'High' || impactMap[a].weight === 'CRITICAL'));
+            if (criticalActions.length > 0) {
+                logicDetail += `4. High-Value Hooks: Your use of ${highImpact = criticalActions.join(', ')} is a goldmine. "Sign-On" services and group memberships reveal your political leanings or family structure, allowing for hyper-personalized manipulation.`;
+            }
+
+            logicTextEl.innerText = logicDetail;
 
             // Secondary Ad Auction
             const scored = MASTER_ADS.map(ad => {
