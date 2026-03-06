@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIA Triad | Information Security Core</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .triad-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .triad-node:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        .active-tab {
+            border-bottom: 4px solid #38bdf8;
+            color: #38bdf8;
+        }
+
+        .cube-grid-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .cube-grid-item:hover {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+        .cube-grid-item.selected {
+            background-color: rgba(56, 189, 248, 0.3);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .hidden { display: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="border-b border-slate-800 p-4 sticky top-0 bg-slate-900/90 backdrop-blur-md z-50">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-shield-halved text-sky-400 text-2xl"></i>
+                <span class="font-bold text-xl tracking-tight">CIA Triad</span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 text-xs md:text-sm font-medium">
+                <button onclick="switchTab('learn')" id="nav-learn" class="hover:text-sky-400 transition active-tab">1. CORE CONCEPTS</button>
+                <button onclick="switchTab('explore')" id="nav-explore" class="hover:text-sky-400 transition">2. INTERACTIVE TRIAD</button>
+                <button onclick="switchTab('mccumber')" id="nav-mccumber" class="hover:text-sky-400 transition">3. McCUMBER CUBE</button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="hover:text-sky-400 transition">4. AUDIT CHALLENGE</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-4 md:p-8 max-w-6xl mx-auto w-full">
+        
+        <!-- Tab: Learn -->
+        <section id="tab-learn" class="space-y-8 animate-fade-in">
+            <header class="text-center space-y-4">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white">The CIA Triad</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto text-lg">The fundamental model for information security. Every security control targets at least one of these three pillars.</p>
+            </header>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Confidentiality -->
+                <div class="glass-card p-6 border-t-4 border-t-sky-500 flex flex-col">
+                    <div class="bg-sky-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-lock text-sky-400 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Confidentiality</h2>
+                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">Ensuring that data is hidden from unauthorized users and only accessible to those with a valid "need to know."</p>
+                    <div class="bg-slate-900/50 p-3 rounded mb-4 text-xs italic text-slate-300">
+                        "If a secret is leaked, Confidentiality is dead."
+                    </div>
+                    <ul class="text-xs space-y-3 text-slate-300 mt-auto">
+                        <li><strong class="text-sky-400">Encryption:</strong> Protecting data at rest (AES) and in transit (TLS).</li>
+                        <li><strong class="text-sky-400">Access Control:</strong> Implementing MFA and Permission sets (RBAC).</li>
+                        <li><strong class="text-sky-400">Least Privilege:</strong> Granting only the minimum access needed for a job.</li>
+                        <li><strong class="text-sky-400">Obfuscation:</strong> Making code or data difficult to read (Steganography).</li>
+                    </ul>
+                </div>
+
+                <!-- Integrity -->
+                <div class="glass-card p-6 border-t-4 border-t-emerald-500 flex flex-col">
+                    <div class="bg-emerald-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-fingerprint text-emerald-400 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Integrity</h2>
+                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">Assurance that data is accurate, complete, and has not been modified by unauthorized parties.</p>
+                    <div class="bg-slate-900/50 p-3 rounded mb-4 text-xs italic text-slate-300">
+                        "If the data changes without permission, Integrity is gone."
+                    </div>
+                    <ul class="text-xs space-y-3 text-slate-300 mt-auto">
+                        <li><strong class="text-emerald-400">Hashing:</strong> Generating unique fingerprints (SHA-256) to detect tampering.</li>
+                        <li><strong class="text-emerald-400">Digital Signatures:</strong> Combining hashing and encryption to prove origin.</li>
+                        <li><strong class="text-emerald-400">Non-repudiation:</strong> Ensuring a sender cannot deny sending a message.</li>
+                        <li><strong class="text-emerald-400">Versioning:</strong> Tracking changes to restore correct data states.</li>
+                    </ul>
+                </div>
+
+                <!-- Availability -->
+                <div class="glass-card p-6 border-t-4 border-t-amber-500 flex flex-col">
+                    <div class="bg-amber-500/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-bolt text-amber-400 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">Availability</h2>
+                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">The guarantee that systems and data are accessible to authorized users whenever they are needed.</p>
+                    <div class="bg-slate-900/50 p-3 rounded mb-4 text-xs italic text-slate-300">
+                        "If the user can't log in, Availability has failed."
+                    </div>
+                    <ul class="text-xs space-y-3 text-slate-300 mt-auto">
+                        <li><strong class="text-amber-400">Redundancy:</strong> Using RAID, Load Balancers, and Clusters.</li>
+                        <li><strong class="text-amber-400">DDoS Mitigation:</strong> Filtering malicious traffic bursts.</li>
+                        <li><strong class="text-amber-400">Patch Management:</strong> Fixing bugs that could cause crashes.</li>
+                        <li><strong class="text-amber-400">SLA Tracking:</strong> Measuring "Uptime" percentages (e.g., 99.99%).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Acronyms Section -->
+            <div class="glass-card p-8 border-l-4 border-l-sky-500">
+                <div class="bg-slate-900/80 p-6 rounded-xl border border-slate-700">
+                    <h4 class="text-sm font-bold uppercase tracking-widest text-sky-400 mb-4">Key Acronyms to Know</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-sky-500/20 text-sky-400 px-2 py-1 rounded text-xs font-bold">DRP</span>
+                            <span class="text-xs text-slate-300">Disaster Recovery Plan: Primary focus is Availability.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded text-xs font-bold">HMAC</span>
+                            <span class="text-xs text-slate-300">Hash-based Message Auth Code: Focused on Integrity.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs font-bold">RBAC</span>
+                            <span class="text-xs text-slate-300">Role-Based Access Control: Focused on Confidentiality.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: Explore -->
+        <section id="tab-explore" class="hidden animate-fade-in space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold mb-2">Simulate a Breach</h2>
+                <p class="text-slate-400">Interact with the triad nodes to witness specific security failures.</p>
+            </div>
+
+            <div class="relative flex flex-col items-center">
+                <div class="relative w-full flex items-center justify-center mb-16 md:mb-24 lg:mb-32 px-4">
+                    <svg viewBox="-85 -45 570 450" class="w-full h-auto max-w-[min(450px,90vw)] transition-all duration-300">
+                        <!-- Triangle Lines -->
+                        <line x1="200" y1="50" x2="350" y2="300" stroke="#334155" stroke-width="4" />
+                        <line x1="350" y1="300" x2="50" y2="300" stroke="#334155" stroke-width="4" />
+                        <line x1="50" y1="300" x2="200" y2="50" stroke="#334155" stroke-width="4" />
+
+                        <!-- Nodes -->
+                        <g class="triad-node text-sky-400" onclick="showImpact('conf')">
+                            <circle cx="200" cy="50" r="35" fill="currentColor" />
+                            <text x="200" y="58" text-anchor="middle" fill="white" font-weight="bold" font-size="24">C</text>
+                            <text x="200" y="10" text-anchor="middle" fill="currentColor" font-size="14" font-weight="bold">Confidentiality</text>
+                        </g>
+                        <g class="triad-node text-emerald-400" onclick="showImpact('integ')">
+                            <circle cx="350" cy="300" r="35" fill="currentColor" />
+                            <text x="350" y="308" text-anchor="middle" fill="white" font-weight="bold" font-size="24">I</text>
+                            <text x="350" y="355" text-anchor="middle" fill="currentColor" font-size="14" font-weight="bold">Integrity</text>
+                        </g>
+                        <g class="triad-node text-amber-400" onclick="showImpact('avail')">
+                            <circle cx="50" cy="300" r="35" fill="currentColor" />
+                            <text x="50" y="308" text-anchor="middle" fill="white" font-weight="bold" font-size="24">A</text>
+                            <text x="50" y="355" text-anchor="middle" fill="currentColor" font-size="14" font-weight="bold">Availability</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <div id="impact-box" class="glass-card mt-12 p-8 w-full min-h-[180px] flex items-center justify-center text-center border-dashed border-2 border-slate-700 transition-all duration-300">
+                    <p class="text-slate-500 italic animate-pulse">Click a node on the triangle above to simulate a system breach and view technical mitigations.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: McCumber Cube -->
+        <section id="tab-mccumber" class="hidden animate-fade-in space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold mb-2">Interactive McCumber Cube</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">Select one item from each column to see how the dimensions of information security intersect.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Dimension 1: Goals -->
+                <div class="glass-card p-6 border-l-4 border-l-sky-500">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-bullseye text-sky-400"></i> 1. Security Goal</h3>
+                    <div class="space-y-2" id="cube-col-goal">
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('goal', 'Confidentiality', this)">Confidentiality</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('goal', 'Integrity', this)">Integrity</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('goal', 'Availability', this)">Availability</div>
+                    </div>
+                </div>
+
+                <!-- Dimension 2: Data States -->
+                <div class="glass-card p-6 border-l-4 border-l-emerald-500">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-database text-emerald-400"></i> 2. Information State</h3>
+                    <div class="space-y-2" id="cube-col-state">
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('state', 'Storage', this)">Storage (At Rest)</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('state', 'Transmission', this)">Transmission (In Transit)</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('state', 'Processing', this)">Processing (In Use)</div>
+                    </div>
+                </div>
+
+                <!-- Dimension 3: Safeguards -->
+                <div class="glass-card p-6 border-l-4 border-l-amber-500">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fas fa-shield-alt text-amber-400"></i> 3. Safeguard</h3>
+                    <div class="space-y-2" id="cube-col-safeguard">
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('safeguard', 'Technology', this)">Technology</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('safeguard', 'Policy', this)">Policies & Practice</div>
+                        <div class="cube-grid-item bg-slate-800/50 p-3 rounded" onclick="selectCubeItem('safeguard', 'Education', this)">Education & Training</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cube-explanation" class="glass-card p-8 bg-slate-900/60 border border-slate-700 min-h-[120px] flex items-center justify-center text-center">
+                <p class="text-slate-400 italic">Select an item from each column above to generate a security scenario.</p>
+            </div>
+        </section>
+
+        <!-- Tab: Quiz -->
+        <section id="tab-quiz" class="hidden animate-fade-in space-y-6">
+            <div class="glass-card p-8">
+                <div id="quiz-container">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-sky-400 font-bold uppercase tracking-widest text-xs">Security Auditor Challenge</span>
+                        <span id="quiz-progress" class="text-slate-500 text-xs font-mono">Question 1 of 9</span>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="h-full bg-sky-500 transition-all duration-300" style="width: 11%"></div>
+                        </div>
+                    </div>
+
+                    <h3 id="quiz-question" class="text-xl md:text-2xl font-bold mb-8 min-h-[80px]">Loading Scenario...</h3>
+                    
+                    <div id="quiz-options" class="grid md:grid-cols-2 gap-4">
+                        <!-- Options injected via JS -->
+                    </div>
+
+                    <div id="quiz-feedback" class="mt-8 p-6 rounded-xl hidden"></div>
+                    
+                    <div class="flex justify-end mt-8">
+                        <button id="next-btn" onclick="nextQuestion()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-10 rounded-full transition-all flex items-center gap-2 hidden shadow-lg shadow-sky-500/20">
+                            Next Scenario <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-results" class="hidden text-center space-y-8 py-10">
+                    <div class="flex justify-center">
+                        <div class="w-24 h-24 bg-sky-500/10 rounded-full flex items-center justify-center border-4 border-sky-500">
+                             <i class="fas fa-award text-sky-400 text-4xl"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-4xl font-bold">Audit Evaluation Complete</h2>
+                    <div class="text-7xl font-extrabold text-sky-400" id="final-score">0/9</div>
+                    <p id="score-commentary" class="text-slate-400 text-lg max-w-lg mx-auto leading-relaxed"></p>
+                    <button onclick="resetQuiz()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-12 rounded-full transition-all">
+                        Restart Examination
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Tab Management
+        function switchTab(tab) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
+            document.getElementById(`nav-${tab}`).classList.add('active-tab');
+            window.scrollTo(0,0);
+        }
+
+        // Impact Simulator
+        const impacts = {
+            conf: {
+                title: "Confidentiality Breach (Data Leak)",
+                text: "An attacker used a 'Packet Sniffer' to capture sensitive patient records sent over an unencrypted HTTP connection (Data in Transit failure).",
+                remedy: "Mitigation: Enforce TLS 1.3 for all web traffic and implement Data Loss Prevention (DLP) tools.",
+                color: "text-sky-400",
+                borderColor: "border-sky-500"
+            },
+            integ: {
+                title: "Integrity Breach (Unauthorized Change)",
+                text: "A script kiddie gained access to a pricing database and changed the price of all flagship products to $0.01.",
+                remedy: "Mitigation: Implement File Integrity Monitoring (FIM) and require Digitally Signed database transactions.",
+                color: "text-emerald-400",
+                borderColor: "border-emerald-500"
+            },
+            avail: {
+                title: "Availability Breach (Denial of Service)",
+                text: "A distributed botnet is saturating the corporate firewall, preventing remote employees from accessing the VPN.",
+                remedy: "Mitigation: Deploy an Anycast network for traffic distribution and set up Geo-fencing to block high-risk traffic regions.",
+                color: "text-amber-400",
+                borderColor: "border-amber-500"
+            }
+        };
+
+        function showImpact(key) {
+            const data = impacts[key];
+            const box = document.getElementById('impact-box');
+            box.style.opacity = '0';
+            
+            setTimeout(() => {
+                box.innerHTML = `
+                    <div class="space-y-3 animate-fade-in w-full">
+                        <h4 class="text-2xl font-bold ${data.color}">${data.title}</h4>
+                        <p class="text-slate-200 text-lg leading-relaxed">${data.text}</p>
+                        <div class="h-px bg-slate-700 my-4"></div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">${data.remedy}</p>
+                    </div>
+                `;
+                box.className = `glass-card mt-12 p-8 w-full min-h-[180px] flex items-center justify-center text-center border-2 ${data.borderColor}`;
+                box.style.opacity = '1';
+            }, 150);
+        }
+
+        // McCumber Cube Interactive Logic
+        let selectedCube = { goal: null, state: null, safeguard: null };
+
+        function selectCubeItem(category, value, element) {
+            element.parentNode.querySelectorAll('.cube-grid-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedCube[category] = value;
+            updateCubeExplanation();
+        }
+
+        function updateCubeExplanation() {
+            const display = document.getElementById('cube-explanation');
+            if (!selectedCube.goal || !selectedCube.state || !selectedCube.safeguard) {
+                const missing = [];
+                if (!selectedCube.goal) missing.push("a Goal");
+                if (!selectedCube.state) missing.push("a State");
+                if (!selectedCube.safeguard) missing.push("a Safeguard");
+                display.innerHTML = `<p class="text-slate-500 italic">Still missing: ${missing.join(', ')}.</p>`;
+                return;
+            }
+
+            const { goal, state, safeguard } = selectedCube;
+            let scenario = "";
+
+            if (goal === "Confidentiality") {
+                if (state === "Storage") {
+                    if (safeguard === "Technology") scenario = "Implementing <strong>Full Disk Encryption (FDE)</strong> on company laptops to protect sensitive files if the hardware is stolen.";
+                    if (safeguard === "Policy") scenario = "A <strong>Clean Desk Policy</strong> requiring all printed sensitive documents to be locked in a drawer before leaving for the day.";
+                    if (safeguard === "Education") scenario = "Training employees to recognize the risks of leaving sensitive spreadsheets on unencrypted USB drives.";
+                } else if (state === "Transmission") {
+                    if (safeguard === "Technology") scenario = "Enforcing <strong>WPA3 Encryption</strong> on the office Wi-Fi so that local traffic cannot be intercepted by packet sniffers.";
+                    if (safeguard === "Policy") scenario = "A policy prohibiting the use of public Wi-Fi for accessing internal company databases.";
+                    if (safeguard === "Education") scenario = "Teaching users how to check for valid SSL/TLS certificates before entering credit card info.";
+                } else {
+                    if (safeguard === "Technology") scenario = "Using <strong>Trusted Execution Environments (TEEs)</strong> to ensure that sensitive data in RAM is invisible to other processes.";
+                    if (safeguard === "Policy") scenario = "Privacy policies that mandate data masking (obfuscation) in application logs during developer testing.";
+                    if (safeguard === "Education") scenario = "Training developers to avoid hardcoding secrets or API keys in application source code.";
+                }
+            } else if (goal === "Integrity") {
+                if (state === "Storage") {
+                    if (safeguard === "Technology") scenario = "Using <strong>File Integrity Monitoring (FIM)</strong> to alert admins if a critical Windows system file hash changes.";
+                    if (safeguard === "Policy") scenario = "A change management policy requiring two administrators to sign off on all production database modifications.";
+                    if (safeguard === "Education") scenario = "Training DBAs on the importance of periodic database consistency checks (DBCC).";
+                } else if (state === "Transmission") {
+                    if (safeguard === "Technology") scenario = "Using <strong>HMAC (Hash-based Message Authentication Codes)</strong> to ensure network packets haven't been modified in transit.";
+                    if (safeguard === "Policy") scenario = "Protocols requiring <strong>Digital Signatures</strong> on all executive-level email communications.";
+                    if (safeguard === "Education") scenario = "Educating staff to verify the 'Digital Signature' of a software installer before running it.";
+                } else {
+                    if (safeguard === "Technology") scenario = "Implementing <strong>Input Validation</strong> in code to prevent SQL Injection attacks from corrupting user data.";
+                    if (safeguard === "Policy") scenario = "Requiring peer code reviews for all updates to financial processing logic.";
+                    if (safeguard === "Education") scenario = "Teaching developers about the OWASP Top 10 risks, specifically focusing on Injection vulnerabilities.";
+                }
+            } else {
+                if (state === "Storage") {
+                    if (safeguard === "Technology") scenario = "Configuring a <strong>RAID 6 array</strong> so that a server can continue running even if two hard drives fail simultaneously.";
+                    if (safeguard === "Policy") scenario = "A <strong>3-2-1 Backup Policy</strong> ensuring data is replicated across multiple media and geographic locations.";
+                    if (safeguard === "Education") scenario = "Training sysadmins on the proper procedure for hot-swapping failed server components.";
+                } else if (state === "Transmission") {
+                    if (safeguard === "Technology") scenario = "Deploying <strong>Load Balancers</strong> to distribute web traffic across multiple healthy servers to prevent a crash.";
+                    if (safeguard === "Policy") scenario = "Service Level Agreements (SLAs) with ISPs guaranteeing 'four-nines' (99.99%) network uptime.";
+                    if (safeguard === "Education") scenario = "Training helpdesk staff to quickly identify and report signs of a potential DDoS attack.";
+                } else {
+                    if (safeguard === "Technology") scenario = "Setting up <strong>Failover Clusters</strong> so that if one application instance crashes, another takes over instantly.";
+                    if (safeguard === "Policy") scenario = "A patch management policy that requires testing updates on a staging server before pushing to production.";
+                    if (safeguard === "Education") scenario = "Training operators on how to manually restart services or clear stuck memory buffers without rebooting.";
+                }
+            }
+            display.innerHTML = `<div class="animate-fade-in"><h4 class="text-sky-400 font-bold mb-2 uppercase tracking-widest text-xs">Security Intersection Identified</h4><p class="text-lg text-slate-100">${scenario}</p></div>`;
+        }
+
+        // Quiz Logic
+        const quizData = [
+            { q: "A developer notices that a file's hash value has changed unexpectedly since the last backup. Which pillar is affected?", options: ["Confidentiality", "Integrity", "Availability", "Non-repudiation"], correct: 1, exp: "Hashing is used to verify Integrity. A change in the hash indicates the data was altered." },
+            { q: "A disaster recovery site is brought online after a hurricane destroys the primary data center. This addresses which pillar?", options: ["Confidentiality", "Integrity", "Availability", "Defense in Depth"], correct: 2, exp: "Redundancy and failover sites ensure systems stay online, supporting Availability." },
+            { q: "An employee's laptop is stolen. The thief cannot read any files because the drive is fully encrypted (AES-256). This protection is for:", options: ["Confidentiality", "Integrity", "Availability", "Accountability"], correct: 0, exp: "Encryption is the primary control for maintaining Confidentiality of data at rest." },
+            { q: "A website is hit with a SYN Flood attack, causing CPU spikes and timing out all legitimate requests. This is an attack on:", options: ["Confidentiality", "Integrity", "Availability", "Authorization"], correct: 2, exp: "SYN Floods are a form of DoS, which targets Availability." },
+            { q: "A digital signature ensures that a message sender cannot later deny they sent the message. This concept is known as:", options: ["Obfuscation", "Persistence", "Non-repudiation", "Availability"], correct: 2, exp: "Non-repudiation ensures a sender cannot deny their actions, often achieved through digital signatures." },
+            { q: "Which state of the McCumber Cube is being protected when you apply WPA3 encryption to a Wi-Fi network?", options: ["Data at Rest", "Data in Transit", "Data in Use", "Safeguard Policy"], correct: 1, exp: "Wi-Fi encryption protects 'Data in Transit' (Transmission) while it moves across the airwaves." },
+            { q: "A company implements a policy that 'All employees must change passwords every 90 days.' In the McCumber Cube, this is which Safeguard?", options: ["Technology", "Processing", "Policies & Practices", "Education"], correct: 2, exp: "Mandatory password rotations are a Policy-driven safeguard." },
+            { q: "You implement 'Least Privilege' by ensuring a Marketing intern only has access to the social media folder. This primarily supports:", options: ["Confidentiality", "Integrity", "Availability", "Redundancy"], correct: 0, exp: "Least Privilege prevents unauthorized access to sensitive data, upholding Confidentiality." },
+            { q: "An administrator uses a 'File Integrity Monitor' (FIM) to detect unauthorized changes to the Windows System32 folder. This targets:", options: ["Confidentiality", "Integrity", "Availability", "Encryption"], correct: 1, exp: "FIM tools look for changes in file hashes to ensure the system has not been tampered with (Integrity)." }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const data = quizData[currentQ];
+            document.getElementById('quiz-progress').innerText = `Question ${currentQ + 1} of ${quizData.length}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQ + 1) / quizData.length) * 100}%`;
+            document.getElementById('quiz-question').innerText = data.q;
+            const optionsDiv = document.getElementById('quiz-options');
+            optionsDiv.innerHTML = '';
+            data.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all duration-200 flex justify-between items-center group active:scale-95";
+                btn.innerHTML = `<span>${opt}</span><i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition translate-x-[-10px] group-hover:translate-x-0"></i>`;
+                btn.onclick = () => checkAnswer(idx);
+                optionsDiv.appendChild(btn);
+            });
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+        }
+
+        function checkAnswer(idx) {
+            const data = quizData[currentQ];
+            const feedback = document.getElementById('quiz-feedback');
+            const btns = document.getElementById('quiz-options').querySelectorAll('button');
+            btns.forEach(b => b.onclick = null);
+            if (idx === data.correct) {
+                score++;
+                feedback.innerHTML = `<div class="flex items-start gap-4"><i class="fas fa-check-circle text-emerald-400 text-2xl mt-1"></i><div><p class="text-emerald-400 font-bold text-lg">Correct Audit Conclusion</p><p class="text-slate-300 mt-1">${data.exp}</p></div></div>`;
+                feedback.className = "mt-8 p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/30 block animate-fade-in";
+                btns[idx].classList.add('border-emerald-500', 'bg-emerald-500/20', 'ring-2', 'ring-emerald-500/20');
+            } else {
+                feedback.innerHTML = `<div class="flex items-start gap-4"><i class="fas fa-exclamation-triangle text-rose-400 text-2xl mt-1"></i><div><p class="text-rose-400 font-bold text-lg">Incorrect conclusion.</p><p class="text-slate-300 mt-1">${data.exp}</p></div></div>`;
+                feedback.className = "mt-8 p-6 rounded-xl bg-rose-500/10 border border-rose-500/30 block animate-fade-in";
+                btns[idx].classList.add('border-rose-500', 'bg-rose-500/20');
+                btns[data.correct].classList.add('border-emerald-500', 'bg-emerald-500/10');
+            }
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < quizData.length) loadQuestion(); else showResults();
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/${quizData.length}`;
+            const perc = (score / quizData.length) * 100;
+            let msg = perc === 100 ? "Perfect Score! You have a complete grasp of the core concepts." : (perc >= 70 ? "Solid foundational knowledge. You're on the right track." : "Keep studying the definitions and controls associated with each pillar.");
+            document.getElementById('score-commentary').innerText = msg;
+        }
+
+        function resetQuiz() {
+            currentQ = 0; score = 0;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            loadQuestion();
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
