@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eMate 1: You Are the Algorithm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-panel: #f9fafb;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .panel-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 80px);
+        }
+        @media (max-width: 768px) {
+            .panel-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .left-panel {
+            background-color: white;
+            padding: 2.5rem;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+        }
+        .right-panel {
+            background-color: var(--bg-panel);
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+        .rule-row {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+        .scenario-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 relative">
+    <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width: 0%"></div></div>
+    <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">A</div>
+        <h1 class="text-xl font-bold tracking-tight">You Are the Algorithm</h1>
+    </div>
+    <div id="screenIndicator" class="text-sm font-medium text-gray-500">Screen 1 of 4</div>
+</header>
+
+<main id="app" class="panel-container">
+    <!-- Content injected via JS -->
+</main>
+
+<script>
+    // --- Data ---
+    const SCENARIOS = [
+        {
+            id: 1,
+            title: "The Shortcut Essay",
+            text: "A student uses an AI to write their entire final history essay because they are overwhelmed by other classes. They plan to submit it as their own work.",
+            tags: ["Integrity", "Academic Honesty"],
+            attributes: ["is_shortcut", "violates_integrity"],
+            choices: { allow: "Accept Submission", deny: "Flag for Plagiarism" }
+        },
+        {
+            id: 2,
+            title: "Paid Praise",
+            text: "An influencer is offered $500 to post a positive review of a skincare product they've never used, without disclosing that it's a paid advertisement.",
+            tags: ["Transparency", "Honesty"],
+            attributes: ["paid_promotion", "violates_transparency"],
+            choices: { allow: "Post Content", deny: "Block/Require Disclosure" }
+        },
+        {
+            id: 3,
+            title: "The Free Movie",
+            text: "A student finds a website where they can stream a brand new blockbuster movie for free, knowing it's a pirated copy that hasn't been officially released yet.",
+            tags: ["Law", "Property Rights"],
+            attributes: ["violates_law"],
+            choices: { allow: "Permit Access", deny: "Block Site" }
+        },
+        {
+            id: 4,
+            title: "The Celebrity Swap",
+            text: "A user creates a highly realistic 'deepfake' video of a celebrity saying something controversial just to see if they can make it go viral as a prank.",
+            tags: ["Privacy", "Integrity"],
+            attributes: ["privacy_risk", "violates_integrity"],
+            choices: { allow: "Publish Video", deny: "Remove Content" }
+        },
+        {
+            id: 5,
+            title: "Snooping for Truth",
+            text: "A student suspects their best friend is lying to them. While the friend is away, they see the friend's phone is unlocked and want to check their messages.",
+            tags: ["Privacy", "Trustworthiness"],
+            attributes: ["privacy_risk"],
+            choices: { allow: "Open Messages", deny: "Lock Device" }
+        },
+        {
+            id: 6,
+            title: "The Rumor Mill",
+            text: "A student hears a rumor that the school counselor is unfair. Based only on this rumor, they decide to warn other students to avoid that counselor's office.",
+            tags: ["Fairness", "Respect"],
+            attributes: ["hears_rumor", "violates_fairness"],
+            choices: { allow: "Share Warning", deny: "Wait for Evidence" }
+        }
+    ];
+
+    const PRINCIPLES = ["Integrity", "Privacy", "Transparency", "Fairness", "Respect for Law", "Minimize Harm", "Loyalty"];
+    const CONDITIONS = [
+        { id: "is_shortcut", label: "user requests shortcut" },
+        { id: "violates_law", label: "action violates law" },
+        { id: "privacy_risk", label: "friend's privacy at risk" },
+        { id: "paid_promotion", label: "content is paid promotion" },
+        { id: "violates_integrity", label: "violates personal integrity" },
+        { id: "violates_transparency", label: "lacks transparency" },
+        { id: "hears_rumor", label: "based on unverified rumor" }
+    ];
+    const ACTIONS = [
+        { id: "allow", label: "allow" },
+        { id: "deny", label: "deny" },
+        { id: "warn", label: "warn user" },
+        { id: "ask", label: "ask for more info" }
+    ];
+
+    // --- State Management ---
+    let state = {
+        screen: 1,
+        systemType: "Autonomous Car",
+        activePrinciples: [],
+        rules: [{ condition: "is_shortcut", action: "deny" }],
+        currentScenarioIndex: 0,
+        results: Array(SCENARIOS.length).fill(null).map(() => ({ agreement: null, feedback: "" }))
+    };
+
+    // --- Core Logic ---
+    function updateScreen(screenNum) {
+        state.screen = screenNum;
+        render();
+        window.scrollTo(0, 0);
+    }
+
+    function togglePrinciple(p) {
+        if (state.activePrinciples.includes(p)) {
+            state.activePrinciples = state.activePrinciples.filter(item => item !== p);
+        } else {
+            state.activePrinciples.push(p);
+        }
+        render();
+    }
+
+    function addRule() {
+        if (state.rules.length < 5) {
+            state.rules.push({ condition: CONDITIONS[0].id, action: ACTIONS[0].id });
+            render();
+        }
+    }
+
+    function removeRule(index) {
+        state.rules.splice(index, 1);
+        render();
+    }
+
+    function updateRule(index, field, value) {
+        state.rules[index][field] = value;
+    }
+
+    function getAIAction(scenario) {
+        for (let i = 0; i < state.rules.length; i++) {
+            if (scenario.attributes.includes(state.rules[i].condition)) {
+                return { action: state.rules[i].action, ruleIndex: i + 1 };
+            }
+        }
+        return { action: "neutral", ruleIndex: null };
+    }
+
+    function saveScenarioResponse(agree, text) {
+        state.results[state.currentScenarioIndex] = { agreement: agree, feedback: text };
+        if (state.currentScenarioIndex < SCENARIOS.length - 1) {
+            state.currentScenarioIndex++;
+            render();
+        } else {
+            updateScreen(4);
+        }
+    }
+
+    function exportData() {
+        const data = JSON.stringify({
+            system: state.systemType,
+            principles: state.activePrinciples,
+            rules: state.rules,
+            outcomes: state.results
+        }, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `my_ai_rulebook_${state.systemType.toLowerCase().replace(' ', '_')}.json`;
+        a.click();
+    }
+
+    // --- Rendering ---
+    function render() {
+        const app = document.getElementById('app');
+        const progress = document.getElementById('progressFill');
+        const indicator = document.getElementById('screenIndicator');
+        
+        progress.style.width = `${(state.screen / 4) * 100}%`;
+        indicator.innerText = `Screen ${state.screen} of 4`;
+
+        switch(state.screen) {
+            case 1: renderScreen1(app); break;
+            case 2: renderScreen2(app); break;
+            case 3: renderScreen3(app); break;
+            case 4: renderScreen4(app); break;
+        }
+    }
+
+    function renderScreen1(container) {
+        container.innerHTML = `
+            <div class="left-panel">
+                <h2 class="text-3xl font-bold mb-6 text-gray-900">Welcome, Architect.</h2>
+                <p class="text-lg text-gray-600 mb-4 leading-relaxed">
+                    AI doesn't have a moral compass of its own—it follows the patterns and priorities set by humans.
+                </p>
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                    Today, you are the developer. You will define the <strong>Ethical Rule Set</strong> for an automated system. Think carefully: will your AI prioritize efficiency, the law, or user privacy?
+                </p>
+                <div class="p-6 bg-indigo-50 rounded-xl border border-indigo-100">
+                    <h3 class="font-semibold text-indigo-900 mb-2">Your Task</h3>
+                    <ul class="space-y-2 text-indigo-800 text-sm">
+                        <li class="flex items-start"><span class="mr-2">1.</span> Select the type of system you are building.</li>
+                        <li class="flex items-start"><span class="mr-2">2.</span> Define IF/THEN logical rules for behavior.</li>
+                        <li class="flex items-start"><span class="mr-2">3.</span> Watch your AI handle difficult real-world dilemmas.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel flex flex-col justify-center">
+                <div class="max-w-md mx-auto w-full">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" for="sys-type">Select System Type</label>
+                    <select id="sys-type" class="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-0 transition-all mb-8 bg-white" onchange="state.systemType = this.value">
+                        <option>Autonomous Car</option>
+                        <option>AI Homework Helper</option>
+                        <option>Social Media Recommender</option>
+                        <option>Digital Assistant</option>
+                    </select>
+                    <button onclick="updateScreen(2)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1">
+                        Start Designing Rules
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderScreen2(container) {
+        container.innerHTML = `
+            <div class="left-panel">
+                <h2 class="text-2xl font-bold mb-6 text-gray-900">Ethical Foundation</h2>
+                <p class="text-gray-600 mb-8">Select the core principles that should guide your <strong>${state.systemType}</strong>. These values will inform how you write your specific IF/THEN rules.</p>
+                
+                <div class="grid grid-cols-1 gap-3">
+                    ${PRINCIPLES.map(p => `
+                        <button 
+                            onclick="togglePrinciple('${p}')"
+                            class="flex items-center justify-between p-4 rounded-xl border-2 transition-all ${state.activePrinciples.includes(p) ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-100 bg-white text-gray-500 hover:border-gray-200'}"
+                        >
+                            <span class="font-medium">${p}</span>
+                            ${state.activePrinciples.includes(p) ? '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>' : ''}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="right-panel">
+                <h3 class="text-xl font-bold mb-4">Rule Builder</h3>
+                <p class="text-sm text-gray-500 mb-6">Create the logic that powers your AI. Rules are checked from top to bottom.</p>
+                
+                <div id="ruleList" class="space-y-4 mb-8">
+                    ${state.rules.map((rule, idx) => `
+                        <div class="rule-row bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold text-gray-400 tracking-widest uppercase">Rule #${idx + 1}</span>
+                                <button onclick="removeRule(${idx})" class="text-gray-400 hover:text-red-500 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                            <div class="flex flex-col space-y-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-bold text-gray-500">IF</span>
+                                    <select onchange="updateRule(${idx}, 'condition', this.value)" class="flex-1 p-2 bg-gray-50 border-gray-200 rounded-lg text-sm">
+                                        ${CONDITIONS.map(c => `<option value="${c.id}" ${rule.condition === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-bold text-gray-500">THEN</span>
+                                    <select onchange="updateRule(${idx}, 'action', this.value)" class="flex-1 p-2 bg-gray-50 border-gray-200 rounded-lg text-sm">
+                                        ${ACTIONS.map(a => `<option value="${a.id}" ${rule.action === a.id ? 'selected' : ''}>${a.label}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${state.rules.length < 5 ? `
+                <button onclick="addRule()" class="w-full border-2 border-dashed border-gray-300 rounded-xl py-3 text-gray-500 hover:border-indigo-400 hover:text-indigo-500 transition-all flex items-center justify-center mb-6">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Add Custom Rule
+                </button>
+                ` : ''}
+
+                <button onclick="updateScreen(3)" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
+                    Test My Rules
+                </button>
+            </div>
+        `;
+    }
+
+    function renderScreen3(container) {
+        const scenario = SCENARIOS[state.currentScenarioIndex];
+        const aiResponse = getAIAction(scenario);
+        const result = state.results[state.currentScenarioIndex];
+
+        container.innerHTML = `
+            <div class="left-panel">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-indigo-600 font-bold tracking-widest text-xs uppercase">Scenario ${state.currentScenarioIndex + 1} of 6</span>
+                </div>
+                <h2 class="text-2xl font-bold mb-4 text-gray-900">${scenario.title}</h2>
+                <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                    "${scenario.text}"
+                </p>
+                <div class="flex flex-wrap gap-2 mb-8">
+                    ${scenario.tags.map(tag => `<span class="scenario-pill">${tag}</span>`).join('')}
+                </div>
+                
+                <div class="mt-auto pt-8 border-t border-gray-100 flex items-center space-x-4">
+                    <button onclick="if(state.currentScenarioIndex > 0) { state.currentScenarioIndex--; render(); }" class="text-gray-400 hover:text-gray-600 font-medium ${state.currentScenarioIndex === 0 ? 'opacity-0 pointer-events-none' : ''}">
+                        &larr; Previous
+                    </button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">AI Execution</h3>
+                    <div class="p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+                        ${aiResponse.ruleIndex ? `
+                            <div class="flex items-center space-x-3 text-green-600 mb-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                <span class="font-bold">Rule Match Found</span>
+                            </div>
+                            <p class="text-gray-700">Your AI would <strong>${aiResponse.action.toUpperCase()}</strong> because Rule #${aiResponse.ruleIndex} was triggered.</p>
+                        ` : `
+                            <div class="flex items-center space-x-3 text-gray-400 mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="font-bold">No Rule Match</span>
+                            </div>
+                            <p class="text-gray-600 italic">No defined rules apply here. The system defaults to neutral/ask.</p>
+                        `}
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Self-Reflection</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-sm text-gray-700 mb-3">Do you agree with the AI's action in this specific case?</p>
+                            <div class="flex space-x-4">
+                                <button onclick="saveScenarioResponse('Yes', document.getElementById('feedback').value)" class="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 hover:border-indigo-600 hover:text-indigo-600 transition-all font-bold bg-white">Yes</button>
+                                <button onclick="saveScenarioResponse('No', document.getElementById('feedback').value)" class="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 hover:border-red-600 hover:text-red-600 transition-all font-bold bg-white">No</button>
+                                <button onclick="saveScenarioResponse('Unsure', document.getElementById('feedback').value)" class="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 hover:border-gray-600 transition-all font-bold bg-white">Unsure</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-700 mb-2">Why? (Or what should it do instead?)</label>
+                            <textarea id="feedback" class="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-0 transition-all text-sm h-24" placeholder="Briefly explain your reasoning...">${result ? result.feedback : ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderScreen4(container) {
+        container.innerHTML = `
+            <div class="left-panel col-span-2">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Final Alignment Report</h2>
+                        <p class="text-gray-500">Compare your rules vs. your judgment for the <strong>${state.systemType}</strong>.</p>
+                    </div>
+                    <div class="flex space-x-3">
+                         <button onclick="updateScreen(2)" class="px-6 py-2 border-2 border-indigo-600 text-indigo-600 font-bold rounded-lg hover:bg-indigo-50 transition-all">
+                            Revise Rules
+                        </button>
+                        <button onclick="exportData()" class="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 shadow-md transition-all">
+                            Export Rulebook
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200">
+                                <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Scenario</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">AI Action</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Your Agreement</th>
+                                <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase">Values in Play</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${SCENARIOS.map((s, idx) => {
+                                const ai = getAIAction(s);
+                                const user = state.results[idx];
+                                const isDisagreement = user.agreement === 'No';
+                                return `
+                                <tr class="${isDisagreement ? 'bg-red-50' : 'hover:bg-gray-50'} transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-gray-900">${s.title}</div>
+                                        <div class="text-xs text-gray-500 line-clamp-1">${s.text}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-1 rounded text-xs font-bold uppercase ${ai.action === 'deny' ? 'bg-red-100 text-red-700' : (ai.action === 'allow' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700')}">
+                                            ${ai.action}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="font-medium ${isDisagreement ? 'text-red-600' : 'text-gray-700'}">${user.agreement || '—'}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex gap-1">
+                                            ${s.tags.map(t => `<span class="text-[10px] bg-white border border-gray-200 px-1 rounded text-gray-500">${t}</span>`).join('')}
+                                        </div>
+                                    </td>
+                                </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-8 bg-white border border-gray-200 rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4">Conflict Analysis</h3>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Algorithms are often rigid. While your rules might say "Deny everything that violates the law," your human intuition might feel that some violations (like streaming a movie) are different from others.
+                        </p>
+                        <div class="p-4 bg-indigo-50 rounded-xl">
+                            <h4 class="text-indigo-900 font-bold text-sm mb-1 italic">Key Takeaway</h4>
+                            <p class="text-indigo-800 text-sm">
+                                ${state.results.filter(r => r.agreement === 'No').length > 0 
+                                    ? "You disagreed with your AI in " + state.results.filter(r => r.agreement === 'No').length + " cases. This suggests your rules might need more nuance or secondary conditions."
+                                    : "Your rules perfectly aligned with your choices. Your algorithmic logic is consistent with your personal ethics!"}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-8 bg-indigo-900 text-white rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4">Rule Revision</h3>
+                        <p class="text-indigo-200 mb-6 text-sm">
+                            If you weren't happy with how the AI performed, you can go back and change your IF/THEN logic. Real AI developers do this constantly, trying to find the balance between safety, ethics, and utility.
+                        </p>
+                        <button onclick="updateScreen(2)" class="w-full bg-white text-indigo-900 font-bold py-3 rounded-xl hover:bg-indigo-50 transition-all">
+                            Tweak My Logic
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Init ---
+    window.onload = render;
+</script>
+
+</body>
+</html>
