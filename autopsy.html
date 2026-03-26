@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethical Autopsy | Case File Investigation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1B2B4B;
+            --navy-light: #243860;
+            --amber: #F59E0B;
+            --amber-light: #FEF3C7;
+            --crimson: #DC2626;
+            --crimson-light: #FEF2F2;
+            --emerald: #059669;
+            --emerald-light: #ECFDF5;
+            --sky-blue: #0EA5E9;
+            --white: #FFFFFF;
+            --charcoal: #1E293B;
+            --gray: #64748B;
+            --slate: #F1F5F9;
+            --border: #E2E8F0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--navy);
+            color: var(--charcoal);
+            line-height: 1.6;
+            font-size: 15px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Typography */
+        h1 { font-size: 36px; font-weight: 800; color: var(--white); letter-spacing: -1px; margin-bottom: 8px; text-transform: uppercase; }
+        h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+        h3 { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .tagline { color: var(--sky-blue); font-weight: 600; margin-bottom: 30px; font-size: 18px; }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+
+        .screen.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: var(--navy-light);
+            padding: 12px 24px;
+            border-radius: 50px;
+            color: var(--white);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-step { opacity: 0.4; transition: 0.3s; }
+        .progress-step.active { opacity: 1; color: var(--sky-blue); }
+        .progress-step.complete { opacity: 1; color: var(--emerald); }
+
+        /* Score Display (Fixed) */
+        #score-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--amber);
+            color: var(--navy);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .btn-primary { background: var(--navy); color: var(--white); }
+        .btn-primary:hover { background: #2a4173; transform: translateY(-1px); }
+        .btn-primary:disabled { background: var(--gray); cursor: not-allowed; transform: none; }
+
+        .btn-outline { background: transparent; border: 2px solid var(--navy); color: var(--navy); }
+        .btn-outline:hover { background: var(--slate); }
+
+        /* S1: Welcome */
+        .input-group { margin-bottom: 24px; }
+        .input-group label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--sky-blue); }
+
+        .brief-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .brief-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            position: relative;
+        }
+
+        .brief-card:hover { transform: scale(1.03); border-color: var(--sky-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .brief-card.selected { border-color: var(--amber); border-width: 2px; background: var(--amber-light); }
+        .brief-card .icon { font-size: 32px; margin-bottom: 10px; display: block; }
+        .brief-card .letter { position: absolute; top: 10px; left: 10px; font-weight: 800; opacity: 0.2; font-size: 18px; }
+        .brief-card .badge { font-size: 10px; background: var(--navy); color: var(--white); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 10px; }
+
+        /* S2: Case File */
+        .classified-header {
+            background: var(--slate);
+            border-left: 5px solid var(--navy);
+            padding: 16px;
+            margin-bottom: 24px;
+            font-family: monospace;
+        }
+
+        .features-list { list-style: none; margin-bottom: 24px; }
+        .features-list li {
+            padding: 12px;
+            border-bottom: 1px solid var(--slate);
+            display: flex;
+            align-items: flex-start;
+        }
+        .features-list li::before { content: "•"; color: var(--amber); font-weight: bold; margin-right: 12px; font-size: 20px; line-height: 1; }
+
+        .reference-panel {
+            background: var(--slate);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        .reference-header {
+            padding: 12px 20px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .reference-content { padding: 0 20px 20px; display: none; }
+        .reference-content.active { display: block; }
+        .tenet-pill {
+            display: inline-block;
+            background: var(--navy);
+            color: var(--white);
+            font-family: monospace;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        /* S3/S4: Autopsy Grid */
+        .autopsy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .violation-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .violation-card:hover { transform: scale(1.02); border-color: var(--sky-blue); }
+        .violation-card.selected { background: var(--amber-light); border-color: var(--amber); border-width: 2px; }
+        .violation-card input { position: absolute; opacity: 0; }
+        
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray);
+            border-radius: 4px;
+            margin-right: 12px;
+            display: inline-block;
+            flex-shrink: 0;
+            background: white;
+            position: relative;
+        }
+        .selected .check-box { background: var(--amber); border-color: var(--amber); }
+        .selected .check-box::after {
+            content: "✓";
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .card-body { flex-grow: 1; margin-bottom: 12px; }
+
+        /* Result States */
+        .reveal-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .confirmed { background: var(--amber); color: var(--navy); }
+        .missed { background: #fef3c7; color: #92400e; border: 1px dashed #d97706; }
+        .not-violation { background: #e2e8f0; color: #475569; }
+        .correct-skip { background: var(--emerald); color: white; }
+
+        /* S5: Fixes */
+        .fix-container { animation: fadeIn 0.4s ease; }
+        .violation-summary {
+            background: var(--slate);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--amber);
+        }
+
+        .fix-options { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+        .fix-option-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .fix-option-card:hover { border-color: var(--sky-blue); }
+        .fix-option-card.selected { border-width: 2px; }
+        .fix-option-card.reveal { pointer-events: none; }
+        
+        .fix-option-card.best.selected { background: var(--emerald-light); border-color: var(--emerald); }
+        .fix-option-card.partial.selected { background: var(--amber-light); border-color: var(--amber); }
+        .fix-option-card.insufficient.selected { background: var(--crimson-light); border-color: var(--crimson); }
+        
+        .fix-feedback {
+            margin-top: 12px;
+            font-size: 14px;
+            font-style: italic;
+            display: none;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        .reveal .fix-feedback { display: block; }
+        .dimmed { opacity: 0.6; }
+
+        /* S6: Final Report */
+        .score-circle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 30px 0;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 10px solid var(--slate);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--navy);
+            position: relative;
+        }
+        .badge-reveal {
+            font-size: 24px;
+            font-weight: 800;
+            margin-top: 16px;
+            color: var(--amber);
+            text-align: center;
+            animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .launch-statement {
+            background: #f8fafc;
+            border: 2px dashed var(--border);
+            padding: 24px;
+            border-radius: 12px;
+            font-style: italic;
+            margin: 24px 0;
+            position: relative;
+        }
+        .launch-statement::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 40px;
+            opacity: 0.1;
+            font-family: serif;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            font-size: 13px;
+        }
+        .report-table th, .report-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .report-table th { background: var(--slate); font-weight: 700; text-transform: uppercase; }
+
+        .hint-text { font-size: 13px; color: var(--crimson); margin-top: 8px; font-weight: 600; }
+
+        /* Accessibility & Utils */
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .container { padding: 0; max-width: 100%; }
+            .screen { display: none !important; box-shadow: none; border: none; padding: 0; }
+            #s6 { display: block !important; }
+            .btn, #score-counter, .progress-nav, .no-print { display: none !important; }
+            .launch-statement { border: 1px solid #ccc; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
+            .screen { padding: 20px; }
+            .autopsy-grid { grid-template-columns: 1fr; }
+            .brief-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="score-counter">Points: 0</div>
+
+    <div class="container">
+        <header class="no-print">
+            <h1>Ethical Autopsy</h1>
+            <p class="tagline">Your mission: catch the violations before launch.</p>
+        </header>
+
+        <!-- S1: Welcome Screen -->
+        <section id="s1" class="screen active">
+            <h2>Welcome, Investigator</h2>
+            <div class="input-group">
+                <label for="student-name">Your Name</label>
+                <input type="text" id="student-name" maxlength="40" placeholder="Enter full name...">
+            </div>
+
+            <h3>Select a Case File</h3>
+            <div class="brief-grid" id="brief-selector">
+                <!-- Brief cards will be injected here -->
+            </div>
+
+            <button id="btn-begin" class="btn btn-primary" disabled>Begin Investigation</button>
+        </section>
+
+        <!-- S2: Case File Screen -->
+        <section id="s2" class="screen">
+            <div class="classified-header">
+                <h3>CASE FILE: <span id="case-title">APP_NAME</span></h3>
+                <p>SUBJECT: Ethical Pre-Launch Audit</p>
+                <p>ASSIGNED TO: <span class="student-display">NAME</span></p>
+            </div>
+
+            <p id="case-desc" style="margin-bottom: 24px; font-weight: 500; font-size: 16px;"></p>
+
+            <h3>Suspicious Features</h3>
+            <ul class="features-list" id="case-features">
+                <!-- Injected features -->
+            </ul>
+
+            <div class="reference-panel">
+                <div class="reference-header" onclick="toggleRef()">
+                    <span>Ethics Code Quick Reference</span>
+                    <span id="ref-icon">▼</span>
+                </div>
+                <div class="reference-content" id="ref-content">
+                    <!-- Injected tenets -->
+                </div>
+            </div>
+
+            <button onclick="showScreen('s3')" class="btn btn-primary">Open Autopsy →</button>
+        </section>
+
+        <!-- S3: Autopsy Screen -->
+        <section id="s3" class="screen">
+            <div class="progress-nav">
+                <span class="progress-step active">Step 1: Autopsy</span>
+                <span class="progress-step">Step 2: Results</span>
+                <span class="progress-step">Step 3: Fix</span>
+            </div>
+
+            <h2>Phase 1: Identify Violations</h2>
+            <p>Select <strong>EVERY</strong> item below that you believe is an ethical violation. Choose carefully — not everything is a violation.</p>
+
+            <div class="autopsy-grid" id="autopsy-cards">
+                <!-- Injected 6 cards -->
+            </div>
+
+            <div style="margin-top: 30px; display: flex; flex-direction: column; align-items: flex-start;">
+                <button id="btn-submit-autopsy" class="btn btn-primary" disabled>Submit My Findings</button>
+                <p id="selection-hint" class="hint-text">Please select at least 2 items to proceed.</p>
+            </div>
+        </section>
+
+        <!-- S4: Autopsy Results -->
+        <section id="s4" class="screen">
+            <div class="progress-nav">
+                <span class="progress-step complete">Step 1: Autopsy</span>
+                <span class="progress-step active">Step 2: Results</span>
+                <span class="progress-step">Step 3: Fix</span>
+            </div>
+
+            <h2>Autopsy Results</h2>
+            <p id="autopsy-feedback-summary" style="margin-bottom: 20px; font-weight: 600;"></p>
+
+            <div class="autopsy-grid" id="autopsy-results">
+                <!-- Results revealed here -->
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button onclick="startFixes()" class="btn btn-primary">Proceed to Fixes →</button>
+            </div>
+        </section>
+
+        <!-- S5: Fix Selection Screen -->
+        <section id="s5" class="screen">
+            <div class="progress-nav">
+                <span class="progress-step complete">Step 1: Autopsy</span>
+                <span class="progress-step complete">Step 2: Results</span>
+                <span class="progress-step active">Step 3: Fix</span>
+            </div>
+
+            <div id="fix-stage-indicator" style="font-weight: 800; color: var(--sky-blue); margin-bottom: 10px;">Violation 1 of 4</div>
+            
+            <div class="fix-container" id="fix-content">
+                <!-- Fix content injected here -->
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button id="btn-next-fix" class="btn btn-primary" style="display: none;">Next Violation →</button>
+            </div>
+        </section>
+
+        <!-- S6: Final Report Screen -->
+        <section id="s6" class="screen">
+            <div class="no-print">
+                <h2>Final Investigation Report</h2>
+                <p>Great work, <span class="student-display">Name</span>. Here is the summary of your ethical analysis for <span id="final-app-name">App</span>.</p>
+            </div>
+
+            <div class="print-header" style="display: none;">
+                <h1>ETHICAL AUTOPSY REPORT</h1>
+                <p>INVESTIGATOR: <span class="student-display">Name</span></p>
+                <p>CASE: <span id="print-app-name">App</span></p>
+                <hr style="margin: 20px 0;">
+            </div>
+
+            <div class="score-circle-container no-print">
+                <div class="score-circle" id="final-score-val">0</div>
+                <div class="badge-reveal" id="final-badge">Badge Name</div>
+                <p style="margin-top: 10px; color: var(--gray);">Total Points: <span id="final-points-total">0</span>/120</p>
+            </div>
+
+            <div class="launch-statement">
+                <h3>Your Launch Statement</h3>
+                <p id="launch-statement-text"></p>
+            </div>
+
+            <h3>Audit Summary</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Violation</th>
+                        <th>Tenet</th>
+                        <th>Fix Quality</th>
+                        <th>Pts</th>
+                    </tr>
+                </thead>
+                <tbody id="report-table-body">
+                    <!-- Table rows -->
+                </tbody>
+            </table>
+
+            <div class="no-print" style="margin-top: 40px; display: flex; gap: 16px; justify-content: center;">
+                <button onclick="window.location.reload()" class="btn btn-outline">Try Another Brief</button>
+                <button onclick="window.print()" class="btn btn-primary">Print My Report</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const DATA = [
+            {
+                id: 'A',
+                name: 'SnapGrade',
+                icon: '📚',
+                badge: 'ACM',
+                desc: 'SnapGrade is a study app for students aged 13–18 that claims to help them build better study habits through streaks, reminders, and performance analytics.',
+                features: [
+                    'A daily streak system that resets to zero if you miss even one day',
+                    'Push notifications at 11 PM comparing your study time to friends',
+                    'Study session data (topics, time, scores) sold to colleges as "learning analytics"',
+                    'Login requires your school email, granting the app access to your school account',
+                    'No notification or disclosure that any data is sold — it is buried in the 42-page Terms of Service'
+                ],
+                tenets: [
+                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
+                    { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems' },
+                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' }
+                ],
+                autopsy: [
+                    { text: 'The streak system resets completely to zero if a student misses a single day, creating anxiety and compulsive daily app-checking behavior.', type: 'VIOLATION', tenet: 'ACM 1.1', primary: true, reason: 'This creates harmful psychological pressure for a vulnerable audience.' },
+                    { text: 'Late-night notifications at 11 PM tell students exactly how long their friends studied, without those friends\' consent to share that data.', type: 'VIOLATION', tenet: 'ACM 2.5', reason: 'Using private data to drive peer pressure violates principles of thorough evaluation and consent.' },
+                    { text: 'All study data is sold to college admissions offices without telling students or parents, with disclosure only in a 42-page Terms of Service.', type: 'VIOLATION', tenet: 'ACM 1.1 + 2.8', reason: 'Hidden data sales without explicit consent is a significant breach of trust and privacy.' },
+                    { text: 'Logging in with a school email grants the app access to the student\'s entire school account — far beyond what the app needs.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Accessing resources beyond the minimum necessary for the app to function is unauthorized.' },
+                    { text: 'The app allows students to set their own daily study time goal.', type: 'DISTRACTOR', reason: 'User-controlled goals are a standard feature and do not violate ethics codes.' },
+                    { text: 'The app has a dark mode to reduce eye strain during late-night studying.', type: 'DISTRACTOR', reason: 'A UI feature that provides accessibility or comfort benefits is ethical.' }
+                ],
+                fixes: [
+                    {
+                        violationIdx: 0,
+                        options: [
+                            { text: 'Replace the streak with a flexible weekly goal (e.g., "study 5 days this week") that forgives missed days without resetting progress.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 1.1 by preserving motivation without harmful anxiety.' },
+                            { text: 'Add a "freeze" token that protects the streak once per week.', type: 'PARTIAL', pts: 10, reason: 'Reduces anxiety but still relies on a system that penalizes students for life interruptions.' },
+                            { text: 'Add a warning screen telling students "streaks can be stressful."', type: 'INSUFFICIENT', pts: 0, reason: 'Warning labels do not fix the underlying harmful design pattern.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 1,
+                        options: [
+                            { text: 'Remove peer data from notifications entirely. Instead show the student only their own study trends.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.5 as students\' data is no longer used to pressure others without consent.' },
+                            { text: 'Allow students to opt out of comparison notifications in settings.', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-out places the burden on the user rather than requiring consent by default.' },
+                            { text: 'Change the notification to 9 PM instead of 11 PM.', type: 'INSUFFICIENT', pts: 0, reason: 'The issue is unauthorized peer data use, not the timing of the alert.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 2,
+                        options: [
+                            { text: 'Add a clear, plain-language consent screen during signup explaining exactly what data is sold, to whom, and why.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 1.1 and 2.8 by ensuring informed, active agreement.' },
+                            { text: 'Add a one-paragraph data use summary to the app\'s main settings page.', type: 'PARTIAL', pts: 10, reason: 'Better than only a ToS, but not presented at the point of decision (signup).' },
+                            { text: 'Shorten the Terms of Service to 20 pages.', type: 'INSUFFICIENT', pts: 0, reason: 'Length isn\'t the problem; lack of active informed consent is.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 3,
+                        options: [
+                            { text: 'Create a separate app-specific login that requests only name and email. Do not request school account access.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.8 by limiting access to only what is required.' },
+                            { text: 'Display a permission screen listing what school data the app will access.', type: 'PARTIAL', pts: 10, reason: 'Transparency is good, but the app still collects more data than it truly needs.' },
+                            { text: 'Offer an optional "guest mode" with limited features.', type: 'INSUFFICIENT', pts: 0, reason: 'The default path still violates ethics for the majority of users.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'B',
+                name: 'SafeKid Pro',
+                icon: '🛡️',
+                badge: 'ACM + IEEE',
+                desc: 'SafeKid Pro is a parental monitoring app marketed as "total privacy protection for your family," offering GPS tracking and content filtering for children aged 8–16.',
+                features: [
+                    'Real-time GPS location shared with parents AND with "advertising partners"',
+                    'All text messages scanned for "suspicious keywords" including: "gay," "depressed," "party"',
+                    'Every flagged message stored on company servers for 3 years',
+                    'Marketed as a "privacy solution" while selling location data to advertisers',
+                    'All data sharing with advertisers disclosed only in a 40-page Terms of Service'
+                ],
+                tenets: [
+                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
+                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' },
+                    { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
+                    { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates' }
+                ],
+                autopsy: [
+                    { text: 'The app shares children\'s real-time GPS location with advertising partners, without clear parental consent for this use of location data.', type: 'VIOLATION', tenet: 'ACM 2.8, IEEE I.1', primary: true, reason: 'Sharing minor\'s tracking data with 3rd parties without explicit consent is unsafe and unauthorized.' },
+                    { text: 'The keyword monitoring list flags the words "gay" and "depressed," treating identity and mental health expressions as security threats.', type: 'VIOLATION', tenet: 'ACM 1.1', reason: 'This can cause psychological harm by stigmatizing identity and mental health concerns.' },
+                    { text: 'Flagged messages are stored on company servers for 3 years without user awareness, long after they are needed.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Retention of private data without clear necessity or disclosure is an ethical breach.' },
+                    { text: 'The app is marketed as "privacy protection" while simultaneously selling children\'s location data to advertisers.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'This is a fundamentally dishonest and misleading claim about the product\'s core function.' },
+                    { text: 'Parents can set daily screen time limits for each app on the child\'s device.', type: 'DISTRACTOR', reason: 'Standard parental controls are a legitimate, advertised feature.' },
+                    { text: 'The app sends parents a daily summary email of their child\'s usage statistics.', type: 'DISTRACTOR', reason: 'Transparent reporting to the parent account is the intended purpose of the app.' }
+                ],
+                fixes: [
+                    {
+                        violationIdx: 0,
+                        options: [
+                            { text: 'Share GPS data only with the parent account and no third parties. Use non-location-based ads if needed.', type: 'BEST', pts: 20, reason: 'Fully satisfies safety (IEEE I.1) and authorization (ACM 2.8).' },
+                            { text: 'Add an on/off toggle for "Share location" in parent settings, defaulted to OFF.', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-in defaults are still risky for minor-focused products.' },
+                            { text: 'Add "location data may be shared" to the app store description.', type: 'INSUFFICIENT', pts: 0, reason: 'Store listings don\'t replace the need for active consent at the point of setup.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 1,
+                        options: [
+                            { text: 'Remove identity terms from the list entirely. Replace mental health terms with context-sensitive prompts.', type: 'BEST', pts: 20, reason: 'Protects the child\'s wellbeing (ACM 1.1) while maintaining a safety net.' },
+                            { text: 'Allow parents to customize the keyword list.', type: 'PARTIAL', pts: 10, reason: 'Gives control back, but the harmful defaults still exist.' },
+                            { text: 'Add more keywords to make the list more comprehensive.', type: 'INSUFFICIENT', pts: 0, reason: 'Monitoring more things doesn\'t resolve the harm of flagging identity.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 2,
+                        options: [
+                            { text: 'Delete logs within 30 days. Deliver alerts in real-time and do not store content on company servers.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.8 by removing unnecessary data retention risk.' },
+                            { text: 'Reduce retention to 90 days and notify parents in the setup flow.', type: 'PARTIAL', pts: 10, reason: 'Better transparency, but still retains private content longer than necessary.' },
+                            { text: 'Encrypt the stored messages on the company servers.', type: 'INSUFFICIENT', pts: 0, reason: 'Encryption is a security step, but doesn\'t address the ethics of unnecessary collection.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 3,
+                        options: [
+                            { text: 'Stop selling data to advertisers. Switch to a subscription model and update marketing to be accurate.', type: 'BEST', pts: 20, reason: 'Eliminates the contradiction and satisfies IEEE I.3.' },
+                            { text: 'Add a disclaimer on the website: "Location data may be used for advertising."', type: 'PARTIAL', pts: 10, reason: 'Honest, but the product is still being marketed with a fundamental contradiction.' },
+                            { text: 'Rename the product to something that doesn\'t reference "privacy."', type: 'INSUFFICIENT', pts: 0, reason: 'Changing the name doesn\'t fix the underlying dishonest practice.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'C',
+                name: 'HireFirst AI',
+                icon: '🤖',
+                badge: 'NSPE + ACM',
+                desc: 'HireFirst AI is a hiring tool used by employers to automatically screen and rank job applicants using machine learning trained on historical hiring data.',
+                features: [
+                    'Algorithm trained on data where 80% of past hires were men from 4 specific universities',
+                    'No independent bias audit has ever been conducted on the algorithm',
+                    'Employment gaps are automatically rejected with no exceptions for caregiving or military service',
+                    'Rejected candidates are never told a computer made the decision and have no appeal option',
+                    'Employers are told the system is "objective and data-driven" with no mention of bias risk'
+                ],
+                tenets: [
+                    { id: 'NSPE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
+                    { id: 'NSPE I.5', text: 'Act so as not to deceive the public' },
+                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
+                    { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems' }
+                ],
+                autopsy: [
+                    { text: 'The algorithm was trained on biased historical data, preferring candidates who match the demographics of past hires — mostly men from four universities.', type: 'VIOLATION', tenet: 'ACM 1.1, NSPE I.1', primary: true, reason: 'This perpetuates systemic bias and harms qualified applicants from underrepresented groups.' },
+                    { text: 'No independent audit for bias has ever been conducted, meaning the company does not know how unfairly the algorithm performs.', type: 'VIOLATION', tenet: 'ACM 2.5, NSPE I.1', reason: 'Failing to test for bias in a high-stakes tool is a failure of thorough evaluation.' },
+                    { text: 'Applicants with any gap in their employment history are automatically rejected, with no logic for caregiving, illness, or military service.', type: 'VIOLATION', tenet: 'ACM 1.1', reason: 'This causes unfair harm to individuals with legitimate life circumstances.' },
+                    { text: 'Rejected candidates are never informed that an AI made the decision and have no pathway to appeal.', type: 'VIOLATION', tenet: 'NSPE I.5, ACM 2.5', reason: 'Deceiving candidates about the nature of the decision-making process is unethical.' },
+                    { text: 'The system automatically sends acknowledgment emails to all applicants confirming receipt.', type: 'DISTRACTOR', reason: 'Automated communication about application status is a helpful standard practice.' },
+                    { text: 'The system ranks candidates alphabetically as a tiebreaker when scores are equal.', type: 'DISTRACTOR', reason: 'Neutral tie-breaking logic is not an ethical violation.' }
+                ],
+                fixes: [
+                    {
+                        violationIdx: 0,
+                        options: [
+                            { text: 'Retrain the algorithm using a cleaned, representative dataset. Conduct demographic parity analysis before deployment.', type: 'BEST', pts: 20, reason: 'Addresses the root cause of the bias directly (ACM 1.1).' },
+                            { text: 'Add a human review step for all candidates ranked in the bottom 20%.', type: 'PARTIAL', pts: 10, reason: 'Humans can catch some bias, but the underlying engine remains flawed.' },
+                            { text: 'Add more applicants to the training data without addressing the existing bias.', type: 'INSUFFICIENT', pts: 0, reason: 'More data doesn\'t fix biased data; it often reinforces it.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 1,
+                        options: [
+                            { text: 'Commission an independent third-party audit before deployment and annually thereafter.', type: 'BEST', pts: 20, reason: 'Provides the rigorous evaluation required for public welfare (NSPE I.1).' },
+                            { text: 'Have the internal development team review algorithm outputs for disparities.', type: 'PARTIAL', pts: 10, reason: 'Internal review is better than none, but lacks independence.' },
+                            { text: 'Create documentation about how the algorithm was built.', type: 'INSUFFICIENT', pts: 0, reason: 'Describing how it works doesn\'t prove it works fairly.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 2,
+                        options: [
+                            { text: 'Remove automatic rejection for gaps. Flag gaps for human review with context prompts.', type: 'BEST', pts: 20, reason: 'Reintroduces fairness and context for life events (ACM 1.1).' },
+                            { text: 'Create exception rules for military service and medical leave only.', type: 'PARTIAL', pts: 10, reason: 'Addresses some groups, but ignores caregivers and others.' },
+                            { text: 'Shorten the gap threshold from 6 months to 12 months before auto-rejection.', type: 'INSUFFICIENT', pts: 0, reason: 'Moving the goalpost doesn\'t fix the underlying fairness problem.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 3,
+                        options: [
+                            { text: 'Notify rejected applicants of the AI decision, factors considered, and provide a human review request option.', type: 'BEST', pts: 20, reason: 'Ensures honesty (NSPE I.5) and provides accountability.' },
+                            { text: 'Add a general statement to the job posting: "We use AI-assisted screening."', type: 'PARTIAL', pts: 10, reason: 'Better transparency, but doesn\'t provide recourse for specific decisions.' },
+                            { text: 'Add an FAQ page on the website explaining that AI is used in hiring.', type: 'INSUFFICIENT', pts: 0, reason: 'A website FAQ is not meaningful disclosure to an affected applicant.' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'D',
+                name: 'InstaLike',
+                icon: '📱',
+                badge: 'ACM + IEEE',
+                desc: 'InstaLike is a social media platform for users aged 13 and up that uses AI to personalize content feeds and improve engagement.',
+                features: [
+                    'AI analyzes selfies to detect emotions and serves extreme content when users are sad',
+                    'Facial recognition biometric data collected via a buried ToS clause',
+                    'Internal research showing algorithm increases self-comparison in girls was never disclosed',
+                    'Inaccurate or exaggerated "You\'re losing followers" notifications are sent to users',
+                    'Like counts are hidden from users, but are still used to rank feed content'
+                ],
+                tenets: [
+                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
+                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' },
+                    { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
+                    { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates' }
+                ],
+                autopsy: [
+                    { text: 'The AI detects users\' emotional states from selfies and deliberately serves more emotionally extreme content when a user appears sad.', type: 'VIOLATION', tenet: 'ACM 1.1, IEEE I.1', primary: true, reason: 'Deliberately targeting emotionally vulnerable users with extreme content is a severe harm.' },
+                    { text: 'Facial recognition biometric data is collected from every photo, with consent buried in a ToS clause — not obtained explicitly.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Biometric data requires specific, informed consent at the point of collection.' },
+                    { text: 'Internal research found the algorithm increases self-comparison behavior in girls, but this was never disclosed to users or regulators.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'Withholding known safety risks is a violation of the requirement to be honest about claims.' },
+                    { text: '"You\'re losing followers" notifications are sent using inaccurate numbers to create anxiety and drive app usage.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'Sending dishonest notifications to manipulate user behavior is unethical.' },
+                    { text: 'Users can choose any photo they want as their profile picture.', type: 'DISTRACTOR', reason: 'Basic user control over their profile is not an ethical violation.' },
+                    { text: 'The app includes a content reporting button so users can flag posts.', type: 'DISTRACTOR', reason: 'Safety reporting tools are a positive, ethical design feature.' }
+                ],
+                fixes: [
+                    {
+                        violationIdx: 0,
+                        options: [
+                            { text: 'Discontinue emotion-detection entirely. Base personalization only on user-selected preferences.', type: 'BEST', pts: 20, reason: 'Removes the harm (ACM 1.1) and respects user autonomy.' },
+                            { text: 'Add an opt-out setting for "mood-based content."', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-outs are insufficient for a vulnerable teen audience.' },
+                            { text: 'Add a "Take a Break" notification after 30 minutes of scrolling.', type: 'INSUFFICIENT', pts: 0, reason: 'Does not address the underlying targeting of vulnerable emotional states.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 1,
+                        options: [
+                            { text: 'Remove biometric analysis OR present a standalone consent screen at first upload explaining collection.', type: 'BEST', pts: 20, reason: 'Ensures informed, authorized access to resources (ACM 2.8).' },
+                            { text: 'Move the disclosure from the ToS to a dedicated Privacy Policy page.', type: 'PARTIAL', pts: 10, reason: 'More visible, but still doesn\'t constitute explicit consent at the moment of collection.' },
+                            { text: 'Rewrite the ToS to make the biometric clause easier to find.', type: 'INSUFFICIENT', pts: 0, reason: 'The issue is the lack of explicit consent, not the readability of the ToS.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 2,
+                        options: [
+                            { text: 'Publish findings in a transparency report and brief regulators and parent advocacy groups.', type: 'BEST', pts: 20, reason: 'Honors the obligation to state safety risks honestly (IEEE I.3).' },
+                            { text: 'Share findings with the internal safety team and implement an internal review process.', type: 'PARTIAL', pts: 10, reason: 'Improves governance, but fails the public disclosure obligation.' },
+                            { text: 'Stop conducting internal research on user psychological outcomes.', type: 'INSUFFICIENT', pts: 0, reason: 'Ignoring the problem doesn\'t make the algorithm more ethical.' }
+                        ]
+                    },
+                    {
+                        violationIdx: 3,
+                        options: [
+                            { text: 'Remove follower-loss notifications entirely. Ensure all engagement metrics shared are accurate and neutral.', type: 'BEST', pts: 20, reason: 'Ensures honesty (IEEE I.3) and removes manipulative anxiety-driven design.' },
+                            { text: 'Make follower-loss notifications opt-in rather than the default.', type: 'PARTIAL', pts: 10, reason: 'Reduces exposure, but the inaccuracy problem remains for those who opt in.' },
+                            { text: 'Round the follower numbers shown in notifications to the nearest 10.', type: 'INSUFFICIENT', pts: 0, reason: 'Rounded dishonest data is still dishonest data.' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let state = {
+            studentName: '',
+            selectedBriefIndex: -1,
+            autopsySelections: [],
+            fixSelections: [],
+            currentFixIndex: 0,
+            score: 0
+        };
+
+        // Initialize App
+        window.onload = () => {
+            renderBriefs();
+            document.getElementById('student-name').addEventListener('input', validateS1);
+        };
+
+        function renderBriefs() {
+            const grid = document.getElementById('brief-selector');
+            grid.innerHTML = DATA.map((brief, index) => `
+                <div class="brief-card" id="brief-${index}" onclick="selectBrief(${index})">
+                    <span class="letter">${brief.id}</span>
+                    <span class="icon">${brief.icon}</span>
+                    <h3>${brief.name}</h3>
+                    <p style="font-size: 11px; color: var(--gray);">${brief.desc.substring(0, 60)}...</p>
+                    <span class="badge">${brief.badge}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectBrief(index) {
+            state.selectedBriefIndex = index;
+            document.querySelectorAll('.brief-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`brief-${index}`).classList.add('selected');
+            validateS1();
+        }
+
+        function validateS1() {
+            const name = document.getElementById('student-name').value.trim();
+            const btn = document.getElementById('btn-begin');
+            btn.disabled = !(name.length > 0 && state.selectedBriefIndex !== -1);
+            state.studentName = name;
+        }
+
+        document.getElementById('btn-begin').addEventListener('click', () => {
+            const brief = DATA[state.selectedBriefIndex];
+            document.getElementById('case-title').innerText = brief.name;
+            document.getElementById('case-desc').innerText = brief.desc;
+            document.querySelectorAll('.student-display').forEach(el => el.innerText = state.studentName);
+            
+            const featuresList = document.getElementById('case-features');
+            featuresList.innerHTML = brief.features.map(f => `<li>${f}</li>`).join('');
+
+            const refContent = document.getElementById('ref-content');
+            refContent.innerHTML = brief.tenets.map(t => `
+                <div style="margin-bottom: 12px;">
+                    <span class="tenet-pill">${t.id}</span>
+                    <p style="font-size: 13px;">${t.text}</p>
+                </div>
+            `).join('');
+
+            showScreen('s2');
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0,0);
+
+            if (screenId === 's3') {
+                document.getElementById('score-counter').style.display = 'block';
+                renderAutopsyCards();
+            }
+        }
+
+        function toggleRef() {
+            const content = document.getElementById('ref-content');
+            const icon = document.getElementById('ref-icon');
+            content.classList.toggle('active');
+            icon.innerText = content.classList.contains('active') ? '▲' : '▼';
+        }
+
+        function renderAutopsyCards() {
+            const brief = DATA[state.selectedBriefIndex];
+            const cards = [...brief.autopsy];
+            // Fisher-Yates shuffle
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+
+            const grid = document.getElementById('autopsy-cards');
+            grid.innerHTML = cards.map((c, i) => `
+                <div class="violation-card" onclick="toggleViolation(${i})" id="vcard-${i}">
+                    <div style="display: flex; align-items: flex-start;">
+                        <div class="check-box"></div>
+                        <div class="card-body">${c.text}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            state.tempCards = cards; // Store the shuffled order to check later
+            state.autopsySelections = [];
+            document.getElementById('btn-submit-autopsy').disabled = true;
+            document.getElementById('selection-hint').style.display = 'block';
+        }
+
+        function toggleViolation(index) {
+            const card = document.getElementById(`vcard-${index}`);
+            const isSelected = card.classList.toggle('selected');
+            
+            if (isSelected) state.autopsySelections.push(index);
+            else state.autopsySelections = state.autopsySelections.filter(i => i !== index);
+            
+            const canSubmit = state.autopsySelections.length >= 2;
+            document.getElementById('btn-submit-autopsy').disabled = !canSubmit;
+            document.getElementById('selection-hint').style.display = canSubmit ? 'none' : 'block';
+        }
+
+        document.getElementById('btn-submit-autopsy').addEventListener('click', () => {
+            // Removed blocking confirm() call for smoother iframe experience
+            processAutopsy();
+        });
+
+        function processAutopsy() {
+            let autopsyPoints = 0;
+            let foundCount = 0;
+            const brief = DATA[state.selectedBriefIndex];
+            const resultsGrid = document.getElementById('autopsy-results');
+            
+            resultsGrid.innerHTML = '';
+            
+            state.tempCards.forEach((card, index) => {
+                const isSelected = state.autopsySelections.includes(index);
+                let statusClass = '';
+                let statusText = '';
+                
+                if (card.type === 'VIOLATION') {
+                    if (isSelected) {
+                        statusClass = 'confirmed';
+                        statusText = '✅ Violation Confirmed';
+                        autopsyPoints += 10;
+                        foundCount++;
+                    } else {
+                        statusClass = 'missed';
+                        statusText = '⚠️ Violation Missed';
+                    }
+                } else {
+                    if (isSelected) {
+                        statusClass = 'not-violation';
+                        statusText = '❌ Not a Violation';
+                        autopsyPoints = Math.max(0, autopsyPoints - 5);
+                    } else {
+                        statusClass = 'correct-skip';
+                        statusText = '✓ Correctly Skipped';
+                    }
+                }
+
+                resultsGrid.innerHTML += `
+                    <div class="violation-card ${statusClass}">
+                        <span class="reveal-badge ${statusClass}">${statusText}</span>
+                        <div class="card-body">
+                            <p>${card.text}</p>
+                            <p style="margin-top: 10px; font-size: 12px; color: var(--navy);">
+                                <strong>${card.type === 'VIOLATION' ? 'Ethics Tenet:' : 'Note:'}</strong> 
+                                ${card.type === 'VIOLATION' ? card.tenet : card.reason}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            state.score += autopsyPoints;
+            updateScoreDisplay();
+            document.getElementById('autopsy-feedback-summary').innerText = `Autopsy complete. You identified ${foundCount} of 4 violations. Points gained: ${autopsyPoints}`;
+            showScreen('s4');
+        }
+
+        function updateScoreDisplay() {
+            const counter = document.getElementById('score-counter');
+            counter.innerText = `Points: ${state.score}`;
+            counter.classList.add('bounce');
+            setTimeout(() => counter.classList.remove('bounce'), 300);
+        }
+
+        function startFixes() {
+            state.currentFixIndex = 0;
+            state.fixSelections = [];
+            renderFixStep();
+            showScreen('s5');
+        }
+
+        function renderFixStep() {
+            const brief = DATA[state.selectedBriefIndex];
+            const fixData = brief.fixes[state.currentFixIndex];
+            
+            // Find the correct violation description based on the fixData index
+            const violation = brief.autopsy.filter(a => a.type === 'VIOLATION')[state.currentFixIndex];
+            
+            // Check if user found this violation in phase 1 by checking the text match
+            const wasFound = state.tempCards.some((c, i) => c.text === violation.text && state.autopsySelections.includes(i));
+
+            document.getElementById('fix-stage-indicator').innerText = `Violation ${state.currentFixIndex + 1} of 4`;
+            
+            const content = document.getElementById('fix-content');
+            content.innerHTML = `
+                <div class="violation-summary">
+                    <h3>Violation: ${violation.text.substring(0, 60)}...</h3>
+                    <div class="tenet-pill">${violation.tenet}</div>
+                    <p style="font-size: 14px; margin-top: 8px;">${violation.reason}</p>
+                    <div style="margin-top: 12px; font-weight: 700; color: ${wasFound ? 'var(--emerald)' : 'var(--gray)'}">
+                        ${wasFound ? '✓ You found this' : '⚠️ You missed this — but let\'s fix it anyway'}
+                    </div>
+                </div>
+
+                <h3>Choose Your Fix</h3>
+                <p style="margin-bottom: 16px;">Select the fix that best resolves this violation while still serving the user\'s legitimate need.</p>
+                
+                <div class="fix-options" id="fix-options-list">
+                    ${fixData.options.map((opt, i) => `
+                        <div class="fix-option-card ${opt.type.toLowerCase()}" onclick="selectFix(${i})">
+                            <div class="card-body">${opt.text}</div>
+                            <div class="fix-feedback">
+                                <strong>${opt.type === 'BEST' ? '🏆 BEST FIX' : (opt.type === 'PARTIAL' ? '⚡ PARTIAL FIX' : '✗ INSUFFICIENT')}</strong> — ${opt.reason}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('btn-next-fix').style.display = 'none';
+            document.getElementById('btn-next-fix').innerText = state.currentFixIndex === 3 ? 'Complete Report →' : 'Next Violation →';
+        }
+
+        function selectFix(index) {
+            const options = document.querySelectorAll('.fix-option-card');
+            const brief = DATA[state.selectedBriefIndex];
+            const fixData = brief.fixes[state.currentFixIndex];
+            const selection = fixData.options[index];
+
+            options.forEach((opt, i) => {
+                opt.classList.add('reveal');
+                if (i === index) opt.classList.add('selected');
+                else opt.classList.add('dimmed');
+            });
+
+            state.fixSelections.push({
+                violationIdx: state.currentFixIndex,
+                choice: selection
+            });
+
+            state.score += selection.pts;
+            updateScoreDisplay();
+            
+            document.getElementById('btn-next-fix').style.display = 'inline-block';
+        }
+
+        document.getElementById('btn-next-fix').addEventListener('click', () => {
+            if (state.currentFixIndex < 3) {
+                state.currentFixIndex++;
+                renderFixStep();
+            } else {
+                generateFinalReport();
+            }
+        });
+
+        function generateFinalReport() {
+            const brief = DATA[state.selectedBriefIndex];
+            
+            // Score and Badge
+            document.getElementById('final-points-total').innerText = state.score;
+            document.getElementById('final-score-val').innerText = Math.round((state.score / 120) * 100);
+            
+            let badge = '';
+            if (state.score >= 100) badge = '🏅 Master Investigator';
+            else if (state.score >= 80) badge = '🥈 Senior Analyst';
+            else if (state.score >= 60) badge = '🥉 Junior Analyst';
+            else badge = '🔍 Trainee — Keep Investigating';
+            
+            document.getElementById('final-badge').innerText = badge;
+            document.getElementById('final-app-name').innerText = brief.name;
+            document.getElementById('print-app-name').innerText = brief.name;
+
+            // Launch Statement Logic
+            const foundViolationsCount = state.tempCards.filter((c, i) => c.type === 'VIOLATION' && state.autopsySelections.includes(i)).length;
+            const primaryViolation = brief.autopsy.find(v => v.primary);
+            const primaryFix = state.fixSelections.find(s => {
+                const vForFix = brief.autopsy.filter(a => a.type === 'VIOLATION')[s.violationIdx];
+                return vForFix.text === primaryViolation.text;
+            });
+            const bestFixes = state.fixSelections.filter(s => s.choice.type === 'BEST');
+            
+            let statement = '';
+            if (bestFixes.length > 0) {
+                const v1ForFix = brief.autopsy.filter(a => a.type === 'VIOLATION')[bestFixes[0].violationIdx];
+                const v1Name = v1ForFix.text.substring(0, 30);
+                const v2Name = bestFixes.length > 1 ? brief.autopsy.filter(a => a.type === 'VIOLATION')[bestFixes[1].violationIdx].text.substring(0, 30) : "others";
+                
+                statement = `In reviewing ${brief.name}, I identified ${foundViolationsCount} ethical violations, including ${v1Name}... and ${v2Name}... The most critical issue was ${primaryViolation.text.substring(0, 50)}... By ${primaryFix.choice.text.split('.')[0]}, this app can satisfy ${primaryViolation.tenet} while still serving its users.`;
+            } else {
+                statement = `In reviewing ${brief.name}, I identified ${foundViolationsCount} violations. Addressing ${primaryViolation.text.substring(0, 50)}... is the highest priority — it directly violates ${primaryViolation.tenet} by ${primaryViolation.reason.toLowerCase()}`;
+            }
+            document.getElementById('launch-statement-text').innerText = statement;
+
+            // Report Table
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = state.fixSelections.map(s => {
+                const violation = brief.autopsy.filter(a => a.type === 'VIOLATION')[s.violationIdx];
+                return `
+                    <tr>
+                        <td>${violation.text.substring(0, 60)}...</td>
+                        <td><span class="tenet-pill">${violation.tenet}</span></td>
+                        <td><strong>${s.choice.type}</strong></td>
+                        <td>${s.choice.pts}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            showScreen('s6');
+            document.getElementById('score-counter').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
