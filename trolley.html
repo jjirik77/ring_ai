@@ -124,7 +124,7 @@
         .title-large { font-size: 42px; color: var(--primary); margin-bottom: 8px; }
         .subtitle { color: var(--text-sec); font-size: 18px; font-style: italic; margin-bottom: 32px; }
         
-        .chip-container { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+        .chip-container { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; align-items: center; }
         .chip {
             background: var(--elevated);
             border: 1px solid var(--border);
@@ -133,10 +133,22 @@
             cursor: pointer;
             font-size: 14px;
             transition: 0.2s;
+            flex-shrink: 0;
         }
         .chip.expanded { border-color: var(--primary); background: rgba(0, 229, 255, 0.1); }
         .chip-content { display: none; margin-top: 8px; color: var(--text-sec); font-size: 13px; text-align: left; }
         .chip.expanded .chip-content { display: block; }
+
+        .progression-arrow {
+            color: var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .chip-container { flex-direction: column; }
+            .progression-arrow { transform: rotate(90deg); margin: 4px 0; }
+        }
 
         /* S2 - Vehicle */
         .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -253,10 +265,20 @@
                     <span>Trolley Problem</span>
                     <div class="chip-content">A thought experiment about choosing between two harmful outcomes when doing nothing is not an option.</div>
                 </div>
+                
+                <div class="progression-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+
                 <div class="chip" onclick="toggleChip(this)">
                     <span>Autonomous Vehicle</span>
                     <div class="chip-content">A self-driving car that uses sensors and AI to operate without a human driver.</div>
                 </div>
+
+                <div class="progression-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </div>
+
                 <div class="chip" onclick="toggleChip(this)">
                     <span>Moral Algorithm</span>
                     <div class="chip-content">A programmed set of rules that determines how a machine behaves when facing an ethical choice.</div>
