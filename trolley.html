@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTONOMA X1 // Ethics Engineering Simulation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0A0C12;
+            --panel: #131720;
+            --elevated: #1A2030;
+            --primary: #00E5FF;
+            --danger: #FF3B3B;
+            --safe: #22C55E;
+            --amber: #F59E0B;
+            --text-pri: #F1F5F9;
+            --text-sec: #94A3B8;
+            --border: #1E2740;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-pri);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Progress Bar */
+        #progress-container {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Layout */
+        .screen {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UI Elements */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 14px 28px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 4px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: var(--text-sec);
+            color: var(--text-sec);
+        }
+
+        /* S1 - Intro */
+        .intro-container { max-width: 680px; margin: 0 auto; text-align: center; }
+        .hero-icon { margin-bottom: 24px; color: var(--primary); }
+        .title-large { font-size: 42px; color: var(--primary); margin-bottom: 8px; }
+        .subtitle { color: var(--text-sec); font-size: 18px; font-style: italic; margin-bottom: 32px; }
+        
+        .chip-container { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+        .chip {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .chip.expanded { border-color: var(--primary); background: rgba(0, 229, 255, 0.1); }
+        .chip-content { display: none; margin-top: 8px; color: var(--text-sec); font-size: 13px; text-align: left; }
+        .chip.expanded .chip-content { display: block; }
+
+        /* S2 - Vehicle */
+        .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .vehicle-visual { text-align: center; }
+        .badge-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+        .badge { font-family: monospace; background: var(--elevated); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: var(--primary); border: 1px solid rgba(0,229,255,0.2); }
+        .check-list { list-style: none; margin-top: 16px; }
+        .check-list li { margin-bottom: 12px; display: flex; gap: 12px; }
+        .callout { border-left: 4px solid var(--amber); background: rgba(245, 158, 11, 0.05); padding: 16px; margin: 24px 0; }
+
+        /* S3 - Matrix */
+        .rule-row { margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
+        .rule-row h4 { margin-bottom: 8px; font-size: 16px; }
+        .rule-row p { color: var(--text-sec); margin-bottom: 16px; font-size: 14px; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .option-card {
+            background: var(--elevated);
+            border: 2px solid transparent;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 13px;
+        }
+        .option-card:hover { border-color: var(--border); }
+        .option-card.selected { border-color: var(--primary); background: rgba(0, 229, 255, 0.05); }
+        .option-card strong { display: block; margin-bottom: 4px; color: var(--primary); text-transform: uppercase; font-size: 11px; }
+
+        /* S4-S6 Scenario */
+        .scenario-header { text-align: center; margin-bottom: 24px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .scenario-grid { display: grid; grid-template-columns: 300px 1fr 300px; gap: 20px; min-height: 400px; }
+        .scenario-canvas-container { 
+            background: #05070a; 
+            border: 2px solid var(--border); 
+            border-radius: 12px; 
+            position: relative; 
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        
+        .meter-container { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+        .meter-fill { height: 100%; transition: width 1s ease; }
+        
+        .reaction-quote { font-style: italic; font-size: 14px; color: var(--text-sec); padding: 12px; border-left: 2px solid var(--primary); background: var(--elevated); }
+
+        /* Review Board */
+        .board-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+        .member-card { 
+            background: var(--elevated); 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+        .member-card:hover { transform: scale(1.02); }
+        .member-reveal { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); font-size: 14px; }
+        .member-card.active .member-reveal { display: block; }
+
+        .badge-reveal-card {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--elevated) 0%, #000 100%);
+            border: 2px solid var(--primary);
+            margin-top: 40px;
+            display: none;
+        }
+
+        /* SVG Animations */
+        .car-node { fill: var(--primary); transition: transform 2s ease-in-out; }
+        .ped-node { fill: #FFF; }
+        .impact-flash { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--danger); opacity: 0; pointer-events: none; 
+        }
+        @keyframes flash {
+            0% { opacity: 0; } 50% { opacity: 0.5; } 100% { opacity: 0; }
+        }
+
+        @media (max-width: 900px) {
+            .split-layout, .scenario-grid, .board-grid { grid-template-columns: 1fr; }
+            .scenario-grid { grid-template-rows: auto 400px auto; }
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container"><div id="progress-bar"></div></div>
+
+    <!-- S1: Introduction -->
+    <section id="S1" class="screen active">
+        <div class="intro-container">
+            <div class="hero-icon">
+                <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="8" rx="2"/><path d="M7 10V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/></svg>
+            </div>
+            <h1 class="title-large">The Trolley Problem</h1>
+            <p class="subtitle">"A thought experiment. A real engineering problem."</p>
+            
+            <div class="card" style="text-align: left;">
+                <p>In 1967, philosopher Philippa Foot posed a thought experiment: a runaway trolley is headed toward five people. You can pull a lever and divert it — but it will then kill one person on the other track. Do you pull the lever?</p>
+                <br>
+                <p>For decades, this was philosophy. Then we built self-driving cars. Today, autonomous vehicles are programmed to make split-second collision decisions before the crash ever happens. These rules are permanent, embedded in the vehicle's code, and applied at scale.</p>
+                <br>
+                <p><strong>You are the engineer.</strong> You will program your vehicle's ethics algorithm, watch it play out, and face a review board.</p>
+            </div>
+
+            <div class="chip-container">
+                <div class="chip" onclick="toggleChip(this)">
+                    <span>Trolley Problem</span>
+                    <div class="chip-content">A thought experiment about choosing between two harmful outcomes when doing nothing is not an option.</div>
+                </div>
+                <div class="chip" onclick="toggleChip(this)">
+                    <span>Autonomous Vehicle</span>
+                    <div class="chip-content">A self-driving car that uses sensors and AI to operate without a human driver.</div>
+                </div>
+                <div class="chip" onclick="toggleChip(this)">
+                    <span>Moral Algorithm</span>
+                    <div class="chip-content">A programmed set of rules that determines how a machine behaves when facing an ethical choice.</div>
+                </div>
+            </div>
+
+            <button class="btn" style="margin-top: 40px;" onclick="goTo('S2')">Begin Programming &rarr;</button>
+        </div>
+    </section>
+
+    <!-- S2: Meet Your Vehicle -->
+    <section id="S2" class="screen">
+        <div class="split-layout">
+            <div class="vehicle-visual">
+                <h3>Your Vehicle — Autonoma X1</h3>
+                <div class="card" style="margin-top: 20px;">
+                    <svg width="180" height="260" viewBox="0 0 100 150">
+                        <rect x="25" y="20" width="50" height="110" rx="10" stroke="var(--primary)" stroke-width="2" fill="none" />
+                        <rect x="30" y="30" width="40" height="25" rx="4" fill="rgba(0,229,255,0.1)" />
+                        <rect x="30" y="95" width="40" height="20" rx="4" fill="rgba(0,229,255,0.1)" />
+                        <circle cx="50" cy="15" r="5" fill="var(--primary)" opacity="0.5" />
+                    </svg>
+                    <div class="badge-row">
+                        <span class="badge">SENSORS: 360° LiDAR</span>
+                        <span class="badge">REACTION: 0.001s</span>
+                        <span class="badge">PASSENGERS: 1-5</span>
+                        <span class="badge">STATUS: PRE-LAUNCH</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3>Capabilities & Constraints</h3>
+                <div class="card">
+                    <ul class="check-list">
+                        <li><span style="color:var(--safe)">✓</span> Detect all objects within 80 meters</li>
+                        <li><span style="color:var(--safe)">✓</span> Calculate collision probability in real time</li>
+                        <li><span style="color:var(--safe)">✓</span> Choose between two or more evasive paths</li>
+                        <li><span style="color:var(--safe)">✓</span> Apply your ethics rules to its decision</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <ul class="check-list">
+                        <li><span style="color:var(--danger)">✕</span> Stop in time once a collision is unavoidable</li>
+                        <li><span style="color:var(--danger)">✕</span> Know identity/health of pedestrians</li>
+                        <li><span style="color:var(--danger)">✕</span> Ask you for help in the moment</li>
+                        <li><span style="color:var(--danger)">✕</span> Choose an option you did not program</li>
+                    </ul>
+                </div>
+                <div class="callout">
+                    "Once deployed, your car will make thousands of decisions using these rules — without checking with you. Choose carefully."
+                </div>
+                <button class="btn" onclick="goTo('S3')">Set My Ethics Rules &rarr;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- S3: Rules Matrix -->
+    <section id="S3" class="screen">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 style="color: var(--primary);">Your Ethics Algorithm</h2>
+            <p style="margin-bottom: 32px; color: var(--text-sec);">Configure the 5 core priority rules that will govern the Autonoma X1.</p>
+
+            <!-- Rule 1 -->
+            <div class="rule-row">
+                <h4>Rule 1 — General Priority</h4>
+                <p>When a collision is unavoidable, what is the primary objective?</p>
+                <div class="options-grid">
+                    <div class="option-card" data-rule="r1" data-val="protect_passengers" onclick="selectRule(this)">
+                        <strong>Passenger Priority</strong>
+                        Always protect the people inside the vehicle.
+                    </div>
+                    <div class="option-card" data-rule="r1" data-val="minimize_casualties" onclick="selectRule(this)">
+                        <strong>Utilitarian</strong>
+                        Choose path with the fewest total deaths.
+                    </div>
+                    <div class="option-card" data-rule="r1" data-val="protect_3to1" onclick="selectRule(this)">
+                        <strong>Balanced</strong>
+                        Protect passengers unless outnumbered 3-to-1.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule 2 -->
+            <div class="rule-row">
+                <h4>Rule 2 — Pedestrian Interaction</h4>
+                <p>How should the car react to legal crosswalk scenarios?</p>
+                <div class="options-grid">
+                    <div class="option-card" data-rule="r2" data-val="swerve_always" onclick="selectRule(this)">
+                        <strong>Always Swerve</strong>
+                        Protect pedestrians even if passengers are harmed.
+                    </div>
+                    <div class="option-card" data-rule="r2" data-val="count_lives" onclick="selectRule(this)">
+                        <strong>Math Driven</strong>
+                        Decide purely on the number of lives involved.
+                    </div>
+                    <div class="option-card" data-rule="r2" data-val="jaywalk_penalty" onclick="selectRule(this)">
+                        <strong>Legal Focus</strong>
+                        Prioritize passengers if pedestrians are jaywalking.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule 3 -->
+            <div class="rule-row">
+                <h4>Rule 3 — Age Factor</h4>
+                <p>Does the age of those involved factor into the decision?</p>
+                <div class="options-grid">
+                    <div class="option-card" data-rule="r3" data-val="age_neutral" onclick="selectRule(this)">
+                        <strong>Age Neutral</strong>
+                        All lives are equal; age is not a variable.
+                    </div>
+                    <div class="option-card" data-rule="r3" data-val="prioritize_children" onclick="selectRule(this)">
+                        <strong>Younger First</strong>
+                        Prioritize children over adults.
+                    </div>
+                    <div class="option-card" data-rule="r3" data-val="expectancy" onclick="selectRule(this)">
+                        <strong>Future Focus</strong>
+                        Factor in remaining life expectancy.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule 4 -->
+            <div class="rule-row">
+                <h4>Rule 4 — Quantitative Thresholds</h4>
+                <p>At what ratio do pedestrians outweigh passengers?</p>
+                <div class="options-grid">
+                    <div class="option-card" data-rule="r4" data-val="protect_always" onclick="selectRule(this)">
+                        <strong>Passenger Absolute</strong>
+                        1 passenger > 100 pedestrians.
+                    </div>
+                    <div class="option-card" data-rule="r4" data-val="minimize" onclick="selectRule(this)">
+                        <strong>Simple Majority</strong>
+                        Always choose the smaller death toll.
+                    </div>
+                    <div class="option-card" data-rule="r4" data-val="protect_5to1" onclick="selectRule(this)">
+                        <strong>High Threshold</strong>
+                        Passengers first unless outnumbered 5-to-1.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule 5 -->
+            <div class="rule-row">
+                <h4>Rule 5 — Sensor Uncertainty</h4>
+                <p>How to handle a 70% probability of a pedestrian?</p>
+                <div class="options-grid">
+                    <div class="option-card" data-rule="r5" data-val="assume_real" onclick="selectRule(this)">
+                        <strong>Cautious</strong>
+                        Assume they are real; act to avoid.
+                    </div>
+                    <div class="option-card" data-rule="r5" data-val="confirmed_only" onclick="selectRule(this)">
+                        <strong>Strict</strong>
+                        Act only on 100% confirmed detections.
+                    </div>
+                    <div class="option-card" data-rule="r5" data-val="threshold_50" onclick="selectRule(this)">
+                        <strong>Probabilistic</strong>
+                        Act if probability exceeds 50%.
+                    </div>
+                </div>
+            </div>
+
+            <div id="algorithm-summary" class="card" style="border-color: var(--border);">
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 id="rules-set-label">Algorithm Profile [0/5 Rules Set]</h4>
+                    </div>
+                    <button id="deploy-btn" class="btn" disabled onclick="startSimulation()">Deploy to Simulation &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario Interface (Dynamic S4-S6) -->
+    <section id="SCENARIO" class="screen">
+        <div class="scenario-header">
+            <h2 id="scenario-title">Scenario 1: The Crosswalk</h2>
+            <p id="scenario-desc" class="card" style="margin-top: 12px;"></p>
+        </div>
+
+        <div class="scenario-grid">
+            <div class="side-panel">
+                <h4>Sensor Data</h4>
+                <div class="card">
+                    <div id="sensor-readout" style="font-family: monospace; font-size: 12px;"></div>
+                </div>
+                <h4>Your Rules Say</h4>
+                <div class="card" id="rules-applied" style="font-size: 13px; color: var(--text-sec);"></div>
+            </div>
+
+            <div class="scenario-canvas-container" id="canvas-container">
+                <svg id="road-svg" width="100%" height="100%" viewBox="0 0 300 500">
+                    <rect x="100" y="0" width="100" height="500" fill="#111" />
+                    <line x1="150" y1="0" x2="150" y2="500" stroke="#444" stroke-dasharray="10,10" />
+                    <!-- Dynamic car and pedestrians -->
+                    <g id="elements-layer"></g>
+                </svg>
+                <div id="flash" class="impact-flash"></div>
+                <div id="outcome-overlay" style="display:none; position:absolute; bottom:20px; width:90%; background: rgba(10,12,18,0.95); border: 1px solid var(--primary); padding: 16px; border-radius: 8px;">
+                    <h4 id="outcome-title" style="color: var(--primary);">Collision Imminent</h4>
+                    <p id="outcome-text" style="font-size: 13px;"></p>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <h4>System Decision</h4>
+                <div class="card" id="decision-panel">
+                    <div style="text-align: center; color: var(--text-sec);">Calculating...</div>
+                </div>
+                
+                <div id="reaction-panel" style="display:none;">
+                    <h4>Public Impact</h4>
+                    <div class="card">
+                        <label style="font-size: 11px; text-transform: uppercase;">Approval</label>
+                        <div class="meter-container"><div id="approval-meter" class="meter-fill" style="background: var(--safe);"></div></div>
+                        <label style="font-size: 11px; text-transform: uppercase;">Controversy</label>
+                        <div class="meter-container"><div id="controversy-meter" class="meter-fill" style="background: var(--danger);"></div></div>
+                    </div>
+                    <div class="reaction-quote" id="reaction-quote"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="choice-reaction" class="card" style="display:none; margin-top: 20px;">
+            <p style="margin-bottom: 12px;">Reflect on this outcome:</p>
+            <div class="options-grid" id="reaction-options"></div>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px;">
+            <button id="next-scenario-btn" class="btn" style="display:none;" onclick="nextStep()">Continue &rarr;</button>
+        </div>
+    </section>
+
+    <!-- S7: Review Board -->
+    <section id="S7" class="screen">
+        <h2 style="color: var(--primary); text-align: center;">Ethics Review Board</h2>
+        <p style="text-align: center; margin-bottom: 40px;">Your algorithm and its real-world outcomes have been audited.</p>
+
+        <div class="board-grid">
+            <div>
+                <h3>Audit Summary</h3>
+                <div class="card">
+                    <div id="final-summary-stats"></div>
+                    <div id="final-rules-list" style="margin-top: 20px; font-size: 13px; opacity: 0.8;"></div>
+                </div>
+                <div class="card">
+                    <h4>Internal Consistency</h4>
+                    <div id="consistency-badge" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div>
+                <h3>Board Verdicts</h3>
+                <div class="member-card" onclick="toggleMember(this)">
+                    <strong>The Ethicist</strong>
+                    <div class="member-reveal" id="ethicist-verdict"></div>
+                </div>
+                <div class="member-card" onclick="toggleMember(this)">
+                    <strong>The Engineer</strong>
+                    <div class="member-reveal">Your algorithm will work exactly as specified. It will apply these rules 2.3 million times per year across the fleet. Make sure you're comfortable with all 2.3 million of those decisions — not just these three.</div>
+                </div>
+                <div class="member-card" onclick="toggleMember(this)">
+                    <strong>The Regulator</strong>
+                    <div class="member-reveal" id="regulator-verdict"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="final-reflection-box" style="margin-top: 40px;">
+            <h3>Final Reflection</h3>
+            <p style="margin-bottom: 20px; color: var(--text-sec);">After programming this car and seeing the outcomes, which statement best describes what you believe?</p>
+            <div id="final-options" class="options-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="option-card" onclick="setFinal('answer')">There is a correct ethical answer — engineers just need to find it.</div>
+                <div class="option-card" onclick="setFinal('consistency')">There is no perfect answer — but consistency matters more than the specific choice.</div>
+                <div class="option-card" onclick="setFinal('public')">This decision should not be made by engineers alone — it requires public input.</div>
+                <div class="option-card" onclick="setFinal('human')">Some decisions should not be automated — humans should stay in control.</div>
+            </div>
+        </div>
+
+        <div id="final-badge-card" class="badge-reveal-card">
+            <h1 id="badge-title" style="color: var(--primary);"></h1>
+            <p id="badge-desc" style="margin: 16px 0;"></p>
+            <button class="btn" onclick="location.reload()">Restart Simulation</button>
+        </div>
+    </section>
+
+    <script>
+        const STATE = {
+            currentStep: 'S1',
+            rules: { r1: null, r2: null, r3: null, r4: null, r5: null },
+            scenarioIndex: 0,
+            totalControversy: 0,
+            totalApproval: 0,
+            outcomes: [],
+            finalReflection: null
+        };
+
+        const SCENARIOS = [
+            {
+                id: 'S4',
+                title: 'Scenario 1: The Crosswalk',
+                desc: 'Brake failure at 35 mph. 3 pedestrians in crosswalk legally. Two paths: Continue straight (Path A) or Swerve into barrier (Path B), injuring the 1 passenger.',
+                sensors: 'OBJECTS: 3 PEDESTRIANS (IDENTIFIED) / 1 PASSENGER\nPROBABILITY: 100% COLLISION\nPATH_A: IMPACT_MULTI\nPATH_B: IMPACT_SINGLE_INTERNAL',
+                evaluate: (rules) => {
+                    if (rules.r1 === 'protect_passengers' || rules.r4 === 'protect_always') return 'PATH_A';
+                    if (rules.r1 === 'minimize_casualties' || rules.r4 === 'minimize') return 'PATH_B';
+                    // Balanced rule: pedestrians are 3, passenger is 1. Ratio 3:1.
+                    return 'PATH_A'; 
+                },
+                results: {
+                    'PATH_A': { 
+                        text: 'STRIKE PEDESTRIANS. 3 fatalities.', 
+                        app: 25, con: 15, quote: 'The car protected its passengers. Isn’t that what we paid for? — Consumer Advocate' 
+                    },
+                    'PATH_B': { 
+                        text: 'SWERVE. 1 passenger severe injury.', 
+                        app: 15, con: 25, quote: 'A machine just harmed the passenger to save people who weren’t even in the car. — Safety Org' 
+                    }
+                }
+            },
+            {
+                id: 'S5',
+                title: 'Scenario 2: The School Zone',
+                desc: 'School zone. 5 children jaywalking. Brake failure. Path A: Strike children. Path B: Swerve into barrier, 2 passengers (adults) killed.',
+                sensors: 'OBJECTS: 5 CHILDREN (IDENTIFIED) / 2 ADULT_PASSENGERS\nPROBABILITY: 100%\nPATH_A: HIGH_FATALITY_MINORS\nPATH_B: FATALITY_INTERNAL',
+                evaluate: (rules) => {
+                    if (rules.r3 === 'prioritize_children' || rules.r3 === 'expectancy') return 'PATH_B';
+                    if (rules.r1 === 'protect_passengers') return 'PATH_A';
+                    if (rules.r1 === 'minimize_casualties' || rules.r4 === 'minimize') return 'PATH_B';
+                    return 'PATH_A';
+                },
+                results: {
+                    'PATH_A': { 
+                        text: 'STRIKE CHILDREN. 5 child fatalities.', 
+                        app: 5, con: 55, quote: 'Five children died because an algorithm valued adults more. — Parent Group' 
+                    },
+                    'PATH_B': { 
+                        text: 'SWERVE. 2 passengers killed.', 
+                        app: 20, con: 30, quote: 'The passengers trusted this car with their lives. The car failed them. — Industry Analyst' 
+                    }
+                }
+            },
+            {
+                id: 'S6',
+                title: 'Scenario 3: The Edge Case',
+                desc: 'Night. Low visibility. 68% probability of elderly pedestrian. Path A: Swerve into oncoming lane (2 drivers at risk). Path B: Continue.',
+                sensors: 'OBJECTS: 1 UNKNOWN_ENTITY (68% MATCH: ELDERLY_PED)\nPROBABILITY: UNCERTAIN\nPATH_A: MULTI_VEHICLE_RISK\nPATH_B: PROBABLE_FATALITY',
+                evaluate: (rules) => {
+                    if (rules.r5 === 'confirmed_only') return 'PATH_B';
+                    return 'PATH_A';
+                },
+                results: {
+                    'PATH_A': { 
+                        text: 'SWERVE. Multi-vehicle collision. 2 fatalities.', 
+                        app: 10, con: 35, quote: 'The car swerved for a ghost and killed two innocent drivers. — Legal Expert' 
+                    },
+                    'PATH_B': { 
+                        text: 'CONTINUE. Elderly pedestrian killed.', 
+                        app: 30, con: 10, quote: 'The sensor was correct. The pedestrian died, but the drivers survived. — Risk Analyst' 
+                    }
+                }
+            }
+        ];
+
+        function goTo(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            STATE.currentStep = id;
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            const steps = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'];
+            const idx = steps.indexOf(STATE.currentStep === 'SCENARIO' ? `S${4 + STATE.scenarioIndex}` : STATE.currentStep);
+            document.getElementById('progress-bar').style.width = `${((idx + 1) / steps.length) * 100}%`;
+        }
+
+        function toggleChip(el) {
+            el.classList.toggle('expanded');
+        }
+
+        function selectRule(el) {
+            const ruleId = el.dataset.rule;
+            const val = el.dataset.val;
+            
+            // UI Toggle
+            document.querySelectorAll(`[data-rule="${ruleId}"]`).forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            STATE.rules[ruleId] = val;
+            
+            // Check completion
+            const count = Object.values(STATE.rules).filter(v => v !== null).length;
+            document.getElementById('rules-set-label').innerText = `Algorithm Profile [${count}/5 Rules Set]`;
+            
+            if (count === 5) {
+                document.getElementById('deploy-btn').disabled = false;
+                document.getElementById('algorithm-summary').style.borderColor = 'var(--primary)';
+            }
+        }
+
+        function startSimulation() {
+            STATE.scenarioIndex = 0;
+            renderScenario();
+            goTo('SCENARIO');
+        }
+
+        function renderScenario() {
+            const s = SCENARIOS[STATE.scenarioIndex];
+            document.getElementById('scenario-title').innerText = s.title;
+            document.getElementById('scenario-desc').innerText = s.desc;
+            document.getElementById('sensor-readout').innerText = s.sensors;
+            document.getElementById('next-scenario-btn').style.display = 'none';
+            document.getElementById('reaction-panel').style.display = 'none';
+            document.getElementById('choice-reaction').style.display = 'none';
+            document.getElementById('outcome-overlay').style.display = 'none';
+            document.getElementById('decision-panel').innerHTML = '<div style="text-align: center; color: var(--text-sec);">Calculating...</div>';
+            
+            // Visuals
+            const layer = document.getElementById('elements-layer');
+            layer.innerHTML = '';
+            
+            // Car SVG
+            const car = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            car.setAttribute("x", "135"); car.setAttribute("y", "400");
+            car.setAttribute("width", "30"); car.setAttribute("height", "50");
+            car.setAttribute("rx", "4"); car.setAttribute("class", "car-node");
+            car.setAttribute("id", "sim-car");
+            layer.appendChild(car);
+
+            // Logic Reveal
+            setTimeout(() => {
+                const decision = s.evaluate(STATE.rules);
+                const result = s.results[decision];
+                
+                document.getElementById('rules-applied').innerText = `Applying Rule ${STATE.scenarioIndex === 0 ? '1 & 4' : (STATE.scenarioIndex === 1 ? '2, 3 & 4' : '5')}...`;
+                
+                document.getElementById('decision-panel').innerHTML = `
+                    <div style="text-align: center;">
+                        <span style="font-size: 11px; color: var(--text-sec);">RECOMMENDED ACTION:</span><br>
+                        <strong style="color: var(--primary);">${decision === 'PATH_A' ? 'CONTINUE STRAIGHT' : 'SWERVE RIGHT'}</strong>
+                    </div>
+                `;
+
+                // Animation
+                const carEl = document.getElementById('sim-car');
+                if (decision === 'PATH_A') {
+                    carEl.style.transform = 'translateY(-300px)';
+                } else {
+                    carEl.style.transform = 'translate(80px, -300px) rotate(15deg)';
+                }
+
+                setTimeout(() => {
+                    document.getElementById('flash').style.animation = 'flash 0.4s ease-out';
+                    showOutcome(result, decision);
+                }, 2000);
+
+            }, 1000);
+        }
+
+        function showOutcome(result, decision) {
+            STATE.totalApproval += result.app;
+            STATE.totalControversy += result.con;
+            STATE.outcomes.push(result.text);
+
+            document.getElementById('outcome-overlay').style.display = 'block';
+            document.getElementById('outcome-text').innerText = result.text;
+            
+            document.getElementById('reaction-panel').style.display = 'block';
+            document.getElementById('approval-meter').style.width = result.app + '%';
+            document.getElementById('controversy-meter').style.width = result.con + '%';
+            document.getElementById('reaction-quote').innerText = result.quote;
+
+            // Reaction Choices
+            const options = [
+                "I stand by my rule — this was the correct outcome.",
+                "I would revise my rules for this scenario.",
+                "No rule makes this easy — this was unavoidable."
+            ];
+            const optCont = document.getElementById('reaction-options');
+            optCont.innerHTML = '';
+            options.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option-card';
+                div.innerText = opt;
+                div.onclick = () => {
+                    document.querySelectorAll('#reaction-options .option-card').forEach(c => c.classList.remove('selected'));
+                    div.classList.add('selected');
+                    document.getElementById('next-scenario-btn').style.display = 'inline-flex';
+                };
+                optCont.appendChild(div);
+            });
+            document.getElementById('choice-reaction').style.display = 'block';
+        }
+
+        function nextStep() {
+            if (STATE.scenarioIndex < 2) {
+                STATE.scenarioIndex++;
+                renderScenario();
+            } else {
+                renderReview();
+                goTo('S7');
+            }
+        }
+
+        function renderReview() {
+            document.getElementById('final-summary-stats').innerHTML = `
+                <p>Scenarios Resolved: 3</p>
+                <p>Total Approval: ${STATE.totalApproval}</p>
+                <p>Total Controversy: ${STATE.totalControversy}</p>
+            `;
+
+            let rulesHTML = '<ul>';
+            for (let [id, val] of Object.entries(STATE.rules)) {
+                rulesHTML += `<li>${id.toUpperCase()}: ${val.replace('_', ' ')}</li>`;
+            }
+            rulesHTML += '</ul>';
+            document.getElementById('final-rules-list').innerHTML = rulesHTML;
+
+            // Consistency
+            const vals = Object.values(STATE.rules);
+            const counts = {};
+            vals.forEach(v => counts[v] = (counts[v]||0) + 1);
+            
+            const badge = document.getElementById('consistency-badge');
+            if (STATE.rules.r1 === 'minimize_casualties' && STATE.rules.r4 === 'minimize') {
+                badge.innerHTML = '<span class="badge" style="background: var(--safe); color: #000;">CONSISTENT FRAMEWORK ✓</span>';
+                document.getElementById('ethicist-verdict').innerText = "Your algorithm reflects a mathematically consistent utilitarian framework. You minimize loss of life regardless of legal status. Note: Some jurisdictions may view programmed harm as illegal even if it saves more lives.";
+            } else if (STATE.rules.r1 === 'protect_passengers' && STATE.rules.r4 === 'protect_always') {
+                badge.innerHTML = '<span class="badge" style="background: var(--safe); color: #000;">CONSISTENT FRAMEWORK ✓</span>';
+                document.getElementById('ethicist-verdict').innerText = "Your algorithm reflects a clear social contract: the purchaser of the vehicle assumes the vehicle will protect them. This is defensible, but it creates a world where pedestrians bear all the risk.";
+            } else {
+                badge.innerHTML = '<span class="badge" style="background: var(--amber); color: #000;">MIXED SIGNALS ⚠️</span>';
+                document.getElementById('ethicist-verdict').innerText = "Your rules shift priorities depending on the scenario details. While human-like, this inconsistency would produce unpredictable fleet-wide behavior, creating significant liability.";
+            }
+
+            // Regulator
+            const reg = document.getElementById('regulator-verdict');
+            let regText = "";
+            if (STATE.rules.r3 === 'age_neutral') regText += "The EU's AV guidelines prohibit age-based targeting. Your Rule 3 aligns with this standard. ";
+            else regText += "The EU's guidelines prohibit age-based targeting. Your Rule 3 conflicts with this standard. ";
+            
+            if (STATE.rules.r1 === 'minimize_casualties') regText += "Germany's 2017 guidelines suggest all parties be treated equally. Your Rule 1 aligns with this utilitarian balance.";
+            else regText += "In many regions, laws regarding programmed 'sacrifice' are still unwritten. Your car could likely ship today.";
+            reg.innerText = regText;
+        }
+
+        function toggleMember(el) {
+            el.classList.toggle('active');
+        }
+
+        function setFinal(type) {
+            STATE.finalReflection = type;
+            document.querySelectorAll('#final-options .option-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            const badgeCard = document.getElementById('final-badge-card');
+            badgeCard.style.display = 'block';
+            
+            const title = document.getElementById('badge-title');
+            const desc = document.getElementById('badge-desc');
+
+            if (STATE.rules.r1 === 'minimize_casualties' || STATE.rules.r4 === 'minimize') {
+                title.innerText = "Utilitarian Architect";
+                desc.innerText = "You prioritize the preservation of life as a numerical absolute, seeking the greatest good for the greatest number.";
+            } else if (STATE.rules.r1 === 'protect_passengers') {
+                title.innerText = "Social Contract Engineer";
+                desc.innerText = "You honor the bond between user and machine, ensuring the vehicle protects its own at any cost.";
+            } else if (type === 'human') {
+                title.innerText = "Human-First Advocate";
+                desc.innerText = "You believe ethical complexity belongs in human hands, not in pre-programmed silicon.";
+            } else {
+                title.innerText = "Pragmatic Analyst";
+                desc.innerText = "You navigate the shades of gray in machine ethics, balancing liability, safety, and public perception.";
+            }
+            
+            badgeCard.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Init progress
+        updateProgress();
+    </script>
+</body>
+</html>
