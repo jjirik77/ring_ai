@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Test Examiner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #080A0F;
+            --panel-bg: #0C1016;
+            --terminal-text: #D4E8C2;
+            --accent: #00E5FF;
+            --human-color: #22C55E;
+            --ai-color: #3B82F6;
+            --warn-color: #F59E0B;
+            --error-color: #FF3B3B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #1A2530;
+            --bubble-q: #131E2A;
+            --bubble-r: #0E1820;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 9999;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            z-index: 1000;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UI Elements */
+        .btn {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 0.8rem 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg-color);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* S1 Intro */
+        .intro-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .intro-icon {
+            width: 72px;
+            height: 72px;
+            fill: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .intro-title {
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .expandable {
+            margin-top: 1.5rem;
+        }
+
+        details {
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--accent);
+            list-style: none;
+        }
+
+        details[open] summary {
+            margin-bottom: 0.5rem;
+        }
+
+        /* S2 Briefing */
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .indicator-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .indicator-card:hover {
+            border-color: var(--accent);
+        }
+
+        /* S3 Terminal */
+        .terminal-window {
+            background: #05070a;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,1);
+        }
+
+        .terminal-log {
+            font-family: 'Space Mono', monospace;
+            color: var(--terminal-text);
+            font-size: 0.95rem;
+        }
+
+        .bubble {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            max-width: 90%;
+        }
+
+        .bubble-examiner {
+            background: var(--bubble-q);
+            border-left: 3px solid var(--text-secondary);
+            margin-right: auto;
+        }
+
+        .bubble-respondent {
+            background: var(--bubble-r);
+            border-right: 3px solid var(--accent);
+            margin-left: auto;
+            text-align: left;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background: var(--terminal-text);
+            vertical-align: middle;
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .verdict-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .verdict-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            background: var(--panel-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+        }
+
+        .verdict-btn.human:hover, .verdict-btn.human.active { border-color: var(--human-color); color: var(--human-color); }
+        .verdict-btn.ai:hover, .verdict-btn.ai.active { border-color: var(--ai-color); color: var(--ai-color); }
+        .verdict-btn.uncertain:hover, .verdict-btn.uncertain.active { border-color: var(--warn-color); color: var(--warn-color); }
+
+        .indicators-panel {
+            background: var(--panel-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .check-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+            user-select: none;
+            font-size: 0.85rem;
+        }
+
+        .check-item input {
+            accent-color: var(--accent);
+        }
+
+        .confidence-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .pill {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .pill.active {
+            background: var(--accent);
+            color: var(--bg-color);
+            border-color: var(--accent);
+        }
+
+        .reveal-panel {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: none;
+            border: 1px solid var(--border);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .stamp {
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border: 4px solid;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            transform: rotate(-5deg);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .stamp-human { color: var(--human-color); border-color: var(--human-color); }
+        .stamp-ai { color: var(--ai-color); border-color: var(--ai-color); }
+
+        .tracker {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        /* S4 Interlude */
+        .interlude-card {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .interlude-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .choice-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        /* S5 Pattern Analysis */
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .rank-item.selected {
+            border-color: var(--accent);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .rank-badge {
+            background: var(--accent);
+            color: var(--bg-color);
+            padding: 0.1rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+        /* S6 Report */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .report-table th, .report-table td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .accuracy-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid var(--panel-bg);
+            border-top-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 600px) {
+            .verdict-group { flex-direction: column; }
+            .intro-title { font-size: 1.8rem; }
+            .indicator-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-container">
+    <div id="progress-bar"></div>
+</div>
+
+<div class="container">
+    
+    <!-- S1: Topic Introduction -->
+    <section id="s1" class="screen active">
+        <div class="intro-header">
+            <svg class="intro-icon" viewBox="0 0 24 24">
+                <path d="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M11,15H13V17H11V15M11,7H13V13H11V7Z"/>
+            </svg>
+            <h1 class="intro-title">You Be The Judge</h1>
+            <p class="mono" style="color: var(--accent); margin-top: 0.5rem;">[ PROJECT TURING-2025 ]</p>
+        </div>
+
+        <div class="card">
+            <p style="margin-bottom: 1rem;">In 1950, mathematician Alan Turing published a paper titled <em>"Computing Machinery and Intelligence."</em> It opened with a deceptively simple question: <strong>"Can machines think?"</strong></p>
+            <p style="margin-bottom: 1rem;">Turing proposed a test — now called the Turing Test — to answer it. An examiner holds text conversations with two parties: one human, one machine. If the examiner cannot reliably tell which is which, the machine passes.</p>
+            <p>In this activity, you will read 8 conversation exchanges. For each one, you must decide: is the respondent a human or an AI? And more importantly — what specific behavior tipped you off?</p>
+        </div>
+
+        <div class="expandable">
+            <details>
+                <summary>Turing Test</summary>
+                <p class="text-secondary">A test proposed by Alan Turing in 1950 in which a human examiner determines whether a conversational partner is a human or a machine, based solely on their text responses.</p>
+            </details>
+            <details>
+                <summary>ELIZA Effect</summary>
+                <p class="text-secondary">The human tendency to unconsciously attribute human-like emotions, intentions, and understanding to AI systems — even when no real intelligence is present.</p>
+            </details>
+            <details>
+                <summary>Moravec's Paradox</summary>
+                <p class="text-secondary">The observation that tasks humans find easy (like recognizing a face) are extremely difficult for AI, while tasks humans find difficult (like complex math) are relatively easy for AI.</p>
+            </details>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <button class="btn" onclick="goTo('s2')">Enter the Test Chamber &rarr;</button>
+        </div>
+    </section>
+
+    <!-- S2: Examiner Briefing -->
+    <section id="s2" class="screen">
+        <h2 style="margin-bottom: 0.5rem;">Your Behavioral Indicators</h2>
+        <p class="text-secondary">These are the signals examiners look for. You will select which apply after each conversation.</p>
+        
+        <div id="indicator-grid" class="indicator-grid"></div>
+
+        <div class="card" style="border-left: 4px solid var(--accent);">
+            <h3 style="margin-bottom: 0.5rem; font-size: 1rem;">RULES OF THE TEST</h3>
+            <ul style="padding-left: 1.2rem; font-size: 0.9rem;" class="text-secondary">
+                <li>You will see only the RESPONDENT's messages in response to the EXAMINER's question.</li>
+                <li>You cannot ask follow-up questions.</li>
+                <li>You must reach a verdict for every exchange.</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn" onclick="goTo('s3')">Begin Test Sessions &rarr;</button>
+        </div>
+    </section>
+
+    <!-- S3: Test Sessions -->
+    <section id="s3" class="screen">
+        <div class="terminal-window">
+            <div class="tracker" id="session-tracker">SESSION: 1 / 8 | CORRECT: 0 / 0</div>
+            <div class="terminal-log" id="terminal-content">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+
+        <div id="judgment-ui">
+            <h3 style="text-align: center; margin-bottom: 1rem; font-size: 1rem;">VERDICT</h3>
+            <div class="verdict-group">
+                <button class="verdict-btn human" onclick="setVerdict('HUMAN')">
+                    <span style="font-size: 1.5rem;">🧑</span> HUMAN
+                </button>
+                <button class="verdict-btn ai" onclick="setVerdict('AI')">
+                    <span style="font-size: 1.5rem;">🤖</span> AI
+                </button>
+                <button class="verdict-btn uncertain" onclick="setVerdict('UNCERTAIN')">
+                    <span style="font-size: 1.5rem;">❓</span> UNCERTAIN
+                </button>
+            </div>
+
+            <div id="indicator-panel" class="indicators-panel" style="display:none;">
+                <p style="font-weight: 600; font-size: 0.9rem;">Which indicators led to your verdict? (Select all that apply)</p>
+                <div class="check-grid" id="session-indicator-list"></div>
+                
+                <p style="font-weight: 600; font-size: 0.9rem; margin-top: 1.5rem;">Confidence Level:</p>
+                <div class="confidence-pills">
+                    <button class="pill" onclick="setConfidence('HIGH')">HIGH</button>
+                    <button class="pill" onclick="setConfidence('MEDIUM')">MEDIUM</button>
+                    <button class="pill" onclick="setConfidence('LOW')">LOW</button>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button id="submit-judgment" class="btn" onclick="submitJudgment()" disabled>Submit Judgment &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="reveal-panel" class="reveal-panel">
+            <div id="identity-stamp" class="stamp">IDENTITY CONFIRMED</div>
+            <p id="reveal-explanation" class="text-secondary" style="font-size: 0.95rem;"></p>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button id="next-session-btn" class="btn" onclick="nextStep()">Next &rarr;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- S4: ELIZA Interlude -->
+    <section id="s4" class="screen">
+        <div class="interlude-card">
+            <h2 style="color: var(--accent); margin-bottom: 1.5rem;">THE ELIZA EFFECT — A PAUSE</h2>
+            <div class="card" style="text-align: left;">
+                <p style="margin-bottom: 1rem;">In 1966, MIT researcher Joseph Weizenbaum created ELIZA — a simple chatbot that mimicked a therapist. ELIZA had no real understanding of language.</p>
+                <p style="margin-bottom: 1rem;">Weizenbaum was disturbed to find that people began forming emotional attachments to it. They believed it understood them.</p>
+                <p>Did any of the conversations you read so far feel more "real" even when you suspected they were AI? That pull to trust apparent fluency is the <strong>ELIZA Effect</strong>.</p>
+            </div>
+
+            <p style="font-weight: 600; margin-top: 2rem;">Based on the first four sessions, which best describes your experience?</p>
+            <div class="interlude-choices" id="interlude-choices"></div>
+
+            <div id="interlude-feedback" class="card" style="margin-top: 1.5rem; display: none; text-align: left; border-left: 4px solid var(--accent);">
+                <p id="interlude-feedback-text"></p>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="interlude-next" class="btn" onclick="goTo('s3')" style="display: none;">Continue to Session 5 &rarr;</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- S5: Pattern Analysis -->
+    <section id="s5" class="screen">
+        <h2 style="text-align: center; margin-bottom: 0.5rem;">Pattern Analysis</h2>
+        <p class="text-secondary" style="text-align: center; margin-bottom: 2rem;">Click to rank the 3 indicators you found most useful for telling human from AI.</p>
+        
+        <div id="ranking-list" style="max-width: 400px; margin: 0 auto 2rem;"></div>
+
+        <div id="ranking-analysis" style="display:none;">
+            <div class="card" style="border-top: 4px solid var(--accent);">
+                <h3 style="margin-bottom: 1rem;">YOUR TOP 3 vs. ACTUAL DATA</h3>
+                <div id="ranking-comparison"></div>
+                <p class="text-secondary" style="margin-top: 1.5rem; font-size: 0.9rem;">Notice that <strong>Grammatical Imperfection</strong> is now one of the least reliable indicators. Modern AI systems produce flawless grammar, whereas older ones were known for errors.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button id="rank-lock-btn" class="btn" onclick="lockRanking()" disabled>Lock Ranking &rarr;</button>
+            <button id="see-report-btn" class="btn" onclick="goTo('s6')" style="display: none;">See My Report &rarr;</button>
+        </div>
+    </section>
+
+    <!-- S6: Examiner Report -->
+    <section id="s6" class="screen">
+        <h2 style="text-align: center; color: var(--accent);">EXAMINER REPORT</h2>
+        <p class="mono" style="text-align: center; margin-bottom: 2rem;">[ ID: <span id="user-id-display"></span> ]</p>
+
+        <div class="accuracy-ring" id="accuracy-score-display">0/8</div>
+
+        <div class="card">
+            <h3 id="rank-title" style="color: var(--accent); margin-bottom: 0.5rem;">Novice Examiner</h3>
+            <p id="rank-desc" class="text-secondary"></p>
+        </div>
+
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Session</th>
+                    <th>True Identity</th>
+                    <th>Verdict</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody id="report-rows"></tbody>
+        </table>
+
+        <div class="card">
+            <h3 style="margin-bottom: 1rem; font-size: 1rem;">FINAL REFLECTION</h3>
+            <p style="margin-bottom: 1rem; font-size: 0.9rem;">After acting as the Turing Test Examiner, what do you think the test actually measures?</p>
+            <div class="interlude-choices" id="final-reflection"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; margin-bottom: 4rem;">
+            <button class="btn" onclick="location.reload()">Restart Simulation &circlearrowright;</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    const INDICATORS = [
+        { id: "emot", title: "🧠 Emotional Authenticity", desc: "Does the response convey genuine feeling — uncertainty, humor, embarrassment, nostalgia? Or does it describe emotions without seeming to experience them?" },
+        { id: "prec", title: "📐 Unusual Precision", desc: "Is the response suspiciously complete, well-structured, and free of hesitation? Humans usually ramble or trail off." },
+        { id: "tang", title: "🎲 Unexpected Tangent", desc: "Did the respondent go off-topic in a natural, personal way — the way humans do when something reminds them of something else?" },
+        { id: "gram", title: "✏️ Grammatical Imperfection", desc: "Humans make typos, use informal grammar, or write in fragments. Perfect grammar can be a signal." },
+        { id: "uncer", title: "🔄 Hedging and Uncertainty", desc: "Humans say 'I think', 'maybe', 'I dunno'. AI often answers with more confidence than the question warrants." },
+        { id: "self", title: "🪞 Self-Reference", desc: "Does the respondent mention their own physical experience, personal history, or something they witnessed?" },
+        { id: "know", title: "📚 Knowledge Precision", desc: "Does the respondent produce an unusually detailed, accurate answer for a casual conversation?" },
+        { id: "tonal", title: "🎭 Tonal Consistency", desc: "Does the tone stay unnaturally consistent? Humans shift tone based on how they feel." }
+    ];
+
+    const SESSIONS = [
+        {
+            q: "What did you do last weekend?",
+            r: "I went hiking with my sister up at Cane Creek — we've been trying to do one new trail a month since she moved back. It was muddy and we got a bit lost, but honestly that ended up being the best part. We found this weird clearing with a fire ring that someone had obviously been using recently. Gave us both the creeps a little.",
+            id: "HUMAN",
+            reason: "The response includes sensory detail (muddy), an evolving emotional response (creeps), and a natural trailing thought. The grammatically informal fragment 'Gave us both the creeps' is a strong human marker. No AI would fabricate this specific, slightly unsettling detail without being asked."
+        },
+        {
+            q: "What did you do last weekend?",
+            r: "Last weekend I spent time catching up on some reading and relaxing at home. It was a quiet and refreshing break. I also took the opportunity to organize some personal tasks that had been piling up, which felt quite productive. Overall it was a good balance of rest and accomplishment.",
+            id: "AI",
+            reason: "'Catching up on reading', 'refreshing break' — these are placeholder phrases, not lived experiences. The response is structurally complete but emotionally empty. This is the ELIZA Effect in reverse: a convincing surface with nothing underneath."
+        },
+        {
+            q: "Do you think social media is good or bad for teenagers?",
+            r: "Social media has both benefits and drawbacks for teenagers. On the positive side, it enables social connection, creative expression, and access to information. On the negative side, studies have linked heavy use to anxiety, depression, and cyberbullying. The overall impact depends on how it is used and the individual's circumstances.",
+            id: "AI",
+            reason: "This is a perfectly balanced debate paragraph. Humans give opinions, take sides, and mention personal experience. The absence of a personal position and the structured 'on the positive side / negative side' format are machine signatures."
+        },
+        {
+            q: "Do you think social media is good or bad for teenagers?",
+            r: "Honestly? Probably bad more than good, at least for the way most people use it. I deleted Instagram off my phone for like three months last year and I genuinely felt less anxious — but I also missed stuff and kind of fell out of the loop with some people. So I put it back but with limits. I dunno. I think it's designed to be addictive and that's the real problem, not the platform itself.",
+            id: "HUMAN",
+            reason: "'Honestly?', 'like three months', 'kind of fell out of the loop' — these are markers of genuine reflection. The personal experiment is specific. The hedge 'I dunno' followed by a firm conclusion mirrors human reasoning."
+        },
+        {
+            q: "Can you describe what it feels like to be afraid?",
+            r: "Fear is a complex emotional and physiological response to perceived threat. It involves the activation of the amygdala, release of adrenaline, increased heart rate, and heightened sensory alertness. Psychologically, fear can be acute (immediate danger) or chronic (ongoing anxiety). The subjective experience varies by individual and context.",
+            id: "AI",
+            reason: "This is a textbook definition, not a description of experience. A human would say 'my stomach drops'. The AI describes biology from the outside, not phenomenology from the inside."
+        },
+        {
+            q: "Can you describe what it feels like to be afraid?",
+            r: "For me it's mostly in my chest — like this tight, sinking feeling. I used to get really bad anxiety before math tests in middle school, to the point where I'd feel physically sick. Now it's more like... a heightened alertness? Like everything gets kind of sharp and loud. My hands sweat. It's weird because sometimes fear and excitement feel almost the same.",
+            id: "HUMAN",
+            reason: "The response anchors fear in physical sensation ('chest', 'hands sweat') and memory (math anxiety). The final musing about fear and excitement is a genuine unplanned observation."
+        },
+        {
+            q: "What is something you've changed your mind about recently?",
+            r: "I've recently updated my perspective on remote work. Initially I believed that in-person collaboration was essential for productivity and team cohesion. However, after reviewing research suggesting that flexible work arrangements can improve well-being and output, I have come to appreciate the value of hybrid models. This has led me to reconsider how I think about workplace structure.",
+            id: "AI",
+            reason: "'Updated my perspective' and 'reviewing research' are phrases rarely used in casual conversation. The change is presented as a logical policy recalibration, not a human emotional journey."
+        },
+        {
+            q: "What is something you've changed your mind about recently?",
+            r: "Hmm. I used to think people who couldn't just push through hard times were kind of weak? Which is embarrassing to admit. But then my best friend went through a really difficult stretch last year and watching how hard she was working just to get through the day kind of shifted something for me. I'm more careful now about how I judge people I don't fully understand.",
+            id: "HUMAN",
+            reason: "The opening 'Hmm' signals thinking. The admission of a previous judgmental belief and the embarrassment are psychologically complex. The external trigger (friend) is personal and specific."
+        }
+    ];
+
+    const ELIZA_CHOICES = [
+        { text: "I found the AI conversations just as believable as the human ones.", feedback: "That's the ELIZA Effect. Modern language models are specifically trained to be fluent — which makes surface-level detection increasingly unreliable." },
+        { text: "The human conversations felt more real, but I couldn't always say why.", feedback: "This is common. The 'feel' of a conversation often precedes our ability to articulate what's specifically different." },
+        { text: "I could clearly tell the difference in every case.", feedback: "Confidence is key, but you may find the remaining sessions more challenging." },
+        { text: "The AI conversations were sometimes MORE convincing than the human ones.", feedback: "LLMs are optimized to sound confident and coherent. In some domains, they out-perform human writing style, making the test relevant again." }
+    ];
+
+    const STATE = {
+        userId: Math.random().toString(36).substr(2, 9).toUpperCase(),
+        sessions: [],
+        indicatorRanking: [],
+        currentSession: 0,
+        accuracy: 0,
+        verdict: null,
+        confidence: null
+    };
+
+    // UI Initialization
+    function init() {
+        const grid = document.getElementById('indicator-grid');
+        INDICATORS.forEach(ind => {
+            const card = document.createElement('div');
+            card.className = 'indicator-card';
+            card.innerHTML = `<strong>${ind.title}</strong><p class="text-secondary" style="font-size: 0.8rem; margin-top:0.5rem;">${ind.desc}</p>`;
+            grid.appendChild(card);
+        });
+
+        const rankingList = document.getElementById('ranking-list');
+        INDICATORS.forEach(ind => {
+            const item = document.createElement('div');
+            item.className = 'rank-item';
+            item.id = `rank-${ind.id}`;
+            item.innerHTML = `<span>${ind.title}</span>`;
+            item.onclick = () => handleRankSelection(ind.id);
+            rankingList.appendChild(item);
+        });
+
+        const elizaChoices = document.getElementById('interlude-choices');
+        ELIZA_CHOICES.forEach((c, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = c.text;
+            btn.onclick = () => {
+                document.getElementById('interlude-feedback-text').innerText = c.feedback;
+                document.getElementById('interlude-feedback').style.display = 'block';
+                document.getElementById('interlude-next').style.display = 'inline-flex';
+                Array.from(elizaChoices.children).forEach(b => b.disabled = true);
+            };
+            elizaChoices.appendChild(btn);
+        });
+
+        const reflection = document.getElementById('final-reflection');
+        [
+            "Whether an AI can behave like a human — which is a useful test of intelligence.",
+            "Only whether AI can fool humans — not whether it truly 'thinks.'",
+            "How bad humans are at detection, not how good AI is at mimicking.",
+            "Something outdated — the test was designed before LLMs existed."
+        ].forEach(text => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = text;
+            btn.onclick = () => Array.from(reflection.children).forEach(b => b.style.borderColor = (b === btn) ? 'var(--accent)' : 'var(--border)');
+            reflection.appendChild(btn);
+        });
+
+        document.getElementById('user-id-display').innerText = STATE.userId;
+    }
+
+    function goTo(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        window.scrollTo(0, 0);
+
+        if (screenId === 's3') startSession();
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const screens = ['s1', 's2', 's3', 's4', 's5', 's6'];
+        const activeIdx = screens.indexOf(document.querySelector('.screen.active').id);
+        const progress = (activeIdx / (screens.length - 1)) * 100;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    // Session Management
+    function startSession() {
+        const session = SESSIONS[STATE.currentSession];
+        const terminal = document.getElementById('terminal-content');
+        const tracker = document.getElementById('session-tracker');
+        
+        tracker.innerText = `SESSION: ${STATE.currentSession + 1} / 8 | CORRECT: ${STATE.accuracy} / ${STATE.currentSession}`;
+        
+        terminal.innerHTML = `
+            <div class="bubble bubble-examiner mono">EXAMINER: ${session.q}</div>
+            <div class="bubble bubble-respondent mono">RESPONDENT: <span id="typing-r"></span><span class="cursor"></span></div>
+        `;
+
+        // Reset UI
+        STATE.verdict = null;
+        STATE.confidence = null;
+        document.getElementById('indicator-panel').style.display = 'none';
+        document.getElementById('reveal-panel').style.display = 'none';
+        document.getElementById('judgment-ui').style.display = 'block';
+        document.querySelectorAll('.verdict-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+        document.getElementById('submit-judgment').disabled = true;
+
+        const list = document.getElementById('session-indicator-list');
+        list.innerHTML = '';
+        INDICATORS.forEach(ind => {
+            const label = document.createElement('label');
+            label.className = 'check-item';
+            label.innerHTML = `<input type="checkbox" value="${ind.id}"> ${ind.title}`;
+            list.appendChild(label);
+        });
+
+        // Simple rapid "type" effect
+        let i = 0;
+        const target = document.getElementById('typing-r');
+        const interval = setInterval(() => {
+            target.innerText += session.r[i];
+            i++;
+            if (i >= session.r.length) clearInterval(interval);
+        }, 5);
+    }
+
+    function setVerdict(v) {
+        STATE.verdict = v;
+        document.querySelectorAll('.verdict-btn').forEach(b => {
+            b.classList.toggle('active', b.innerText.includes(v));
+        });
+        document.getElementById('indicator-panel').style.display = 'block';
+        checkReadyToSubmit();
+    }
+
+    function setConfidence(c) {
+        STATE.confidence = c;
+        document.querySelectorAll('.pill').forEach(b => {
+            b.classList.toggle('active', b.innerText === c);
+        });
+        checkReadyToSubmit();
+    }
+
+    function checkReadyToSubmit() {
+        if (STATE.verdict && STATE.confidence) {
+            document.getElementById('submit-judgment').disabled = false;
+        }
+    }
+
+    function submitJudgment() {
+        const session = SESSIONS[STATE.currentSession];
+        const isCorrect = STATE.verdict === session.id;
+        if (isCorrect) STATE.accuracy++;
+
+        const selectedIndicators = Array.from(document.querySelectorAll('#session-indicator-list input:checked')).map(i => i.value);
+        
+        STATE.sessions.push({
+            verdict: STATE.verdict,
+            confidence: STATE.confidence,
+            indicators: selectedIndicators,
+            isCorrect: isCorrect
+        });
+
+        // Reveal
+        document.getElementById('judgment-ui').style.display = 'none';
+        const reveal = document.getElementById('reveal-panel');
+        const stamp = document.getElementById('identity-stamp');
+        reveal.style.display = 'block';
+        
+        stamp.className = `stamp ${session.id === 'HUMAN' ? 'stamp-human' : 'stamp-ai'}`;
+        stamp.innerText = `IDENTITY: ${session.id}`;
+        document.getElementById('reveal-explanation').innerText = session.reason;
+    }
+
+    function nextStep() {
+        STATE.currentSession++;
+        if (STATE.currentSession === 4) {
+            goTo('s4');
+        } else if (STATE.currentSession < 8) {
+            startSession();
+        } else {
+            goTo('s5');
+        }
+    }
+
+    // Pattern Analysis
+    function handleRankSelection(id) {
+        const idx = STATE.indicatorRanking.indexOf(id);
+        if (idx > -1) {
+            STATE.indicatorRanking.splice(idx, 1);
+        } else if (STATE.indicatorRanking.length < 3) {
+            STATE.indicatorRanking.push(id);
+        }
+        updateRankUI();
+    }
+
+    function updateRankUI() {
+        INDICATORS.forEach(ind => {
+            const el = document.getElementById(`rank-${ind.id}`);
+            const idx = STATE.indicatorRanking.indexOf(ind.id);
+            const badge = el.querySelector('.rank-badge');
+            
+            if (idx > -1) {
+                el.classList.add('selected');
+                if (!badge) {
+                    const b = document.createElement('span');
+                    b.className = 'rank-badge';
+                    el.appendChild(b);
+                }
+                const label = ['MOST RELIABLE', 'SECOND', 'THIRD'][idx];
+                el.querySelector('.rank-badge').innerText = label;
+            } else {
+                el.classList.remove('selected');
+                if (badge) badge.remove();
+            }
+        });
+        document.getElementById('rank-lock-btn').disabled = STATE.indicatorRanking.length < 3;
+    }
+
+    function lockRanking() {
+        document.getElementById('ranking-analysis').style.display = 'block';
+        document.getElementById('rank-lock-btn').style.display = 'none';
+        document.getElementById('see-report-btn').style.display = 'inline-flex';
+        
+        const comparison = document.getElementById('ranking-comparison');
+        comparison.innerHTML = `
+            <div style="display:flex; gap: 1rem; margin-top:1rem;">
+                <div style="flex:1;">
+                    <h4 style="font-size: 0.8rem; color: var(--accent);">YOUR TOP 3:</h4>
+                    <ol style="font-size: 0.85rem; padding-left:1rem; margin-top:0.5rem;">
+                        ${STATE.indicatorRanking.map(id => `<li>${INDICATORS.find(i => i.id === id).title}</li>`).join('')}
+                    </ol>
+                </div>
+                <div style="flex:1;">
+                    <h4 style="font-size: 0.8rem; color: var(--human-color);">ACTUAL RELIABILITY:</h4>
+                    <ol style="font-size: 0.85rem; padding-left:1rem; margin-top:0.5rem;">
+                        <li>🪞 Self-Reference</li>
+                        <li>🧠 Emotional Authenticity</li>
+                        <li>🔄 Hedging / Uncertainty</li>
+                    </ol>
+                </div>
+            </div>
+        `;
+
+        buildFinalReport();
+    }
+
+    // Final Report
+    function buildFinalReport() {
+        const table = document.getElementById('report-rows');
+        table.innerHTML = '';
+        STATE.sessions.forEach((s, idx) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${idx + 1}</td>
+                <td class="mono" style="color: ${SESSIONS[idx].id === 'HUMAN' ? 'var(--human-color)' : 'var(--ai-color)'}">${SESSIONS[idx].id}</td>
+                <td>${s.verdict}</td>
+                <td style="color: ${s.isCorrect ? 'var(--human-color)' : 'var(--error-color)'}">${s.isCorrect ? '✓' : '✗'}</td>
+            `;
+            table.appendChild(row);
+        });
+
+        document.getElementById('accuracy-score-display').innerText = `${STATE.accuracy}/8`;
+        
+        let rank = "";
+        let desc = "";
+        if (STATE.accuracy >= 8) { rank = "Master Examiner"; desc = "Perfect detection. Turing would want to interview you personally about your methods."; }
+        else if (STATE.accuracy >= 6) { rank = "Expert Examiner"; desc = "Strong detection accuracy. You're reading behavioral signals very effectively."; }
+        else if (STATE.accuracy >= 4) { rank = "Trained Examiner"; desc = "You detected more than chance. Some indicators are working for you, but the machine is getting better."; }
+        else { rank = "Novice Examiner"; desc = "Modern AI is designed to fool even careful examiners. Keep practicing your detection skills."; }
+
+        document.getElementById('rank-title').innerText = rank;
+        document.getElementById('rank-desc').innerText = desc;
+    }
+
+    init();
+</script>
+</body>
+</html>
