@@ -32,23 +32,24 @@
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Changed from center to allow scrolling if needed */
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            padding: 40px 0; /* Add padding for breathability */
+            overflow-y: auto; /* Allow body to scroll now that window is bigger */
         }
 
-        /* Fixed Aspect Ratio Container */
+        /* Fixed Width, Larger Vertical Aspect Ratio Container */
         #app-viewport {
             width: 1024px;
-            height: 768px;
+            min-height: 1000px; /* Increased from 768px */
             background-color: var(--bg-light);
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden;
+            overflow: visible; /* Allow content to dictate height */
         }
 
         /* Header Area */
@@ -105,7 +106,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: visible; /* No internal scroll */
         }
 
         .content-card {
@@ -114,13 +115,13 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             padding: 35px;
-            height: 100%;
+            min-height: 800px; /* Force internal space */
             width: 100%;
             display: flex;
             flex-direction: column;
             animation: slideUp 0.4s ease-out;
-            overflow-y: auto;
             position: relative;
+            overflow: visible; /* No internal scroll */
         }
 
         @keyframes slideUp {
@@ -132,8 +133,8 @@
         .sidebar-layout {
             display: flex;
             gap: 25px;
-            height: 100%;
-            overflow: hidden;
+            height: auto;
+            overflow: visible;
         }
 
         .sidebar {
@@ -168,8 +169,8 @@
 
         .sidebar-content {
             flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 10px;
+            overflow: visible;
+            padding-right: 0;
         }
 
         /* Footer */
@@ -251,7 +252,7 @@
         /* Stamp */
         .stamp-overlay {
             position: absolute;
-            top: 45%;
+            top: 350px; /* Fixed vertical position relative to expanded card */
             left: 50%;
             transform: translate(-50%, -50%) rotate(-10deg) scale(0);
             z-index: 100;
@@ -286,14 +287,17 @@
         /* Term definition specific box */
         #term-definition-box {
             background-color: #f1f7ff;
-            border-left: 4px solid var(--primary);
-            padding: 15px 20px;
-            margin-top: 10px;
-            min-height: 80px;
+            border: 1px solid var(--primary);
+            border-left: 6px solid var(--primary);
+            padding: 25px 30px;
+            margin-top: 15px;
+            min-height: 120px; 
             display: none;
             animation: fadeIn 0.3s;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
-        #term-definition-box p { margin: 0; color: var(--text-main); font-weight: 500; }
+        #term-definition-box p { margin: 0; color: var(--text-main); font-weight: 500; font-size: 16px; line-height: 1.5; }
 
         /* Matching Grid */
         .match-container {
@@ -301,6 +305,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 15px;
+            overflow: visible;
         }
         .match-col { display: flex; flex-direction: column; gap: 10px; }
         .match-card {
@@ -347,6 +352,7 @@
             font-style: italic;
             font-size: 14px;
             color: var(--primary);
+            line-height: 1.4;
         }
 
         /* Hidden Utility */
@@ -362,11 +368,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* Internal Scrollbar */
-        .scrollable { overflow-y: auto; padding-right: 10px; }
-        .scrollable::-webkit-scrollbar { width: 6px; }
-        .scrollable::-webkit-scrollbar-track { background: transparent; }
-        .scrollable::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 10px; }
+        /* No internal scroll requested */
+        .scrollable { overflow: visible; padding-right: 0; }
     </style>
 </head>
 <body>
@@ -376,9 +379,7 @@
         <div class="header-left">
             <h1>Digital Rights Consultant</h1>
         </div>
-        <div class="progress-dots" id="dot-container">
-            <!-- Dots injected by JS -->
-        </div>
+        <div class="progress-dots" id="dot-container"></div>
         <div class="score-box" id="global-score">SCORE: 0</div>
     </header>
 
@@ -418,14 +419,12 @@
                     <div class="sidebar-btn" onclick="switchBriefingTab(1, this)">Legal Principles</div>
                 </div>
                 <div class="sidebar-content" id="briefing-content">
-                    <!-- Tab 0 Content -->
                     <div id="brief-tab-0">
                         <p><strong>✅ FAIR USE:</strong> The use is legal without permission. It serves a transformative, educational, critical, or commentary purpose, and does not harm the original creator's market.</p>
                         <p><strong>🔵 LICENSED:</strong> The creator has explicitly granted permission through a license (e.g., Creative Commons, royalty-free, open source). Use is permitted within the license terms.</p>
                         <p><strong>🚫 PIRACY:</strong> The use is unauthorized and violates copyright. The creator's rights are being infringed — whether or not money changes hands.</p>
                         <p><strong>⚠️ UNCLEAR:</strong> The case falls in a legal grey zone. Courts have disagreed, or the technology is new enough that clear precedent doesn't yet exist.</p>
                     </div>
-                    <!-- Tab 1 Content -->
                     <div id="brief-tab-1" class="hidden">
                         <p><strong>⚙️ Transformative Use:</strong> Does the new work add something new — commentary, parody, critique, new meaning? Or does it simply reproduce the original?</p>
                         <p><strong>📏 Proportion:</strong> How much of the original work was used? Using one sentence from a book differs from reproducing an entire chapter.</p>
@@ -492,13 +491,11 @@
                     <div class="sidebar-btn" id="ai-btn-2" onclick="switchAITab(2, this)">Part B: Output</div>
                     <div class="sidebar-btn" id="ai-btn-3" onclick="switchAITab(3, this)">Part C: Ethics</div>
                 </div>
-                <div class="sidebar-content scrollable">
-                    <!-- Context -->
+                <div class="sidebar-content">
                     <div id="ai-tab-0">
                         <p>In 2023 and 2024, multiple lawsuits were filed against AI companies by artists, authors, and media companies. The central claim: AI image generators (Midjourney, Stable Diffusion) and AI writing tools (ChatGPT) were trained on billions of copyrighted images and texts — without the creators' permission and without payment. The AI then generates new content in the style of those creators.</p>
                         <p>You read about the ChatGPT/Studio Ghibli case in your Unit 1.2 warm-up. This is that case — now you'll analyze it in three parts.</p>
                     </div>
-                    <!-- Part A: Training -->
                     <div id="ai-tab-1" class="hidden">
                         <p><strong>Scenario:</strong> An AI company scraped millions of copyrighted images from the internet to train their image generation model. Artists did not consent. No payment was made. The AI can now generate images in the style of any artist whose work was included.</p>
                         <div class="verdict-grid">
@@ -508,7 +505,6 @@
                             <p><strong>Actual Status: UNCLEAR.</strong> This is the central unresolved copyright question of the AI era. Courts in the U.S. and EU are actively deciding it. Some judges have dismissed claims; others have allowed them to proceed. The core question: is scraping copyrighted content for AI training "transformative" (suggesting Fair Use) or does it harm artists' markets?</p>
                         </div>
                     </div>
-                    <!-- Part B: Output -->
                     <div id="ai-tab-2" class="hidden">
                         <p><strong>Scenario:</strong> A user asks the same AI to generate an image "in the style of Studio Ghibli." The AI produces an image that has never existed before but is clearly recognizable as matching Studio Ghibli's visual style. The user shares it on social media.</p>
                         <div class="verdict-grid">
@@ -518,7 +514,6 @@
                             <p><strong>Actual Status: UNCLEAR.</strong> Copyright does not protect artistic "style" — only specific works. An image that resembles Ghibli's style but does not reproduce a specific Ghibli frame is unlikely to infringe copyright under current law. However, this question is being actively litigated, and some legal scholars argue that style mimicry at AI scale crosses a line.</p>
                         </div>
                     </div>
-                    <!-- Part C: Ethics -->
                     <div id="ai-tab-3" class="hidden">
                         <p><strong>Even if training AI on copyrighted art is ruled 'legal,' is it ethical?</strong></p>
                         <div class="match-col">
@@ -540,17 +535,13 @@
             
             <div class="scrollable">
                 <div class="match-container">
-                    <div class="match-col" id="match-list-left">
-                        <!-- Left cards -->
-                    </div>
-                    <div class="match-col" id="match-list-right">
-                        <!-- Right cards -->
-                    </div>
+                    <div class="match-col" id="match-list-left"></div>
+                    <div class="match-col" id="match-list-right"></div>
                 </div>
             </div>
             
             <div style="margin-top: 30px; text-align: center;">
-                <button class="btn-mate btn-solid" id="btn-verify-matches" disabled onclick="verifyPrecedents()">Verify Matches →</button>
+                <button class="btn-emate btn-solid" id="btn-verify-matches" disabled onclick="verifyPrecedents()">Verify Matches →</button>
             </div>
         </div>
 
@@ -601,27 +592,23 @@
 </div>
 
 <script>
-    // App State
     let currentStep = 0;
     let score = 0;
     let currentCaseIdx = 0;
     let selectedVerdict = null;
     let selectedPrinciples = [];
     let matchSelection = { left: null, right: null };
-    let activeMatches = {}; // leftIndex: rightIndex
+    let activeMatches = {}; 
     
-    // Screens configuration
     const SCREENS = ['intro', 'briefing', 'cases', 'ai', 'precedent', 'report'];
 
-    // Definitions Data
     const DEFINITIONS = {
-        'Copyright': "The legal right giving creators exclusive control over how their original works are copied, shared, and sold.",
-        'Fair Use': "A legal exception allowing limited use of copyrighted material without permission, based on purpose, nature, amount used, and market impact.",
-        'Piracy': "The unauthorized copying, distribution, or use of copyrighted material — digital or physical.",
-        'DRM': "Technological tools (Digital Rights Management) used to restrict copying, sharing, or modifying digital content."
+        'Copyright': "The legal right giving creators exclusive control over how their original works are copied, shared, and sold. It applies automatically the moment a work is created.",
+        'Fair Use': "A legal exception allowing limited use of copyrighted material without permission. Judges look at four factors: purpose of use, nature of the original work, amount used, and market impact.",
+        'Piracy': "The unauthorized copying, distribution, or use of copyrighted material — digital or physical. It violates the creator's exclusive rights regardless of whether profit is made.",
+        'DRM': "Digital Rights Management (DRM) refers to technological tools and protocols used to restrict the copying, sharing, or modification of digital content to protect copyright holders."
     };
 
-    // Cases data
     const CASES = [
         { text: "A high school English teacher photocopies 3 pages from a published novel to use as a handout for a class discussion on narrative structure. The class has 25 students. No copies are sold.", ruling: "fair-use", explanation: "Courts have consistently found that brief educational use of copyrighted text for nonprofit classroom purposes qualifies as fair use. The teacher did not reproduce the entire work, did not sell it, and the use does not harm the author's market." },
         { text: "A student finds a full album — 12 songs — available on a file-sharing site for free. They download it instead of paying $12 on a streaming platform. They keep it only for personal listening.", ruling: "piracy", explanation: "Downloading a complete copyrighted work without payment, even for personal use, violates copyright. The 'personal use' defense does not apply to reproduction of entire commercial works. This directly substitutes for a lawful purchase, causing market harm." },
@@ -632,7 +619,6 @@
         { text: "A student takes a still from a copyrighted movie, adds text to create a meme, and shares it widely on social media. The meme does not change the meaning of the movie scene — it just makes it funny in a new context.", ruling: "unclear", explanation: "Memes exist in a rarely-litigated grey area. Most rights holders tolerate them because prosecution is unpopular and costly. Legal scholars disagree on whether a meme constitutes transformative use. In practice, memes are rarely prosecuted — but they are technically unauthorized reproductions of copyrighted frames." }
     ];
 
-    // Precedents Data
     const PRECEDENTS = [
         { left: "A rapper sampled a 2-second guitar lick from a 1970s funk record in a new song. The sample was looped and used throughout.", right: "PIRACY — The 2-second sample required a license. 'Get a license or do not sample' — Bridgeport (2004)", match: 0 },
         { left: "Google scanned millions of books from university libraries and made searchable excerpts publicly available.", right: "FAIR USE — The transformative nature and lack of market harm made it fair use. Authors Guild v. Google (2015)", match: 1 },
@@ -640,7 +626,6 @@
         { left: "An artist re-photographed news photographs, printed them in large format, and sold them in art galleries.", right: "PIRACY — Copying photographs without transformation, even as 'art,' infringes copyright. Cariou v. Prince (2013)", match: 3 }
     ];
 
-    // Initialization
     function init() {
         const dotContainer = document.getElementById('dot-container');
         SCREENS.forEach((s, i) => {
@@ -653,7 +638,6 @@
         setupMatching();
     }
 
-    // Definitions
     function showDefinition(term, el) {
         document.querySelectorAll('.term-chip').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
@@ -663,10 +647,8 @@
         text.innerHTML = `<strong>${term}:</strong> ${DEFINITIONS[term]}`;
     }
 
-    // Navigation
     function changeScreen(delta) {
         let next = currentStep + delta;
-        
         if (SCREENS[currentStep] === 'cases' && delta > 0) {
             if (currentCaseIdx < CASES.length - 1) {
                 currentCaseIdx++;
@@ -674,12 +656,10 @@
                 return;
             }
         }
-        
         if (next >= 0 && next < SCREENS.length) {
             document.getElementById('screen-' + SCREENS[currentStep]).classList.add('hidden');
             currentStep = next;
             document.getElementById('screen-' + SCREENS[currentStep]).classList.remove('hidden');
-            
             updateNavigation();
         }
     }
@@ -691,17 +671,13 @@
             if (i < currentStep) dot.classList.add('complete');
             if (i === currentStep) dot.classList.add('active');
         });
-
         document.getElementById('btn-back').disabled = currentStep === 0;
-        
         const nextBtn = document.getElementById('btn-next');
         const screen = SCREENS[currentStep];
-        
         if (screen === 'cases') {
-            const isLastCase = currentCaseIdx === CASES.length - 1;
             const isFeedbackVisible = document.getElementById('case-feedback').classList.contains('visible');
             nextBtn.disabled = !isFeedbackVisible;
-            nextBtn.innerText = isLastCase ? "Finish Cases" : "Next Case";
+            nextBtn.innerText = currentCaseIdx === CASES.length - 1 ? "Finish Cases" : "Next Case";
         } else if (screen === 'precedent') {
             nextBtn.disabled = true;
             nextBtn.innerText = "See Report";
@@ -714,7 +690,6 @@
         }
     }
 
-    // Briefing Tabs
     function switchBriefingTab(idx, el) {
         document.querySelectorAll('#screen-briefing .sidebar-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
@@ -723,22 +698,18 @@
         document.getElementById('brief-tab-' + idx).classList.remove('hidden');
     }
 
-    // Cases Logic
     function loadCase() {
         const caseData = CASES[currentCaseIdx];
-        document.getElementById('case-title').innerText = `Case #${currentCaseIdx + 1}`;
+        document.getElementById('case-title').innerText = `Case Review — Scenario #${currentCaseIdx + 1}`;
         document.getElementById('case-text').innerText = caseData.text;
-        
         document.getElementById('case-input-zone').classList.remove('hidden');
         document.getElementById('case-feedback').classList.remove('visible');
         document.getElementById('stamp-overlay').classList.remove('active');
         document.getElementById('btn-submit-case').disabled = true;
-        
         selectedVerdict = null;
         selectedPrinciples = [];
         document.querySelectorAll('#screen-cases .choice-pill').forEach(p => p.classList.remove('selected'));
         document.querySelectorAll('#principle-list .chip').forEach(c => c.classList.remove('selected'));
-        
         updateNavigation();
     }
 
@@ -767,22 +738,17 @@
     function submitCase() {
         const data = CASES[currentCaseIdx];
         const isCorrect = selectedVerdict === data.ruling;
-        
         if (isCorrect) score++;
         updateScore();
-
-        const stampOverlay = document.getElementById('stamp-overlay');
         const stampText = document.getElementById('stamp-text');
         stampText.innerText = data.ruling.replace('-', ' ');
         stampText.style.color = `var(--${data.ruling})`;
-        stampOverlay.classList.add('active');
-
+        document.getElementById('stamp-overlay').classList.add('active');
         const feedback = document.getElementById('case-feedback');
         document.getElementById('feedback-title').innerText = isCorrect ? "Verdict Matched ✅" : "Verdict Mismatch ❌";
         document.getElementById('feedback-title').style.color = isCorrect ? "var(--fair-use)" : "var(--piracy)";
         document.getElementById('feedback-text').innerText = data.explanation;
         feedback.classList.add('visible');
-        
         document.getElementById('case-input-zone').classList.add('hidden');
         updateNavigation();
     }
@@ -791,13 +757,10 @@
         document.getElementById('global-score').innerText = `SCORE: ${score}`;
     }
 
-    // AI Tabs
     function switchAITab(idx, el) {
         document.querySelectorAll('#screen-ai .sidebar-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        for (let i=0; i<4; i++) {
-            document.getElementById('ai-tab-' + i).classList.add('hidden');
-        }
+        for (let i=0; i<4; i++) document.getElementById('ai-tab-' + i).classList.add('hidden');
         document.getElementById('ai-tab-' + idx).classList.remove('hidden');
     }
 
@@ -817,18 +780,15 @@
         ];
         document.querySelectorAll('#ai-tab-3 .match-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
-        const box = document.getElementById('ethics-feedback-box');
-        box.innerHTML = `<div class="ethics-response">${responses[idx]}</div>`;
+        document.getElementById('ethics-feedback-box').innerHTML = `<div class="ethics-response">${responses[idx]}</div>`;
         score += 1;
         updateScore();
     }
 
-    // Matching
     function setupMatching() {
         const leftBox = document.getElementById('match-list-left');
         const rightBox = document.getElementById('match-list-right');
         const randomized = [...PRECEDENTS].sort(() => Math.random() - 0.5);
-
         PRECEDENTS.forEach((p, i) => {
             const card = document.createElement('div');
             card.className = 'match-card';
@@ -836,7 +796,6 @@
             card.onclick = () => selectMatchItem('left', i, card);
             leftBox.appendChild(card);
         });
-
         randomized.forEach((p, i) => {
             const card = document.createElement('div');
             card.className = 'match-card';
@@ -847,12 +806,9 @@
     }
 
     function selectMatchItem(side, index, el) {
-        if (matchSelection[side] && matchSelection[side].el) {
-            matchSelection[side].el.classList.remove('selected');
-        }
+        if (matchSelection[side] && matchSelection[side].el) matchSelection[side].el.classList.remove('selected');
         matchSelection[side] = { index, el };
         el.classList.add('selected');
-
         if (matchSelection.left && matchSelection.right) {
             const leftIdx = matchSelection.left.index;
             const rightIdx = matchSelection.right.index;
@@ -860,9 +816,7 @@
             matchSelection.left.el.classList.add('linked');
             matchSelection.right.el.classList.add('linked');
             matchSelection = { left: null, right: null };
-            if (Object.keys(activeMatches).length === 4) {
-                document.getElementById('btn-verify-matches').disabled = false;
-            }
+            if (Object.keys(activeMatches).length === 4) document.getElementById('btn-verify-matches').disabled = false;
         }
     }
 
@@ -875,13 +829,8 @@
             const rightEls = document.querySelectorAll('#match-list-right .match-card');
             let matchedRightEl = null;
             rightEls.forEach(re => { if (re.innerText === p.right) matchedRightEl = re; });
-            if (isMatch) {
-                leftEl.style.borderColor = "var(--fair-use)";
-                matchedRightEl.style.borderColor = "var(--fair-use)";
-            } else {
-                leftEl.style.borderColor = "var(--piracy)";
-                matchedRightEl.style.borderColor = "var(--piracy)";
-            }
+            if (isMatch) { leftEl.style.borderColor = "var(--fair-use)"; matchedRightEl.style.borderColor = "var(--fair-use)"; }
+            else { leftEl.style.borderColor = "var(--piracy)"; matchedRightEl.style.borderColor = "var(--piracy)"; }
         });
         score += matchScore;
         updateScore();
@@ -904,16 +853,10 @@
         document.getElementById('pattern-analysis').innerText = pattern;
     }
 
-    function restart() {
-        location.reload();
-    }
+    function restart() { location.reload(); }
 
     init();
-    document.getElementById('btn-next').addEventListener('click', () => {
-        if (SCREENS[currentStep] === 'report') {
-            calculateFinal();
-        }
-    });
+    document.getElementById('btn-next').addEventListener('click', () => { if (SCREENS[currentStep] === 'report') calculateFinal(); });
 </script>
 </body>
 </html>
