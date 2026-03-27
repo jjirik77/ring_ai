@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethics Vocab Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0A0D14;
+            --panel: #12182A;
+            --elevated: #1A2236;
+            --accent: #00E5FF;
+            --unit-1-1: #22C55E;
+            --unit-1-2: #3B82F6;
+            --unit-1-3: #F59E0B;
+            --unit-1-4: #7C3AED;
+            --correct: #22C55E;
+            --incorrect: #FF3B3B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #1E2A40;
+            --card-back: #0A1A2E;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Layout */
+        #app-container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        #main-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--panel);
+            border-top: 1px solid var(--border);
+            padding: 12px;
+            justify-content: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        /* S1: Welcome */
+        .welcome-card {
+            max-width: 640px;
+            text-align: center;
+            background: var(--panel);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .radar-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+            color: var(--accent);
+        }
+
+        .welcome-title { font-size: 32px; color: var(--accent); margin-bottom: 24px; }
+        .intro-text { text-align: left; color: var(--text-secondary); margin-bottom: 40px; font-size: 15px; }
+
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .mode-btn {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover { border-color: var(--accent); background: rgba(0, 229, 255, 0.05); }
+
+        .mode-btn strong { display: block; font-family: 'Space Grotesk'; font-size: 16px; color: var(--accent); }
+        .mode-btn span { font-size: 13px; color: var(--text-secondary); font-style: italic; }
+
+        /* S2: Flashcards */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            width: 100%;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+
+        .filter-tab {
+            white-space: nowrap;
+            padding: 8px 16px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .filter-tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .card-container {
+            width: 100%;
+            max-width: 480px;
+            height: 320px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card-front { background: var(--panel); border-left: 8px solid var(--accent); }
+        .card-back { background: var(--card-back); border: 2px solid var(--accent); transform: rotateY(180deg); }
+
+        .unit-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .card-term { font-size: 32px; color: white; margin-bottom: 8px; }
+        .card-unit-name { font-size: 14px; color: var(--text-secondary); text-transform: uppercase; }
+        .card-def { font-size: 18px; line-height: 1.4; margin-bottom: 16px; }
+        .card-example { font-size: 14px; font-style: italic; color: var(--text-secondary); }
+
+        .card-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .nav-arrow {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .self-rate-group {
+            display: none;
+            gap: 12px;
+        }
+
+        .self-rate-group.visible { display: flex; }
+
+        .rate-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Space Grotesk';
+        }
+
+        .btn-got-it { background: var(--correct); color: var(--bg); }
+        .btn-again { background: var(--elevated); color: white; border: 1px solid var(--border); }
+
+        /* S3: Match Mode */
+        .match-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .match-col { display: flex; flex-direction: column; gap: 10px; }
+
+        .match-chip {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .match-chip.selected { border-color: var(--accent); background: rgba(0, 229, 255, 0.1); }
+        .match-chip.correct { border-color: var(--correct); background: rgba(34, 197, 94, 0.2); pointer-events: none; opacity: 0.6; }
+        .match-chip.incorrect { border-color: var(--incorrect); background: rgba(255, 59, 59, 0.2); }
+
+        /* S4: Challenge Mode */
+        .challenge-container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .q-badge { background: var(--elevated); padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .q-text { font-size: 18px; text-align: center; margin-bottom: 30px; font-weight: 500; }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .answer-tile {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .answer-tile.correct { background: var(--correct); color: var(--bg); border-color: var(--correct); }
+        .answer-tile.incorrect { background: var(--incorrect); color: white; border-color: var(--incorrect); }
+        .answer-tile.disabled { pointer-events: none; }
+
+        .explanation {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .next-btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Space Grotesk';
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* S5: Summary */
+        .summary-card {
+            width: 100%;
+            max-width: 620px;
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+        .result-box { background: var(--elevated); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .result-val { font-size: 28px; font-family: 'Space Grotesk'; color: var(--accent); display: block; }
+        .result-lbl { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; }
+
+        .mastery-bars { text-align: left; margin-bottom: 30px; }
+        .mastery-row { margin-bottom: 15px; }
+        .mastery-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .bar-bg { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; transition: width 1s ease-out; }
+
+        .rating-box {
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--accent);
+            background: rgba(0, 229, 255, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .rating-title { color: var(--accent); font-family: 'Space Grotesk'; font-size: 20px; margin-bottom: 8px; }
+        .rating-desc { color: var(--text-secondary); font-size: 14px; }
+
+        .restart-group { display: flex; flex-direction: column; gap: 10px; }
+        .action-btn {
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .action-btn:hover { border-color: var(--accent); }
+
+        @media (max-width: 600px) {
+            .match-grid, .answer-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- S1: Welcome -->
+    <div id="screen-S1" class="screen active">
+        <div class="welcome-card">
+            <svg class="radar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="12"/><line x1="12" y1="12" x2="20.66" y2="17"/></svg>
+            <h1 class="welcome-title">ETHICS VOCABULARY COMMAND CENTER</h1>
+            
+            <div class="intro-text">
+                <p>Good ethics reasoning starts with precise vocabulary. When you read about "non-maleficence," can you immediately say what it means and give an example? This tool builds that fluency through active recall.</p>
+            </div>
+
+            <div class="mode-selection">
+                <button class="mode-btn" onclick="startMode('flashcard')">
+                    <strong>📇 FLASHCARD MODE</strong>
+                    <span>Self-paced review of all 18 terms</span>
+                </button>
+                <button class="mode-btn" onclick="startMode('match')">
+                    <strong>🔗 MATCH MODE</strong>
+                    <span>Connect terms to definitions under pressure</span>
+                </button>
+                <button class="mode-btn" onclick="startMode('challenge')">
+                    <strong>⚡ CHALLENGE MODE</strong>
+                    <span>10-question scenario-based assessment</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- S2: Flashcards -->
+    <div id="screen-flashcard" class="screen">
+        <div class="filter-bar" id="fc-filters">
+            <button class="filter-tab active" onclick="filterFlashcards('all')">ALL</button>
+            <button class="filter-tab" onclick="filterFlashcards('1.1')">1.1 ETHICS</button>
+            <button class="filter-tab" onclick="filterFlashcards('1.2')">1.2 COMPUTER ETHICS</button>
+            <button class="filter-tab" onclick="filterFlashcards('1.3')">1.3 END USERS</button>
+            <button class="filter-tab" onclick="filterFlashcards('1.4')">1.4 PROGRAMMERS</button>
+        </div>
+
+        <div class="card-container" onclick="flipCard()">
+            <div class="flashcard" id="active-card">
+                <div class="card-face card-front">
+                    <div class="unit-badge" id="fc-unit-badge">1.1</div>
+                    <h2 class="card-term" id="fc-term">Ethics</h2>
+                    <p class="card-unit-name" id="fc-unit-name">Ethics Introduction</p>
+                </div>
+                <div class="card-face card-back">
+                    <p class="card-def" id="fc-def">Definition goes here...</p>
+                    <p class="card-example" id="fc-example">"Example sentence goes here..."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-controls">
+            <button class="nav-arrow" onclick="navCard(-1)">←</button>
+            <span id="card-counter" class="heading-font">Card 1 of 18</span>
+            <button class="nav-arrow" onclick="navCard(1)">→</button>
+        </div>
+
+        <div class="self-rate-group" id="fc-rate-group">
+            <button class="rate-btn btn-again" onclick="rateCard(false)">🔁 REVIEW AGAIN</button>
+            <button class="rate-btn btn-got-it" onclick="rateCard(true)">✅ GOT IT</button>
+        </div>
+    </div>
+
+    <!-- S3: Match Mode -->
+    <div id="screen-match" class="screen">
+        <h2 class="welcome-title" style="margin-bottom: 10px;">MATCH MODE</h2>
+        <p id="match-round-title" class="heading-font" style="color: var(--accent); margin-bottom: 20px;">ROUND 1 OF 3</p>
+        
+        <div class="match-grid">
+            <div class="match-col" id="match-terms"></div>
+            <div class="match-col" id="match-defs"></div>
+        </div>
+    </div>
+
+    <!-- S4: Challenge Mode -->
+    <div id="screen-challenge" class="screen">
+        <div class="challenge-container">
+            <div class="q-header">
+                <span class="q-badge" id="ch-q-num">QUESTION 1 OF 10</span>
+                <span class="q-badge" id="ch-unit" style="background: var(--unit-1-1);">UNIT 1.1</span>
+            </div>
+            <p class="q-text" id="ch-text">A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which ethical principle is most directly violated?</p>
+            
+            <div class="answer-grid" id="ch-answers">
+                <!-- Tiles -->
+            </div>
+
+            <div class="explanation" id="ch-explanation"></div>
+            <button class="next-btn" id="ch-next" onclick="nextQuestion()">NEXT QUESTION →</button>
+        </div>
+    </div>
+
+    <!-- S5: Summary -->
+    <div id="screen-summary" class="screen">
+        <div class="summary-card">
+            <h2 class="welcome-title">SESSION REPORT</h2>
+            <p id="summary-name" class="heading-font" style="font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">ANALYST: OPERATOR</p>
+            
+            <div class="results-grid">
+                <div class="result-box">
+                    <span class="result-val" id="res-match">0/18</span>
+                    <span class="result-lbl">Match First-Try</span>
+                </div>
+                <div class="result-box">
+                    <span class="result-val" id="res-challenge">0/10</span>
+                    <span class="result-lbl">Challenge Correct</span>
+                </div>
+            </div>
+
+            <div class="mastery-bars">
+                <div class="mastery-row">
+                    <div class="mastery-label"><span>UNIT 1.1: ETHICS INTRO</span><span id="bar-1-1-val">0%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar-1-1" style="background: var(--unit-1-1); width: 0%;"></div></div>
+                </div>
+                <div class="mastery-row">
+                    <div class="mastery-label"><span>UNIT 1.2: COMPUTER ETHICS</span><span id="bar-1-2-val">0%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar-1-2" style="background: var(--unit-1-2); width: 0%;"></div></div>
+                </div>
+                <div class="mastery-row">
+                    <div class="mastery-label"><span>UNIT 1.3: END USERS</span><span id="bar-1-3-val">0%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar-1-3" style="background: var(--unit-1-3); width: 0%;"></div></div>
+                </div>
+                <div class="mastery-row">
+                    <div class="mastery-label"><span>UNIT 1.4: PROGRAMMERS</span><span id="bar-1-4-val">0%</span></div>
+                    <div class="bar-bg"><div class="bar-fill" id="bar-1-4" style="background: var(--unit-1-4); width: 0%;"></div></div>
+                </div>
+            </div>
+
+            <div class="rating-box">
+                <p class="rating-title" id="res-rating-title">BUILDING FOUNDATION</p>
+                <p class="rating-desc" id="res-rating-desc">Spend more time in Flashcard Mode before the next activity.</p>
+            </div>
+
+            <div class="restart-group">
+                <button class="action-btn" style="background: var(--accent); color: var(--bg);" onclick="location.reload()">FINISH SESSION</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav id="main-nav">
+        <button class="nav-btn" data-mode="flashcard" onclick="startMode('flashcard')">📇 FLASHCARDS</button>
+        <button class="nav-btn" data-mode="match" onclick="startMode('match')">🔗 MATCH</button>
+        <button class="nav-btn" data-mode="challenge" onclick="startMode('challenge')">⚡ CHALLENGE</button>
+        <button class="nav-btn" style="border-color: #94A3B8;" onclick="showSummary()">🏁 FINISH</button>
+    </nav>
+</div>
+
+<script>
+    const DATA = {
+        terms: [
+            { id: 1, unit: "1.1", term: "Ethics", def: "The discipline dealing with what is good and bad and with moral duty and obligation", ex: "Deciding whether to share a friend's private message involves ethics.", color: "var(--unit-1-1)" },
+            { id: 2, unit: "1.1", term: "Integrity", def: "The act of adhering to an ethical or moral code of conduct", ex: "A programmer with integrity reports a bug even when it might delay a launch.", color: "var(--unit-1-1)" },
+            { id: 3, unit: "1.1", term: "Plagiarism", def: "The act of using someone else's work and claiming it as your own", ex: "Submitting a paper written by an AI without disclosure is plagiarism.", color: "var(--unit-1-1)" },
+            { id: 4, unit: "1.1", term: "Transparency", def: "The act of being honest about information, particularly as it relates to interests or business practices", ex: "An advertiser shows transparency by disclosing when a post is paid content.", color: "var(--unit-1-1)" },
+            { id: 5, unit: "1.1", term: "Piracy", def: "The act of taking or using someone else's work without paying for it", ex: "Downloading a movie without purchase is digital piracy.", color: "var(--unit-1-1)" },
+            { id: 6, unit: "1.1", term: "Trustworthiness", def: "The concept that a source can be counted on to provide accurate and honest information", ex: "A trustworthy AI system behaves consistently and does not conceal errors.", color: "var(--unit-1-1)" },
+            { id: 7, unit: "1.1", term: "Privacy", def: "The concept of freedom from unauthorized intrusion", ex: "Location tracking without consent violates a user's privacy.", color: "var(--unit-1-1)" },
+            { id: 8, unit: "1.1", term: "Bias", def: "An inclination toward a specific outlook or preference, often unfair", ex: "An AI trained only on data from one demographic may produce biased results.", color: "var(--unit-1-1)" },
+            { id: 9, unit: "1.2", term: "Accountability", def: "The obligation to accept responsibility for one's actions and their consequences", ex: "A developer is accountable when they fix harm caused by their software.", color: "var(--unit-1-2)" },
+            { id: 10, unit: "1.2", term: "Beneficence", def: "The quality of doing good and acting in the best interest of others", ex: "Designing accessible technology for users with disabilities reflects beneficence.", color: "var(--unit-1-2)" },
+            { id: 11, unit: "1.2", term: "Fairness", def: "Treating all people equally and without favoritism or discrimination", ex: "A hiring algorithm is fair only if it produces equal outcomes across demographic groups.", color: "var(--unit-1-2)" },
+            { id: 12, unit: "1.3", term: "Cookies", def: "Small data files stored by websites on a user's device to track behavior and preferences", ex: "Cookies allow a retailer to remember your cart — and track your browsing across sites.", color: "var(--unit-1-3)" },
+            { id: 13, unit: "1.3", term: "Clickbait", def: "Content that uses exaggerated or misleading headlines to generate clicks regardless of actual value", ex: "A headline reading 'You Won't Believe What This App Does to Your Data' is clickbait.", color: "var(--unit-1-3)" },
+            { id: 14, unit: "1.3", term: "Rage Bait", def: "Content deliberately engineered to provoke emotional outrage because angry users engage more", ex: "A post misrepresenting a policy to maximize anger is rage bait.", color: "var(--unit-1-3)" },
+            { id: 15, unit: "1.3", term: "DRM", def: "Technological tools used to restrict copying, sharing, or modifying digital content", ex: "DRM prevents a purchased e-book from being copied and shared freely.", color: "var(--unit-1-3)" },
+            { id: 16, unit: "1.3", term: "Media Literacy", def: "The ability to access, analyze, evaluate, and create media in all forms", ex: "Media literacy helps you identify when a statistic has been taken out of context.", color: "var(--unit-1-3)" },
+            { id: 17, unit: "1.4", term: "Code of Ethics", def: "A set of principles that guide professional behavior and decision-making in a field", ex: "The ACM Code of Ethics requires computing professionals to avoid harm.", color: "var(--unit-1-4)" },
+            { id: 18, unit: "1.4", term: "Non-Maleficence", def: "The principle of doing no harm — ensuring actions do not cause unnecessary damage", ex: "Releasing software with known security vulnerabilities violates non-maleficence.", color: "var(--unit-1-4)" }
+        ],
+        questions: [
+            { q: "A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which ethical principle is most directly violated?", unit: "1.1", options: ["Privacy", "Transparency", "Fairness", "Non-Maleficence"], correct: 1, exp: "The influencer is concealing a financial interest that affects the authenticity of the review. Transparency requires honest disclosure of relevant information." },
+            { q: "A news website writes the headline 'Local Teacher DESTROYS Student's Dreams With One Decision' about a standard grade appeal. This is an example of:", unit: "1.3", options: ["Privacy violation", "Piracy", "Clickbait", "Misinformation"], correct: 2, exp: "'DESTROYS' is extreme language used to generate clicks, not to accurately describe a grade appeal. The headline is designed to create emotional reaction rather than inform." },
+            { q: "A software company releases a product it knows has a security flaw that could expose user passwords. They plan to fix it 'eventually.' This violates which principle?", unit: "1.2", options: ["Transparency", "DRM", "Integrity", "Non-Maleficence"], correct: 3, exp: "Non-maleficence means doing no harm. Releasing software with a known security flaw that will harm users is a direct violation of the principle of avoiding harm." },
+            { q: "An AI hiring system was trained on 10 years of a company's hiring data. During those years, the company hired mostly male engineers. The AI now screens out female candidates more often. This is an example of:", unit: "1.1", options: ["Plagiarism", "Bias", "Piracy", "Non-Maleficence"], correct: 1, exp: "The AI learned patterns from biased historical data and reproduces that bias in its decisions. This is training data bias — not intentional but still harmful." },
+            { q: "A programmer discovers that their company's app secretly records user conversations. They are told to ignore it. According to professional codes of ethics, what should they do?", unit: "1.4", options: ["Follow instructions", "Delete feature secretly", "Report the issue appropriately", "Fix code to be less detectable"], correct: 2, exp: "ACM Code of Ethics Section 2.5 requires professionals to report ethical violations. Codes prioritize public welfare over employer instructions." },
+            { q: "Websites use these small data files to remember your preferences and track your behavior across multiple sites:", unit: "1.3", options: ["DRM files", "Cache files", "Cookies", "Metadata tags"], correct: 2, exp: "Cookies enable features like saved carts but also enable cross-site behavior tracking used by advertisers." },
+            { q: "A school administrator uses a surveillance app that tracks students' locations and texts without their knowledge. Which principle is most clearly violated?", unit: "1.2", options: ["Piracy", "Privacy", "Clickbait", "Accountability"], correct: 1, exp: "Privacy protects individuals from unauthorized intrusion into their personal information and behavior." },
+            { q: "A developer creates a game designed to emotionally manipulate children into pressuring parents to buy in-app purchases. Which principle is most directly violated?", unit: "1.1", options: ["Transparency", "Piracy", "Privacy", "Trustworthiness"], correct: 3, exp: "Trustworthiness requires that technology behaves honestly and in users' genuine interest." },
+            { q: "The ability to evaluate whether a viral news article is citing a credible source or using misleading statistics is called:", unit: "1.3", options: ["Digital Literacy", "Accountability", "Code of Ethics", "Media Literacy"], correct: 3, exp: "Media literacy is specifically the skill of analyzing and evaluating media content critically." },
+            { q: "Which of the following actions demonstrates ALL THREE: Transparency, Accountability, and Non-Maleficence?", unit: "Mixed", options: ["Encrypting data secretly", "Publicly disclosing a vulnerability and releasing a patch", "Removing a post after complaints", "Adding warnings after regulation"], correct: 1, exp: "Publicly disclosing (Transparency), taking responsibility for the fix (Accountability), and preventing user harm (Non-Maleficence) satisfies all three." }
+        ]
+    };
+
+    const STATE = {
+        flashcard: { filtered: [], currentIdx: 0, mastered: new Set() },
+        match: { round: 0, firstTryCount: 0, selectedTerm: null, selectedDef: null, errors: new Set() },
+        challenge: { currentIdx: 0, score: 0 },
+        screen: "S1"
+    };
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-' + id).classList.add('active');
+        STATE.screen = id;
+        
+        const nav = document.getElementById('main-nav');
+        nav.style.display = (id === 'S1') ? 'none' : 'flex';
+
+        document.querySelectorAll('.nav-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === id);
+        });
+    }
+
+    function startMode(mode) {
+        if (mode === 'flashcard') initFlashcards();
+        if (mode === 'match') initMatchMode();
+        if (mode === 'challenge') initChallengeMode();
+        showScreen(mode);
+    }
+
+    // --- Flashcard Logic ---
+    function initFlashcards() {
+        STATE.flashcard.filtered = [...DATA.terms];
+        STATE.flashcard.currentIdx = 0;
+        updateFlashcardUI();
+    }
+
+    function filterFlashcards(unit) {
+        document.querySelectorAll('#fc-filters .filter-tab').forEach(t => {
+            t.classList.toggle('active', t.innerText.includes(unit) || (unit === 'all' && t.innerText === 'ALL'));
+        });
+        
+        if (unit === 'all') {
+            STATE.flashcard.filtered = [...DATA.terms];
+        } else {
+            STATE.flashcard.filtered = DATA.terms.filter(t => t.unit === unit);
+        }
+        STATE.flashcard.currentIdx = 0;
+        updateFlashcardUI();
+    }
+
+    function flipCard() {
+        const card = document.getElementById('active-card');
+        card.classList.toggle('flipped');
+        document.getElementById('fc-rate-group').classList.toggle('visible', card.classList.contains('flipped'));
+    }
+
+    function updateFlashcardUI() {
+        const card = STATE.flashcard.filtered[STATE.flashcard.currentIdx];
+        const ui = document.getElementById('active-card');
+        ui.classList.remove('flipped');
+        document.getElementById('fc-rate-group').classList.remove('visible');
+
+        if (!card) return;
+
+        document.getElementById('fc-term').innerText = card.term;
+        document.getElementById('fc-unit-badge').innerText = card.unit;
+        document.getElementById('fc-unit-badge').style.background = card.color;
+        document.querySelector('.card-front').style.borderLeftColor = card.color;
+        document.getElementById('fc-def').innerText = card.def;
+        document.getElementById('fc-example').innerText = card.ex;
+        document.getElementById('card-counter').innerText = `Card ${STATE.flashcard.currentIdx + 1} of ${STATE.flashcard.filtered.length}`;
+    }
+
+    function navCard(dir) {
+        STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
+        updateFlashcardUI();
+    }
+
+    function rateCard(gotIt) {
+        if (gotIt) {
+            STATE.flashcard.mastered.add(STATE.flashcard.filtered[STATE.flashcard.currentIdx].id);
+        }
+        navCard(1);
+    }
+
+    // --- Match Mode Logic ---
+    function initMatchMode() {
+        STATE.match.round = 0;
+        STATE.match.firstTryCount = 0;
+        STATE.match.errors.clear();
+        loadMatchRound();
+    }
+
+    function loadMatchRound() {
+        STATE.match.round++;
+        if (STATE.match.round > 3) {
+            showSummary();
+            return;
+        }
+
+        document.getElementById('match-round-title').innerText = `ROUND ${STATE.match.round} OF 3`;
+        
+        const roundIndices = [
+            [1, 3, 5, 9, 12, 17],
+            [2, 4, 6, 10, 13, 18],
+            [7, 8, 11, 14, 15, 16]
+        ];
+        
+        const currentSetIds = roundIndices[STATE.match.round - 1];
+        const currentSet = DATA.terms.filter(t => currentSetIds.includes(t.id));
+        
+        const termsContainer = document.getElementById('match-terms');
+        const defsContainer = document.getElementById('match-defs');
+        termsContainer.innerHTML = '';
+        defsContainer.innerHTML = '';
+
+        // Shuffle
+        const shuffledTerms = [...currentSet].sort(() => Math.random() - 0.5);
+        const shuffledDefs = [...currentSet].sort(() => Math.random() - 0.5);
+
+        shuffledTerms.forEach(t => {
+            const chip = document.createElement('div');
+            chip.className = 'match-chip';
+            chip.innerText = t.term;
+            chip.onclick = () => selectMatchItem(t.id, 'term', chip);
+            termsContainer.appendChild(chip);
+        });
+
+        shuffledDefs.forEach(t => {
+            const chip = document.createElement('div');
+            chip.className = 'match-chip';
+            chip.innerText = t.def;
+            chip.onclick = () => selectMatchItem(t.id, 'def', chip);
+            defsContainer.appendChild(chip);
+        });
+    }
+
+    function selectMatchItem(id, type, el) {
+        const col = (type === 'term') ? 'selectedTerm' : 'selectedDef';
+        
+        const siblings = el.parentElement.querySelectorAll('.match-chip');
+        siblings.forEach(s => s.classList.remove('selected'));
+
+        if (STATE.match[col] && STATE.match[col].id === id) {
+            STATE.match[col] = null;
+        } else {
+            el.classList.add('selected');
+            STATE.match[col] = { id, el };
+        }
+
+        checkMatch();
+    }
+
+    function checkMatch() {
+        const t = STATE.match.selectedTerm;
+        const d = STATE.match.selectedDef;
+
+        if (t && d) {
+            if (t.id === d.id) {
+                t.el.classList.add('correct');
+                d.el.classList.add('correct');
+                t.el.classList.remove('selected');
+                d.el.classList.remove('selected');
+                
+                if (!t.el.dataset.failed) STATE.match.firstTryCount++;
+                
+                STATE.match.selectedTerm = null;
+                STATE.match.selectedDef = null;
+
+                const remaining = document.querySelectorAll('#match-terms .match-chip:not(.correct)');
+                if (remaining.length === 0) {
+                    setTimeout(loadMatchRound, 1000);
+                }
+            } else {
+                t.el.classList.add('incorrect');
+                d.el.classList.add('incorrect');
+                t.el.dataset.failed = "true";
+                STATE.match.errors.add(t.id);
+                
+                setTimeout(() => {
+                    t.el.classList.remove('incorrect', 'selected');
+                    d.el.classList.remove('incorrect', 'selected');
+                }, 400);
+                
+                STATE.match.selectedTerm = null;
+                STATE.match.selectedDef = null;
+            }
+        }
+    }
+
+    // --- Challenge Logic ---
+    function initChallengeMode() {
+        STATE.challenge.currentIdx = 0;
+        STATE.challenge.score = 0;
+        updateChallengeUI();
+    }
+
+    function updateChallengeUI() {
+        const qData = DATA.questions[STATE.challenge.currentIdx];
+        document.getElementById('ch-q-num').innerText = `QUESTION ${STATE.challenge.currentIdx + 1} OF 10`;
+        document.getElementById('ch-unit').innerText = `UNIT ${qData.unit}`;
+        
+        const unitColors = { "1.1": "var(--unit-1-1)", "1.2": "var(--unit-1-2)", "1.3": "var(--unit-1-3)", "1.4": "var(--unit-1-4)", "Mixed": "var(--accent)" };
+        document.getElementById('ch-unit').style.background = unitColors[qData.unit] || "var(--accent)";
+        
+        document.getElementById('ch-text').innerText = qData.q;
+        
+        const grid = document.getElementById('ch-answers');
+        grid.innerHTML = '';
+        
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('div');
+            btn.className = 'answer-tile';
+            btn.innerText = opt;
+            btn.onclick = () => selectAnswer(idx, btn);
+            grid.appendChild(btn);
+        });
+
+        document.getElementById('ch-explanation').style.display = 'none';
+        document.getElementById('ch-next').style.display = 'none';
+    }
+
+    function selectAnswer(idx, el) {
+        const qData = DATA.questions[STATE.challenge.currentIdx];
+        const tiles = document.querySelectorAll('.answer-tile');
+        
+        tiles.forEach(t => t.classList.add('disabled'));
+
+        if (idx === qData.correct) {
+            el.classList.add('correct');
+            STATE.challenge.score++;
+        } else {
+            el.classList.add('incorrect');
+            tiles[qData.correct].classList.add('correct');
+        }
+
+        const exp = document.getElementById('ch-explanation');
+        exp.innerText = qData.exp;
+        exp.style.display = 'block';
+        document.getElementById('ch-next').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        STATE.challenge.currentIdx++;
+        if (STATE.challenge.currentIdx < 10) {
+            updateChallengeUI();
+        } else {
+            showSummary();
+        }
+    }
+
+    // --- Summary Logic ---
+    function showSummary() {
+        showScreen('summary');
+        document.getElementById('res-match').innerText = `${STATE.match.firstTryCount}/18`;
+        document.getElementById('res-challenge').innerText = `${STATE.challenge.score}/10`;
+
+        const units = ["1.1", "1.2", "1.3", "1.4"];
+        units.forEach(u => {
+            const total = DATA.terms.filter(t => t.unit === u).length;
+            const mastered = [...STATE.flashcard.mastered].filter(id => DATA.terms.find(t => t.id === id).unit === u).length;
+            const pct = Math.min(100, Math.round((mastered / total) * 100));
+            document.getElementById(`bar-${u.replace('.','-')}`).style.width = pct + '%';
+            document.getElementById(`bar-${u.replace('.','-')}-val`).innerText = pct + '%';
+        });
+
+        const totalPoints = STATE.match.firstTryCount + STATE.challenge.score; 
+        let title = "BUILDING FOUNDATION";
+        let desc = "Spend more time in Flashcard Mode before the next activity.";
+
+        if (totalPoints >= 26) {
+            title = "COMMAND LEVEL MASTERY";
+            desc = "All 18 terms at operational readiness. Superior ethical literacy.";
+        } else if (totalPoints >= 20) {
+            title = "PROFICIENT";
+            desc = "Strong vocabulary command across most units. You are ready for assessment.";
+        } else if (totalPoints >= 12) {
+            title = "DEVELOPING FLUENCY";
+            desc = "You know most terms — a few need reinforcement in Review mode.";
+        }
+
+        document.getElementById('res-rating-title').innerText = title;
+        document.getElementById('res-rating-desc').innerText = desc;
+    }
+
+</script>
+</body>
+</html>
