@@ -3,962 +3,904 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Rights Consultant | Copyright Decision Lab</title>
+    <title>Digital Rights Consultant | emate Interactive</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0C0F18;
-            --panel: #141A26;
-            --elevated: #1C2438;
-            --accent: #00E5FF;
-            --fair-use: #22C55E;
-            --licensed: #3B82F6;
-            --piracy: #FF3B3B;
-            --unclear: #F59E0B;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --border: #1E2A40;
-            --case-bg: #1C2030;
-            --case-accent: #E8D5B5; /* Manila folder tint */
+            --primary: #0056b3;
+            --primary-hover: #004494;
+            --bg-light: #e7f1ff;
+            --accent-teal: #20c997;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            
+            --fair-use: #28a745;
+            --licensed: #007bff;
+            --piracy: #dc3545;
+            --unclear: #ffc107;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text-primary);
+            background-color: #ced4da;
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
-
-        button {
-            font-family: inherit;
-            color: inherit;
-        }
-
-        .app-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 4px;
-            background: var(--border);
-            margin-bottom: 50px;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        /* Screen Management */
-        .screen {
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-        .screen.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Introduction Screen (S1) */
-        .intro-content { max-width: 720px; margin: 0 auto; text-align: center; }
-        .gavel-icon { color: var(--accent); margin-bottom: 24px; }
-        .intro-title { font-size: 42px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
-        .intro-subtitle { font-size: 18px; color: var(--text-secondary); font-style: italic; margin-bottom: 32px; }
-        .intro-panel { 
-            background: var(--panel); 
-            padding: 32px; 
-            border-radius: 16px; 
-            border: 1px solid var(--border);
-            text-align: left;
-            margin-bottom: 24px;
-        }
-        .intro-panel p { margin-bottom: 16px; font-size: 16px; }
-        
-        .chip-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 40px; }
-        .chip {
-            background: var(--elevated);
-            border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-            color: var(--accent);
-        }
-        .chip:hover { border-color: var(--accent); background: #00E5FF1A; }
-
-        /* Briefing Screen (S2) */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
-        @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
-        
-        .briefing-card {
-            background: var(--panel);
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-        }
-        .briefing-card h3 { margin-bottom: 16px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .ruling-item { margin-bottom: 20px; }
-        .ruling-item strong { display: block; font-size: 14px; margin-bottom: 4px; }
-        .ruling-item p { font-size: 13px; color: var(--text-secondary); }
-
-        /* Case File Layout (S3/S4) */
-        .case-view { display: grid; grid-template-columns: 1fr 300px; gap: 40px; }
-        @media (max-width: 900px) { .case-view { grid-template-columns: 1fr; } }
-
-        .case-file {
-            background: var(--case-bg);
-            border-radius: 0 16px 16px 16px;
-            position: relative;
-            padding: 40px;
-            border-left: 4px solid var(--case-accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            min-height: 320px;
-            z-index: 1;
-        }
-        .case-tab {
-            position: absolute;
-            top: -26px;
-            left: -4px;
-            background: var(--case-accent);
-            color: #1c2030;
-            padding: 4px 16px;
-            border-radius: 8px 16px 0 0;
-            font-family: 'Space Grotesk';
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            z-index: 2;
-        }
-        .case-scenario { font-size: 18px; margin-bottom: 30px; font-weight: 400; line-height: 1.6; color: #fff; }
-
-        .verdict-controls { margin-top: 32px; }
-        .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-        
-        .btn-verdict {
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            background: var(--elevated);
-            color: var(--text-primary);
-            cursor: pointer;
-            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            font-size: 13px;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-        .btn-verdict:hover { background: var(--panel); border-color: var(--border); }
-        .btn-verdict.selected { transform: scale(0.98); }
-        .btn-verdict[data-type="fair-use"].selected { border-color: var(--fair-use); background: #22C55E26; color: #4ade80; }
-        .btn-verdict[data-type="licensed"].selected { border-color: var(--licensed); background: #3B82F626; color: #60a5fa; }
-        .btn-verdict[data-type="piracy"].selected { border-color: var(--piracy); background: #FF3B3B26; color: #f87171; }
-        .btn-verdict[data-type="unclear"].selected { border-color: var(--unclear); background: #F59E0B26; color: #fbbf24; }
 
-        .principle-selection { margin-bottom: 24px; }
-        .principle-title { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: block; }
-        .principle-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-        .p-chip {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            color: var(--text-primary);
-            transition: all 0.2s;
-        }
-        .p-chip.selected { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
-
-        /* Stamp Animation */
-        .ruling-stamp {
-            position: absolute;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg) scale(3);
-            opacity: 0;
-            pointer-events: none;
-            padding: 10px 30px;
-            border: 6px solid currentColor;
-            font-family: 'Space Grotesk';
-            font-weight: 700;
-            font-size: 40px;
-            text-transform: uppercase;
-            z-index: 10;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: rgba(28, 32, 48, 0.6);
-            backdrop-filter: blur(2px);
-        }
-        .ruling-stamp.active { opacity: 0.9; transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
-        .stamp-fair-use { color: var(--fair-use); }
-        .stamp-licensed { color: var(--licensed); }
-        .stamp-piracy { color: var(--piracy); }
-        .stamp-unclear { color: var(--unclear); }
-
-        .reveal-card {
-            background: var(--panel);
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            margin-top: 24px;
-            display: none;
-            animation: slideUp 0.3s ease-out;
+        /* Fixed Aspect Ratio Container */
+        #app-viewport {
+            width: 1024px;
+            height: 768px;
+            background-color: var(--bg-light);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
             position: relative;
-            z-index: 5;
+            overflow: hidden;
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Verdict Ledger Sidebar */
-        .ledger { background: var(--panel); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
-        .ledger-title { font-size: 14px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 16px; }
-        .ledger-item { font-size: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-
-        /* Buttons */
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg);
-            padding: 14px 28px;
-            border-radius: 8px;
-            border: none;
-            font-family: 'Space Grotesk';
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: transform 0.2s, background 0.2s;
-            display: inline-block;
-        }
-        .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-primary:active { transform: translateY(0); }
-        .btn-primary:disabled { background: var(--border); color: var(--text-secondary); cursor: not-allowed; transform: none; }
-
-        /* Precedent Matching (S6) */
-        .matching-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .match-list { display: flex; flex-direction: column; gap: 12px; }
-        .match-item {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            min-height: 80px;
+        /* Header Area */
+        header {
+            height: 70px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            color: var(--text-primary);
-            text-align: left;
-            width: 100%;
+            justify-content: space-between;
+            padding: 0 30px;
+            flex-shrink: 0;
+            z-index: 10;
         }
-        .match-item:hover { border-color: var(--accent); background: var(--elevated); }
-        .match-item.selected { border-color: var(--accent); background: #00E5FF22; }
-        .match-item.linked { border-color: var(--fair-use); background: #22C55E22; }
-        .match-item.wrong { border-color: var(--piracy); background: #FF3B3B22; }
 
-        /* Report (S7) */
-        .report-header { text-align: center; margin-bottom: 40px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-        .stat-card { background: var(--panel); padding: 24px; border-radius: 16px; text-align: center; }
-        .stat-val { font-size: 48px; font-family: 'Space Grotesk'; color: var(--accent); line-height: 1; }
-        .stat-label { font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-top: 8px; }
+        .header-left h1 {
+            font-size: 18px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        /* Utils */
-        .mt-4 { margin-top: 16px; }
-        .hidden { display: none; }
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .dot.active { background-color: var(--primary); border-color: var(--primary); transform: scale(1.2); }
+        .dot.complete { background-color: var(--accent-teal); border-color: var(--accent-teal); }
+
+        .score-box {
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--bg-light);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* Main Area */
+        main {
+            flex-grow: 1;
+            padding: 25px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 35px;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.4s ease-out;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar Layout */
+        .sidebar-layout {
+            display: flex;
+            gap: 25px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-right: 1px solid var(--border-color);
+            padding-right: 20px;
+        }
+
+        .sidebar-btn {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .sidebar-btn:hover { background: #e9ecef; color: var(--text-main); }
+        .sidebar-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .sidebar-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Footer */
+        footer {
+            height: 70px;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        /* Typography */
+        h2 { font-size: 28px; color: var(--primary); margin-bottom: 8px; font-weight: 700; }
+        .subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 25px; }
+        p { margin-bottom: 1.2rem; line-height: 1.6; font-size: 15px; }
+        strong { color: var(--text-main); }
+
+        /* Buttons */
+        .btn-emate {
+            padding: 12px 25px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline { background: var(--white); border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--bg-light); }
+        .btn-solid { background: var(--primary); color: var(--white); }
+        .btn-solid:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-solid:disabled { background: var(--border-color); cursor: not-allowed; transform: none; }
+
+        /* Verdict Elements */
+        .verdict-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .choice-pill {
+            padding: 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+        .choice-pill:hover { border-color: var(--primary); background: #f8f9fa; }
+        .choice-pill.selected { border-color: var(--primary); background: var(--bg-light); color: var(--primary); }
+
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #f1f3f5;
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .chip.selected { background: var(--accent-teal); color: var(--white); border-color: var(--accent-teal); }
+
+        /* Stamp */
+        .stamp-overlay {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg) scale(0);
+            z-index: 100;
+            pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .stamp-overlay.active { transform: translate(-50%, -50%) rotate(-8deg) scale(1); }
+        .stamp {
+            border: 10px solid currentColor;
+            padding: 15px 45px;
+            font-size: 52px;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        /* Results Panel */
+        .result-panel {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+        .result-panel.visible { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Term definition specific box */
+        #term-definition-box {
+            background-color: #f1f7ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin-top: 10px;
+            min-height: 80px;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        #term-definition-box p { margin: 0; color: var(--text-main); font-weight: 500; }
+
+        /* Matching Grid */
+        .match-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        .match-col { display: flex; flex-direction: column; gap: 10px; }
+        .match-card {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--white);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            line-height: 1.4;
+        }
+        .match-card:hover { border-color: var(--primary); background: #f8f9fa; }
+        .match-card.selected { border-color: var(--primary); background: var(--bg-light); box-shadow: inset 0 0 0 1px var(--primary); }
+        .match-card.linked { background: #e9ecef; border-style: dashed; opacity: 0.6; pointer-events: none; }
+
+        /* Final Report */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            padding: 25px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-val { font-size: 32px; font-weight: 800; color: var(--primary); display: block; }
+        .stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; }
+
+        /* Consultant Message on Case Screens */
+        .consultant-instruction {
+            background-color: #0056b30a;
+            border: 1px dashed var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        /* Hidden Utility */
+        .hidden { display: none !important; }
+        
+        /* Modal Style for ethics */
+        .ethics-response {
+            border-left: 4px solid var(--primary);
+            background: #fff;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Internal Scrollbar */
+        .scrollable { overflow-y: auto; padding-right: 10px; }
+        .scrollable::-webkit-scrollbar { width: 6px; }
+        .scrollable::-webkit-scrollbar-track { background: transparent; }
+        .scrollable::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="progress-container">
-        <div id="progress-bar" class="progress-bar"></div>
-    </div>
+<div id="app-viewport">
+    <header>
+        <div class="header-left">
+            <h1>Digital Rights Consultant</h1>
+        </div>
+        <div class="progress-dots" id="dot-container">
+            <!-- Dots injected by JS -->
+        </div>
+        <div class="score-box" id="global-score">SCORE: 0</div>
+    </header>
 
-    <!-- S1: Introduction -->
-    <section id="screen-S1" class="screen active">
-        <div class="intro-content">
-            <div class="gavel-icon">
-                <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 3-3 5 5-3 3"/><path d="m14 5-8 8-3-3 8-8Z"/><path d="M14 9a1 1 0 0 1 2 0"/><path d="M2 21h7"/><path d="M5 15v7"/></svg>
-            </div>
-            <h1 class="intro-title">Who Owns This?</h1>
-            <p class="intro-subtitle">"Copyright law meets the digital world."</p>
+    <main>
+        <!-- S1: Introduction -->
+        <div id="screen-intro" class="content-card">
+            <h2>Who Owns This?</h2>
+            <p class="subtitle">"Copyright law meets the digital world."</p>
             
-            <div class="intro-panel">
+            <div class="scrollable">
                 <p>Everything you see online was created by someone. Music, photos, videos, writing, code — all of it is protected by copyright law the moment it is created. Copyright gives creators the exclusive right to copy, distribute, and profit from their work.</p>
-                <p>But digital technology made copying nearly effortless and free. Some acts are legal. Some are not. Many exist in a grey zone.</p>
-                <p>As a <strong>Digital Rights Consultant</strong>, you will review copyright cases and issue rulings — then compare your judgment to the law.</p>
-            </div>
+                <p>But digital technology made copying nearly effortless and free. Downloading a song, screenshotting an image, sampling a beat, using an AI tool trained on copyrighted art — these acts happen billions of times a day. Some are legal. Some are not. Many exist in a grey zone.</p>
+                <p><strong>"Fair use"</strong> is a legal exception that allows limited use of copyrighted material without permission — for education, commentary, parody, news reporting. But the line between fair use and infringement is not always clear.</p>
+                <p><strong>"Piracy"</strong> is the unauthorized reproduction or distribution of copyrighted material, typically for free or for profit, without the creator's permission.</p>
+                
+                <p style="margin-top: 20px; font-weight: 600; color: var(--primary);">Click to explore Key Terms:</p>
+                <div class="chip-container">
+                    <div class="chip term-chip" onclick="showDefinition('Copyright', this)">Copyright</div>
+                    <div class="chip term-chip" onclick="showDefinition('Fair Use', this)">Fair Use</div>
+                    <div class="chip term-chip" onclick="showDefinition('Piracy', this)">Piracy</div>
+                    <div class="chip term-chip" onclick="showDefinition('DRM', this)">DRM</div>
+                </div>
 
-            <div class="chip-grid">
-                <div class="chip" onclick="showTerm('Copyright', 'The legal right giving creators exclusive control over how their original works are copied, shared, and sold.')">Copyright</div>
-                <div class="chip" onclick="showTerm('Fair Use', 'A legal exception allowing limited use of copyrighted material without permission, based on purpose, nature, amount used, and market impact.')">Fair Use</div>
-                <div class="chip" onclick="showTerm('Piracy', 'The unauthorized copying, distribution, or use of copyrighted material — digital or physical.')">Piracy</div>
-                <div class="chip" onclick="showTerm('DRM', 'Technological tools used to restrict copying, sharing, or modifying digital content.')">DRM</div>
-            </div>
-
-            <div id="term-box" class="intro-panel hidden" style="margin-top: -20px; border-color: var(--accent); background: #00E5FF08;">
-                <strong id="term-title"></strong>: <span id="term-desc"></span>
-            </div>
-
-            <button class="btn-primary" onclick="nextScreen()">Open the Case Files →</button>
-        </div>
-    </section>
-
-    <!-- S2: Briefing -->
-    <section id="screen-S2" class="screen">
-        <h2 style="margin-bottom: 24px; font-size: 32px;">Consultant Briefing</h2>
-        <div class="grid-2">
-            <div class="briefing-card">
-                <h3>4 Ruling Types</h3>
-                <div class="ruling-item">
-                    <strong>✅ FAIR USE</strong>
-                    <p>The use is legal without permission. It serves a transformative, educational, or commentary purpose.</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>🔵 LICENSED</strong>
-                    <p>The creator granted permission via a specific license (Creative Commons, etc.).</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>🚫 PIRACY</strong>
-                    <p>Unauthorized use that violates the creator's exclusive rights.</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>⚠️ UNCLEAR</strong>
-                    <p>The case exists in a legal grey zone with no clear precedent yet.</p>
-                </div>
-            </div>
-            <div class="briefing-card">
-                <h3>4 Key Principles</h3>
-                <div class="ruling-item">
-                    <strong>⚙️ Transformative Use</strong>
-                    <p>Does the new work add something new — commentary, parody, or meaning?</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>📏 Proportion</strong>
-                    <p>How much of the original was used? A tiny snippet or the whole thing?</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>💰 Market Harm</strong>
-                    <p>Does the use harm the creator's ability to sell their work?</p>
-                </div>
-                <div class="ruling-item">
-                    <strong>🎓 Educational Purpose</strong>
-                    <p>Nonprofit research or teaching is given more legal protection.</p>
+                <div id="term-definition-box">
+                    <p id="term-definition-text">Select a term above to see its definition.</p>
                 </div>
             </div>
         </div>
-        <div style="text-align: center;">
-            <button class="btn-primary" onclick="nextScreen()">Begin Case Review →</button>
-        </div>
-    </section>
 
-    <!-- S3/S4: Case Review -->
-    <section id="screen-cases" class="screen">
-        <div class="case-view">
-            <div class="main-case">
-                <div id="case-file-card" class="case-file" role="article">
-                    <div id="case-tab" class="case-tab">Case #1</div>
-                    <div id="case-scenario" class="case-scenario">
-                        Loading scenario...
+        <!-- S2: Briefing -->
+        <div id="screen-briefing" class="content-card hidden">
+            <h2>Case Review Briefing</h2>
+            <p class="subtitle">Understand the parameters of your consultation.</p>
+            <div class="sidebar-layout">
+                <div class="sidebar">
+                    <div class="sidebar-btn active" onclick="switchBriefingTab(0, this)">Ruling Types</div>
+                    <div class="sidebar-btn" onclick="switchBriefingTab(1, this)">Legal Principles</div>
+                </div>
+                <div class="sidebar-content" id="briefing-content">
+                    <!-- Tab 0 Content -->
+                    <div id="brief-tab-0">
+                        <p><strong>✅ FAIR USE:</strong> The use is legal without permission. It serves a transformative, educational, critical, or commentary purpose, and does not harm the original creator's market.</p>
+                        <p><strong>🔵 LICENSED:</strong> The creator has explicitly granted permission through a license (e.g., Creative Commons, royalty-free, open source). Use is permitted within the license terms.</p>
+                        <p><strong>🚫 PIRACY:</strong> The use is unauthorized and violates copyright. The creator's rights are being infringed — whether or not money changes hands.</p>
+                        <p><strong>⚠️ UNCLEAR:</strong> The case falls in a legal grey zone. Courts have disagreed, or the technology is new enough that clear precedent doesn't yet exist.</p>
                     </div>
+                    <!-- Tab 1 Content -->
+                    <div id="brief-tab-1" class="hidden">
+                        <p><strong>⚙️ Transformative Use:</strong> Does the new work add something new — commentary, parody, critique, new meaning? Or does it simply reproduce the original?</p>
+                        <p><strong>📏 Proportion:</strong> How much of the original work was used? Using one sentence from a book differs from reproducing an entire chapter.</p>
+                        <p><strong>💰 Market Harm:</strong> Does the use harm the original creator's ability to sell their work? A free download that replaces a purchase is different from a scholarly quote.</p>
+                        <p><strong>🎓 Educational Purpose:</strong> Use for nonprofit education, research, criticism, or news reporting receives more protection than commercial use.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- S3/S4: Cases -->
+        <div id="screen-cases" class="content-card hidden">
+            <div class="stamp-overlay" id="stamp-overlay">
+                <div class="stamp" id="stamp-text">FAIR USE</div>
+            </div>
+
+            <h2 id="case-title">Case Review</h2>
+            
+            <div class="consultant-instruction">
+                In this activity, you are a Digital Rights Consultant. You will review copyright cases and issue rulings — then compare your judgment to how the law actually handles each one.
+            </div>
+
+            <div class="scrollable">
+                <div id="case-display">
+                    <p id="case-text" style="font-size: 16px; font-weight: 500; margin-bottom: 25px;"></p>
                     
-                    <div id="ruling-stamp" class="ruling-stamp">FAIR USE</div>
-
-                    <div id="verdict-controls" class="verdict-controls">
-                        <span class="principle-title">Select Your Verdict</span>
-                        <div class="verdict-grid" role="radiogroup">
-                            <button class="btn-verdict" data-type="fair-use" onclick="selectVerdict('fair-use')">✅ Fair Use</button>
-                            <button class="btn-verdict" data-type="licensed" onclick="selectVerdict('licensed')">🔵 Licensed</button>
-                            <button class="btn-verdict" data-type="piracy" onclick="selectVerdict('piracy')">🚫 Piracy</button>
-                            <button class="btn-verdict" data-type="unclear" onclick="selectVerdict('unclear')">⚠️ Unclear</button>
+                    <div id="case-input-zone">
+                        <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Issue Verdict</p>
+                        <div class="verdict-grid">
+                            <div class="choice-pill" onclick="selectVerdict('fair-use', this)">✅ FAIR USE</div>
+                            <div class="choice-pill" onclick="selectVerdict('licensed', this)">🔵 LICENSED</div>
+                            <div class="choice-pill" onclick="selectVerdict('piracy', this)">🚫 PIRACY</div>
+                            <div class="choice-pill" onclick="selectVerdict('unclear', this)">⚠️ UNCLEAR</div>
                         </div>
 
-                        <span class="principle-title">Applicable Principles (Select 1-2)</span>
-                        <div id="principle-chips" class="principle-chips">
-                            <div class="p-chip" onclick="togglePrinciple(0)">Transformative Use</div>
-                            <div class="p-chip" onclick="togglePrinciple(1)">Proportion</div>
-                            <div class="p-chip" onclick="togglePrinciple(2)">Market Harm</div>
-                            <div class="p-chip" onclick="togglePrinciple(3)">Educational Purpose</div>
+                        <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Legal Principles (Select 1-2)</p>
+                        <div class="chip-container" id="principle-list">
+                            <div class="chip" onclick="togglePrinciple(0, this)">Transformative Use</div>
+                            <div class="chip" onclick="togglePrinciple(1, this)">Proportion</div>
+                            <div class="chip" onclick="togglePrinciple(2, this)">Market Harm</div>
+                            <div class="chip" onclick="togglePrinciple(3, this)">Educational Purpose</div>
                         </div>
 
-                        <div style="margin-top: 30px; text-align: right;">
-                            <button id="submit-verdict" class="btn-primary" onclick="submitVerdict()" disabled>Submit Verdict</button>
-                        </div>
+                        <button class="btn-emate btn-solid" style="width: 100%;" id="btn-submit-case" disabled onclick="submitCase()">Submit Ruling</button>
                     </div>
 
-                    <div id="reveal-card" class="reveal-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                            <h3 id="reveal-title" style="color: var(--accent);">ACTUAL RULING: FAIR USE</h3>
-                            <span id="match-badge" style="font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600;"></span>
-                        </div>
-                        <p id="reveal-explanation" style="font-size: 14px; margin-bottom: 20px; color: var(--text-primary);"></p>
-                        <button class="btn-primary" style="width: 100%;" onclick="nextCase()">Next Case →</button>
+                    <div id="case-feedback" class="result-panel">
+                        <h3 id="feedback-title" style="margin-bottom: 10px; font-size: 18px;"></h3>
+                        <p id="feedback-text" style="font-size: 14px; color: var(--text-main);"></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="ledger">
-                <h3 class="ledger-title">Case Ledger</h3>
-                <div id="ledger-list">
-                    <!-- Items added by JS -->
+        <!-- S5: AI Art -->
+        <div id="screen-ai" class="content-card hidden">
+            <h2>Special Case: AI Art</h2>
+            <p class="subtitle">Active litigation and the copyright frontier.</p>
+            
+            <div class="sidebar-layout">
+                <div class="sidebar">
+                    <div class="sidebar-btn active" id="ai-btn-0" onclick="switchAITab(0, this)">Context</div>
+                    <div class="sidebar-btn" id="ai-btn-1" onclick="switchAITab(1, this)">Part A: Training</div>
+                    <div class="sidebar-btn" id="ai-btn-2" onclick="switchAITab(2, this)">Part B: Output</div>
+                    <div class="sidebar-btn" id="ai-btn-3" onclick="switchAITab(3, this)">Part C: Ethics</div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- S5: AI Case -->
-    <section id="screen-ai" class="screen">
-        <h2 style="color: var(--accent); margin-bottom: 16px;">Special Case: AI Art & Copyright</h2>
-        <div class="intro-panel" id="ai-context-card">
-            <p>In 2023-2024, multiple lawsuits were filed against AI companies. The central claim: models were trained on copyrighted work without permission. You'll analyze this in three parts.</p>
-            <button class="btn-primary mt-4" onclick="startAICase()">Start Analysis</button>
-        </div>
-
-        <div id="ai-interaction" class="hidden">
-            <div id="ai-case-file" class="case-file" style="min-height: auto; margin-bottom: 24px;">
-                <div id="ai-tab" class="case-tab">AI PART A</div>
-                <div id="ai-scenario" class="case-scenario">Scenario loading...</div>
-                <div id="ai-stamp" class="ruling-stamp">UNCLEAR</div>
-            </div>
-
-            <div id="ai-controls">
-                <!-- Verdict buttons re-used -->
-                <div id="ai-verdict-area">
-                     <span class="principle-title">Your Verdict</span>
-                     <div class="verdict-grid" style="margin-bottom: 24px;">
-                        <button class="btn-verdict ai-v" data-type="fair-use" onclick="selectAIVerdict('fair-use')">✅ Fair Use</button>
-                        <button class="btn-verdict ai-v" data-type="licensed" onclick="selectAIVerdict('licensed')">🔵 Licensed</button>
-                        <button class="btn-verdict ai-v" data-type="piracy" onclick="selectAIVerdict('piracy')">🚫 Piracy</button>
-                        <button class="btn-verdict ai-v" data-type="unclear" onclick="selectAIVerdict('unclear')">⚠️ Unclear</button>
+                <div class="sidebar-content scrollable">
+                    <!-- Context -->
+                    <div id="ai-tab-0">
+                        <p>In 2023 and 2024, multiple lawsuits were filed against AI companies by artists, authors, and media companies. The central claim: AI image generators (Midjourney, Stable Diffusion) and AI writing tools (ChatGPT) were trained on billions of copyrighted images and texts — without the creators' permission and without payment. The AI then generates new content in the style of those creators.</p>
+                        <p>You read about the ChatGPT/Studio Ghibli case in your Unit 1.2 warm-up. This is that case — now you'll analyze it in three parts.</p>
                     </div>
-                    <button id="ai-submit" class="btn-primary" onclick="submitAIVerdict()" disabled>Submit Analysis</button>
+                    <!-- Part A: Training -->
+                    <div id="ai-tab-1" class="hidden">
+                        <p><strong>Scenario:</strong> An AI company scraped millions of copyrighted images from the internet to train their image generation model. Artists did not consent. No payment was made. The AI can now generate images in the style of any artist whose work was included.</p>
+                        <div class="verdict-grid">
+                            <div class="choice-pill" onclick="handleAIVerdict('unclear', 'A', this)">⚠️ UNCLEAR / LITIGATION</div>
+                        </div>
+                        <div id="ai-reveal-A" class="result-panel">
+                            <p><strong>Actual Status: UNCLEAR.</strong> This is the central unresolved copyright question of the AI era. Courts in the U.S. and EU are actively deciding it. Some judges have dismissed claims; others have allowed them to proceed. The core question: is scraping copyrighted content for AI training "transformative" (suggesting Fair Use) or does it harm artists' markets?</p>
+                        </div>
+                    </div>
+                    <!-- Part B: Output -->
+                    <div id="ai-tab-2" class="hidden">
+                        <p><strong>Scenario:</strong> A user asks the same AI to generate an image "in the style of Studio Ghibli." The AI produces an image that has never existed before but is clearly recognizable as matching Studio Ghibli's visual style. The user shares it on social media.</p>
+                        <div class="verdict-grid">
+                            <div class="choice-pill" onclick="handleAIVerdict('unclear', 'B', this)">⚠️ UNCLEAR / LITIGATION</div>
+                        </div>
+                        <div id="ai-reveal-B" class="result-panel">
+                            <p><strong>Actual Status: UNCLEAR.</strong> Copyright does not protect artistic "style" — only specific works. An image that resembles Ghibli's style but does not reproduce a specific Ghibli frame is unlikely to infringe copyright under current law. However, this question is being actively litigated, and some legal scholars argue that style mimicry at AI scale crosses a line.</p>
+                        </div>
+                    </div>
+                    <!-- Part C: Ethics -->
+                    <div id="ai-tab-3" class="hidden">
+                        <p><strong>Even if training AI on copyrighted art is ruled 'legal,' is it ethical?</strong></p>
+                        <div class="match-col">
+                            <div class="match-card" onclick="showEthicsResponse(0, this)">Art has always been influenced by other art. AI learning from existing work is no different.</div>
+                            <div class="match-card" onclick="showEthicsResponse(1, this)">No—artists' work was taken without consent or compensation to build a commercial product that competes with them.</div>
+                            <div class="match-card" onclick="showEthicsResponse(2, this)">It depends—small-scale learning from public content seems different from commercial exploitation at scale.</div>
+                            <div class="match-card" onclick="showEthicsResponse(3, this)">I'm not sure—this is genuinely new territory.</div>
+                        </div>
+                        <div id="ethics-feedback-box"></div>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div id="ai-ethics-area" class="hidden">
-                     <span class="principle-title">Ethical Evaluation</span>
-                     <p style="margin-bottom: 16px; color: var(--text-primary);">Even if training AI is ruled 'legal,' is it ethical?</p>
-                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button class="match-item" onclick="selectAIEthics(0)">Yes — art has always been influenced by other art. AI is no different.</button>
-                        <button class="match-item" onclick="selectAIEthics(1)">No — artists' work was taken without consent to compete with them.</button>
-                        <button class="match-item" onclick="selectAIEthics(2)">It depends — scale and commercial intent matter.</button>
-                        <button class="match-item" onclick="selectAIEthics(3)">I'm not sure — this is genuinely new territory.</button>
-                     </div>
+        <!-- S6: Precedent -->
+        <div id="screen-precedent" class="content-card hidden">
+            <h2>Precedent Challenge</h2>
+            <p class="subtitle">Match real-world copyright decisions to their descriptions.</p>
+            
+            <div class="scrollable">
+                <div class="match-container">
+                    <div class="match-col" id="match-list-left">
+                        <!-- Left cards -->
+                    </div>
+                    <div class="match-col" id="match-list-right">
+                        <!-- Right cards -->
+                    </div>
                 </div>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn-mate btn-solid" id="btn-verify-matches" disabled onclick="verifyPrecedents()">Verify Matches →</button>
+            </div>
+        </div>
 
-                <div id="ai-reveal" class="reveal-card">
-                    <h3 id="ai-reveal-title" style="color: var(--accent); margin-bottom: 8px;">ACTUAL RULING</h3>
-                    <p id="ai-reveal-desc" style="font-size: 14px; margin-bottom: 16px; color: var(--text-primary);"></p>
-                    <button class="btn-primary" id="ai-next-btn" onclick="nextAIPart()">Next Part →</button>
+        <!-- S7: Report -->
+        <div id="screen-report" class="content-card hidden">
+            <h2>Consultant Report</h2>
+            <p class="subtitle" id="report-tagline">Finalizing your digital rights analysis.</p>
+
+            <div class="report-grid">
+                <div class="stat-card">
+                    <span class="stat-val" id="final-score">0</span>
+                    <span class="stat-label">Total Score</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val" id="final-accuracy">0%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val" id="final-rank">Junior</span>
+                    <span class="stat-label">Consultant Rank</span>
+                </div>
+            </div>
+
+            <div class="result-panel visible">
+                <h3 style="color: var(--primary); margin-bottom: 10px;">Pattern Analysis</h3>
+                <p id="pattern-analysis" style="font-size: 14px;"></p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <p style="font-weight: 700; font-size: 13px; color: var(--text-muted); text-transform: uppercase;">After reviewing these cases, what surprises you most?</p>
+                <div class="chip-container">
+                    <div class="chip" onclick="restart()">Unclear nature of law</div>
+                    <div class="chip" onclick="restart()">Strict music copyright</div>
+                    <div class="chip" onclick="restart()">Style isn't protected</div>
+                    <div class="chip" onclick="restart()">AI legal uncertainty</div>
                 </div>
             </div>
         </div>
-    </section>
+    </main>
 
-    <!-- S6: Precedent Matching -->
-    <section id="screen-S6" class="screen">
-        <h2 style="color: var(--accent); margin-bottom: 8px;">Match the Precedent</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 32px;">Connect the real-world scenario to the legal outcome.</p>
-        
-        <div class="matching-container">
-            <div class="match-list" id="match-scenarios">
-                <!-- JS generated -->
-            </div>
-            <div class="match-list" id="match-rulings">
-                <!-- JS generated -->
-            </div>
+    <footer>
+        <button class="btn-emate btn-outline" onclick="restart()">Restart</button>
+        <div style="display: flex; gap: 15px;">
+            <button class="btn-emate btn-outline" id="btn-back" disabled onclick="changeScreen(-1)">Back</button>
+            <button class="btn-emate btn-solid" id="btn-next" onclick="changeScreen(1)">Next</button>
         </div>
-
-        <div style="text-align: center; margin-top: 40px;">
-            <button id="verify-matches" class="btn-primary" onclick="verifyMatches()" disabled>Verify Matches →</button>
-        </div>
-    </section>
-
-    <!-- S7: Report -->
-    <section id="screen-S7" class="screen">
-        <div class="report-header">
-            <h1 class="intro-title" style="font-size: 32px;">Final Consultation Report</h1>
-            <p id="consultant-rank" style="color: var(--accent); font-weight: 600; font-size: 24px; margin-top: 10px;">Lead Digital Rights Consultant</p>
-        </div>
-
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-val" id="final-score">0</div>
-                <div class="stat-label">Total Score</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-val" id="accuracy-pct">0%</div>
-                <div class="stat-label">Case Accuracy</div>
-            </div>
-        </div>
-
-        <div class="briefing-card" style="margin-bottom: 32px;">
-            <h3>Consultant Review</h3>
-            <p id="pattern-analysis" style="font-size: 15px; color: var(--text-primary);"></p>
-        </div>
-
-        <div class="briefing-card">
-            <h3>Final Reflection</h3>
-            <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-primary);">What surprises you most about copyright law?</p>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button class="p-chip" style="width: 100%; text-align: left;" onclick="restart()">How much is genuinely unclear — even courts disagree.</button>
-                <button class="p-chip" style="width: 100%; text-align: left;" onclick="restart()">How strictly music copyright is enforced — even 2 seconds.</button>
-                <button class="p-chip" style="width: 100%; text-align: left;" onclick="restart()">That 'style' isn't protected — only specific works.</button>
-                <button class="p-chip" style="width: 100%; text-align: left;" onclick="restart()">That AI training has no settled legal answer yet.</button>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 40px;">
-            <button class="btn-primary" onclick="restart()">Restart Simulation</button>
-        </div>
-    </section>
-
+    </footer>
 </div>
 
 <script>
-    const SCREENS = ['S1', 'S2', 'cases', 'ai', 'S6', 'S7'];
+    // App State
+    let currentStep = 0;
+    let score = 0;
+    let currentCaseIdx = 0;
+    let selectedVerdict = null;
+    let selectedPrinciples = [];
+    let matchSelection = { left: null, right: null };
+    let activeMatches = {}; // leftIndex: rightIndex
     
-    const STATE = {
-        currentScreen: 'S1',
-        currentCase: 0,
-        verdicts: [], // {caseId, studentVerdict, correctVerdict, match}
-        aiVerdicts: [],
-        score: 0,
-        tempVerdict: null,
-        tempPrinciples: [],
-        matching: {
-            selectedScenario: null,
-            connections: {} // scenarioId: rulingId
-        }
+    // Screens configuration
+    const SCREENS = ['intro', 'briefing', 'cases', 'ai', 'precedent', 'report'];
+
+    // Definitions Data
+    const DEFINITIONS = {
+        'Copyright': "The legal right giving creators exclusive control over how their original works are copied, shared, and sold.",
+        'Fair Use': "A legal exception allowing limited use of copyrighted material without permission, based on purpose, nature, amount used, and market impact.",
+        'Piracy': "The unauthorized copying, distribution, or use of copyrighted material — digital or physical.",
+        'DRM': "Technological tools (Digital Rights Management) used to restrict copying, sharing, or modifying digital content."
     };
 
+    // Cases data
     const CASES = [
-        {
-            id: 1,
-            title: "Case #1: Classroom Photocopy",
-            scenario: "A high school English teacher photocopies 3 pages from a published novel to use as a handout for a class discussion on narrative structure. The class has 25 students. No copies are sold.",
-            ruling: "fair-use",
-            principles: [1, 3], // Proportion, Educational
-            explanation: "Courts have consistently found that brief educational use for nonprofit classroom purposes qualifies as fair use. The teacher used a small portion, didn't sell it, and didn't harm the market."
-        },
-        {
-            id: 2,
-            title: "Case #2: Album Download",
-            scenario: "A student finds a full album — 12 songs — available on a file-sharing site for free. They download it instead of paying $12 on a streaming platform for personal listening.",
-            ruling: "piracy",
-            principles: [1, 2], // Proportion, Market Harm
-            explanation: "Downloading a complete work without payment violates copyright. The 'personal use' defense does not apply to entire commercial works. This directly substitutions for a purchase."
-        },
-        {
-            id: 3,
-            title: "Case #3: CC Image",
-            scenario: "A student uses a photograph from Unsplash — published under the Creative Commons Zero (CC0) license. They include it in a school project submitted to their teacher.",
-            ruling: "licensed",
-            principles: [0, 3], 
-            explanation: "Creative Commons Zero licenses grant the public unlimited permission to use or modify the work. This isn't fair use—it is a license chosen by the photographer."
-        },
-        {
-            id: 4,
-            title: "Case #4: The Parody Song",
-            scenario: "A student records a parody of a popular song, changing the lyrics to comment on their school's cafeteria food. They post it on YouTube. The melody is recognizable. No money is made.",
-            ruling: "fair-use",
-            principles: [0, 2], // Transformative, No Market Harm
-            explanation: "Parody has strong fair use protection because it is transformative. By referencing the original to create new commentary, it qualifies as protected speech."
-        },
-        {
-            id: 5,
-            title: "Case #5: Fan Fiction",
-            scenario: "A student writes a 40,000-word fan fiction story set in the Harry Potter universe, using Rowling's characters. They publish it for free. The plot is original, but the world is not.",
-            ruling: "unclear",
-            principles: [0, 2],
-            explanation: "Fan fiction exists in a legal grey zone. It is transformative, but courts have ruled against derivative works using trademarked characters. Most exists in a 'tolerance zone' rather than a clear legal right."
-        },
-        {
-            id: 6,
-            title: "Case #6: YouTube Sample",
-            scenario: "A student uses 7 seconds of a copyrighted song as background music in an original 4-minute YouTube video. YouTube's Content ID system detects it and redirects ad revenue to the label.",
-            ruling: "piracy",
-            principles: [1, 2],
-            explanation: "Music copyright is strict. There is no '30-second rule.' Even 7 seconds without a license is infringement, which is why Content ID systems exist to protect rights holders."
-        },
-        {
-            id: 7,
-            title: "Case #7: The Meme",
-            scenario: "A student takes a still from a copyrighted movie, adds text to create a meme, and shares it. The meme uses the scene to create a funny context that differs from the movie's intent.",
-            ruling: "unclear",
-            principles: [0, 1],
-            explanation: "Memes are rarely litigated. While likely fair use due to minimal market harm and transformation, they are technically unauthorized reproductions. Legal scholars still debate the exact status."
-        }
+        { text: "A high school English teacher photocopies 3 pages from a published novel to use as a handout for a class discussion on narrative structure. The class has 25 students. No copies are sold.", ruling: "fair-use", explanation: "Courts have consistently found that brief educational use of copyrighted text for nonprofit classroom purposes qualifies as fair use. The teacher did not reproduce the entire work, did not sell it, and the use does not harm the author's market." },
+        { text: "A student finds a full album — 12 songs — available on a file-sharing site for free. They download it instead of paying $12 on a streaming platform. They keep it only for personal listening.", ruling: "piracy", explanation: "Downloading a complete copyrighted work without payment, even for personal use, violates copyright. The 'personal use' defense does not apply to reproduction of entire commercial works. This directly substitutes for a lawful purchase, causing market harm." },
+        { text: "A student uses a photograph from Unsplash — a platform where photographers publish images under the Creative Commons Zero license. They include it in a school project submitted to their teacher.", ruling: "licensed", explanation: "Creative Commons Zero (CC0) licenses grant the public unlimited permission to use, copy, and modify the work for any purpose. This is not fair use — it is a license. The photographer explicitly chose to release their rights. Use is fully legal." },
+        { text: "A student records a parody version of a popular song, changing the lyrics to comment on their school's cafeteria food. They post it on YouTube. The melody is recognizable. No money is made.", ruling: "fair-use", explanation: "Parody has strong fair use protection because it necessarily references the original to comment on it. The key factor is transformative purpose. A parody that comments on the original work (or uses it as a vehicle for new commentary) and causes no market harm to the original is typically protected." },
+        { text: "A student writes a 40,000-word fan fiction story set in the Harry Potter universe, using J.K. Rowling's characters and world. They publish it for free on a fan fiction website. They make no money. The story is entirely their own plot.", ruling: "unclear", explanation: "Fan fiction sits in a genuine legal grey zone. It is transformative and typically non-commercial — factors favoring fair use. However, courts have ruled against fan fiction that creates 'derivative works' using the original's characters and world, especially when the creator objects. Most fan fiction exists in a legal tolerance zone — not formally approved, but not actively prosecuted." },
+        { text: "A student uses 7 seconds of a copyrighted song as background music in their own original 4-minute YouTube video about their school. They don't profit. YouTube's Content ID system detects it and monetizes the video for the music rights holder.", ruling: "piracy", explanation: "Music copyright is among the strictest. There is no '30 seconds is free' rule — this is a common myth. Even 7 seconds of a song without a license is infringement. YouTube's Content ID system automatically redirects ad revenue to rights holders." },
+        { text: "A student takes a still from a copyrighted movie, adds text to create a meme, and shares it widely on social media. The meme does not change the meaning of the movie scene — it just makes it funny in a new context.", ruling: "unclear", explanation: "Memes exist in a rarely-litigated grey area. Most rights holders tolerate them because prosecution is unpopular and costly. Legal scholars disagree on whether a meme constitutes transformative use. In practice, memes are rarely prosecuted — but they are technically unauthorized reproductions of copyrighted frames." }
     ];
 
-    const AI_CASES = [
-        {
-            id: 'A',
-            title: "AI PART A: Training",
-            scenario: "An AI company scraped millions of copyrighted images to train their model without consent. The AI can now generate images in the style of any artist included in that data.",
-            ruling: "unclear",
-            explanation: "This is the central unresolved question of the AI era. Courts are deciding if training is 'transformative' (Fair Use) or 'extractive' (Infringement)."
-        },
-        {
-            id: 'B',
-            title: "AI PART B: Output",
-            scenario: "A user asks an AI to generate an image 'in the style of Studio Ghibli.' The AI produces a unique image that matches the Ghibli aesthetic perfectly. The user shares it online.",
-            ruling: "unclear",
-            explanation: "Copyright protects specific works, not general 'artistic style.' However, mimicry at this scale is a new legal challenge currently in the courts."
-        }
-    ];
-
+    // Precedents Data
     const PRECEDENTS = [
-        { id: 'P1', text: "A rapper sampled a 2-second guitar lick from a 1970s funk record. The sample was looped throughout.", rid: 'R1' },
-        { id: 'P2', text: "Google scanned millions of books and made searchable excerpts available without payment to authors.", rid: 'R2' },
-        { id: 'P3', text: "A studio sued a rap group for a song that parodied a 1960s hit by retaining the riff but changing the lyrics.", rid: 'R3' },
-        { id: 'P4', text: "An artist re-photographed news photos, printed them large, and sold them in galleries as original art.", rid: 'R4' }
+        { left: "A rapper sampled a 2-second guitar lick from a 1970s funk record in a new song. The sample was looped and used throughout.", right: "PIRACY — The 2-second sample required a license. 'Get a license or do not sample' — Bridgeport (2004)", match: 0 },
+        { left: "Google scanned millions of books from university libraries and made searchable excerpts publicly available.", right: "FAIR USE — The transformative nature and lack of market harm made it fair use. Authors Guild v. Google (2015)", match: 1 },
+        { left: "A studio sued a rap group for their song that parodied a Roy Orbison hit by retaining the riff but changing lyrics.", right: "FAIR USE — Parody requires the ability to use enough of the original to conjure it. Campbell v. Acuff-Rose (1994)", match: 2 },
+        { left: "An artist re-photographed news photographs, printed them in large format, and sold them in art galleries.", right: "PIRACY — Copying photographs without transformation, even as 'art,' infringes copyright. Cariou v. Prince (2013)", match: 3 }
     ];
 
-    const RULINGS = [
-        { id: 'R1', text: "PIRACY — The 2-second sample required a license. 'Get a license or do not sample' (2004)" },
-        { id: 'R2', text: "FAIR USE — The transformative, educational nature and lack of market harm made it legal. (2015)" },
-        { id: 'R3', text: "FAIR USE — Parody requires the ability to use enough of the original to conjure it. (1994)" },
-        { id: 'R4', text: "PIRACY — Copying photos without transformation, even as 'art,' infringes copyright. (2013)" }
-    ];
+    // Initialization
+    function init() {
+        const dotContainer = document.getElementById('dot-container');
+        SCREENS.forEach((s, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dotContainer.appendChild(dot);
+        });
+        updateNavigation();
+        loadCase();
+        setupMatching();
+    }
+
+    // Definitions
+    function showDefinition(term, el) {
+        document.querySelectorAll('.term-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        const box = document.getElementById('term-definition-box');
+        const text = document.getElementById('term-definition-text');
+        box.style.display = 'block';
+        text.innerHTML = `<strong>${term}:</strong> ${DEFINITIONS[term]}`;
+    }
 
     // Navigation
-    function nextScreen() {
-        const currentIndex = SCREENS.indexOf(STATE.currentScreen);
-        if (currentIndex < SCREENS.length - 1) {
-            goToScreen(SCREENS[currentIndex + 1]);
-        }
-    }
-
-    function goToScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(`screen-${id}`).classList.add('active');
-        STATE.currentScreen = id;
+    function changeScreen(delta) {
+        let next = currentStep + delta;
         
-        // Progress
-        const pct = (SCREENS.indexOf(id) / (SCREENS.length - 1)) * 100;
-        document.getElementById('progress-bar').style.width = `${pct}%`;
-
-        if (id === 'cases') startCases();
-        if (id === 'S6') initMatching();
-        if (id === 'S7') generateReport();
-    }
-
-    function showTerm(title, desc) {
-        const box = document.getElementById('term-box');
-        box.classList.remove('hidden');
-        document.getElementById('term-title').innerText = title;
-        document.getElementById('term-desc').innerText = desc;
-    }
-
-    // Case Logic
-    function startCases() {
-        STATE.currentCase = 0;
-        loadCase(0);
-    }
-
-    function loadCase(index) {
-        const c = CASES[index];
-        const card = document.getElementById('case-file-card');
-        document.getElementById('case-tab').innerText = `Case #${c.id}`;
-        document.getElementById('case-scenario').innerText = c.scenario;
-        document.getElementById('verdict-controls').style.display = 'block';
-        document.getElementById('reveal-card').style.display = 'none';
-        document.getElementById('ruling-stamp').className = 'ruling-stamp';
-        document.getElementById('submit-verdict').disabled = true;
-
-        // Reset inputs
-        STATE.tempVerdict = null;
-        STATE.tempPrinciples = [];
-        document.querySelectorAll('.btn-verdict').forEach(b => b.classList.remove('selected'));
-        document.querySelectorAll('.p-chip').forEach(b => b.classList.remove('selected'));
-    }
-
-    function selectVerdict(type) {
-        STATE.tempVerdict = type;
-        document.querySelectorAll('.btn-verdict').forEach(b => {
-            b.classList.remove('selected');
-            if(b.dataset.type === type) b.classList.add('selected');
-        });
-        document.getElementById('submit-verdict').disabled = false;
-    }
-
-    function togglePrinciple(index) {
-        const chips = document.querySelectorAll('.p-chip');
-        if (STATE.tempPrinciples.includes(index)) {
-            STATE.tempPrinciples = STATE.tempPrinciples.filter(i => i !== index);
-            chips[index].classList.remove('selected');
-        } else {
-            if (STATE.tempPrinciples.length < 2) {
-                STATE.tempPrinciples.push(index);
-                chips[index].classList.add('selected');
+        if (SCREENS[currentStep] === 'cases' && delta > 0) {
+            if (currentCaseIdx < CASES.length - 1) {
+                currentCaseIdx++;
+                loadCase();
+                return;
             }
         }
-    }
-
-    function submitVerdict() {
-        const c = CASES[STATE.currentCase];
-        const isMatch = (STATE.tempVerdict === c.ruling);
         
-        // Record result
-        STATE.verdicts.push({
-            id: c.id,
-            v: STATE.tempVerdict,
-            correct: c.ruling,
-            match: isMatch
-        });
-
-        // Stamp
-        const stamp = document.getElementById('ruling-stamp');
-        stamp.innerText = c.ruling.replace('-', ' ');
-        stamp.classList.add('active', `stamp-${c.ruling}`);
-
-        // Reveal
-        document.getElementById('verdict-controls').style.display = 'none';
-        const reveal = document.getElementById('reveal-card');
-        reveal.style.display = 'block';
-        document.getElementById('reveal-title').innerText = `ACTUAL RULING: ${c.ruling.toUpperCase().replace('-', ' ')}`;
-        document.getElementById('reveal-explanation').innerText = c.explanation;
-        
-        const badge = document.getElementById('match-badge');
-        badge.innerText = isMatch ? 'VERDICT MATCHED' : 'VERDICT MISMATCHED';
-        badge.style.background = isMatch ? '#22C55E33' : '#FF3B3B33';
-        badge.style.color = isMatch ? '#4ade80' : '#f87171';
-
-        // Score
-        if (isMatch) STATE.score += 1;
-        else if (c.ruling === 'unclear' && STATE.tempVerdict !== 'unclear') STATE.score += 0; // Missed ambiguity
-        
-        updateLedger();
-    }
-
-    function nextCase() {
-        STATE.currentCase++;
-        if (STATE.currentCase < CASES.length) {
-            loadCase(STATE.currentCase);
-        } else {
-            nextScreen();
-        }
-    }
-
-    function updateLedger() {
-        const list = document.getElementById('ledger-list');
-        list.innerHTML = '';
-        STATE.verdicts.forEach(v => {
-            const item = document.createElement('div');
-            item.className = 'ledger-item';
-            item.innerHTML = `
-                <span>Case ${v.id}</span>
-                <span style="color: ${v.match ? 'var(--fair-use)' : 'var(--text-secondary)'}">${v.v.toUpperCase()}</span>
-            `;
-            list.appendChild(item);
-        });
-    }
-
-    // AI Case Logic
-    let currentAIPart = 0;
-    function startAICase() {
-        document.getElementById('ai-context-card').classList.add('hidden');
-        document.getElementById('ai-interaction').classList.remove('hidden');
-        loadAIPart(0);
-    }
-
-    function loadAIPart(index) {
-        currentAIPart = index;
-        const c = AI_CASES[index];
-        document.getElementById('ai-tab').innerText = `AI PART ${c.id}`;
-        document.getElementById('ai-scenario').innerText = c.scenario;
-        document.getElementById('ai-verdict-area').classList.remove('hidden');
-        document.getElementById('ai-ethics-area').classList.add('hidden');
-        document.getElementById('ai-reveal').classList.none = 'none';
-        document.getElementById('ai-reveal').style.display = 'none';
-        document.getElementById('ai-stamp').className = 'ruling-stamp';
-        document.getElementById('ai-submit').disabled = true;
-        
-        STATE.tempVerdict = null;
-        document.querySelectorAll('.ai-v').forEach(b => b.classList.remove('selected'));
-    }
-
-    function selectAIVerdict(type) {
-        STATE.tempVerdict = type;
-        document.querySelectorAll('.ai-v').forEach(b => {
-            b.classList.remove('selected');
-            if(b.dataset.type === type) b.classList.add('selected');
-        });
-        document.getElementById('ai-submit').disabled = false;
-    }
-
-    function submitAIVerdict() {
-        const c = AI_CASES[currentAIPart];
-        const isMatch = (STATE.tempVerdict === c.ruling);
-        STATE.aiVerdicts.push({ part: c.id, match: isMatch });
-        if (isMatch) STATE.score += 1;
-
-        const stamp = document.getElementById('ai-stamp');
-        stamp.innerText = c.ruling.toUpperCase();
-        stamp.classList.add('active', `stamp-${c.ruling}`);
-
-        document.getElementById('ai-verdict-area').classList.add('hidden');
-        document.getElementById('ai-reveal').style.display = 'block';
-        document.getElementById('ai-reveal-title').innerText = `CURRENT STATUS: ${c.ruling.toUpperCase()}`;
-        document.getElementById('ai-reveal-desc').innerText = c.explanation;
-    }
-
-    function nextAIPart() {
-        if (currentAIPart < 1) {
-            loadAIPart(1);
-        } else {
-            // Ethics Part
-            document.getElementById('ai-tab').innerText = `ETHICS REVIEW`;
-            document.getElementById('ai-scenario').innerText = "Even if training AI on copyrighted art is ruled 'legal,' is it ethical?";
-            document.getElementById('ai-verdict-area').classList.add('hidden');
-            document.getElementById('ai-ethics-area').classList.remove('hidden');
-            document.getElementById('ai-reveal').style.display = 'none';
-            document.getElementById('ai-stamp').classList.remove('active');
-        }
-    }
-
-    function selectAIEthics(index) {
-        const responses = [
-            "This is a real argument made by AI companies. Critics note that humans engage with art intentionally; AI extracts data automatically.",
-            "This reflects the position of most artists' guilds. They argue the value of AI comes directly from their uncompensated work.",
-            "Many legal scholars land here. Scale and commercial intent matter more than the act of learning itself.",
-            "That's honest. We are in one of the most uncertain areas of technology law in history."
-        ];
-        document.getElementById('ai-ethics-area').classList.add('hidden');
-        document.getElementById('ai-reveal').style.display = 'block';
-        document.getElementById('ai-reveal-title').innerText = "ETHICAL PERSPECTIVE";
-        document.getElementById('ai-reveal-desc').innerText = responses[index];
-        document.getElementById('ai-next-btn').innerText = "Face Precedent Challenge →";
-        document.getElementById('ai-next-btn').onclick = () => nextScreen();
-    }
-
-    // Matching Logic
-    function initMatching() {
-        const scenContainer = document.getElementById('match-scenarios');
-        const ruleContainer = document.getElementById('match-rulings');
-        scenContainer.innerHTML = '';
-        ruleContainer.innerHTML = '';
-
-        // Shuffle
-        const shuffledRules = [...RULINGS].sort(() => Math.random() - 0.5);
-
-        PRECEDENTS.forEach(p => {
-            const div = document.createElement('button');
-            div.className = 'match-item';
-            div.id = `scen-${p.id}`;
-            div.innerText = p.text;
-            div.onclick = () => selectMatchSource(p.id);
-            scenContainer.appendChild(div);
-        });
-
-        shuffledRules.forEach(r => {
-            const div = document.createElement('button');
-            div.className = 'match-item';
-            div.id = `rule-${r.id}`;
-            div.innerText = r.text;
-            div.onclick = () => selectMatchTarget(r.id);
-            ruleContainer.appendChild(div);
-        });
-    }
-
-    function selectMatchSource(id) {
-        if (STATE.matching.connections[id]) {
-            const oldRid = STATE.matching.connections[id];
-            document.getElementById(`rule-${oldRid}`).classList.remove('linked');
-            delete STATE.matching.connections[id];
-        }
-        STATE.matching.selectedScenario = id;
-        document.querySelectorAll('#match-scenarios .match-item').forEach(i => i.classList.remove('selected'));
-        document.getElementById(`scen-${id}`).classList.add('selected');
-    }
-
-    function selectMatchTarget(rid) {
-        if (!STATE.matching.selectedScenario) return;
-        
-        const sid = STATE.matching.selectedScenario;
-        STATE.matching.connections[sid] = rid;
-        
-        document.querySelectorAll('#match-rulings .match-item').forEach(i => i.classList.remove('selected'));
-        document.getElementById(`rule-${rid}`).classList.add('linked');
-        document.getElementById(`scen-${sid}`).classList.add('linked');
-        
-        STATE.matching.selectedScenario = null;
-        document.querySelectorAll('#match-scenarios .match-item').forEach(i => i.classList.remove('selected'));
-
-        if (Object.keys(STATE.matching.connections).length === 4) {
-            document.getElementById('verify-matches').disabled = false;
-        }
-    }
-
-    function verifyMatches() {
-        let matchedCount = 0;
-        PRECEDENTS.forEach(p => {
-            const userRid = STATE.matching.connections[p.id];
-            const isCorrect = (userRid === p.rid);
-            const scenEl = document.getElementById(`scen-${p.id}`);
-            const ruleEl = document.getElementById(`rule-${userRid}`);
+        if (next >= 0 && next < SCREENS.length) {
+            document.getElementById('screen-' + SCREENS[currentStep]).classList.add('hidden');
+            currentStep = next;
+            document.getElementById('screen-' + SCREENS[currentStep]).classList.remove('hidden');
             
-            if (isCorrect) {
-                matchedCount++;
-                scenEl.style.borderColor = 'var(--fair-use)';
-                ruleEl.style.borderColor = 'var(--fair-use)';
-            } else {
-                scenEl.classList.add('wrong');
-                ruleEl.classList.add('wrong');
-                scenEl.style.borderColor = 'var(--piracy)';
-                ruleEl.style.borderColor = 'var(--piracy)';
-            }
-        });
-        
-        STATE.score += matchedCount;
-        document.getElementById('verify-matches').innerText = "Continue to Report →";
-        document.getElementById('verify-matches').onclick = () => nextScreen();
+            updateNavigation();
+        }
     }
 
-    // Report
-    function generateReport() {
-        const totalPossible = CASES.length + 2 + 4; // Cases + AI Parts + Matches = 13
-        document.getElementById('final-score').innerText = STATE.score;
-        document.getElementById('accuracy-pct').innerText = Math.round((STATE.score / totalPossible) * 100) + "%";
+    function updateNavigation() {
+        const dots = document.querySelectorAll('.dot');
+        dots.forEach((dot, i) => {
+            dot.className = 'dot';
+            if (i < currentStep) dot.classList.add('complete');
+            if (i === currentStep) dot.classList.add('active');
+        });
 
-        let rank = "";
-        if (STATE.score <= 5) rank = "Junior Associate";
-        else if (STATE.score <= 9) rank = "Associate Consultant";
-        else if (STATE.score <= 11) rank = "Senior Consultant";
-        else rank = "Lead Digital Rights Consultant";
-        document.getElementById('consultant-rank').innerText = rank;
-
-        // Pattern Analysis
-        const unclearMistakes = STATE.verdicts.filter(v => v.correct === 'unclear' && v.v !== 'unclear').length;
-        const piracyAsFair = STATE.verdicts.filter(v => v.correct === 'piracy' && v.v === 'fair-use').length;
+        document.getElementById('btn-back').disabled = currentStep === 0;
         
-        let pattern = "You demonstrated a strong ability to navigate complex digital ethics.";
-        if (unclearMistakes > 1) pattern = "You tended to look for black-and-white answers in a grey field. Remember that much of copyright law remains genuinely unsettled as technology evolves.";
-        if (piracyAsFair > 1) pattern = "You leaned toward permissive use. While education and commentary are protected, Market Harm remains a critical factor that judges take very seriously.";
-        if (STATE.score >= 12) pattern = "Exceptional accuracy. You successfully identified the core legal principles and resisted the urge to oversimplify the hard cases.";
+        const nextBtn = document.getElementById('btn-next');
+        const screen = SCREENS[currentStep];
+        
+        if (screen === 'cases') {
+            const isLastCase = currentCaseIdx === CASES.length - 1;
+            const isFeedbackVisible = document.getElementById('case-feedback').classList.contains('visible');
+            nextBtn.disabled = !isFeedbackVisible;
+            nextBtn.innerText = isLastCase ? "Finish Cases" : "Next Case";
+        } else if (screen === 'precedent') {
+            nextBtn.disabled = true;
+            nextBtn.innerText = "See Report";
+        } else if (screen === 'report') {
+            nextBtn.disabled = true;
+            nextBtn.innerText = "Done";
+        } else {
+            nextBtn.disabled = false;
+            nextBtn.innerText = "Next";
+        }
+    }
 
+    // Briefing Tabs
+    function switchBriefingTab(idx, el) {
+        document.querySelectorAll('#screen-briefing .sidebar-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('brief-tab-0').classList.add('hidden');
+        document.getElementById('brief-tab-1').classList.add('hidden');
+        document.getElementById('brief-tab-' + idx).classList.remove('hidden');
+    }
+
+    // Cases Logic
+    function loadCase() {
+        const caseData = CASES[currentCaseIdx];
+        document.getElementById('case-title').innerText = `Case #${currentCaseIdx + 1}`;
+        document.getElementById('case-text').innerText = caseData.text;
+        
+        document.getElementById('case-input-zone').classList.remove('hidden');
+        document.getElementById('case-feedback').classList.remove('visible');
+        document.getElementById('stamp-overlay').classList.remove('active');
+        document.getElementById('btn-submit-case').disabled = true;
+        
+        selectedVerdict = null;
+        selectedPrinciples = [];
+        document.querySelectorAll('#screen-cases .choice-pill').forEach(p => p.classList.remove('selected'));
+        document.querySelectorAll('#principle-list .chip').forEach(c => c.classList.remove('selected'));
+        
+        updateNavigation();
+    }
+
+    function selectVerdict(type, el) {
+        document.querySelectorAll('#screen-cases .choice-pill').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedVerdict = type;
+        validateSubmit();
+    }
+
+    function togglePrinciple(idx, el) {
+        if (selectedPrinciples.includes(idx)) {
+            selectedPrinciples = selectedPrinciples.filter(i => i !== idx);
+            el.classList.remove('selected');
+        } else if (selectedPrinciples.length < 2) {
+            selectedPrinciples.push(idx);
+            el.classList.add('selected');
+        }
+        validateSubmit();
+    }
+
+    function validateSubmit() {
+        document.getElementById('btn-submit-case').disabled = !(selectedVerdict && selectedPrinciples.length > 0);
+    }
+
+    function submitCase() {
+        const data = CASES[currentCaseIdx];
+        const isCorrect = selectedVerdict === data.ruling;
+        
+        if (isCorrect) score++;
+        updateScore();
+
+        const stampOverlay = document.getElementById('stamp-overlay');
+        const stampText = document.getElementById('stamp-text');
+        stampText.innerText = data.ruling.replace('-', ' ');
+        stampText.style.color = `var(--${data.ruling})`;
+        stampOverlay.classList.add('active');
+
+        const feedback = document.getElementById('case-feedback');
+        document.getElementById('feedback-title').innerText = isCorrect ? "Verdict Matched ✅" : "Verdict Mismatch ❌";
+        document.getElementById('feedback-title').style.color = isCorrect ? "var(--fair-use)" : "var(--piracy)";
+        document.getElementById('feedback-text').innerText = data.explanation;
+        feedback.classList.add('visible');
+        
+        document.getElementById('case-input-zone').classList.add('hidden');
+        updateNavigation();
+    }
+
+    function updateScore() {
+        document.getElementById('global-score').innerText = `SCORE: ${score}`;
+    }
+
+    // AI Tabs
+    function switchAITab(idx, el) {
+        document.querySelectorAll('#screen-ai .sidebar-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        for (let i=0; i<4; i++) {
+            document.getElementById('ai-tab-' + i).classList.add('hidden');
+        }
+        document.getElementById('ai-tab-' + idx).classList.remove('hidden');
+    }
+
+    function handleAIVerdict(ruling, part, el) {
+        el.classList.add('selected');
+        document.getElementById('ai-reveal-' + part).classList.add('visible');
+        score += 0.5;
+        updateScore();
+    }
+
+    function showEthicsResponse(idx, el) {
+        const responses = [
+            "This is a real argument made by AI companies. But critics note a key difference: human artists are influenced by art they choose to engage with; AI systems scraped content without creators' knowledge.",
+            "This reflects the position of most artists' guilds, the Authors Guild, and creative unions. Their argument: the economic benefit of the AI product came partly from their uncompensated labor.",
+            "Many legal scholars land here. Scale and commercial intent matter. A student learning from reference art is different from a $10B company extracting training data from billions of works.",
+            "That's honest — and appropriate. This is one of the most genuinely uncertain areas in technology law right now."
+        ];
+        document.querySelectorAll('#ai-tab-3 .match-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        const box = document.getElementById('ethics-feedback-box');
+        box.innerHTML = `<div class="ethics-response">${responses[idx]}</div>`;
+        score += 1;
+        updateScore();
+    }
+
+    // Matching
+    function setupMatching() {
+        const leftBox = document.getElementById('match-list-left');
+        const rightBox = document.getElementById('match-list-right');
+        const randomized = [...PRECEDENTS].sort(() => Math.random() - 0.5);
+
+        PRECEDENTS.forEach((p, i) => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.innerText = p.left;
+            card.onclick = () => selectMatchItem('left', i, card);
+            leftBox.appendChild(card);
+        });
+
+        randomized.forEach((p, i) => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.innerText = p.right;
+            card.onclick = () => selectMatchItem('right', p.match, card);
+            rightBox.appendChild(card);
+        });
+    }
+
+    function selectMatchItem(side, index, el) {
+        if (matchSelection[side] && matchSelection[side].el) {
+            matchSelection[side].el.classList.remove('selected');
+        }
+        matchSelection[side] = { index, el };
+        el.classList.add('selected');
+
+        if (matchSelection.left && matchSelection.right) {
+            const leftIdx = matchSelection.left.index;
+            const rightIdx = matchSelection.right.index;
+            activeMatches[leftIdx] = rightIdx;
+            matchSelection.left.el.classList.add('linked');
+            matchSelection.right.el.classList.add('linked');
+            matchSelection = { left: null, right: null };
+            if (Object.keys(activeMatches).length === 4) {
+                document.getElementById('btn-verify-matches').disabled = false;
+            }
+        }
+    }
+
+    function verifyPrecedents() {
+        let matchScore = 0;
+        PRECEDENTS.forEach((p, i) => {
+            const isMatch = activeMatches[i] === p.match;
+            if (isMatch) matchScore++;
+            const leftEl = document.querySelectorAll('#match-list-left .match-card')[i];
+            const rightEls = document.querySelectorAll('#match-list-right .match-card');
+            let matchedRightEl = null;
+            rightEls.forEach(re => { if (re.innerText === p.right) matchedRightEl = re; });
+            if (isMatch) {
+                leftEl.style.borderColor = "var(--fair-use)";
+                matchedRightEl.style.borderColor = "var(--fair-use)";
+            } else {
+                leftEl.style.borderColor = "var(--piracy)";
+                matchedRightEl.style.borderColor = "var(--piracy)";
+            }
+        });
+        score += matchScore;
+        updateScore();
+        document.getElementById('btn-verify-matches').classList.add('hidden');
+        document.getElementById('btn-next').disabled = false;
+    }
+
+    function calculateFinal() {
+        const totalPossible = 13;
+        const accuracy = Math.round((score / totalPossible) * 100);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('final-accuracy').innerText = accuracy + '%';
+        let rank = "Lead Consultant";
+        if (score < 5) rank = "Junior Associate";
+        else if (score < 9) rank = "Associate Consultant";
+        else if (score < 12) rank = "Senior Consultant";
+        document.getElementById('final-rank').innerText = rank;
+        let pattern = "You demonstrated a strong ability to navigate complex digital ethics.";
+        if (score > 11) pattern = "Exceptional accuracy — including the hard cases. Strong instinct for legal ambiguity.";
         document.getElementById('pattern-analysis').innerText = pattern;
     }
 
@@ -966,16 +908,12 @@
         location.reload();
     }
 
-    // Handle initial state
-    window.onload = () => {
-        // Accessibility: Keyboard matching
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                STATE.matching.selectedScenario = null;
-                document.querySelectorAll('.match-item').forEach(i => i.classList.remove('selected'));
-            }
-        });
-    };
+    init();
+    document.getElementById('btn-next').addEventListener('click', () => {
+        if (SCREENS[currentStep] === 'report') {
+            calculateFinal();
+        }
+    });
 </script>
 </body>
 </html>
