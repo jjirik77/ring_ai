@@ -32,24 +32,25 @@
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex;
-            align-items: flex-start; /* Changed from center to allow scrolling if needed */
+            align-items: flex-start; /* Changed to flex-start to allow body scrolling */
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 40px 0; /* Add padding for breathability */
-            overflow-y: auto; /* Allow body to scroll now that window is bigger */
+            padding: 40px 0;
+            overflow-y: auto;
         }
 
-        /* Fixed Width, Larger Vertical Aspect Ratio Container */
+        /* Aspect Ratio Container - Height made flexible to remove scrollbars */
         #app-viewport {
             width: 1024px;
-            min-height: 1000px; /* Increased from 768px */
+            min-height: 768px; 
+            height: auto; /* Changed from fixed 768px */
             background-color: var(--bg-light);
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: visible; /* Allow content to dictate height */
+            overflow: visible;
         }
 
         /* Header Area */
@@ -106,7 +107,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            overflow: visible; /* No internal scroll */
+            overflow: visible;
         }
 
         .content-card {
@@ -115,13 +116,14 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             padding: 35px;
-            min-height: 800px; /* Force internal space */
+            height: auto; /* Flexible height */
+            min-height: 600px;
             width: 100%;
             display: flex;
             flex-direction: column;
             animation: slideUp 0.4s ease-out;
             position: relative;
-            overflow: visible; /* No internal scroll */
+            overflow-y: visible; /* Scrollbar removed */
         }
 
         @keyframes slideUp {
@@ -214,10 +216,10 @@
         .btn-solid:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-solid:disabled { background: var(--border-color); cursor: not-allowed; transform: none; }
 
-        /* Verdict Elements */
+        /* Verdict Elements - Restored to 2x2 Grid */
         .verdict-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, 1fr); /* Restored to 2 columns */
             gap: 12px;
             margin-bottom: 25px;
         }
@@ -236,23 +238,41 @@
         .choice-pill:hover { border-color: var(--primary); background: #f8f9fa; }
         .choice-pill.selected { border-color: var(--primary); background: var(--bg-light); color: var(--primary); }
 
+        /* Term Chips Layout */
         .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        
+        .terms-grid {
+            display: flex;
+            justify-content: space-between; 
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
         .chip {
             padding: 6px 14px;
             border-radius: 20px;
             background: #f1f3f5;
             border: 1px solid var(--border-color);
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
+            text-align: center;
         }
+
+        /* Widened Key Term Chips */
+        .term-chip {
+            padding: 12px 45px;
+            min-width: 160px;
+            border-radius: 25px;
+        }
+
         .chip.selected { background: var(--accent-teal); color: var(--white); border-color: var(--accent-teal); }
 
         /* Stamp */
         .stamp-overlay {
             position: absolute;
-            top: 350px; /* Fixed vertical position relative to expanded card */
+            top: 40%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-10deg) scale(0);
             z-index: 100;
@@ -284,18 +304,17 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Term definition specific box */
+        /* Term definition box */
         #term-definition-box {
             background-color: #f1f7ff;
             border: 1px solid var(--primary);
-            border-left: 6px solid var(--primary);
+            border-left: 10px solid var(--primary);
             padding: 25px 30px;
-            margin-top: 15px;
-            min-height: 120px; 
+            margin-top: 20px;
+            min-height: 100px; 
             display: none;
             animation: fadeIn 0.3s;
             border-radius: 4px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
         #term-definition-box p { margin: 0; color: var(--text-main); font-weight: 500; font-size: 16px; line-height: 1.5; }
 
@@ -305,7 +324,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-top: 15px;
-            overflow: visible;
         }
         .match-col { display: flex; flex-direction: column; gap: 10px; }
         .match-card {
@@ -368,8 +386,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* No internal scroll requested */
-        .scrollable { overflow: visible; padding-right: 0; }
+        /* Internal scroll removed globally per request */
+        .scrollable { overflow: visible; }
     </style>
 </head>
 <body>
@@ -392,11 +410,9 @@
             <div class="scrollable">
                 <p>Everything you see online was created by someone. Music, photos, videos, writing, code — all of it is protected by copyright law the moment it is created. Copyright gives creators the exclusive right to copy, distribute, and profit from their work.</p>
                 <p>But digital technology made copying nearly effortless and free. Downloading a song, screenshotting an image, sampling a beat, using an AI tool trained on copyrighted art — these acts happen billions of times a day. Some are legal. Some are not. Many exist in a grey zone.</p>
-                <p><strong>"Fair use"</strong> is a legal exception that allows limited use of copyrighted material without permission — for education, commentary, parody, news reporting. But the line between fair use and infringement is not always clear.</p>
-                <p><strong>"Piracy"</strong> is the unauthorized reproduction or distribution of copyrighted material, typically for free or for profit, without the creator's permission.</p>
                 
                 <p style="margin-top: 20px; font-weight: 600; color: var(--primary);">Click to explore Key Terms:</p>
-                <div class="chip-container">
+                <div class="chip-container terms-grid">
                     <div class="chip term-chip" onclick="showDefinition('Copyright', this)">Copyright</div>
                     <div class="chip term-chip" onclick="showDefinition('Fair Use', this)">Fair Use</div>
                     <div class="chip term-chip" onclick="showDefinition('Piracy', this)">Piracy</div>
@@ -491,7 +507,7 @@
                     <div class="sidebar-btn" id="ai-btn-2" onclick="switchAITab(2, this)">Part B: Output</div>
                     <div class="sidebar-btn" id="ai-btn-3" onclick="switchAITab(3, this)">Part C: Ethics</div>
                 </div>
-                <div class="sidebar-content">
+                <div class="sidebar-content scrollable">
                     <div id="ai-tab-0">
                         <p>In 2023 and 2024, multiple lawsuits were filed against AI companies by artists, authors, and media companies. The central claim: AI image generators (Midjourney, Stable Diffusion) and AI writing tools (ChatGPT) were trained on billions of copyrighted images and texts — without the creators' permission and without payment. The AI then generates new content in the style of those creators.</p>
                         <p>You read about the ChatGPT/Studio Ghibli case in your Unit 1.2 warm-up. This is that case — now you'll analyze it in three parts.</p>
@@ -623,7 +639,7 @@
         { left: "A rapper sampled a 2-second guitar lick from a 1970s funk record in a new song. The sample was looped and used throughout.", right: "PIRACY — The 2-second sample required a license. 'Get a license or do not sample' — Bridgeport (2004)", match: 0 },
         { left: "Google scanned millions of books from university libraries and made searchable excerpts publicly available.", right: "FAIR USE — The transformative nature and lack of market harm made it fair use. Authors Guild v. Google (2015)", match: 1 },
         { left: "A studio sued a rap group for their song that parodied a Roy Orbison hit by retaining the riff but changing lyrics.", right: "FAIR USE — Parody requires the ability to use enough of the original to conjure it. Campbell v. Acuff-Rose (1994)", match: 2 },
-        { left: "An artist re-photographed news photographs, printed them in large format, and sold them in art galleries.", right: "PIRACY — Copying photographs without transformation, even as 'art,' infringes copyright. Cariou v. Prince (2013)", match: 3 }
+        { left: "An artist re-photographed famous news photographs, printed them in large format, and sold them in art galleries.", right: "PIRACY — Copying photographs without transformation, even as 'art,' infringes copyright. Cariou v. Prince (2013)", match: 3 }
     ];
 
     function init() {
