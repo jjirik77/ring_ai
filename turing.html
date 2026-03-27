@@ -33,7 +33,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Prevents body scroll */
+            overflow: hidden; 
         }
 
         #app-container {
@@ -48,7 +48,6 @@
             overflow: hidden;
         }
 
-        /* Header */
         header {
             padding: 1rem 2rem;
             border-bottom: 1px solid var(--border);
@@ -69,12 +68,12 @@
 
         .progress-dots {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--border);
             transition: var(--transition);
@@ -82,16 +81,15 @@
 
         .dot.active {
             background: var(--primary);
-            transform: scale(1.2);
+            transform: scale(1.3);
         }
 
-        /* Main Stage */
         main {
             flex-grow: 1;
             position: relative;
             background: var(--bg-light);
-            padding: 1.5rem;
-            overflow: hidden; /* Stage should not scroll globally */
+            padding: 1.25rem;
+            overflow: hidden; 
         }
 
         .scene {
@@ -110,11 +108,10 @@
             transform: translateY(0);
         }
 
-        /* Content Card */
         .content-card {
             background: var(--white);
             border-radius: 12px;
-            padding: 1.5rem; /* Reduced padding to fit content */
+            padding: 1.5rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             flex-grow: 1;
@@ -124,27 +121,27 @@
             position: relative;
         }
 
-        /* Introduction View */
         .intro-view {
             text-align: center;
-            max-width: 800px;
+            max-width: 850px;
             margin: auto;
+            overflow-y: auto;
+            padding: 1rem;
         }
 
         .icon-circle {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             background: var(--primary-light);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.25rem;
+            margin: 0 auto 1rem;
         }
 
-        .icon-circle svg { width: 35px; height: 35px; fill: var(--primary); }
+        .icon-circle svg { width: 30px; height: 30px; fill: var(--primary); }
 
-        /* Briefing View (Role-style) */
         .briefing-layout {
             display: grid;
             grid-template-columns: 260px 1fr;
@@ -156,33 +153,33 @@
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
-            overflow-y: auto; /* Allow sidebar itself to scroll if absolutely necessary, but styled compactly */
-            padding-right: 4px;
+            gap: 0.35rem;
+            overflow-y: auto;
+            padding-right: 5px;
         }
 
         .sidebar-nav h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-bottom: 0.25rem;
         }
 
         .tab-btn {
             background: var(--white);
             border: 1px solid var(--border);
-            padding: 0.6rem 0.8rem;
+            padding: 0.55rem 0.75rem;
             border-radius: 6px;
             cursor: pointer;
             text-align: left;
             font-weight: 600;
             color: var(--text-muted);
             transition: var(--transition);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            line-height: 1.2;
         }
 
         .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
         .tab-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 
-        /* Session View (Terminal Content card) */
         .session-grid {
             display: grid;
             grid-template-columns: 1fr 340px;
@@ -206,7 +203,7 @@
             max-width: 90%;
             padding: 0.85rem;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             line-height: 1.45;
         }
 
@@ -225,17 +222,29 @@
             font-weight: 500;
         }
 
-        /* Verdict Controls */
         .controls-area {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            overflow: hidden; /* Prevent controls from having a nested scrollbar if possible */
+            gap: 0.75rem;
+            overflow: hidden;
         }
 
         .controls-area h3 {
-            font-size: 0.9rem;
-            margin-bottom: 0.2rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .rules-card {
+            background: var(--primary-light);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            font-size: 0.72rem;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
         }
 
         .verdict-options {
@@ -244,21 +253,16 @@
             gap: 0.4rem;
         }
 
-        /* Vertical options for main verdict to match Sidebar style if needed, or keeping horizontal to save space */
-        .verdict-options.vertical {
-            grid-template-columns: 1fr;
-        }
-
         .control-btn {
             background: var(--white);
             border: 1px solid var(--border);
-            padding: 0.6rem;
+            padding: 0.55rem;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
             transition: var(--transition);
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .control-btn:hover { border-color: var(--primary); }
@@ -266,18 +270,20 @@
         .control-btn.active.ai { background: var(--ai-color); color: white; border-color: var(--ai-color); }
         .control-btn.active.uncertain { background: #f59e0b; color: white; border-color: #f59e0b; }
 
-        /* Indicators grid - 2 columns to keep it compact */
         .indicator-checks {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.4rem;
+            gap: 0.35rem;
+            overflow-y: auto;
+            max-height: 160px;
+            padding-right: 5px;
         }
 
         .check-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
+            gap: 5px;
+            font-size: 0.72rem;
             padding: 0.4rem;
             background: var(--bg-light);
             border: 1px solid var(--border);
@@ -289,7 +295,6 @@
 
         .check-pill:hover { border-color: var(--text-muted); }
 
-        /* Reveal Overlay */
         .reveal-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -318,7 +323,6 @@
         .stamp.human { color: var(--human-color); border-color: var(--human-color); }
         .stamp.ai { color: var(--ai-color); border-color: var(--ai-color); }
 
-        /* Footer */
         footer {
             padding: 1rem 2rem;
             border-top: 1px solid var(--border);
@@ -329,14 +333,14 @@
         }
 
         .btn {
-            padding: 0.65rem 1.25rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             border: none;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .btn-primary { background: var(--primary); color: var(--white); }
@@ -345,49 +349,109 @@
         .btn-outline:hover { background: var(--bg-light); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .term-details {
+            text-align: left;
+            margin-top: 1rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
 
-        /* Analysis Ranking */
+        .term-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .term-item:hover {
+            border-color: var(--primary);
+            background: var(--bg-light);
+        }
+
+        .term-item.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: inset 0 0 0 1px var(--primary);
+        }
+
+        .term-item strong {
+            color: var(--primary);
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .term-item strong::after {
+            content: '+';
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .term-item.active strong::after {
+            content: '−';
+            transform: rotate(180deg);
+        }
+
+        .term-item p {
+            font-size: 0.8rem;
+            color: var(--text-dark);
+            margin-top: 0.5rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .term-item.active p {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
         .rank-container {
-            max-width: 500px;
+            max-width: 550px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.4rem;
+            overflow-y: auto;
+            max-height: 320px;
+            padding-right: 10px;
         }
 
         .rank-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.65rem 0.85rem;
+            padding: 0.6rem 0.85rem;
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .rank-item.selected { border-color: var(--primary); background: var(--primary-light); }
-        .rank-badge { background: var(--primary); color: white; padding: 0 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; height: 18px; line-height: 18px; }
+        .rank-badge { background: var(--primary); color: white; padding: 0 8px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; height: 18px; line-height: 18px; }
 
-        /* Results Table */
         .results-table {
             width: 100%;
             border-collapse: collapse;
             margin: 0.5rem 0;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
         .results-table th, .results-table td {
             text-align: left;
-            padding: 0.6rem;
+            padding: 0.5rem;
             border-bottom: 1px solid var(--border);
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -401,7 +465,7 @@
     </header>
 
     <main id="stage">
-        <!-- Scenes rendered here -->
+        <!-- Content dynamic -->
     </main>
 
     <footer>
@@ -416,28 +480,33 @@
 <script>
     const INDICATORS = [
         { id: "emot", title: "🧠 Emotional Authenticity", desc: "Does the response convey genuine feeling — uncertainty, humor, embarrassment, nostalgia? Or does it describe emotions without seeming to experience them?" },
-        { id: "prec", title: "📐 Unusual Precision", desc: "Is the response suspiciously complete, well-structured, and free of hesitation? Humans usually ramble or trail off." },
+        { id: "prec", title: "📐 Unusual Precision", desc: "Is the response suspiciously complete, well-structured, and free of hesitation? Humans usually ramble, trail off, or contradict themselves." },
         { id: "tang", title: "🎲 Unexpected Tangent", desc: "Did the respondent go off-topic in a natural, personal way — the way humans do when something reminds them of something else?" },
-        { id: "gram", title: "✏️ Grammatical Imperfection", desc: "Humans make typos, use informal grammar, or write in fragments. Perfect grammar can be a signal." },
-        { id: "uncer", title: "🔄 Hedging and Uncertainty", desc: "Humans say 'I think', 'maybe', 'I dunno'. AI often answers with more confidence than the question warrants." },
-        { id: "self", title: "🪞 Self-Reference", desc: "Does the respondent mention their own physical experience, personal history, or something they witnessed?" },
-        { id: "know", title: "📚 Knowledge Precision", desc: "Does the respondent produce an unusually detailed, accurate answer for a casual conversation?" },
-        { id: "tonal", title: "🎭 Tonal Consistency", desc: "Does the tone stay unnaturally consistent? Humans shift tone based on how they feel." }
+        { id: "gram", title: "✏️ Grammatical Imperfection", desc: "Humans make typos, use informal grammar, skip capitalization, or write in fragments. Perfect grammar can be a signal." },
+        { id: "uncer", title: "🔄 Hedging and Uncertainty", desc: "Humans say 'I think', 'maybe', 'I dunno', 'it depends'. AI systems often answer with more confidence than the question warrants." },
+        { id: "self", title: "🪞 Self-Reference", desc: "Does the respondent mention their own physical experience, personal history, or something they personally felt or witnessed?" },
+        { id: "know", title: "📚 Knowledge Precision", desc: "Does the respondent produce an unusually detailed, accurate, and comprehensive answer for a casual conversation? Humans often say 'I don't know' or guess." },
+        { id: "tonal", title: "🎭 Tonal Consistency", desc: "Does the tone stay unnaturally consistent throughout — always helpful, always measured? Humans shift tone based on how the conversation makes them feel." }
     ];
 
     const SESSIONS = [
-        { q: "What did you do last weekend?", r: "I went hiking with my sister up at Cane Creek — we've been trying to do one new trail a month since she moved back. It was muddy and we got a bit lost, but honestly that ended up being the best part. We found this weird clearing with a fire ring that someone had obviously been using recently. Gave us both the creeps a little.", id: "HUMAN", reason: "Includes sensory detail (muddy), an evolving emotional response (creeps), and a natural trailing thought. The informal fragment 'Gave us both the creeps' is a strong human marker." },
-        { q: "What did you do last weekend?", r: "Last weekend I spent time catching up on some reading and relaxing at home. It was a quiet and refreshing break. I also took the opportunity to organize some personal tasks that had been piling up, which felt quite productive. Overall it was a good balance of rest and accomplishment.", id: "AI", reason: "'Catching up on reading', 'refreshing break' — these are placeholder phrases. The response is structurally complete but emotionally empty. It lacks messy human details." },
-        { q: "Do you think social media is good or bad for teenagers?", r: "Social media has both benefits and drawbacks for teenagers. On the positive side, it enables social connection, creative expression, and access to information. On the negative side, studies have linked heavy use to anxiety, depression, and cyberbullying. The overall impact depends on how it is used and the individual's circumstances.", id: "AI", reason: "This is a perfectly balanced debate paragraph. Humans usually give biased opinions or personal anecdotes. The 'positive side / negative side' format is a machine signature." },
-        { q: "Do you think social media is good or bad for teenagers?", r: "Honestly? Probably bad more than good, at least for the way most people use it. I deleted Instagram off my phone for like three months last year and I genuinely felt less anxious — but I also missed stuff and kind of fell out of the loop with some people. So I put it back but with limits. I dunno. I think it's designed to be addictive and that's the real problem, not the platform itself.", id: "HUMAN", reason: "Contains markers of genuine reflection ('Honestly?', 'I dunno'). The specific personal experiment (deleting Instagram) and its nuanced outcome feel uniquely human." }
+        { q: "What did you do last weekend?", r: "I went hiking with my sister up at Cane Creek — we've been trying to do one new trail a month since she moved back. It was muddy and we got a bit lost, but honestly that ended up being the best part. We found this weird clearing with a fire ring that someone had obviously been using recently. Gave us both the creeps a little.", id: "HUMAN", reason: "The response includes sensory detail (muddy), an evolving emotional response (creeps), and a natural trailing thought. The grammatically informal fragment 'Gave us both the creeps' is a strong human marker. No AI would fabricate this specific, slightly unsettling detail without being asked." },
+        { q: "What did you do last weekend?", r: "Last weekend I spent time catching up on some reading and relaxing at home. It was a quiet and refreshing break. I also took the opportunity to organize some personal tasks that had been piling up, which felt quite productive. Overall it was a good balance of rest and accomplishment.", id: "AI", reason: "'Catching up on reading', 'refreshing break', 'balance of rest and accomplishment' — these are placeholder phrases, not lived experiences. The response is structurally complete but emotionally empty. No messy human details, no sensory memory, no specific title of the book. This is the ELIZA Effect in reverse." },
+        { q: "Do you think social media is good or bad for teenagers?", r: "Social media has both benefits and drawbacks for teenagers. On the positive side, it enables social connection, creative expression, and access to information. On the negative side, studies have linked heavy use to anxiety, depression, and cyberbullying. The overall impact depends on how it is used and the individual's circumstances.", id: "AI", reason: "This response is a perfectly balanced debate paragraph — exactly what a student might write for an essay but not say in a casual conversation. Humans give opinions, take sides, mention personal experience. The absence of a personal position and the structured 'on the positive side / on the negative side' format are machine signatures." },
+        { q: "Do you think social media is good or bad for teenagers?", r: "Honestly? Probably bad more than good, at least for the way most people use it. I deleted Instagram off my phone for like three months last year and I genuinely felt less anxious — but I also missed stuff and kind of fell out of the loop with some people. So I put it back but with limits. I dunno. I think it's designed to be addictive and that's the real problem, not the platform itself.", id: "HUMAN", reason: "'Honestly?', 'like three months', 'kind of fell out of the loop' — these are markers of genuine reflection, not constructed argument. The personal experiment (deleting Instagram) is self-referential and specific. The hedge 'I dunno' followed by a firm conclusion mirrors how humans actually reason through uncertain opinions." },
+        { q: "Can you describe what it feels like to be afraid?", r: "Fear is a complex emotional and physiological response to perceived threat. It involves the activation of the amygdala, release of adrenaline, increased heart rate, and heightened sensory alertness. Psychologically, fear can be acute (immediate danger) or chronic (ongoing anxiety). The subjective experience varies by individual and context.", id: "AI", reason: "This is a textbook definition, not a description of experience. The question asks what it 'feels like' — an invitation for personal reflection. A human would say 'my stomach drops' or 'I get this cold feeling.' The AI describes the biology of fear from the outside, not the phenomenology from the inside. It knows about fear; it does not feel it." },
+        { q: "Can you describe what it feels like to be afraid?", r: "For me it's mostly in my chest — like this tight, sinking feeling. I used to get really bad anxiety before math tests in middle school, to the point where I'd feel physically sick. Now it's more like... a heightened alertness? Like everything gets kind of sharp and loud. My hands sweat. It's weird because sometimes fear and excitement feel almost the same.", id: "HUMAN", reason: "The response anchors fear in physical sensation ('chest,' 'stomach,' 'hands sweat') and personal memory (middle school math anxiety). The comparison between fear and excitement at the end is genuine philosophical musing — the kind of unplanned observation that emerges from actually thinking about a question, not retrieving information about it." },
+        { q: "What is something you've changed your mind about recently?", r: "I've recently updated my perspective on remote work. Initially I believed that in-person collaboration was essential for productivity and team cohesion. However, after reviewing research suggesting that flexible work arrangements can improve well-being and output, I have come to appreciate the value of hybrid models. This has led me to reconsider how I think about workplace structure.", id: "AI", reason: "'Updated my perspective' and 'reviewing research' are phrases no one uses in casual conversation. The change of mind is presented as a logical policy recalibration, not a human experience. Humans say 'I used to think X but then Y happened to me and now I think Z' — not 'after reviewing research I have come to appreciate.'" },
+        { q: "What is something you've changed your mind about recently?", r: "Hmm. I used to think people who couldn't just push through hard times were kind of weak? Which is embarrassing to admit. But then my best friend went through a really difficult stretch last year and watching how hard she was working just to get through the day kind of shifted something for me. I'm more careful now about how I judge people I don't fully understand.", id: "HUMAN", reason: "The opening 'Hmm' signals genuine thinking — an AI would not start with a hesitation marker. The admission of a previous judgmental belief ('kind of weak') and the embarrassment about it are psychologically complex and self-revealing. The external event (friend's difficult year) that caused the change is specific and personal." }
     ];
 
-    const SCENES = ["intro", "briefing", "session-0", "session-1", "session-2", "session-3", "interlude", "analysis", "report"];
+    const SCENES = ["intro", "briefing", "session-0", "session-1", "session-2", "session-3", "interlude", "session-4", "session-5", "session-6", "session-7", "analysis", "report"];
     
     let currentStep = 0;
     let state = {
-        verdicts: [], // {isCorrect, verdict, confidence, indicators}
-        ranking: []
+        verdicts: [], 
+        ranking: [],
+        elizaChoice: null
     };
 
     function init() {
@@ -451,11 +520,14 @@
         render();
     }
 
+    function toggleTerm(el) {
+        el.classList.toggle('active');
+    }
+
     function render() {
         const stage = document.getElementById('stage');
         stage.innerHTML = '';
         const stepName = SCENES[currentStep];
-
         const scene = document.createElement('div');
         scene.className = 'scene active';
 
@@ -466,11 +538,25 @@
                         <div class="icon-circle">
                             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                         </div>
-                        <h2>Project Turing</h2>
-                        <p style="margin-bottom: 1.25rem;">Can a machine think? Alan Turing proposed that if a machine can hold a conversation indistinguishable from a human, it has passed the test.</p>
-                        <p>You will act as the <strong>Examiner</strong>. Review 4 conversations and determine if the respondent is a human or an AI based on behavioral indicators.</p>
-                        <div style="background: var(--primary-light); padding: 1rem; border-radius: 8px; margin-top: 1.5rem; font-size: 0.9rem;">
-                            <strong>Ready?</strong> Click Next to review your Briefing.
+                        <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 0.5rem;">YOU BE THE JUDGE</h2>
+                        <p style="font-style: italic; color: var(--text-muted); margin-bottom: 1.25rem;">"Can you tell the difference between a human and a machine?"</p>
+                        <div style="text-align: left; font-size: 0.88rem; line-height: 1.6;">
+                            <p style="margin-bottom: 0.75rem;">In 1950, mathematician Alan Turing published a paper titled "Computing Machinery and Intelligence." It opened with a deceptively simple question: "Can machines think?"</p>
+                            <p style="margin-bottom: 0.75rem;">Turing proposed a test — now called the Turing Test — to answer it. An examiner holds text conversations with two parties: one human, one machine. If the examiner cannot reliably tell which is which, the machine passes.</p>
+                        </div>
+                        <div class="term-details">
+                            <div class="term-item" onclick="toggleTerm(this)">
+                                <strong>Turing Test</strong>
+                                <p>A human examiner determines whether a conversational partner is a human or a machine, based solely on their text responses.</p>
+                            </div>
+                            <div class="term-item" onclick="toggleTerm(this)">
+                                <strong>ELIZA Effect</strong>
+                                <p>The human tendency to attribute human-like emotions and understanding to AI systems — even when no intelligence is present.</p>
+                            </div>
+                            <div class="term-item" onclick="toggleTerm(this)">
+                                <strong>Moravec's Paradox</strong>
+                                <p>Tasks humans find easy (like recognizing a face) are extremely difficult for AI, while difficult tasks (like chess) are easy for AI.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -481,12 +567,15 @@
                     <div class="briefing-layout">
                         <div class="sidebar-nav">
                             <h3>Examiner Briefing</h3>
-                            <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 0.5rem;">Review indicators used to detect AI.</p>
+                            <p class="text-muted" style="font-size: 0.72rem; margin-bottom: 0.4rem;">Click each indicator to expand.</p>
                             ${INDICATORS.map((ind, i) => `<button class="tab-btn ${i===0?'active':''}" onclick="switchTab(this, ${i})">${ind.title}</button>`).join('')}
                         </div>
                         <div id="brief-content" style="padding: 0.5rem 1rem;">
-                            <h2 id="brief-title" style="font-size: 1.5rem; color: var(--primary);">${INDICATORS[0].title}</h2>
+                            <h2 id="brief-title" style="font-size: 1.4rem; color: var(--primary);">${INDICATORS[0].title}</h2>
                             <p id="brief-desc" style="margin-top: 1rem; line-height: 1.7; font-size: 0.95rem;">${INDICATORS[0].desc}</p>
+                            <div style="margin-top: 2rem; background: var(--primary-light); padding: 1rem; border-radius: 8px; font-size: 0.85rem; text-align: center;">
+                                <strong>Action:</strong> Review the behavioral indicators in the sidebar, then click Next to begin the sessions.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -502,13 +591,16 @@
                             <div class="message msg-respondent"><strong>RESPONDENT:</strong><br>${session.r}</div>
                         </div>
                         <div class="controls-area">
+                            <div class="rules-card">
+                                <strong>Rules:</strong> Judge based on Respondent messages. No follow-up allowed. You must reach a verdict for every exchange.
+                            </div>
                             <h3>Verdict</h3>
                             <div class="verdict-options">
                                 <button class="control-btn" id="v-human" onclick="setVerdict('HUMAN')">🧑 HUMAN</button>
                                 <button class="control-btn" id="v-ai" onclick="setVerdict('AI')">🤖 AI</button>
                                 <button class="control-btn" id="v-un" onclick="setVerdict('UNCERTAIN')">❓ UNCERTAIN</button>
                             </div>
-                            <h3>Indicators</h3>
+                            <h3>Behavioral Indicators</h3>
                             <div class="indicator-checks">
                                 ${INDICATORS.map(ind => `
                                     <label class="check-pill">
@@ -519,7 +611,7 @@
                             <h3>Confidence</h3>
                             <div class="verdict-options">
                                 <button class="control-btn conf-btn" onclick="setConf('HIGH', this)">HIGH</button>
-                                <button class="control-btn conf-btn" onclick="setConf('MED', this)">MED</button>
+                                <button class="control-btn conf-btn" onclick="setConf('MEDIUM', this)">MEDIUM</button>
                                 <button class="control-btn conf-btn" onclick="setConf('LOW', this)">LOW</button>
                             </div>
                             <div style="flex-grow: 1; display: flex; align-items: flex-end;">
@@ -529,24 +621,33 @@
                     </div>
                     <div class="reveal-overlay" id="reveal-${sIdx}">
                         <div class="stamp" id="stamp-${sIdx}">IDENTITY CONFIRMED</div>
-                        <p id="reveal-reason-${sIdx}" style="max-width: 600px; line-height: 1.5; color: var(--text-dark); font-size: 0.95rem;"></p>
+                        <p id="reveal-reason-${sIdx}" style="max-width: 650px; line-height: 1.5; color: var(--text-dark); font-size: 0.95rem;"></p>
                         <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="changeStep(1)">Next Session &rarr;</button>
                     </div>
                 </div>
             `;
         } else if (stepName === "interlude") {
+            const choices = [
+                "I found the AI conversations just as believable as the human ones.",
+                "The human conversations felt more real, but I couldn't always say why.",
+                "I could clearly tell the difference in every case.",
+                "The AI conversations were sometimes MORE convincing than the human ones."
+            ];
             scene.innerHTML = `
                 <div class="content-card">
                     <div class="intro-view">
-                        <h2 style="color: var(--primary);">The ELIZA Effect</h2>
-                        <p style="text-align: left; margin: 1rem 0; font-size: 0.9rem;">In 1966, a simple program called ELIZA fooled users into thinking it was a therapist just by echoing keywords. People formed deep emotional bonds with it.</p>
-                        <p style="text-align: left; font-size: 0.9rem;">This is the <strong>ELIZA Effect</strong>: our tendency to attribute human thoughts to any system that communicates fluently. Did any of the previous responses pull at your emotions?</p>
-                        <div style="background: var(--bg-light); border: 1px solid var(--border); padding: 1.25rem; border-radius: 8px; margin-top: 1.5rem;">
-                            <p style="font-weight: 700; margin-bottom: 0.75rem; font-size: 0.9rem;">Reflect: Which was harder to detect?</p>
-                            <div style="display: flex; gap: 10px; justify-content: center;">
-                                <button class="btn btn-outline" onclick="changeStep(1)">AI sounding like a human</button>
-                                <button class="btn btn-outline" onclick="changeStep(1)">Humans sounding like themselves</button>
+                        <h2 style="color: var(--primary); font-size: 1.5rem;">THE ELIZA EFFECT — A PAUSE</h2>
+                        <div style="text-align: left; margin: 1rem 0; font-size: 0.88rem; line-height: 1.5;">
+                            <p style="margin-bottom: 0.5rem;">In 1966, MIT researcher Joseph Weizenbaum created ELIZA — a simple chatbot that mimicked a therapist by asking questions based on keywords. ELIZA had no understanding of language whatsoever.</p>
+                            <p style="margin-bottom: 0.5rem;">Weizenbaum was disturbed to find that people — including his own secretary — began forming emotional attachments to ELIZA. They believed it understood them.</p>
+                            <p>This is the <strong>ELIZA Effect</strong>: our tendency to attribute understanding, emotion, and intelligence to any system that communicates. Before you continue: think about the first four sessions. Did any feel more 'real' even when you logically suspected they were AI?</p>
+                        </div>
+                        <div style="background: var(--bg-light); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <p style="font-weight: 700; margin-bottom: 0.75rem; font-size: 0.85rem;">Which statement best describes your experience so far?</p>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                                ${choices.map((c, i) => `<button class="btn btn-outline" style="text-align: left; font-size: 0.8rem; height: auto;" onclick="handleElizaChoice(${i})">${c}</button>`).join('')}
                             </div>
+                            <div id="eliza-feedback" style="display:none; margin-top: 1rem; padding: 0.75rem; background: var(--primary-light); border-radius: 6px; font-size: 0.8rem; text-align: left; border-left: 4px solid var(--primary);"></div>
                         </div>
                     </div>
                 </div>
@@ -554,42 +655,70 @@
         } else if (stepName === "analysis") {
             scene.innerHTML = `
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 1.5rem;">Pattern Analysis</h2>
-                    <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Select the 3 most reliable indicators for detecting AI.</p>
+                    <h2 style="text-align: center; margin-bottom: 0.4rem; font-size: 1.5rem;">PATTERN ANALYSIS</h2>
+                    <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.88rem;">Click to rank the 3 indicators you found most useful for telling human from AI.</p>
                     <div class="rank-container" id="rank-box">
                         ${INDICATORS.map(ind => `<div class="rank-item" onclick="toggleRank('${ind.id}', this)"><span>${ind.title}</span></div>`).join('')}
                     </div>
-                    <div id="rank-feedback" style="display:none; margin-top: 1.5rem; padding: 1rem; background: var(--primary-light); border-radius: 8px; font-size: 0.85rem;">
-                        <strong>Actual Top 3:</strong> 1. Self-Reference, 2. Emotional Authenticity, 3. Hedging.
+                    <div id="rank-reveal" style="display:none; margin-top: 1.25rem; padding: 1rem; background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; overflow-y: auto;">
+                        <h4 style="font-size: 0.9rem; color: var(--primary); margin-bottom: 0.5rem;">ACTUAL RELIABILITY DATA</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.8rem;">
+                            <div>
+                                <p><strong>Most reliable:</strong> Self-Reference (present in all human, absent in AI)</p>
+                                <p><strong>Second:</strong> Emotional Authenticity</p>
+                                <p><strong>Third:</strong> Hedging and Uncertainty</p>
+                            </div>
+                            <div>
+                                <p><strong>Least reliable:</strong> Grammatical Imperfection. Modern LLMs produce flawless text; this is no longer a strong machine marker.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         } else if (stepName === "report") {
             const score = state.verdicts.filter(v => v.isCorrect).length;
+            let rank = "";
+            let desc = "";
+            if (score <= 3) { rank = "Novice Examiner"; desc = "Modern AI is designed to fool examiners. Keep practicing."; }
+            else if (score <= 5) { rank = "Trained Examiner"; desc = "You detected more than chance. Some indicators are working for you."; }
+            else if (score <= 7) { rank = "Expert Examiner"; desc = "Strong detection accuracy. You're reading behavioral signals well."; }
+            else { rank = "Master Examiner"; desc = "Perfect detection. Turing would want to interview you."; }
+
             scene.innerHTML = `
                 <div class="content-card">
-                    <h2 style="text-align: center; color: var(--primary); font-size: 1.5rem;">Examiner Final Report</h2>
-                    <div style="display:flex; justify-content: center; margin: 1rem 0;">
-                        <div style="width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800;">
-                            ${score}/4
+                    <h2 style="text-align: center; color: var(--primary); font-size: 1.4rem;">EXAMINER REPORT</h2>
+                    <div style="display:flex; justify-content: center; margin: 0.75rem 0;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; border: 6px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800;">
+                            ${score}/8
                         </div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <h3 style="color: var(--primary); font-size: 1rem;">Rank: ${rank}</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">${desc}</p>
                     </div>
                     <div style="overflow-y: auto; flex-grow: 1;">
                         <table class="results-table">
-                            <thead><tr><th>Session</th><th>Target</th><th>Verdict</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Session</th><th>True Identity</th><th>Your Verdict</th><th>Result</th></tr></thead>
                             <tbody>
                                 ${state.verdicts.map((v, i) => `
                                     <tr>
                                         <td>Session ${i+1}</td>
                                         <td>${SESSIONS[i].id}</td>
                                         <td>${v.verdict}</td>
-                                        <td style="color: ${v.isCorrect? 'var(--human-color)':'var(--ai-color)'}">${v.isCorrect?'CORRECT':'FOOLED'}</td>
+                                        <td style="color: ${v.isCorrect? 'var(--human-color)':'var(--ai-color)'}">${v.isCorrect?'✓ CORRECT':'✗ FOOLED'}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
+                        <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <p style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem;">FINAL REFLECTION</p>
+                            <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">What do you think the test actually measures?</p>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 5px;">
+                                <button class="btn btn-outline" style="text-align: left; font-size: 0.75rem;">Whether AI can behave like a human (intelligence test).</button>
+                                <button class="btn btn-outline" style="text-align: left; font-size: 0.75rem;">Only whether AI can fool humans (mimicry test).</button>
+                            </div>
+                        </div>
                     </div>
-                    <p style="margin-top: 0.75rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">Rank: <strong>${score > 2 ? 'Expert Examiner' : 'Novice Examiner'}</strong></p>
                 </div>
             `;
         }
@@ -642,6 +771,19 @@
         overlay.classList.add('active');
     }
 
+    function handleElizaChoice(idx) {
+        const feedbacks = [
+            "That's the ELIZA Effect. Modern language models are specifically trained to be fluent — which makes surface-level detection increasingly unreliable.",
+            "This is the most honest answer. The 'feel' of a conversation often precedes our ability to articulate what's different.",
+            "You may find the remaining sessions more challenging.",
+            "LLMs are optimized to sound confident and coherent. In some domains, they out-perform human writing style — which is exactly what makes the Turing Test relevant again."
+        ];
+        const fb = document.getElementById('eliza-feedback');
+        fb.innerText = feedbacks[idx];
+        fb.style.display = 'block';
+        document.getElementById('btn-next').disabled = false;
+    }
+
     function toggleRank(id, el) {
         if (state.ranking.includes(id)) {
             state.ranking = state.ranking.filter(i => i !== id);
@@ -658,7 +800,7 @@
         }
         
         if (state.ranking.length === 3) {
-            document.getElementById('rank-feedback').style.display = 'block';
+            document.getElementById('rank-reveal').style.display = 'block';
             document.getElementById('btn-next').disabled = false;
         }
     }
@@ -672,8 +814,15 @@
     }
 
     function updateUI() {
+        const step = SCENES[currentStep];
         document.getElementById('btn-back').disabled = currentStep === 0;
-        document.getElementById('btn-next').disabled = (SCENES[currentStep].startsWith('session')) || (SCENES[currentStep] === 'analysis' && state.ranking.length < 3);
+        
+        let nextDisabled = false;
+        if (step.startsWith('session')) nextDisabled = true;
+        if (step === 'interlude' && !document.getElementById('eliza-feedback').innerText) nextDisabled = true;
+        if (step === 'analysis' && state.ranking.length < 3) nextDisabled = true;
+        
+        document.getElementById('btn-next').disabled = nextDisabled;
         if (currentStep === SCENES.length - 1) document.getElementById('btn-next').style.display = 'none';
         else document.getElementById('btn-next').style.display = 'block';
 
@@ -682,7 +831,7 @@
 
     function restart() {
         currentStep = 0;
-        state = { verdicts: [], ranking: [] };
+        state = { verdicts: [], ranking: [], elizaChoice: null };
         render();
     }
 
