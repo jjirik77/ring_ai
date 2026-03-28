@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Lifecycle Challenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --panel: #FFFFFF;
+            --elevated: #F1F5F9;
+            --accent: #2563EB;
+            --design: #7C3AED;
+            --develop: #3B82F6;
+            --deploy: #10B981;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --text-pri: #0F172A;
+            --text-sec: #475569;
+            --border: #E2E8F0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-pri);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.4;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Outer Window Wrapper */
+        .window-frame {
+            width: 100%;
+            max-width: 1100px;
+            height: 90vh;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Window Header/Title Bar */
+        .window-header {
+            background: #F1F5F9;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .window-controls {
+            display: flex; gap: 8px;
+        }
+
+        .window-dot {
+            width: 12px; height: 12px; border-radius: 50%; background: var(--border);
+        }
+        .window-dot.red { background: #FF5F56; }
+        .window-dot.yellow { background: #FFBD2E; }
+        .window-dot.green { background: #27C93F; }
+
+        .window-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px; font-weight: 700; color: var(--text-sec);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* Interior Content Area */
+        .window-content {
+            padding: 24px; flex-grow: 1; overflow-y: hidden;
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        h1, h2, h3, .heading-font {
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+        }
+
+        button {
+            cursor: pointer; border: none; border-radius: 8px;
+            font-family: inherit; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Progress Rail */
+        .progress-rail {
+            display: flex; width: 100%; max-width: 800px;
+            margin: 0 auto 20px; justify-content: space-between; flex-shrink: 0;
+        }
+
+        .stage-track {
+            flex: 1; text-align: center; position: relative;
+        }
+
+        .stage-label {
+            font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+            margin-bottom: 4px; color: var(--text-sec);
+        }
+
+        .stage-bar {
+            height: 4px; background: var(--border); margin: 0 4px;
+            border-radius: 10px; position: relative;
+        }
+
+        .stage-bar.active { background: var(--accent); }
+        .stage-bar.design.complete { background: var(--design); }
+        .stage-bar.develop.complete { background: var(--develop); }
+        .stage-bar.deploy.complete { background: var(--deploy); }
+
+        .sub-dots {
+            display: flex; justify-content: center; gap: 8px; margin-top: 4px;
+        }
+
+        .dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--border);
+        }
+
+        .dot.active { background: var(--accent); transform: scale(1.2); }
+        .dot.filled { background: var(--text-sec); }
+
+        /* Main Container */
+        .app-container {
+            width: 100%; display: flex; gap: 24px; flex-grow: 1; min-height: 0;
+        }
+
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; min-height: 0;
+        }
+
+        .sidebar {
+            width: 260px; background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px; height: 100%; box-shadow: var(--shadow);
+            display: none; overflow-y: auto;
+        }
+
+        /* Cards and Elements */
+        .card {
+            background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+            padding: 24px; margin-bottom: 0; box-shadow: var(--shadow);
+        }
+
+        .options-container {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 12px;
+        }
+
+        .decision-card {
+            background: var(--panel); border: 2px solid var(--border); border-radius: 12px;
+            padding: 16px; cursor: pointer; transition: all 0.2s ease;
+            display: flex; flex-direction: column; height: 100%;
+        }
+
+        .decision-card:hover {
+            transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow);
+        }
+
+        .decision-card.selected {
+            border-color: var(--accent); background: rgba(37, 99, 235, 0.03);
+        }
+
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 9px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;
+        }
+
+        .badge-best { background: var(--success); color: white; }
+        .badge-shortcut { background: var(--warning); color: white; }
+        .badge-mistake { background: var(--error); color: white; }
+
+        .btn-primary {
+            background: var(--accent); color: white; font-weight: 700;
+            padding: 12px 24px; width: auto; min-width: 200px;
+            font-size: 14px; margin: 16px auto 0; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover { 
+            transform: translateY(-2px); filter: brightness(1.1);
+        }
+
+        /* Launch Sequence Overlay */
+        #launch-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1000; text-align: center;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; flex-grow: 1; min-height: 0;
+        }
+
+        .metrics-panel, .alerts-panel {
+            overflow-y: auto; padding-right: 4px;
+        }
+
+        .metric-card {
+            background: var(--panel); padding: 12px; border-radius: 8px;
+            border-left: 4px solid var(--success); margin-bottom: 8px;
+            box-shadow: var(--shadow); font-size: 13px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .alert-card {
+            background: #FFF1F2; border: 1px solid #FECDD3; border-radius: 10px;
+            padding: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease;
+        }
+
+        .alert-card:hover { transform: scale(1.01); }
+
+        .diagnosis-panel {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;
+        }
+
+        /* Stage Banners */
+        .stage-banner {
+            display: inline-block; padding: 2px 10px; border-radius: 100px;
+            font-size: 10px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .bg-design { background: #F5F3FF; color: var(--design); }
+        .bg-develop { background: #EFF6FF; color: var(--develop); }
+        .bg-deploy { background: #ECFDF5; color: var(--deploy); }
+
+        .icon-lg { width: 64px; height: 64px; margin-bottom: 16px; }
+
+        .hidden { display: none !important; }
+        .text-cyan { color: var(--accent); }
+        .text-center { text-align: center; }
+
+        /* Step Selector Tabs for Feedback */
+        .step-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .step-tab {
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--panel);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-sec);
+        }
+
+        .step-tab:hover {
+            border-color: var(--accent);
+        }
+
+        .step-tab.active {
+            border-color: var(--accent);
+            background: rgba(37, 99, 235, 0.05);
+            color: var(--accent);
+        }
+
+        .detail-display {
+            flex-grow: 1;
+            background: var(--elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        @media (max-width: 900px) {
+            .options-container, .diagnosis-panel, .step-selector { grid-template-columns: 1fr; }
+            .window-frame { height: 100vh; border-radius: 0; }
+            .window-content { overflow-y: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window-frame">
+        <div class="window-header">
+            <div class="window-controls">
+                <div class="window-dot red"></div>
+                <div class="window-dot yellow"></div>
+                <div class="window-dot green"></div>
+            </div>
+            <div class="window-title">AI Lifecycle Challenge</div>
+            <div style="width: 52px;"></div>
+        </div>
+
+        <div class="window-content">
+            <div id="progress-container" class="progress-rail hidden">
+                <div class="stage-track">
+                    <div class="stage-label">DESIGN</div>
+                    <div class="stage-bar design" id="bar-0"></div>
+                    <div class="sub-dots">
+                        <div class="dot" id="dot-0"></div>
+                        <div class="dot" id="dot-1"></div>
+                    </div>
+                </div>
+                <div class="stage-track">
+                    <div class="stage-label">DEVELOP</div>
+                    <div class="stage-bar develop" id="bar-1"></div>
+                    <div class="sub-dots">
+                        <div class="dot" id="dot-2"></div>
+                        <div class="dot" id="dot-3"></div>
+                    </div>
+                </div>
+                <div class="stage-track">
+                    <div class="stage-label">DEPLOY</div>
+                    <div class="stage-bar deploy" id="bar-2"></div>
+                    <div class="sub-dots">
+                        <div class="dot" id="dot-4"></div>
+                        <div class="dot" id="dot-5"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-container">
+                <main class="main-content" id="screen-container">
+                    <!-- Content injected here -->
+                </main>
+                <aside class="sidebar" id="sidebar">
+                    <h3 class="heading-font" style="font-size: 12px; margin-bottom: 12px; color: var(--text-sec); letter-spacing: 1px;">DECISION LOG</h3>
+                    <div id="decision-log"></div>
+                </aside>
+            </div>
+
+            <div id="launch-overlay">
+                <h1 id="countdown" class="heading-font" style="font-size: 100px; color: var(--accent);">3</h1>
+                <div id="launch-text" class="hidden">
+                    <h1 class="heading-font" style="font-size: 48px; color: var(--text-pri);">STUDYMATCH IS LIVE</h1>
+                    <p style="color: var(--text-sec); font-size: 16px; margin-top: 8px;">2,400 students receiving AI recommendations...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DECISION_CONTENT = [
+            {
+                stage: "DESIGN",
+                subStep: "Problem Definition",
+                prompt: "Before building the AI, define what a 'good' recommendation looks like.",
+                options: [
+                    { id: "shortcut", title: "GPA Matching", text: "Match students with the highest combined GPA. It's simple and the data is available.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Clusters high achievers and leaves others isolated, defeating the mission." },
+                    { id: "best", title: "Multi-Factor Rubric", text: "Use shared courses, schedules, and complementary strengths. Weights are tested on historical data.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Reduces bias and captures real compatibility better than single factors." },
+                    { id: "mistake", title: "Implicit Patterns", text: "Let the AI find patterns in current library study groups to decide who belongs together.", quality: "MISTAKE", qualityTag: "mistake", reason: "Reproduces existing social divides and group inequities instead of creating new ones." }
+                ]
+            },
+            {
+                stage: "DESIGN",
+                subStep: "Data Preparation",
+                prompt: "Choose your approach to preparing training data.",
+                options: [
+                    { id: "mistake", title: "Social Media Scrape", text: "Scrape social media to find friend connections. Use this to find 'natural' study partners.", quality: "MISTAKE", qualityTag: "mistake", reason: "Violates FERPA and basic ethics. Social divides are not academic compatibility." },
+                    { id: "shortcut", title: "System-Only Data", text: "Use only existing grades and course lists. No new surveys needed; covers students immediately.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Skips critical signals like learning style and doesn't check for demographic gaps." },
+                    { id: "best", title: "Balanced & Private", text: "Use course data, opt-in surveys, and identify under-represented groups. Apply privacy controls.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Gap analysis prevents poor group-specific results. Privacy is legally required." }
+                ]
+            },
+            {
+                stage: "DEVELOP",
+                subStep: "Model Creation",
+                prompt: "Choose the approach for building the recommendation model.",
+                options: [
+                    { id: "best", title: "Transparent Filtering", text: "Build a collaborative model. Test on a 20% validation set and check groups separately.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Per-group checks catch bias before deployment—not after users find it." },
+                    { id: "mistake", title: "Black-Box Model", text: "Use deep learning for max accuracy. Don't test by group—overall performance is the priority.", quality: "MISTAKE", qualityTag: "mistake", reason: "High overall accuracy hides failure for specific groups like students with disabilities." },
+                    { id: "shortcut", title: "Rule-Based System", text: "Use simple rules: overlap in schedules and high GPA. Transparent and quick to build.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Rules are interpretable but GPA-centric rules reproduce systemic inequities." }
+                ]
+            },
+            {
+                stage: "DEVELOP",
+                subStep: "Model Evaluation",
+                prompt: "How will you evaluate if StudyMatch is ready to deploy?",
+                options: [
+                    { id: "shortcut", title: "Teacher Review", text: "Ask 20 teachers if pairings seem 'reasonable' based on their knowledge of the students.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Teacher judgment is limited by their own biases and lack of data on all interactions." },
+                    { id: "best", title: "Multi-Group Pilot", text: "Run a 200-student pilot. Collect feedback on actual connections and track outcome equity.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Pilots reveal real-world friction that test datasets simply cannot predict." },
+                    { id: "mistake", title: "Dataset-Only Review", text: "Skip human pilot. The model performed well on the test data and the deadline is fast.", quality: "MISTAKE", qualityTag: "mistake", reason: "Test performance does not guarantee real success. #1 cause of AI failure." }
+                ]
+            },
+            {
+                stage: "DEPLOY",
+                subStep: "Move to Production",
+                prompt: "How will you roll out StudyMatch to the student body?",
+                options: [
+                    { id: "mistake", title: "Silent Release", text: "Launch with no explanation. AI recommendations should speak for themselves.", quality: "MISTAKE", qualityTag: "mistake", reason: "Unexplained AI generates mistrust. Users assume the system is broken when surprised." },
+                    { id: "best", title: "Phased Rollout", text: "Launch to Grade 9 only for 4 weeks. Brief teachers and provide a 're-match' option.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Limits exposure to bugs. Transparency and autonomy increase system trust." },
+                    { id: "shortcut", title: "Full Launch", text: "Launch to all 2,400 students at once. The pilot went well—no reason to wait.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Scales edge cases instantly. Problems are harder to fix when they hit everyone." }
+                ]
+            },
+            {
+                stage: "DEPLOY",
+                subStep: "Monitor Performance",
+                prompt: "StudyMatch is live. Choose your monitoring approach.",
+                options: [
+                    { id: "best", title: "Holistic Monitoring", text: "Track acceptance rates and demographic equity metrics. Schedule a 60-day review.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Equity monitoring is the only way to detect disparate impact before it causes harm." },
+                    { id: "mistake", title: "Set and Forget", text: "No monitoring needed—the system is automated. Move to the next product.", quality: "MISTAKE", qualityTag: "mistake", reason: "AI fails silently as data drifts. Without monitoring, failures accumulate undetected." },
+                    { id: "shortcut", title: "Engagement Focus", text: "Monitor Daily Active Users. If students keep opening the app, it's working.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Usage is not effectiveness. Students might use it but find it unhelpful." }
+                ]
+            }
+        ];
+
+        const FAILURE_ALERTS = [
+            { id: "F1", trigger: (d) => d[0] !== "best", title: "🔴 Equity Alert", desc: "Lower GPA students are clustered together, creating bubbles. High achievers form exclusive groups.", cause: 0 },
+            { id: "F2", trigger: (d) => d[1] === "mistake", title: "🔴 Privacy Complaint", desc: "District halted the app due to unauthorized social media usage. Legal review underway.", cause: 1 },
+            { id: "F3", trigger: (d) => d[2] === "mistake", title: "🔴 Demographic Disparity", desc: "Students with IEPs have significantly lower acceptance rates. Model fails this group.", cause: 2 },
+            { id: "F4", trigger: (d) => d[3] === "mistake", title: "🔴 High Rejection Rate", desc: "43% of students reject matches. Extracurricular schedules weren't factored in.", cause: 3 },
+            { id: "F5", trigger: (d) => d[4] === "mistake", title: "🔴 Teacher Mistrust", desc: "Counselors report confusion. Teachers are advising students to ignore matches.", cause: 4 },
+            { id: "F6", trigger: (d) => d[5] !== "best", title: "🔴 Silent Data Failure", desc: "Schedule changes affected 380 students. App provided outdated matches for 5 weeks.", cause: 5 }
+        ];
+
+        let STATE = { 
+            decisions: [null, null, null, null, null, null], 
+            activeFailures: [], 
+            diagnosisResults: [], 
+            currentStep: 0, 
+            screen: 'S1',
+            activeFeedbackStep: 0
+        };
+
+        function render() {
+            const container = document.getElementById('screen-container');
+            const progress = document.getElementById('progress-container');
+            const sidebar = document.getElementById('sidebar');
+
+            if (STATE.screen === 'S1') {
+                progress.classList.add('hidden'); sidebar.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="text-center" style="max-width: 600px; margin: 0 auto;">
+                        <svg class="icon-lg text-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        <h1 class="heading-font" style="font-size: 36px; line-height: 1.1; margin-bottom: 8px;">AI LIFECYCLE CHALLENGE</h1>
+                        <p style="font-size: 16px; color: var(--text-sec); font-weight: 500;">Ship It or Fix It?</p>
+                        <div class="card" style="margin-top: 20px; text-align: left; padding: 20px;">
+                            <p style="font-size: 14px;">Building AI requires a structured <strong>AI Lifecycle</strong> to succeed. Early decisions define the ceiling of your success.</p>
+                            <p style="margin-top: 10px; font-size: 14px;">As Product Manager for <strong>StudyMatch</strong>, your mission is to help 2,400 students find study partners while ensuring fairness and privacy.</p>
+                        </div>
+                        <button class="btn-primary" onclick="goTo('S2')">READ THE BRIEF →</button>
+                    </div>
+                `;
+            } else if (STATE.screen === 'S2') {
+                container.innerHTML = `
+                    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2 class="heading-font" style="font-size: 24px; text-align: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">PRODUCT BRIEF</h2>
+                        <div style="font-size: 14px; line-height: 1.5;">
+                            <p><strong>Goal:</strong> Increase collaborative studying in grades 9–12.</p>
+                            <p style="margin-top: 8px;"><strong>Requirements:</strong> Fair recommendations, privacy compliance, and student utility.</p>
+                        </div>
+                        <button class="btn-primary" style="margin-top: 24px;" onclick="goToDecision(0)">BEGIN DESIGN STAGE →</button>
+                    </div>
+                `;
+            } else if (STATE.screen === 'DECISION') {
+                progress.classList.remove('hidden'); sidebar.classList.remove('hidden');
+                updateProgress();
+                const step = DECISION_CONTENT[STATE.currentStep];
+                const bannerClass = step.stage === 'DESIGN' ? 'bg-design' : step.stage === 'DEVELOP' ? 'bg-develop' : 'bg-deploy';
+                container.innerHTML = `
+                    <div class="stage-banner ${bannerClass}">${step.stage} STAGE • STEP ${STATE.currentStep + 1}</div>
+                    <h2 class="heading-font" style="font-size: 24px; margin-bottom: 4px;">${step.subStep}</h2>
+                    <p style="margin-bottom: 12px; color: var(--text-sec); font-size: 14px;">${step.prompt}</p>
+                    <div class="options-container">
+                        ${step.options.map(opt => `
+                            <div class="decision-card" id="opt-${opt.id}" onclick="selectOption('${opt.id}')">
+                                <h3 class="heading-font" style="font-size: 14px;">${opt.title}</h3>
+                                <p style="color: var(--text-sec); font-size: 12px; margin-top: 6px;">${opt.text}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn-primary hidden" id="next-btn" onclick="nextSubStep()">CONTINUE →</button>
+                `;
+            } else if (STATE.screen === 'REVIEW') {
+                sidebar.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2 class="heading-font" style="font-size: 24px; margin-bottom: 16px;">PRE-LAUNCH REVIEW</h2>
+                        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                ${STATE.decisions.map((choice, i) => `
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 10px 0;">${DECISION_CONTENT[i].subStep}</td>
+                                        <td style="padding: 10px 0; font-weight: 600;">${DECISION_CONTENT[i].options.find(o => o.id === choice).title}</td>
+                                        <td style="padding: 10px 0; text-align: right;"><button onclick="goToDecision(${i})" style="color: var(--accent); font-weight: 700;">Change</button></td>
+                                    </tr>
+                                `).join('')}
+                            </table>
+                        </div>
+                        <button class="btn-primary" style="margin-top: 20px;" onclick="initiateLaunch()">LAUNCH SYSTEM →</button>
+                    </div>
+                `;
+            } else if (STATE.screen === 'DASHBOARD') {
+                progress.classList.add('hidden');
+                const failures = FAILURE_ALERTS.filter(f => f.trigger(STATE.decisions));
+                STATE.activeFailures = failures.map(f => f.id);
+                container.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h2 class="heading-font" style="font-size: 28px;">DASHBOARD</h2>
+                        <div class="badge" style="background: ${failures.length > 0 ? 'var(--error)' : 'var(--success)'};">STATUS: ${failures.length > 0 ? 'ALERTS' : 'NOMINAL'}</div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="metrics-panel">
+                            <h3 class="heading-font" style="font-size: 12px; color: var(--text-sec); margin-bottom: 8px;">LIVE METRICS</h3>
+                            <div class="metric-card">⚡ Uptime: 100%</div><div class="metric-card">📱 Latency: 42ms</div><div class="metric-card">📈 Served: 14.4k</div>
+                        </div>
+                        <div class="alerts-panel">
+                            <h3 class="heading-font" style="font-size: 12px; color: var(--text-sec); margin-bottom: 4px;">INCIDENTS (${failures.length})</h3>
+                            <p style="font-size: 11px; color: var(--accent); margin-bottom: 8px; font-weight: 700;">Instruction: Click on 'incidents' below to select the root cause and begin your analysis.</p>
+                            ${failures.length === 0 ? '<p style="font-size: 13px; color: var(--success);">All systems operational.</p>' : failures.map(f => `
+                                <div class="alert-card" id="alert-${f.id}" onclick="diagnoseFailure('${f.id}')">
+                                    <h4 style="font-size: 13px; color: var(--error);">${f.title}</h4>
+                                    <p style="font-size: 11px;">${f.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div id="diagnosis-area"></div>
+                `;
+            } else if (STATE.screen === 'FEEDBACK') {
+                const i = STATE.activeFeedbackStep;
+                const opt = DECISION_CONTENT[i].options.find(o => o.id === STATE.decisions[i]);
+                const bestOpt = DECISION_CONTENT[i].options.find(o => o.id === 'best');
+                const isWrong = STATE.decisions[i] !== 'best';
+
+                container.innerHTML = `
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                        <h2 class="heading-font" style="font-size: 24px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">DETAILED FEEDBACK</h2>
+                        <p style="font-size: 12px; color: var(--text-sec); margin-top: 8px;">Click a step to see the impact of your decision.</p>
+                        
+                        <div class="step-selector">
+                            ${DECISION_CONTENT.map((step, idx) => `
+                                <div class="step-tab ${i === idx ? 'active' : ''}" onclick="selectFeedbackStep(${idx})">
+                                    STEP ${idx + 1}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="detail-display">
+                            <div class="stage-banner bg-design" style="font-size: 9px; margin-bottom: 12px;">${DECISION_CONTENT[i].subStep.toUpperCase()}</div>
+                            <div>
+                                <h3 class="heading-font" style="font-size: 16px; margin-bottom: 4px;">Your Choice: ${opt.title}</h3>
+                                <span class="badge badge-${opt.qualityTag}">${opt.quality}</span>
+                                <p style="font-size: 13px; margin-top: 8px; line-height: 1.5;">${opt.reason}</p>
+                            </div>
+
+                            ${isWrong ? `
+                                <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--success); border-radius: 8px;">
+                                    <h4 class="heading-font" style="font-size: 12px; color: var(--success); text-transform: uppercase;">The Best Practice Way: ${bestOpt.title}</h4>
+                                    <p style="font-size: 12px; color: var(--text-pri); margin-top: 6px; line-height: 1.5;">${bestOpt.reason}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <button class="btn-primary" onclick="goTo('REPORT')">VIEW PERFORMANCE SCORE →</button>
+                    </div>
+                `;
+            } else if (STATE.screen === 'REPORT') {
+                const correct = STATE.diagnosisResults.filter(r => r.correct).length;
+                const best = STATE.decisions.filter(d => d === 'best').length;
+                container.innerHTML = `
+                    <div class="card text-center" style="max-width: 600px; margin: 0 auto; padding: 24px;">
+                        <h2 class="heading-font" style="color: var(--accent); font-size: 32px;">PM REPORT</h2>
+                        <div style="display: flex; justify-content: space-around; margin: 24px 0;">
+                            <div><div style="font-size: 24px; font-weight: 800;">${best}/6</div><div style="font-size: 9px;">BEST PRACTICE</div></div>
+                            <div><div style="font-size: 24px; font-weight: 800; color: var(--error);">${STATE.activeFailures.length}</div><div style="font-size: 9px;">ALERTS</div></div>
+                            <div><div style="font-size: 24px; font-weight: 800;">${correct}/${STATE.activeFailures.length || 0}</div><div style="font-size: 9px;">DIAGNOSES</div></div>
+                        </div>
+                        <button class="btn-primary" onclick="location.reload()">RESTART CHALLENGE</button>
+                    </div>
+                `;
+            }
+        }
+
+        function goTo(screen) { STATE.screen = screen; render(); }
+        function goToDecision(stepIndex) { STATE.currentStep = stepIndex; STATE.screen = 'DECISION'; render(); }
+
+        function selectFeedbackStep(idx) {
+            STATE.activeFeedbackStep = idx;
+            render();
+        }
+
+        function updateProgress() {
+            for(let i=0; i<3; i++) {
+                const bar = document.getElementById(`bar-${i}`);
+                const stage = Math.floor(STATE.currentStep / 2);
+                bar.className = `stage-bar ${i < stage ? 'complete' : i === stage ? 'active' : ''}`;
+            }
+            for(let i=0; i<6; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                dot.className = `dot ${i < STATE.currentStep ? 'filled' : i === STATE.currentStep ? 'active' : ''}`;
+            }
+        }
+
+        function selectOption(id) {
+            STATE.decisions[STATE.currentStep] = id;
+            document.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`opt-${id}`).classList.add('selected');
+            document.getElementById('next-btn').classList.remove('hidden');
+            updateDecisionLog();
+        }
+
+        function updateDecisionLog() {
+            const log = document.getElementById('decision-log');
+            log.innerHTML = STATE.decisions.map((d, i) => d ? `<div style="font-size: 11px; margin-bottom: 8px; padding-left: 8px; border-left: 2px solid var(--accent);">
+                <div style="font-weight: 800; color: var(--text-sec); font-size: 8px;">${DECISION_CONTENT[i].subStep.toUpperCase()}</div>
+                <div>${DECISION_CONTENT[i].options.find(o => o.id === d).title}</div>
+            </div>` : '').join('');
+        }
+
+        function nextSubStep() { if (STATE.currentStep < 5) { STATE.currentStep++; render(); } else { goTo('REVIEW'); } }
+
+        function initiateLaunch() {
+            const overlay = document.getElementById('launch-overlay');
+            const countdown = document.getElementById('countdown');
+            overlay.style.display = 'flex';
+            let count = 3;
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) countdown.innerText = count;
+                else if (count === 0) countdown.innerText = "LAUNCH";
+                else {
+                    clearInterval(timer);
+                    document.getElementById('launch-text').classList.remove('hidden');
+                    countdown.classList.add('hidden');
+                    setTimeout(() => { overlay.style.display = 'none'; goTo('DASHBOARD'); }, 2000);
+                }
+            }, 1000);
+        }
+
+        function diagnoseFailure(failId) {
+            const area = document.getElementById('diagnosis-area');
+            area.innerHTML = `
+                <div class="card" style="margin-top: 16px; padding: 16px;">
+                    <h3 style="font-size: 14px;">ROOT CAUSE ANALYSIS</h3>
+                    <div class="diagnosis-panel">
+                        ${DECISION_CONTENT.map((step, i) => `<button class="decision-card" style="padding: 10px; font-size: 11px;" onclick="submitDiagnosis('${failId}', ${i})">${step.subStep}</button>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitDiagnosis(failId, idx) {
+            const fail = FAILURE_ALERTS.find(f => f.id === failId);
+            const isCorrect = fail.cause === idx;
+            STATE.diagnosisResults.push({ failId, correct: isCorrect });
+            const area = document.getElementById('diagnosis-area');
+            const step = DECISION_CONTENT[fail.cause];
+            area.innerHTML = `
+                <div class="card" style="margin-top: 16px; border: 2px solid ${isCorrect ? 'var(--success)' : 'var(--error)'};">
+                    <h4 style="color: ${isCorrect ? 'var(--success)' : 'var(--error)'}">${isCorrect ? '✓ CORRECT DIAGNOSIS' : '✗ INCORRECT DIAGNOSIS'}</h4>
+                    <p style="font-size: 12px; margin-top: 4px;">Lifecycle Root: <strong>${step.subStep}</strong></p>
+                    <button class="btn-primary" style="margin-top: 12px; font-size: 11px; min-width: 100px;" onclick="finishDiagnosis('${failId}')">CONTINUE</button>
+                </div>
+            `;
+        }
+
+        function finishDiagnosis(failId) {
+            const alert = document.getElementById(`alert-${failId}`);
+            if (alert) { alert.style.opacity = '0.4'; alert.style.pointerEvents = 'none'; }
+            document.getElementById('diagnosis-area').innerHTML = '';
+            if (STATE.diagnosisResults.length === STATE.activeFailures.length) {
+                document.getElementById('diagnosis-area').innerHTML = `<button class="btn-primary" onclick="goTo('FEEDBACK')">GO TO FULL REVIEW →</button>`;
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
