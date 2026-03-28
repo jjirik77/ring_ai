@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Spotter // Technology Analyst Briefing</title>
+    <style>
+        :root {
+            /* Light Modern Palette */
+            --bg-base: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-elevated: #f8fafc;
+            --accent-primary: #2563eb; 
+            --accent-hover: #1d4ed8;
+            --border-subtle: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            /* Feedback Colors */
+            --color-success: #059669;
+            --color-error: #e11d48;
+            --bg-success: #f0fdf4;
+            --bg-error: #fef2f2;
+
+            /* Logic Colors */
+            --c-llm: #7c3aed;    
+            --c-cv: #d97706;     
+            --c-rec: #2563eb;    
+            --c-multi: #db2777;  
+            --c-nlp: #059669;    
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 750px;
+        }
+
+        .header-bar {
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .header-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--accent-primary);
+        }
+
+        .content-area {
+            padding: 2.5rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .screen-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .screen-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text-main); }
+        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
+        p { color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+
+        .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-subtle); }
+        .btn-secondary:hover:not(:disabled) { background: #e2e8f0; }
+        .btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+
+        .icon-wrap { display: inline-flex; margin-right: 0.75rem; vertical-align: middle; color: currentColor; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+        .expand-box {
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .expand-box:hover { border-color: var(--accent-primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+        .expand-header {
+            padding: 1rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .expand-body {
+            padding: 0 1rem 1rem;
+            display: none;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid #f1f5f9;
+            padding-top: 0.75rem;
+        }
+
+        .expand-body.active { display: block; }
+
+        .spotter-grid { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
+
+        .stats-panel {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-subtle);
+            height: fit-content;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .stat-val { color: var(--accent-primary); }
+
+        .experience-box {
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .report-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .pill-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+
+        .pill {
+            padding: 0.6rem 1rem;
+            background: #fff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+
+        .pill:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+        .pill.selected { background: var(--accent-primary); color: #ffffff; border-color: transparent; }
+
+        .reveal-box {
+            border-radius: 1rem;
+            padding: 2rem;
+            display: none;
+            margin-top: 2rem;
+            border: 1px solid var(--border-subtle);
+            background: #fafafa;
+        }
+
+        .reveal-box.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .feedback-success { background: var(--bg-success); border: 1px solid var(--color-success); color: var(--color-success); }
+        .feedback-error { background: var(--bg-error); border: 1px solid var(--color-error); color: var(--color-error); }
+
+        .feedback-icon { flex-shrink: 0; margin-top: 2px; }
+        .feedback-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); }
+        .feedback-title { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.25rem; display: block; }
+
+        .mastery-item { margin-bottom: 1.25rem; }
+        .mastery-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .progress-track { height: 10px; background: #f1f5f9; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-primary); width: 0%; transition: width 1s ease-out; }
+
+        .timeline-bar { display: flex; gap: 1rem; padding: 2rem 0; overflow-x: auto; }
+        .timeline-tick { flex: 0 0 80px; text-align: center; }
+        .tick-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-primary); margin: 0 auto 0.5rem auto; }
+
+        @media (max-width: 768px) { .grid-container, .spotter-grid { grid-template-columns: 1fr; } .content-area { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header-bar">
+            <div class="header-title">AI Technology Analyst</div>
+            <div id="file-indicator" style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted);">SYSTEM ONLINE</div>
+        </div>
+
+        <div class="content-area">
+            
+            <!-- S1: INTRO -->
+            <section id="s1" class="screen-section active">
+                <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                    <h1>The AI Engine Spotter</h1>
+                    <p>Every digital interaction in your day—from the songs you hear to the way you unlock your phone—is powered by a specific AI architecture.</p>
+                    
+                    <div class="experience-box" style="text-align: left;">
+                        <span class="report-label">MISSION OBJECTIVE</span>
+                        <p style="font-size: 0.95rem; margin-bottom: 0;">Analyze 12 real-world experiences. Identify the <strong>AI Architecture</strong> and the <strong>Data Type</strong> required. Review detailed feedback at each step to master the technology stack.</p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn" onclick="nextScreen('s2')">Access Briefing &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- S2: BRIEFING -->
+            <section id="s2" class="screen-section">
+                <h2>Technical Briefing</h2>
+                <div class="grid-container">
+                    <div>
+                        <p style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: var(--accent-primary); margin-bottom: 1rem;">AI ARCHITECTURES</p>
+                        
+                        <div class="expand-box" onclick="toggleCard(this)">
+                            <div class="expand-header">
+                                <span><span class="icon-wrap" style="color:var(--c-llm)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5.04 2.5 2.5 0 0 0-.98 4.96 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 4.96.46 2.5 2.5 0 0 0 1.98-3 2.5 2.5 0 0 0-.98-4.96 2.5 2.5 0 0 0 0-5.04 2.5 2.5 0 0 0 .98-4.96 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 12 4.5Z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></span> LLM / Transformer</span>
+                                <span style="font-size:0.6rem">INFO</span>
+                            </div>
+                            <div class="expand-body">Uses Transformer architectures to process massive text datasets, predicting tokens in a sequence based on deep contextual understanding.</div>
+                        </div>
+
+                        <div class="expand-box" onclick="toggleCard(this)">
+                            <div class="expand-header">
+                                <span><span class="icon-wrap" style="color:var(--c-cv)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span> Computer Vision</span>
+                                <span style="font-size:0.6rem">INFO</span>
+                            </div>
+                            <div class="expand-body">Employs neural networks to identify, classify, and interpret visual features in pixels from images or video feeds.</div>
+                        </div>
+
+                        <div class="expand-box" onclick="toggleCard(this)">
+                            <div class="expand-header">
+                                <span><span class="icon-wrap" style="color:var(--c-rec)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg></span> Recommendation</span>
+                                <span style="font-size:0.6rem">INFO</span>
+                            </div>
+                            <div class="expand-body">Uses collaborative filtering to analyze behavioral patterns (clicks, history) and predict future user preferences.</div>
+                        </div>
+
+                        <div class="expand-box" onclick="toggleCard(this)">
+                            <div class="expand-header">
+                                <span><span class="icon-wrap" style="color:var(--c-multi)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></span> Multimodal AI</span>
+                                <span style="font-size:0.6rem">INFO</span>
+                            </div>
+                            <div class="expand-body">Systems capable of integrated reasoning across multiple data types (e.g., text + image) in a single model.</div>
+                        </div>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: var(--accent-primary); margin-bottom: 1rem;">DATA TYPES</p>
+                        <div class="experience-box" style="padding: 1.25rem; font-size: 0.85rem; background: #fafafa;">
+                            <div style="margin-bottom:0.75rem;">&bull; <strong>Text:</strong> Words, search strings.</div>
+                            <div style="margin-bottom:0.75rem;">&bull; <strong>Image/Video:</strong> Pixel arrays.</div>
+                            <div style="margin-bottom:0.75rem;">&bull; <strong>Behavioral:</strong> Clicks, time-on-page.</div>
+                            <div style="margin-bottom:0.75rem;">&bull; <strong>Audio:</strong> Sound waves, speech.</div>
+                            <div style="margin-bottom:0.75rem;">&bull; <strong>Sensor:</strong> GPS, spatial data.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="nextScreen('s1')">Back</button>
+                    <button class="btn" onclick="nextScreen('s3')">Begin Analysis &rarr;</button>
+                </div>
+            </section>
+
+            <!-- S3: SPOTTER -->
+            <section id="s3" class="screen-section">
+                <div class="spotter-grid">
+                    <aside class="stats-panel">
+                        <div class="stat-line"><span>ANALYSIS FILE</span><span class="stat-val" id="progress-text">1 / 12</span></div>
+                        <div class="stat-line"><span>PRECISION</span><span class="stat-val" id="accuracy-text">0%</span></div>
+                        <div class="stat-line"><span>MASTERY</span><span class="stat-val" id="mastery-text">0/12</span></div>
+                    </aside>
+
+                    <main>
+                        <div class="experience-box" style="border-left: 4px solid var(--accent-primary);">
+                            <span class="report-label">FIELD OBSERVATION REPORT</span>
+                            <div id="exp-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 500; color: var(--text-main);"></div>
+                        </div>
+
+                        <div id="classification-controls">
+                            <div style="margin-bottom: 1.5rem;">
+                                <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.75rem; color: var(--text-muted);">AI Architecture</p>
+                                <div class="pill-wrap" id="tech-pills">
+                                    <div class="pill" data-tech="LLM"><span class="icon-wrap" style="color:var(--c-llm)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5.04 2.5 2.5 0 0 0-.98 4.96 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 4.96.46 2.5 2.5 0 0 0 1.98-3 2.5 2.5 0 0 0-.98-4.96 2.5 2.5 0 0 0 0-5.04 2.5 2.5 0 0 0 .98-4.96 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 12 4.5Z"/></svg></span> LLM</div>
+                                    <div class="pill" data-tech="CV"><span class="icon-wrap" style="color:var(--c-cv)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span> CV</div>
+                                    <div class="pill" data-tech="REC"><span class="icon-wrap" style="color:var(--c-rec)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg></span> REC</div>
+                                    <div class="pill" data-tech="MULTI"><span class="icon-wrap" style="color:var(--c-multi)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></span> MULTI</div>
+                                    <div class="pill" data-tech="NLP"><span class="icon-wrap" style="color:var(--c-nlp)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></span> NLP</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 2rem;">
+                                <p style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.75rem; color: var(--text-muted);" id="data-label">Primary Data Input</p>
+                                <div class="pill-wrap" id="data-pills">
+                                    <div class="pill" data-data="text">Text</div>
+                                    <div class="pill" data-data="img">Image</div>
+                                    <div class="pill" data-data="beh">Behavior</div>
+                                    <div class="pill" data-data="audio">Audio</div>
+                                    <div class="pill" data-data="sensor">Sensor</div>
+                                    <div class="pill" data-data="multi">Multimodal</div>
+                                </div>
+                            </div>
+
+                            <button class="btn" id="identify-btn" disabled onclick="handleIdentify()">Analyze Engine &rarr;</button>
+                        </div>
+
+                        <div class="reveal-box" id="reveal-panel">
+                            <div id="tech-feedback"></div>
+                            <div id="data-feedback"></div>
+                            <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="handleNext()">Next Case File &rarr;</button>
+                        </div>
+                    </main>
+                </div>
+            </section>
+
+            <!-- S4: MAP -->
+            <section id="s4" class="screen-section">
+                <h2>Daily AI Activity Log</h2>
+                <div class="experience-box" style="padding: 1rem; overflow: hidden;">
+                    <div class="timeline-bar" id="timeline-container"></div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="nextScreen('s3')">Back</button>
+                    <button class="btn" onclick="nextScreen('s5')">Mastery Audit &rarr;</button>
+                </div>
+            </section>
+
+            <!-- S5: REPORT -->
+            <section id="s5" class="screen-section">
+                <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+                    <div style="font-size: 4rem; font-weight: 900; color: var(--accent-primary); margin-bottom: 0.5rem;" id="total-score">0/24</div>
+                    <h2 id="analyst-rank" style="margin-bottom: 2rem;">Junior Analyst</h2>
+                    
+                    <div class="experience-box" style="text-align: left;">
+                        <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-primary); margin-bottom: 1.5rem; text-transform: uppercase;">Final Category Summary</p>
+                        <div id="mastery-summary"></div>
+                        <div id="pattern-notes" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); font-style: italic; font-size: 0.9rem; color: var(--text-muted);"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="location.reload()">Restart Simulation</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        const EXPERIENCES = [
+            { id: 1, time: "07:00", title: "Playlist", text: "You open your music app. A playlist has been generated overnight that includes your favorites and three songs you've never heard.", tech: "REC", data: ["beh"], techExplanation: "Recommendation engines are the primary architects of personalized feeds.", dataExplanation: "Behavioral signals (listening history, skips) provide the data required to match your tastes with similar users." },
+            { id: 2, time: "17:30", title: "Translate", text: "You photograph a Japanese sign. The app instantly overlays an English translation on top of the original text.", tech: "MULTI", data: ["multi"], techExplanation: "Multimodal AI is required to process and reason across both visual (image) and linguistic (text) data simultaneously.", dataExplanation: "This requires an integrated pipeline of both pixel data and extracted text tokens." },
+            { id: 3, time: "08:15", title: "Reminder", text: "You ask your phone to 'remind me when I get to school.' The reminder triggers when your GPS detects the school location.", tech: "NLP", data: ["audio", "sensor"], techExplanation: "NLP (Natural Language Processing) is required to understand the intent and entities in your spoken command.", dataExplanation: "This relies on Audio data (for the command) and Sensor data (GPS) to execute the location-based trigger." },
+            { id: 4, time: "15:00", title: "Viral", text: "Your feed shows a video on a topic you've never searched for, but watched a similar video to the end recently.", tech: "REC", data: ["beh"], techExplanation: "The algorithm identified 'dwell time' as a high-interest signal to surface related content.", dataExplanation: "Watch completion rate is a purely behavioral metric, not based on the video's pixels or text captions." },
+            { id: 5, time: "07:30", title: "Unlock", text: "You unlock your phone by looking at the camera in a dark room while wearing glasses.", tech: "CV", data: ["img"], techExplanation: "Computer Vision interprets the geometric patterns of your face from camera sensors.", dataExplanation: "Even in darkness, infrared image sensors capture the visual data required for biometric mapping." },
+            { id: 6, time: "09:00", title: "Predict", text: "You type a query and the search engine suggests exactly what you were going to type before you finish.", tech: "LLM", data: ["text"], techExplanation: "Large Language Models are the masters of predicting the next likely characters in a linguistic sequence.", dataExplanation: "The model only needs the text you have already typed to calculate the statistical probability of the next words." },
+            { id: 7, time: "16:00", title: "Captions", text: "You watch a Spanish video. Real-time English captions appear at the bottom, keeping up word-for-word.", tech: "NLP", data: ["audio"], techExplanation: "Processing spoken language and translating it into another language is a core Natural Language Processing task.", dataExplanation: "The AI listens to the audio waveform to identify words before translating them." },
+            { id: 8, time: "11:45", title: "Tracking", text: "A store homepage shows products you were just looking at on a different website an hour ago.", tech: "REC", data: ["beh"], techExplanation: "Recommendation AI uses cross-site signals to personalize marketing long before you click anything on the page.", dataExplanation: "Third-party cookies share your external browsing behavior with the algorithm's tracking model." },
+            { id: 9, time: "12:30", title: "Album", text: "You photograph a dog. The app automatically creates an album named 'Dogs' and identifies your specific pet.", tech: "CV", data: ["img"], techExplanation: "Identifying objects (dogs) and specific entities (your pet) within a scene is a classic Computer Vision task.", dataExplanation: "The neural network analyzes the pixels of the photograph to detect shapes, coat patterns, and facial structures." },
+            { id: 10, time: "10:30", title: "Email", text: "An assistant writes a formal email to your teacher that sounds exactly like you in just 3 seconds.", tech: "LLM", data: ["text"], techExplanation: "Generating coherent, context-aware text from a prompt is the defining capability of an LLM.", dataExplanation: "LLMs are trained exclusively on massive text corpora to learn the probability of word sequences." },
+            { id: 11, time: "13:00", title: "Stock", text: "A site says 'Only 3 left!' for an item you viewed twice. The next day, it still says 'Only 3 left.'", tech: "REC", data: ["beh"], techExplanation: "The AI uses 'scarcity' as a recommendation tactic to push high-intent users toward a conversion.", dataExplanation: "The 'Only 3 left' message was triggered by your behavioral signals (two views), not actual inventory." },
+            { id: 12, time: "20:00", title: "Skin", text: "A health app analyzes a photo of a skin lesion and provides a melanoma risk assessment.", tech: "CV", data: ["img"], techExplanation: "Computer Vision can detect visual markers of disease that are often imperceptible to the human eye.", dataExplanation: "The model processes the image of the lesion to classify it based on thousands of biopsy-confirmed visual examples." }
+        ];
+
+        let state = { currentIndex: 0, answers: [], techScore: 0, dataScore: 0, selectedTech: null, selectedData: [] };
+
+        function nextScreen(id) {
+            document.querySelectorAll('.screen-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 's3') renderExperience();
+            if (id === 's4') initMap();
+            if (id === 's5') initReport();
+            window.scrollTo(0,0);
+        }
+
+        function toggleCard(el) { el.querySelector('.expand-body').classList.toggle('active'); }
+
+        function renderExperience() {
+            const exp = EXPERIENCES[state.currentIndex];
+            document.getElementById('exp-text').innerText = exp.text;
+            document.getElementById('progress-text').innerText = `${exp.id} / 12`;
+            state.selectedTech = null; state.selectedData = [];
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+            document.getElementById('identify-btn').disabled = true;
+            document.getElementById('reveal-panel').classList.remove('active');
+            document.getElementById('classification-controls').style.display = 'block';
+        }
+
+        document.querySelectorAll('#tech-pills .pill').forEach(p => {
+            p.onclick = () => {
+                document.querySelectorAll('#tech-pills .pill').forEach(btn => btn.classList.remove('selected'));
+                p.classList.add('selected'); state.selectedTech = p.dataset.tech; checkReady();
+            }
+        });
+
+        document.querySelectorAll('#data-pills .pill').forEach(p => {
+            p.onclick = () => {
+                const exp = EXPERIENCES[state.currentIndex];
+                if (exp.id === 3) {
+                    p.classList.toggle('selected');
+                    if (p.classList.contains('selected')) state.selectedData.push(p.dataset.data);
+                    else state.selectedData = state.selectedData.filter(d => d !== p.dataset.data);
+                } else {
+                    document.querySelectorAll('#data-pills .pill').forEach(btn => btn.classList.remove('selected'));
+                    p.classList.add('selected'); state.selectedData = [p.dataset.data];
+                }
+                checkReady();
+            }
+        });
+
+        function checkReady() {
+            const exp = EXPERIENCES[state.currentIndex];
+            const dataReady = exp.id === 3 ? state.selectedData.length >= 1 : state.selectedData.length === 1;
+            document.getElementById('identify-btn').disabled = !(state.selectedTech && dataReady);
+        }
+
+        function handleIdentify() {
+            const exp = EXPERIENCES[state.currentIndex];
+            const isTechCorrect = state.selectedTech === exp.tech;
+            let dp = 0;
+            if (exp.id === 3) {
+                if (state.selectedData.includes('audio')) dp += 0.5;
+                if (state.selectedData.includes('sensor')) dp += 0.5;
+            } else {
+                dp = (state.selectedData[0] === exp.data[0] ? 1 : 0);
+            }
+            
+            state.answers.push({ id: exp.id, techCorrect: isTechCorrect, dataPoints: dp });
+            state.techScore += isTechCorrect ? 1 : 0; state.dataScore += dp;
+
+            // Feedback Logic
+            const techDiv = document.getElementById('tech-feedback');
+            const dataDiv = document.getElementById('data-feedback');
+            
+            techDiv.innerHTML = `
+                <div class="feedback-item ${isTechCorrect ? 'feedback-success' : 'feedback-error'}">
+                    <div class="feedback-icon">${isTechCorrect ? '✓' : '✕'}</div>
+                    <div class="feedback-text">
+                        <span class="feedback-title">Architecture Analysis: ${isTechCorrect ? 'Correct' : 'Incorrect'}</span>
+                        ${exp.techExplanation}
+                    </div>
+                </div>
+            `;
+
+            const isDataCorrect = dp === 1;
+            dataDiv.innerHTML = `
+                <div class="feedback-item ${isDataCorrect ? 'feedback-success' : 'feedback-error'}">
+                    <div class="feedback-icon">${isDataCorrect ? '✓' : '✕'}</div>
+                    <div class="feedback-text">
+                        <span class="feedback-title">Data Attribution: ${isDataCorrect ? 'Correct' : (dp > 0 ? 'Partial' : 'Incorrect')}</span>
+                        ${exp.dataExplanation}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('classification-controls').style.display = 'none';
+            document.getElementById('reveal-panel').classList.add('active');
+            
+            const possible = (state.currentIndex + 1) * 2;
+            const current = state.techScore + state.dataScore;
+            document.getElementById('accuracy-text').innerText = `${Math.round((current/possible)*100)}%`;
+            document.getElementById('mastery-text').innerText = `${state.techScore}/12`;
+        }
+
+        function handleNext() {
+            state.currentIndex++;
+            if (state.currentIndex < EXPERIENCES.length) renderExperience();
+            else nextScreen('s4');
+        }
+
+        function initMap() {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+            EXPERIENCES.forEach((exp, idx) => {
+                const ans = state.answers[idx];
+                const div = document.createElement('div');
+                div.className = 'timeline-tick';
+                div.innerHTML = `
+                    <div style="font-size:0.6rem; font-weight:700; color: var(--text-muted); margin-bottom: 0.5rem;">${exp.time}</div>
+                    <div class="tick-dot" style="background: ${ans && ans.techCorrect ? 'var(--color-success)' : 'var(--color-error)'}"></div>
+                    <div style="font-size:0.5rem; text-transform:uppercase; font-weight: 700;">${exp.title}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function initReport() {
+            const total = state.techScore + state.dataScore;
+            document.getElementById('total-score').innerText = `${Math.floor(total)}/24`;
+            let rank = "Field Analyst";
+            if (total >= 21) rank = "Lead Systems Architect";
+            else if (total >= 16) rank = "Senior Analyst";
+            document.getElementById('analyst-rank').innerText = rank;
+            
+            const techKeys = ['LLM', 'CV', 'REC', 'NLP'];
+            const mastery = { LLM: { c: 0, t: 2 }, CV: { c: 0, t: 4 }, REC: { c: 0, t: 4 }, NLP: { c: 0, t: 2 } };
+            state.answers.forEach((a, i) => { const target = EXPERIENCES[i].tech; if (mastery[target] && a.techCorrect) mastery[target].c++; });
+
+            const summary = document.getElementById('mastery-summary');
+            summary.innerHTML = '';
+            Object.keys(mastery).forEach(key => {
+                const pct = (mastery[key].c / mastery[key].t) * 100;
+                summary.innerHTML += `
+                    <div class="mastery-item">
+                        <div class="mastery-header"><span>${key} Mastery</span><span>${mastery[key].c}/${mastery[key].t}</span></div>
+                        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+                    </div>
+                `;
+            });
+
+            const notes = document.getElementById('pattern-notes');
+            if (total === 24) notes.innerText = "Audit Complete: Perfection achieved. Full system understanding verified.";
+            else if (mastery.REC.c < 2) notes.innerText = "Audit Note: Recommendation AI relies on Behavioral signals (what users do), not visual or text content.";
+            else if (mastery.CV.c < 2) notes.innerText = "Audit Note: Focus on Computer Vision. Any camera-based experience is powered by this engine.";
+            else notes.innerText = "Audit Note: Analysis complete. System accuracy is within acceptable parameters.";
+        }
+    </script>
+</body>
+</html>
