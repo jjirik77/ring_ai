@@ -145,6 +145,17 @@
         .back-link:hover { color: #000; }
         .mode-display-title { font-weight: 700; font-family: 'Space Grotesk'; font-size: 18px; color: #000; }
 
+        /* Icons */
+        .concept-icon {
+            margin-bottom: 1.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .concept-icon svg { width: 100%; height: 100%; stroke-width: 2; fill: none; stroke: currentColor; }
+
         /* Flashcard S2 */
         .flashcard-container {
             perspective: 1200px;
@@ -240,12 +251,13 @@
             background: var(--bg-card);
             border: 1px solid var(--border-default);
             border-radius: 6px;
-            padding: 1.25rem 1.5rem;
+            padding: 1rem 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
             min-height: 80px;
             display: flex;
             align-items: center;
+            gap: 1rem;
             position: relative;
             z-index: 10;
         }
@@ -253,6 +265,8 @@
         .match-item:hover:not(.matched) { border-color: #000; background: #fafafa; }
         .match-item.selected { border-color: var(--accent-primary); background: #f0f9ff; border-width: 2px; }
         .match-item.matched { cursor: default; opacity: 0.5; border-style: dashed; }
+
+        .match-item .concept-icon { width: 24px; height: 24px; margin-bottom: 0; flex-shrink: 0; }
 
         .match-term { font-weight: 700; font-family: 'Space Grotesk'; font-size: 15px; color: #000; }
         .match-def { font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
@@ -278,7 +292,10 @@
             padding: 3rem;
             border-radius: 8px;
             margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
         }
+        .q-text-content { flex: 1; }
 
         .q-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
         .q-num { font-family: 'Space Grotesk'; font-weight: 700; color: var(--text-secondary); font-size: 13px; letter-spacing: 0.05em; }
@@ -352,6 +369,7 @@
             .match-grid { gap: 1.5rem; grid-template-columns: 1fr; }
             #match-svg { display: none; }
             .flashcard-container { height: 450px; }
+            .question-card { flex-direction: column; padding: 2rem; }
         }
     </style>
 </head>
@@ -403,6 +421,7 @@
                 <div class="flashcard-container" id="fc-container">
                     <div class="flashcard" id="fc-card">
                         <div class="flashcard-front">
+                            <div class="concept-icon" id="fc-icon-front"></div>
                             <h2 class="term-display" id="fc-term">AI Model</h2>
                             <div class="flip-hint">Click or Space to flip</div>
                         </div>
@@ -460,10 +479,13 @@
                 </div>
 
                 <div class="question-card">
-                    <div class="q-meta">
-                        <span class="q-num" id="q-counter">QUESTION 1 / 15</span>
+                    <div class="concept-icon" id="q-icon"></div>
+                    <div class="q-text-content">
+                        <div class="q-meta">
+                            <span class="q-num" id="q-counter">QUESTION 1 / 15</span>
+                        </div>
+                        <p class="scenario-text" id="q-scenario">Scenario text goes here?</p>
                     </div>
-                    <p class="scenario-text" id="q-scenario">Scenario text goes here?</p>
                 </div>
 
                 <div class="options-grid" id="q-options"></div>
@@ -524,6 +546,14 @@
     </div>
 
     <script>
+        const ICONS = {
+            "Foundations": `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
+            "History of AI": `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+            "Modern AI": `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+            "Five Big Ideas": `<svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M15.09 14c.18-.19.33-.42.49-.67.38-.58.6-1.27.6-2.01 0-2.21-1.79-4-4-4S8.18 9.11 8.18 11.32c0 .74.22 1.43.6 2.01.16.25.31.48.49.67.57.6 1.09 1.29 1.34 2.15l.07.25h2.64l.07-.25c.25-.86.77-1.55 1.34-2.15z"/></svg>`,
+            "AI Lifecycle": `<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.99 6.57 2.57L21 8M21 3v5h-5"/></svg>`
+        };
+
         const DATA = {
             terms: [
                 { id: 0, group: "Foundations", color: "#2563eb", term: "Artificial Intelligence", def: "The theory and development of a computer system's ability to perform tasks that normally require human intelligence", ex: "AI powers voice assistants, recommendation systems, and self-driving vehicles." },
@@ -563,21 +593,21 @@
                 { id: 34, group: "AI Lifecycle", color: "#ea580c", term: "Deploy Stage", def: "The part of the AI lifecycle in which the AI model is made available for use and its performance is monitored", ex: "Releasing the AI to real users and watching for accuracy drops is the Deploy Stage." }
             ],
             questions: [
-                { q: "A chess-playing program beats grandmasters but cannot write a poem, drive a car, or hold a conversation. What type of AI is this?", options: ["Weak AI / Narrow AI", "Strong AI / AGI", "ASI", "Generative AI"], correct: 0, feedback: "Weak AI is designed for a single task or narrow range of tasks. A chess AI is exceptionally good at chess — and nothing else." },
-                { q: "You ask Siri 'What is the weather like tomorrow?' and it understands your question and reads you the forecast. Which AI subset makes this possible?", options: ["AI Robotics", "Natural Language Processing", "Computer Vision", "Expert System"], correct: 1, feedback: "NLP enables computers to understand and communicate in human language. Siri interprets your spoken words using NLP." },
-                { q: "A self-driving car identifies pedestrians, traffic cones, and stop signs from its cameras in real time. Which AI subset is doing this work?", options: ["Machine Learning", "NLP", "Computer Vision", "AI Robotics"], correct: 2, feedback: "Computer Vision enables AI to process and interpret visual data from cameras." },
-                { q: "ChatGPT writes essays, DALL-E creates images from descriptions, and Suno composes music from lyrics. What do all three have in common?", options: ["Machine Learning", "Expert Systems", "Generative AI", "Computer Vision"], correct: 2, feedback: "Generative AI creates new content — text, images, music, video — by learning patterns from existing data." },
-                { q: "A doctor uses a diagnostic software tool that asks about symptoms and applies a set of medical rules to recommend possible diagnoses. The tool does not learn. What is this?", options: ["Machine Learning", "Expert System", "Neural Network", "Deep Learning"], correct: 1, feedback: "Expert systems use pre-programmed rules in a specific domain to answer complex questions." },
-                { q: "Users of an early 1960s chatbot began sharing personal problems with it and felt it truly understood them — even though it was just matching text patterns. What is this?", options: ["Moravec's Paradox", "ELIZA Effect", "Turing Test", "Perceptron Bias"], correct: 1, feedback: "The ELIZA Effect describes humans falsely attributing understanding and emotion to AI systems." },
-                { q: "AI easily defeats grandmasters at chess — a task humans find hard. But the same AI fails to fold a shirt — a task any toddler can do. Why?", options: ["Weak AI Limitation", "ELIZA Effect", "Moravec's Paradox", "AI Winter"], correct: 2, feedback: "Moravec's Paradox observes that high-level reasoning is often easy for AI, while low-level sensory-motor skills are very difficult." },
-                { q: "Unlike older AI models that processed words one by one, ChatGPT reads your entire message at once before generating a response. This is because it uses which architecture?", options: ["Perceptron", "Expert System", "Transformer", "Decision Tree"], correct: 2, feedback: "The Transformer architecture processes the full context of a sentence simultaneously." },
-                { q: "An AI assistant can hear you describe a photo, look at the photo itself, and then answer your spoken question about it — all in one session. What type of AI is this?", options: ["Large Language Model", "Multimodal AI", "Computer Vision", "AI Robotics"], correct: 1, feedback: "Multimodal AI processes multiple types of data — speech (audio) and image (visual) — simultaneously." },
-                { q: "A robot vacuum detects that it is close to a wall using infrared beams, then turns to avoid a collision. The infrared beam system is the robot's what?", options: ["Perception", "Reasoning", "Sensor", "Training Data"], correct: 2, feedback: "Sensors detect changes in the environment and send that information to the system." },
-                { q: "A medical AI lists the three symptoms that most influenced its diagnosis so that the doctor can verify the reasoning. This is an example of:", options: ["Training Data", "Knowledge Representation", "AI Transparency", "Perception"], correct: 2, feedback: "AI Transparency means providing clarity about how an AI makes decisions." },
-                { q: "An AI stores all medical facts — symptoms, diseases, drug interactions — in a structured database it can search while analyzing a patient. This process is:", options: ["Reasoning", "Perception", "Training Data", "Knowledge Representation"], correct: 3, feedback: "Knowledge Representation structures information so a computer can access and use it efficiently." },
-                { q: "An AI model has been tested and approved. Engineers now deploy it to hospital systems where real doctors use it daily. What stage is this?", options: ["Design Stage", "Develop Stage", "Deploy Stage", "Iterative Process"], correct: 2, feedback: "The Deploy Stage is when the AI is made available for real use and its performance is monitored." },
-                { q: "After testing, engineers find their model only reaches 78% accuracy. They return to collect more training data, retrain the model, and test again. This is a/an:", options: ["AI Lifecycle", "Deploy Stage", "Iterative Process", "Design Stage"], correct: 2, feedback: "An iterative process repeatedly cycles through steps like training and testing to improve outcomes." },
-                { q: "Before building their model, a team spends four weeks gathering 200,000 images, labeling each one, and removing duplicates. Which part of the lifecycle is this?", options: ["Develop Stage", "Deploy Stage", "Design Stage", "Iterative Process"], correct: 2, feedback: "The Design Stage defines the problem and prepares the data before the model is built." }
+                { q: "A chess-playing program beats grandmasters but cannot write a poem, drive a car, or hold a conversation. What type of AI is this?", group: "Foundations", options: ["Weak AI / Narrow AI", "Strong AI / AGI", "ASI", "Generative AI"], correct: 0, feedback: "Weak AI is designed for a single task or narrow range of tasks. A chess AI is exceptionally good at chess — and nothing else." },
+                { q: "You ask Siri 'What is the weather like tomorrow?' and it understands your question and reads you the forecast. Which AI subset makes this possible?", group: "Foundations", options: ["AI Robotics", "Natural Language Processing", "Computer Vision", "Expert System"], correct: 1, feedback: "NLP enables computers to understand and communicate in human language. Siri interprets your spoken words using NLP." },
+                { q: "A self-driving car identifies pedestrians, traffic cones, and stop signs from its cameras in real time. Which AI subset is doing this work?", group: "Foundations", options: ["Machine Learning", "NLP", "Computer Vision", "AI Robotics"], correct: 2, feedback: "Computer Vision enables AI to process and interpret visual data from cameras." },
+                { q: "ChatGPT writes essays, DALL-E creates images from descriptions, and Suno composes music from lyrics. What do all three have in common?", group: "Foundations", options: ["Machine Learning", "Expert Systems", "Generative AI", "Computer Vision"], correct: 2, feedback: "Generative AI creates new content — text, images, music, video — by learning patterns from existing data." },
+                { q: "A doctor uses a diagnostic software tool that asks about symptoms and applies a set of medical rules to recommend possible diagnoses. The tool does not learn. What is this?", group: "Foundations", options: ["Machine Learning", "Expert System", "Neural Network", "Deep Learning"], correct: 1, feedback: "Expert systems use pre-programmed rules in a specific domain to answer complex questions." },
+                { q: "Users of an early 1960s chatbot began sharing personal problems with it and felt it truly understood them — even though it was just matching text patterns. What is this?", group: "History of AI", options: ["Moravec's Paradox", "ELIZA Effect", "Turing Test", "Perceptron Bias"], correct: 1, feedback: "The ELIZA Effect describes humans falsely attributing understanding and emotion to AI systems." },
+                { q: "AI easily defeats grandmasters at chess — a task humans find hard. But the same AI fails to fold a shirt — a task any toddler can do. Why?", group: "History of AI", options: ["Weak AI Limitation", "ELIZA Effect", "Moravec's Paradox", "AI Winter"], correct: 2, feedback: "Moravec's Paradox observes that high-level reasoning is often easy for AI, while low-level sensory-motor skills are very difficult." },
+                { q: "Unlike older AI models that processed words one by one, ChatGPT reads your entire message at once before generating a response. This is because it uses which architecture?", group: "Modern AI", options: ["Perceptron", "Expert System", "Transformer", "Decision Tree"], correct: 2, feedback: "The Transformer architecture processes the full context of a sentence simultaneously." },
+                { q: "An AI assistant can hear you describe a photo, look at the photo itself, and then answer your spoken question about it — all in one session. What type of AI is this?", group: "Modern AI", options: ["Large Language Model", "Multimodal AI", "Computer Vision", "AI Robotics"], correct: 1, feedback: "Multimodal AI processes multiple types of data — speech (audio) and image (visual) — simultaneously." },
+                { q: "A robot vacuum detects that it is close to a wall using infrared beams, then turns to avoid a collision. The infrared beam system is the robot's what?", group: "Five Big Ideas", options: ["Perception", "Reasoning", "Sensor", "Training Data"], correct: 2, feedback: "Sensors detect changes in the environment and send that information to the system." },
+                { q: "A medical AI lists the three symptoms that most influenced its diagnosis so that the doctor can verify the reasoning. This is an example of:", group: "Five Big Ideas", options: ["Training Data", "Knowledge Representation", "AI Transparency", "Perception"], correct: 2, feedback: "AI Transparency means providing clarity about how an AI makes decisions." },
+                { q: "An AI stores all medical facts — symptoms, diseases, drug interactions — in a structured database it can search while analyzing a patient. This process is:", group: "Five Big Ideas", options: ["Reasoning", "Perception", "Training Data", "Knowledge Representation"], correct: 3, feedback: "Knowledge Representation structures information so a computer can access and use it efficiently." },
+                { q: "An AI model has been tested and approved. Engineers now deploy it to hospital systems where real doctors use it daily. What stage is this?", group: "AI Lifecycle", options: ["Design Stage", "Develop Stage", "Deploy Stage", "Iterative Process"], correct: 2, feedback: "The Deploy Stage is when the AI is made available for real use and its performance is monitored." },
+                { q: "After testing, engineers find their model only reaches 78% accuracy. They return to collect more training data, retrain the model, and test again. This is a/an:", group: "AI Lifecycle", options: ["AI Lifecycle", "Deploy Stage", "Iterative Process", "Design Stage"], correct: 2, feedback: "An iterative process repeatedly cycles through steps like training and testing to improve outcomes." },
+                { q: "Before building their model, a team spends four weeks gathering 200,000 images, labeling each one, and removing duplicates. Which part of the lifecycle is this?", group: "AI Lifecycle", options: ["Develop Stage", "Deploy Stage", "Design Stage", "Iterative Process"], correct: 2, feedback: "The Design Stage defines the problem and prepares the data before the model is built." }
             ]
         };
 
@@ -627,6 +657,10 @@
             document.getElementById('fc-def').textContent = termObj.def;
             document.getElementById('fc-example').textContent = termObj.ex;
             document.getElementById('fc-progress').textContent = `Card ${STATE.flashcard.currentIndex + 1} / ${deck.length}`;
+            
+            const iconContainer = document.getElementById('fc-icon-front');
+            iconContainer.innerHTML = ICONS[termObj.group];
+            iconContainer.style.color = termObj.color;
         }
 
         function toggleFlashcard() {
@@ -710,7 +744,10 @@
                 const el = document.createElement('div');
                 el.className = 'match-item';
                 el.id = `match-term-${id}`;
-                el.innerHTML = `<span class="match-term">${t.term}</span>`;
+                el.innerHTML = `
+                    <div class="concept-icon" style="color: ${t.color}">${ICONS[t.group]}</div>
+                    <span class="match-term">${t.term}</span>
+                `;
                 el.onclick = () => selectMatchTerm(id, el);
                 leftCol.appendChild(el);
             });
@@ -798,6 +835,11 @@
             document.getElementById('challenge-score-ui').textContent = `SCORE: ${STATE.challenge.score} / ${STATE.challenge.answered.length}`;
             document.getElementById('q-counter').textContent = `QUESTION ${STATE.challenge.currentQuestion + 1} / 15`;
             document.getElementById('q-scenario').textContent = qObj.q;
+            
+            const iconContainer = document.getElementById('q-icon');
+            iconContainer.innerHTML = ICONS[qObj.group];
+            iconContainer.style.color = DATA.terms.find(t => t.group === qObj.group).color;
+
             const optionsBox = document.getElementById('q-options');
             optionsBox.innerHTML = '';
             qObj.options.forEach((opt, idx) => {
@@ -879,7 +921,13 @@
                     const t = DATA.terms[id];
                     const li = document.createElement('li');
                     li.style.display = 'flex'; li.style.justifyContent = 'space-between'; li.style.padding = '1rem 0'; li.style.borderBottom = '1px solid var(--border-default)';
-                    li.innerHTML = `<span style="font-weight: 500;">${t.term}</span><span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${t.color};">${t.group}</span>`;
+                    li.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 16px; height: 16px; color: ${t.color}">${ICONS[t.group]}</div>
+                            <span style="font-weight: 500;">${t.term}</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${t.color};">${t.group}</span>
+                    `;
                     list.appendChild(li);
                 });
             }
