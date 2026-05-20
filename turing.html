@@ -1053,7 +1053,8 @@
         
         let nextDisabled = false;
         if (step.startsWith('session')) nextDisabled = true;
-        if (step === 'interlude' && !document.getElementById('eliza-feedback').innerText) nextDisabled = true;
+        if (step === 'interlude' && !document.getElementById('btn-next').disabled) nextDisabled = false; // Check if enabled by Eliza choice
+        else if (step === 'interlude') nextDisabled = true;
         if (step === 'analysis' && state.ranking.length < 3) nextDisabled = true;
         
         document.getElementById('btn-next').disabled = nextDisabled;
