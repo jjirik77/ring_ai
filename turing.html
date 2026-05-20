@@ -630,7 +630,7 @@
         }
     ];
 
-    const SCENES = ["intro", "briefing", "session-0", "session-1", "session-2", "session-3", "session-4", "session-5", "session-6", "session-7", "interlude", "analysis", "report"];
+    const SCENES = ["intro", "briefing", "session-0", "session-1", "session-2", "session-3", "interlude", "session-4", "session-5", "session-6", "session-7", "analysis", "report"];
     
     let currentStep = 0;
     let state = { verdicts: [], ranking: [], elizaChoice: null };
@@ -779,11 +779,10 @@
                             <p>This is the <strong>ELIZA Effect</strong>: our human tendency to attribute genuine emotion and intelligence to any system that communicates fluently.</p>
                         </div>
                         <div style="background: var(--bg-page); border: 1px solid var(--border); padding: 1rem; border-radius: 12px; width: 100%;">
-                            <p style="font-weight: 700; margin-bottom: 0.75rem; font-size: 0.85rem;">Which statement best describes your experience so far?</p>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                ${choices.map((c, i) => `<button class="btn btn-outline" style="text-align: left; font-size: 0.75rem; height: auto;" onclick="handleElizaChoice(${i}, this)">${c}</button>`).join('')}
+                            <p style="font-weight: 700; margin-bottom: 0.75rem; font-size: 0.85rem;" id="eliza-prompt">Which statement best describes your experience so far?</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;" id="eliza-btn-grid">
+                                ${choices.map((c, i) => `<button class="btn btn-outline" style="text-align: left; font-size: 0.75rem; height: auto;" data-original="${c}" onclick="handleElizaChoice(${i}, this)">${c}</button>`).join('')}
                             </div>
-                            <div id="eliza-feedback" style="display:none; margin-top: 0.75rem; padding: 0.75rem; background: var(--primary-light); border-radius: 8px; font-size: 0.8rem; text-align: left; border-left: 4px solid var(--primary); line-height: 1.4;"></div>
                         </div>
                     </div>
                 </div>
@@ -969,22 +968,42 @@
     }
 
     function handleElizaChoice(idx, btn) {
-        document.querySelectorAll('#eliza-feedback ~ .btn-outline, .btn-outline').forEach(b => {
-            if (b.parentElement.id !== 'reflection-btns' && b.id !== 'btn-restart' && b.id !== 'btn-back' && b.id !== 'btn-next') {
-                b.style.borderColor = 'var(--border)'; b.style.background = 'transparent'; b.style.color = 'var(--text-dark)';
-            }
-        });
-        btn.style.borderColor = 'var(--primary)'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary)';
-
         const feedbacks = [
             "That's the ELIZA Effect. Modern language models are specifically trained to be fluent — which makes surface-level detection increasingly unreliable.",
             "This is the most honest answer. The 'feel' of a conversation often precedes our ability to articulate what's specifically different.",
             "Confidence is key! You may find the remaining sessions more challenging as the patterns shift.",
             "LLMs are optimized to sound confident and coherent. In some domains, they out-perform human writing style — which is exactly what makes the Turing Test relevant again."
         ];
-        const fb = document.getElementById('eliza-feedback');
-        fb.innerText = feedbacks[idx];
-        fb.style.display = 'block';
+
+        // Hide prompt and other buttons to clean up the screen
+        document.getElementById('eliza-prompt').style.display = 'none';
+        const grid = document.getElementById('eliza-btn-grid');
+        grid.style.gridTemplateColumns = '1fr'; // Switch to full width
+        
+        Array.from(grid.children).forEach(b => {
+            if (b !== btn) b.style.display = 'none';
+        });
+
+        // Transform the clicked button into a feedback card
+        btn.onclick = null; // Remove hover/click effects
+        btn.style.cursor = 'default';
+        btn.style.borderColor = 'var(--primary)';
+        btn.style.background = 'var(--primary-light)';
+        btn.style.padding = '1.25rem';
+        btn.style.transform = 'none';
+        btn.style.boxShadow = 'none';
+        
+        const originalText = btn.getAttribute('data-original');
+        
+        btn.innerHTML = `
+            <div style="font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 0.4rem; letter-spacing: 0.5px;">Your Experience:</div>
+            <div style="font-size: 0.85rem; font-style: italic; color: var(--text-dark); margin-bottom: 1rem;">"${originalText}"</div>
+            <div style="border-top: 1px solid #bfdbfe; padding-top: 0.85rem;">
+                <div style="font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 0.4rem; letter-spacing: 0.5px;">Instructor Note:</div>
+                <div style="font-size: 0.8rem; line-height: 1.4; color: var(--text-dark);">${feedbacks[idx]}</div>
+            </div>
+        `;
+        
         document.getElementById('btn-next').disabled = false;
     }
 
