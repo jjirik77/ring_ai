@@ -1,1165 +1,1616 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50 text-slate-800">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethical Autopsy | Case File Investigation</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy: #1B2B4B;
-            --navy-light: #243860;
-            --amber: #F59E0B;
-            --amber-light: #FEF3C7;
-            --crimson: #DC2626;
-            --crimson-light: #FEF2F2;
-            --emerald: #059669;
-            --emerald-light: #ECFDF5;
-            --sky-blue: #0EA5E9;
-            --white: #FFFFFF;
-            --charcoal: #1E293B;
-            --gray: #64748B;
-            --slate: #F1F5F9;
-            --border: #E2E8F0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ethical Autopsy | Case File Audit Laboratory</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--navy);
-            color: var(--charcoal);
-            line-height: 1.6;
-            font-size: 15px;
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        /* App Window - Based on Ring AI 900px Layout */
-        .app-window {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            min-height: 600px;
-        }
-
-        /* Integrated Header */
-        .app-header {
-            background: var(--navy-light);
-            padding: 24px 32px;
-            color: var(--white);
-            border-bottom: 4px solid var(--sky-blue);
-        }
-
-        .app-header h1 { 
-            font-size: 28px; 
-            font-weight: 800; 
-            color: var(--white); 
-            letter-spacing: -1px; 
-            margin: 0; 
-            text-transform: uppercase; 
-        }
-        
-        .app-header .tagline { 
-            color: var(--sky-blue); 
-            font-weight: 600; 
-            margin: 4px 0 0 0; 
-            font-size: 14px; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Content Area */
-        .app-content {
-            padding: 32px;
-            flex-grow: 1;
-        }
-
-        /* Typography */
-        h2 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: var(--navy); }
-        h3 { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-
-        /* Screen Management */
-        .screen {
-            display: none;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        .screen.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Progress Bar */
-        .progress-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            background: var(--slate);
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: var(--navy);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .progress-step { opacity: 0.4; transition: 0.3s; }
-        .progress-step.active { opacity: 1; color: var(--sky-blue); }
-        .progress-step.complete { opacity: 1; color: var(--emerald); }
-
-        /* Score Display (Fixed) */
-        #score-counter {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--amber);
-            color: var(--navy);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 800;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .btn-primary { background: var(--navy); color: var(--white); }
-        .btn-primary:hover { background: #2a4173; transform: translateY(-1px); }
-        .btn-primary:disabled { background: var(--gray); cursor: not-allowed; transform: none; }
-
-        .btn-outline { background: transparent; border: 2px solid var(--navy); color: var(--navy); }
-        .btn-outline:hover { background: var(--slate); }
-
-        /* S1: Welcome */
-        .input-group { margin-bottom: 24px; }
-        .input-group label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
-        input[type="text"] {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-            outline: none;
-        }
-        input[type="text"]:focus { border-color: var(--sky-blue); }
-
-        .brief-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .brief-card {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            position: relative;
-        }
-
-        .brief-card:hover { transform: scale(1.03); border-color: var(--sky-blue); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .brief-card.selected { border-color: var(--amber); border-width: 2px; background: var(--amber-light); }
-        .brief-card .icon { font-size: 32px; margin-bottom: 10px; display: block; }
-        .brief-card .letter { position: absolute; top: 10px; left: 10px; font-weight: 800; opacity: 0.2; font-size: 18px; }
-        .brief-card .badge { font-size: 10px; background: var(--navy); color: var(--white); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 10px; }
-
-        /* S2: Case File */
-        .classified-header {
-            background: var(--slate);
-            border-left: 5px solid var(--navy);
-            padding: 16px;
-            margin-bottom: 24px;
-            font-family: monospace;
-        }
-
-        .features-list { list-style: none; margin-bottom: 24px; }
-        .features-list li {
-            padding: 12px;
-            border-bottom: 1px solid var(--slate);
-            display: flex;
-            align-items: flex-start;
-        }
-        .features-list li::before { content: "•"; color: var(--amber); font-weight: bold; margin-right: 12px; font-size: 20px; line-height: 1; }
-
-        .reference-panel {
-            background: var(--slate);
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-        .reference-header {
-            padding: 12px 20px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .reference-content { padding: 0 20px 20px; display: none; }
-        .reference-content.active { display: block; }
-        .tenet-pill {
-            display: inline-block;
-            background: var(--navy);
-            color: var(--white);
-            font-family: monospace;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        /* S3/S4: Autopsy Grid */
-        .autopsy-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .violation-card {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .violation-card:hover { transform: scale(1.02); border-color: var(--sky-blue); }
-        .violation-card.selected { background: var(--amber-light); border-color: var(--amber); border-width: 2px; }
-        
-        .check-box {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gray);
-            border-radius: 4px;
-            margin-right: 12px;
-            display: inline-block;
-            flex-shrink: 0;
-            background: white;
-            position: relative;
-        }
-        .selected .check-box { background: var(--amber); border-color: var(--amber); }
-        .selected .check-box::after {
-            content: "✓";
-            color: white;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .card-body { flex-grow: 1; margin-bottom: 12px; }
-
-        /* Result States */
-        .reveal-badge {
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 12px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-        .confirmed { background: var(--amber); color: var(--navy); }
-        .missed { background: #fef3c7; color: #92400e; border: 1px dashed #d97706; }
-        .not-violation { background: #e2e8f0; color: #475569; }
-        .correct-skip { background: var(--emerald); color: white; }
-
-        /* S5: Fixes */
-        .fix-container { animation: fadeIn 0.4s ease; }
-        .violation-summary {
-            background: var(--slate);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border-left: 4px solid var(--amber);
-        }
-
-        .fix-options { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-        .fix-option-card {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .fix-option-card:hover { border-color: var(--sky-blue); }
-        .fix-option-card.selected { border-width: 2px; }
-        .fix-option-card.reveal { pointer-events: none; }
-        
-        .fix-option-card.best.selected { background: var(--emerald-light); border-color: var(--emerald); }
-        .fix-option-card.partial.selected { background: var(--amber-light); border-color: var(--amber); }
-        .fix-option-card.insufficient.selected { background: var(--crimson-light); border-color: var(--crimson); }
-        
-        .fix-feedback {
-            margin-top: 12px;
-            font-size: 14px;
-            font-style: italic;
-            display: none;
-            padding-top: 10px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-        }
-        .reveal .fix-feedback { display: block; }
-        .dimmed { opacity: 0.6; }
-
-        /* S6: Final Report */
-        .score-circle-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            margin: 30px 0;
-        }
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 10px solid var(--slate);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--navy);
-            position: relative;
-        }
-        .badge-reveal {
-            font-size: 24px;
-            font-weight: 800;
-            margin-top: 16px;
-            color: var(--amber);
-            text-align: center;
-            animation: bounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes bounce {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .launch-statement {
-            background: #f8fafc;
-            border: 2px dashed var(--border);
-            padding: 24px;
-            border-radius: 12px;
-            font-style: italic;
-            margin: 24px 0;
-            position: relative;
-        }
-        .launch-statement::before {
-            content: '"';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 40px;
-            opacity: 0.1;
-            font-family: serif;
-        }
-
-        .report-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 24px;
-            font-size: 13px;
-        }
-        .report-table th, .report-table td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .report-table th { background: var(--slate); font-weight: 700; text-transform: uppercase; }
-
-        .hint-text { font-size: 13px; color: var(--crimson); margin-top: 8px; font-weight: 600; }
-
-        /* Accessibility & Utils */
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
-        
-        @media (prefers-reduced-motion: reduce) {
-            * { animation: none !important; transition: none !important; }
-        }
-
-        @media print {
-            body { background: white; color: black; padding: 0; }
-            .app-window { box-shadow: none; border: none; max-width: 100%; }
-            .app-header, .no-print, #score-counter, .progress-nav { display: none !important; }
-            .screen { display: none !important; }
-            #s6 { display: block !important; }
-            .launch-statement { border: 1px solid #ccc; }
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            body { padding: 0; }
-            .app-window { border-radius: 0; }
-            .app-content { padding: 20px; }
-            .autopsy-grid { grid-template-columns: 1fr; }
-            .brief-grid { grid-template-columns: 1fr 1fr; }
-        }
-    </style>
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* Custom themes and smooth transition rules */
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .glowing-amber {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+    .glowing-sky {
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.1);
+    }
+    
+    /* Interactive states */
+    .btn-active:active {
+      transform: scale(0.98);
+    }
+    
+    /* Document Print styling */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+        font-family: 'Inter', sans-serif !important;
+      }
+      .print\:hidden {
+        display: none !important;
+      }
+      .print\:shadow-none {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+      .print\:bg-white {
+        background-color: white !important;
+      }
+      .print\:text-black {
+        color: black !important;
+      }
+      .print\:border-black {
+        border-color: black !important;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white pb-12 print:pb-0 bg-[#f8fafc]">
 
-    <div id="score-counter">Points: 0</div>
+  <!-- Interactive Auditing Workstation UI -->
+  <div class="flex-grow flex flex-col">
+    
+    <!-- Top Monospaced Header Component -->
+    <header class="relative bg-white border-b border-slate-100 text-slate-800 px-6 md:px-10 py-6 overflow-hidden select-none print:hidden shadow-sm">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full mix-blend-multiply filter blur-2xl opacity-60 transform translate-x-12 -translate-y-12"></div>
+      
+      <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
+        <div>
+          <div class="flex items-center gap-2 mb-1.5">
+            <i data-lucide="shield-alert" class="w-5 h-5 text-indigo-600 animate-pulse"></i>
+            <span class="text-xs font-bold tracking-widest text-[#4f46e5] uppercase font-mono">
+              Forensic Audit Laboratory
+            </span>
+          </div>
+          <h1 class="text-2xl md:text-3.5xl font-extrabold tracking-tight text-slate-900 uppercase font-display leading-none">
+            Ethical Autopsy
+          </h1>
+          <p class="text-[10px] text-slate-500 font-bold tracking-wider mt-1.5 uppercase font-mono">
+            Diagnose violations • Remediate failures • Secure the ecosystem
+          </p>
+        </div>
 
-    <div class="app-window">
-        <header class="app-header no-print">
-            <h1>Ethical Autopsy</h1>
-            <p class="tagline">Catch the violations before launch.</p>
-        </header>
+        <div id="header-scoreboard" class="hidden flex items-center self-start sm:self-center gap-3 bg-indigo-50 text-indigo-950 font-black px-5 py-2.5 rounded-full shadow-md border border-indigo-100 transition-all duration-300 transform select-none">
+          <span class="text-[10px] tracking-wider uppercase font-extrabold text-indigo-700 font-mono">LAB INTEGRITY SCORE:</span>
+          <span class="text-lg font-black tracking-widest text-indigo-900" id="live-score-val">0</span>
+          <span class="text-[10px] font-bold text-indigo-600">pts</span>
+        </div>
+      </div>
+    </header>
 
-        <main class="app-content">
-            <!-- S1: Welcome Screen -->
-            <section id="s1" class="screen active">
-                <h2>Welcome, Investigator</h2>
-                <div class="input-group">
-                    <label for="student-name">Your Name</label>
-                    <input type="text" id="student-name" maxlength="40" placeholder="Enter full name...">
+    <!-- Main Container App Body -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col justify-start">
+      <div id="app-container" class="bg-white border border-slate-150 rounded-3xl shadow-xl shadow-slate-100/40 w-full p-6 md:p-10 text-slate-700 fade-in min-h-[450px]">
+        <!-- Dynamic views will content-mount here -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Humble Plain Branding Footer -->
+  <footer class="text-center text-slate-400 text-[11px] font-mono tracking-wide py-4 border-t border-slate-100 print:hidden select-none">
+    Forensic System Code: 0x98A • Authorized Investigator Access Only
+  </footer>
+
+  <!-- CORE ENGINE SCRIPT -->
+  <script>
+    // === DATA STRUCTURES ===
+
+    const CASE_STUDIES = [
+      {
+        id: 'A',
+        name: 'SnapGrade',
+        icon: '📚',
+        badge: 'ACM Code of Ethics',
+        desc: 'SnapGrade is a learning-assistance application for high school students that claims to build daily study habits and track academic progress.',
+        iconBg: 'bg-indigo-50 border-indigo-100/80 text-indigo-600',
+        features: [
+          'A daily streak system that resets immediately to zero if a student misses a single study day',
+          'A push notification engine configured to send alerts at 11 PM comparing study patterns directly with friends',
+          'Study session tracking data (topics, session times, test scores) sold to college admissions offices as learning analytics',
+          'An authentication module utilizing Google Single Sign-On (SSO) that requests deep read/write access to student institutional drive files and emails',
+          'Disclosures and data transfer details regarding college analytics pipelines restricted solely to a 42-page Terms of Service agreement'
+        ],
+        tenets: [
+          { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm.' },
+          { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems and their impacts, including analysis of possible risks.' },
+          { id: 'ACM 2.8', text: 'Access computing and communication resources only when authorized.' }
+        ],
+        autopsy: [
+          {
+            text: 'A daily streak system that resets immediately to zero if a student misses a single study day, reinforcing rigid daily app interaction defaults.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1',
+            primary: true,
+            reason: 'This leverages habit-coupling defaults that pressure vulnerable audiences to engage at the expense of healthy study pacing.'
+          },
+          {
+            text: 'A push notification engine configured to send alerts at 11 PM comparing study patterns directly with friends, without prior affirmative peer consent.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.5',
+            reason: 'Using minor peer comparison metrics without active, granular user selection falls short of professional evaluation and design standards.'
+          },
+          {
+            text: 'Study session tracking data (topics, session times, test scores) sold to college admissions offices as learning analytics without any active or plain-language consent.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1 + 2.8',
+            reason: 'Monetizing student education data in high-stakes college pathways without active, transparent notice violates code authorization and well-being.'
+          },
+          {
+            text: 'An authentication module utilizing Google Single Sign-On (SSO) that requests deep read/write access to student institutional drive files and emails, violating least-privilege principles.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.8',
+            reason: 'SSO permission requests should be strictly bounded to minimal login attributes under standard least-privilege computing principles.'
+          },
+          {
+            text: 'The application allows users to manually adjust and configure their daily study time target thresholds.',
+            type: 'DISTRACTOR',
+            reason: 'Providing individual user customizability is a positive compliance mechanism and respects user autonomy.'
+          },
+          {
+            text: 'The application implements high-contrast light and dark mode view adjustments to support visual accessibility.',
+            type: 'DISTRACTOR',
+            reason: 'Visual styling toggles encourage accessibility and do not conflict with code standards or ethical restrictions.'
+          }
+        ],
+        fixes: [
+          {
+            violationIdx: 0,
+            options: [
+              {
+                text: 'Replace the absolute streak counter with a flexible weekly engagement goal (e.g., "study 5 days this week") that accommodates routine life interruptions.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Satisfies ACM 1.1 by supporting student agency and self-care while eliminating obsessive habit loops.'
+              },
+              {
+                text: 'Implement weekly "skip" or freeze tokens that allow the student to protect their streak count once a week.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Alleviates minor anxiety on some days, but preserves the coercive visual feedback design by default.'
+              },
+              {
+                text: 'Insert a reminder model pop-up warning students: "Daily streaks may cause screen stress; take breaks."',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Placing warnings on a system while retaining coercive mechanics does not address the foundational violation.'
+              }
+            ]
+          },
+          {
+            violationIdx: 1,
+            options: [
+              {
+                text: 'Remove peer analytics from notification payloads and show users only their individual historical performance trends.',
+                type: 'BEST',
+                pts: 20,
+                reason: "Fully satisfies ACM 2.5 by discontinuing peer profiling and data sharing lacking explicit, granular consent."
+              },
+              {
+                text: 'Add a setting toggle allowing users to manually choose to opt out of late-night comparisons.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Shifts privacy responsibility to minors under an opt-out model, failing to obtain active prior consent.'
+              },
+              {
+                text: 'Reschedule the 11 PM comparative notification dispatch time to occur instead at 9 PM.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Rescheduling does not remediate the core issue of unauthorized data profiling and peer pressure.'
+              }
+            ]
+          },
+          {
+            violationIdx: 2,
+            options: [
+              {
+                text: 'Completely eliminate third-party educational data sales, transitioning to a sustainable subscription model with localized device-only storage.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Upholds ACM 1.1 and 2.8 by guaranteeing absolute user data integrity and removing the high-stakes college admissions risk.'
+              },
+              {
+                text: 'Display a plain-language consent screen at signup highlighting exactly what data is sold, specifying the pipeline and allowing opt-in.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Significantly improves transparency and notice, but monetization of minor tracking data still retains ethical exposure.'
+              },
+              {
+                text: 'Add a one-paragraph summary of college data delivery to page 15 of the updated Terms of Service details.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Burying high-stakes analytics monetization inside policy text is non-transparent and does not constitute informed consent.'
+              }
+            ]
+          },
+          {
+            violationIdx: 3,
+            options: [
+              {
+                text: 'Reconfigure OAuth credentials to utilize native login frameworks requesting only basic profile assets: name and email.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Satisfies ACM 2.8 by fully aligning authentication with least-privilege standards and securing resource boundaries.'
+              },
+              {
+                text: 'Add an intermediate splash page explaining that the app does not read or edit school drive folders despite having permission.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Provides weak reassurance but lets the app retain hazardous authorization scopes that could be compromised.'
+              },
+              {
+                text: 'Offer an optional "offline guest mode" that completely bypasses SSO but locks students out of cloud backups.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Fails to repair the core login path, keeping excess accounts exposed by default.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'B',
+        name: 'SafeKid Pro',
+        icon: '🛡️',
+        badge: 'ACM + IEEE Joint Standards',
+        desc: 'SafeKid Pro is a family monitoring utility that markets itself as a privacy-centered safety shield for tracking location and checking incoming content.',
+        iconBg: 'bg-violet-50 border-violet-100/80 text-violet-600',
+        features: [
+          'Real-time GPS location sharing with parent accounts, integrated with background software tracking that transmits location logs to advertising partners',
+          'A message analysis dictionary that automatically flags text messages containing common keywords like "copy", "steal", and "depressed"',
+          'An archiving rule that stores all flagged text message logs on remote corporate servers for a duration of 3 years',
+          'Marketing claims branding the app as a "paramount privacy solution" while transferring active location feeds to third-party ad networks',
+          'Disclosures concerning location sharing pipelines and ad networks located exclusively within a 44-page Terms of Service document'
+        ],
+        tenets: [
+          { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm.' },
+          { id: 'ACM 2.8', text: 'Access computing resources only when authorized.' },
+          { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public.' },
+          { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates.' },
+          { id: 'IEEE I.6', text: 'Protect the privacy of others and avoid unauthorized collection of personal information.' }
+        ],
+        autopsy: [
+          {
+            text: 'Real-time GPS location sharing with parent accounts, integrated with background software tracking that transmits location logs to advertising partners without explicit parental approval.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.8, IEEE I.1 + I.6',
+            primary: true,
+            reason: 'Sharing precise kid location traces with advertising partners without clear affirmative notice compromises kid safety and privacy.'
+          },
+          {
+            text: 'A message analysis dictionary that automatically flags text messages containing common keywords like "copy", "steal", and "depressed", categorizing standard creative or mental-health search terms as safety flags.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1',
+            reason: 'This broad, crude filtering lists common academic and expressive terms, falsely penalizing student communication without contextual nuance.'
+          },
+          {
+            text: 'An archiving rule that stores all flagged text message logs on remote corporate servers for a duration of 3 years without active user disclosure.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.8, IEEE I.6',
+            reason: 'Storing minors\' personal chat transcripts for years raises severe security risks and departs from minimal retention practices.'
+          },
+          {
+            text: 'Marketing claims branding the app as a "paramount privacy solution" while transferring active location feeds to third-party ad networks.',
+            type: 'VIOLATION',
+            tenet: 'IEEE I.3 + I.6',
+            reason: 'Selling precise geolocation logs while positioning the app as a privacy sentinel is fundamentally deceptive and fails privacy-protection compliance.'
+          },
+          {
+            text: 'The dashboard provides parent accounts with custom hourly device timers to schedule screen time breaks.',
+            type: 'DISTRACTOR',
+            reason: 'Standard local scheduling options are a legitimate, advertised parental assistance mechanism.'
+          },
+          {
+            text: 'The utility generates a weekly local chart summarizing total application category usage statistics.',
+            type: 'DISTRACTOR',
+            reason: 'Aggregated local usability statistics help transparent parenting and do not expose individual user content.'
+          }
+        ],
+        fixes: [
+          {
+            violationIdx: 0,
+            options: [
+              {
+                text: 'Completely purge advertising analytics libraries from the application. Securely transmit locations only to authorized parent screens.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Provides complete compliance with security standards (ACM 2.8) and holds child welfare paramount (IEEE I.1).'
+              },
+              {
+                text: 'Add an on/off toggle for "Share location with advertising partners" in parent settings, defaulted to OFF (opt-in transition).',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'While defaulting to off establishes a more secure default, sharing minors\' precise coordinates with advertising partners is unsafe and should be removed entirely.'
+              },
+              {
+                text: 'Insert a plain warning inside the dashboard explaining that location feeds support personalized marketing ads.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'A passive dashboard disclosure does not eliminate the active tracking and safety exposures of kids.'
+              }
+            ]
+          },
+          {
+            violationIdx: 1,
+            options: [
+              {
+                text: 'Refine the scanning configuration to utilize a localized dictionary of checked, highly critical safety indicators (e.g., self-harm, cyberbullying signatures) and let parents selectively audit or prune keywords.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Maintains a safety net for high-risk issues (ACM 1.1) while minimizing false flags on common words.'
+              },
+              {
+                text: 'Reconfigure the algorithm to provide parents options to customize the text scanning dictionary on their own, leaving default lists empty.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Mitigates toxic default dictionaries, but shifts the entire labor of curation and system set-up onto parents.'
+              },
+              {
+                text: 'Further expand the word list to track more words, attempting to cover all slang in a static database.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Broadening rigid lists increases false flags and leaves adolescents over-monitored.'
+              }
+            ]
+          },
+          {
+            violationIdx: 2,
+            options: [
+              {
+                text: 'Configure automated immediate log deletions on a rolling 7-day cycle, keeping data transient and stored peer-to-peer on parent gadgets.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Safeguards privacy (IEEE I.6) and follows least-privilege principles (ACM 2.8) by removing the centralized data target.'
+              },
+              {
+                text: 'Reduce server retention scope to 90 days, storing files encrypted but accessible by technical admins.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Lowers total database risk, but still holds highly personal logs on corporate storage when transiency is viable.'
+              },
+              {
+                text: 'Improve server database encryption keys without changing the 3-year data archiving timeline.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Stronger database encryption is a security practice, but does not address the ethics of unnecessary data collection.'
+              }
+            ]
+          },
+          {
+            violationIdx: 3,
+            options: [
+              {
+                text: 'End ad-network geolocation monetization, transition to a paid subscription, and update promotional claims to mirror data flows truthfully.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Eliminates structural conflicts of interest, securing compliance with honesty (IEEE I.3) and privacy protection (IEEE I.6).'
+              },
+              {
+                text: 'Update marketing assets to explicitly read: "Free family tracking powered by location marketing pipelines."',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Provides honest disclosure in marketing (IEEE I.3), but the product design remains a tracking vector for children.'
+              },
+              {
+                text: 'Rebrand the tool to remove "Pro" from its name without modifying any core data collection behaviors.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Rebranding is superficial; it does not align marketing assertions with actual back-end tracking mechanics.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'C',
+        name: 'HireFirst AI',
+        icon: '🤖',
+        badge: 'NSPE Code + ACM Standards',
+        desc: 'HireFirst AI is an algorithmic recruiting mechanism deployed by corporations to automatically profile, score, and rank resume submittals.',
+        iconBg: 'bg-emerald-50 border-emerald-100/80 text-emerald-600',
+        features: [
+          'Algorithm trained on historical hiring data where 80% of past successful hires were men from 4 select universities',
+          'No independent demographic bias validation has ever been executed on the software output',
+          'An automated routing module that immediately rejects applicants with employment gaps, without exceptions for military or caregiving leaves',
+          'Admissions notification pipelines that reject candidates without disclosing algorithmic decision-making, offering no appeal pathway',
+          'Employer marketing materials explaining that the machine-learning filter is purely objective, omitting potential training datasets bias'
+        ],
+        tenets: [
+          { id: 'NSPE I.1', text: 'Hold paramount the safety, health, and welfare of the public.' },
+          { id: 'NSPE I.5', text: 'Act so as not to deceive the public.' },
+          { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm.' },
+          { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems and their impacts, including analysis of possible risks.' }
+        ],
+        autopsy: [
+          {
+            text: 'Algorithm trained on historical hiring data where 80% of past successful hires were men from 4 select universities, reproducing structural employment disparity.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1, NSPE I.1',
+            primary: true,
+            reason: 'This preserves historical biases and causes unlawful barriers for applicants from underrepresented groups.'
+          },
+          {
+            text: 'No independent demographic bias validation has ever been executed on the software output, leaving disparities unknown to developers.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.5, NSPE I.1',
+            reason: 'Deploying algorithmic selectors in career paths without systematic equity checks is a failure of evaluation.'
+          },
+          {
+            text: 'An automated routing module that immediately rejects applicants with employment gaps, without exceptions for military or caregiving leaves, penalizing standard life transitions.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1',
+            reason: 'Auto-exclusion of files with time gaps unfairly harms primary caregivers, veterans, and medical leaves.'
+          },
+          {
+            text: 'Admissions notification pipelines that reject candidates without disclosing algorithmic decision-making, offering no appeal pathway, violating user recourse.',
+            type: 'VIOLATION',
+            tenet: 'NSPE I.5, ACM 2.5',
+            reason: 'Concealing automated filters and locking users out of recourse fails transparency mandates.'
+          },
+          {
+            text: 'The backend database structures user entries in chronological index orders to support database search indexing operations.',
+            type: 'DISTRACTOR',
+            reason: 'Standard database indexing patterns are neutral and secure, representing no ethical violation.'
+          },
+          {
+            text: 'The module transmits electronic delivery notices to confirm successful receipt of applicant dossiers.',
+            type: 'DISTRACTOR',
+            reason: 'Basic receipt confirmations are helpful transparent practices and do not penalize users.'
+          }
+        ],
+        fixes: [
+          {
+            violationIdx: 0,
+            options: [
+              {
+                text: 'Re-engineer recruiting models on checked datasets, implementing demographic parity filters and removing demographic markers.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Addresses the foundational cause of automated classification bias directly at its training roots (ACM 1.1).'
+              },
+              {
+                text: 'Impose manual recruiter reviews on candidates that score in the lowest 20% bracket to bypass false machine rejections.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Mitigates extreme errors but leaves the main algorithmic scoring engine biased for 80% of incoming talent.'
+              },
+              {
+                text: 'Incorporate more historical recruiting files to scale model datasets without modifying the unbalanced historical attributes.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Increasing the size of skewed dataset profiles only reinforces algorithmic learning of that bias.'
+              }
+            ]
+          },
+          {
+            violationIdx: 1,
+            options: [
+              {
+                text: 'Contract an external, independent testing partner to conduct biannual algorithmic equity audits and release reports.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Provides the independent thorough testing required for public-interest systems (NSPE I.1 and ACM 2.5).'
+              },
+              {
+                text: 'Implement internal reviews where in-house development divisions manually check samples of score results.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Establishes a baseline audit of outputs, but lacks the crucial objective standard of external inspection.'
+              },
+              {
+                text: 'Publish technical charts mapping the internal multi-tiered architecture of the machine learning classifier.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Describing the system layout does not measure or prove that system outputs are non-discriminatory.'
+              }
+            ]
+          },
+          {
+            violationIdx: 2,
+            options: [
+              {
+                text: 'Remove automated rejection on date gaps. Route resumes with gaps to short context prompts allowing users to document circumstances.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Stops automated profiling and respects varying, valid student and public life structures (ACM 1.1).'
+              },
+              {
+                text: 'Modify filters to bypass gaps specifically for medical leave and military credentials, while retaining auto-rejection for others.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Helps specific groups of interest, but ignores familial caregiving, systemic layoffs, and other career steps.'
+              },
+              {
+                text: 'Shorten gap detection criteria from 6 months of inactivity to 12 months before initiating an automated rejection.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Narrows the exclusion filter slightly but retains unfair, structural automated rejection mechanisms by default.'
+              }
+            ]
+          },
+          {
+            violationIdx: 3,
+            options: [
+              {
+                text: 'Notify rejected candidate profile feeds that an automated parser was used, display parameters of impact, and provide a direct manual appeal portal.',
+                type: 'BEST',
+                pts: 15,
+                reason: 'Preserves technical accountability, satisfies public honesty (NSPE I.5) and secures recourse rights.'
+              },
+              {
+                text: 'Incorporate a brief footer link inside the job application page: "Automated selectors are used inside our screening pipelines."',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Establishes general corporate transparency but offers individual files no active disclosure or appeals.'
+              },
+              {
+                text: 'Publish general descriptions on the corporate site stating that automation is leveraged to optimize recruiting efforts.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'General descriptions do not provide individual candidates with meaningful notifications of algorithmic impact.'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'D',
+        name: 'InstaLike',
+        icon: '📱',
+        badge: 'ACM + IEEE Joint Standards',
+        desc: 'InstaLike is a global social media platform for users aged 13 and up that utilizes AI personalization models to recommend and prioritize content feeds.',
+        iconBg: 'bg-rose-50 border-rose-100/80 text-rose-600',
+        features: [
+          'An engagement algorithm designed to analyze user facial expressions via camera feeds to target emotional states',
+          'Facial biometric profiling and tracking protocols authorized only through a nested clause in a 42-page document',
+          'Withholding internal safety research showing that passive comparison feeds negatively affect adolescents, from transparency audits',
+          'Engagement trigger alerts designed to transmit artificially low peer-interaction counts to increase user session times',
+          'Metrics tracking that hides total interaction likes from public views while utilizing them to prioritize feeds'
+        ],
+        tenets: [
+          { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm.' },
+          { id: 'ACM 2.8', text: 'Access computing resources only when authorized.' },
+          { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public.' },
+          { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates.' }
+        ],
+        autopsy: [
+          {
+            text: 'An engagement algorithm designed to analyze user facial expressions via camera feeds to target emotional states, serving high-intensity content prompts when sadness is recognized.',
+            type: 'VIOLATION',
+            tenet: 'ACM 1.1, IEEE I.1',
+            primary: true,
+            reason: 'Deliberately leveraging user sadness or vulnerability to drive engagement metrics creates significant systemic harm.'
+          },
+          {
+            text: 'Facial biometric profiling and tracking protocols authorized only through a nested clause in a 42-page document, lacking affirmative granular consent.',
+            type: 'VIOLATION',
+            tenet: 'ACM 2.8',
+            reason: 'Biometric tracking operations strictly require specific, active opt-in consent given in real-time.'
+          },
+          {
+            text: 'Withholding internal safety research showing that passive comparison feeds negatively affect adolescents, from transparency audits and third-party inspectors.',
+            type: 'VIOLATION',
+            tenet: 'IEEE I.3',
+            reason: 'Failing to report identified psychological safety risks conflicts with requirements of professional honesty.'
+          },
+          {
+            text: 'Engagement trigger alerts designed to transmit artificially low peer-interaction counts to increase user session times, exploiting user psychological feedback loops.',
+            type: 'VIOLATION',
+            tenet: 'IEEE I.3',
+            reason: 'Distributing dishonest, artificial engagement statistics represents clear ethical manipulation.'
+          },
+          {
+            text: 'The platform interface lets individual users set a customized profile cover image from their photo galleries.',
+            type: 'DISTRACTOR',
+            reason: 'Standard avatar customization parameters support user self-expression and are completely ethical.'
+          },
+          {
+            text: 'The feed interface contains a clear report button letting users flag spam profiles for content reviews.',
+            type: 'DISTRACTOR',
+            reason: 'Safety mechanisms that enable active community oversight are ethical compliance tools.'
+          }
+        ],
+        fixes: [
+          {
+            violationIdx: 0,
+            options: [
+              {
+                text: 'Decommission emotion-aware camera profiling completely. Base feed personalization solely on active user topic choices.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Removes the harmful targeting of user micro-expressions (ACM 1.1) and restores individual user agency.'
+              },
+              {
+                text: 'Integrate an opt-out toggle: "Disable facial emotion mapping and personalization in camera feeds."',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Gives setting control, but places the cognitive burden of protection on young users by defaulting tracking to ON.'
+              },
+              {
+                text: 'Introduce a pop-up alert suggesting the user "take a rest" after detecting 30 consecutive minutes of sad expression tracking.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Does not fix the problematic emotional targeting, attempting to treat systemic harm with minor UX prompts.'
+              }
+            ]
+          },
+          {
+            violationIdx: 1,
+            options: [
+              {
+                text: 'Permanently dismantle background biometric analyzers, or structure full opt-in prompts with explicit disclosures at upload points.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Ensures authorized computing resource access (ACM 2.8) and establishes robust biometric authorization standards.'
+              },
+              {
+                text: 'Move biometric tracking descriptions to their own highlighted section in the online Privacy Policy layout.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Increases textual transparency, but still collects biometric indicators without explicit, real-time opt-in consent.'
+              },
+              {
+                text: 'Publish updated Terms of Service drafts that use clear language to define the automated geometric profiling processes.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Improving policy document legibility does not change the core omission of real-time active authorization.'
+              }
+            ]
+          },
+          {
+            violationIdx: 2,
+            options: [
+              {
+                text: 'Integrate completed internal psychological studies into open transparency briefs and coordinate with safety advocates and regulators.',
+                type: 'BEST',
+                pts: 20,
+                reason: 'Addresses professional honesty and states claims and limitations realistically (IEEE I.3).'
+              },
+              {
+                text: 'Share research findings with an internal engineering advisory board to guide future development directions.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Boosts internal engineering oversight, but fails the foundational requirement for public risk disclosure.'
+              },
+              {
+                text: 'Stop conducting any future user psychological studies to avoid generating sensitive risk records.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Attempting to ignore risk metrics is unethical and fails professional accountability principles.'
+              }
+            ]
+          },
+          {
+            violationIdx: 3,
+            options: [
+              {
+                text: 'Completely eliminate the fake metrics alerts. Ensure all visual engagement alerts show only precise, verified timelines.',
+                type: 'BEST',
+                pts: 15,
+                reason: 'Guarantees absolute honesty in metrics reporting (IEEE I.3) and removes coercive UI patterns.'
+              },
+              {
+                text: 'Allow users to disable "Losing Followers" updates individually inside setting notification options.',
+                type: 'PARTIAL',
+                pts: 10,
+                reason: 'Reduces the exposure of young users to fake alerts, but leaves the misleading notifications active by default.'
+              },
+              {
+                text: 'Scale back follow metrics alerts to display fuzzy counts (e.g. "several profile views") instead of inaccurate absolute counts.',
+                type: 'INSUFFICIENT',
+                pts: 0,
+                reason: 'Vague metrics are still structured to trigger behavioral distress and fail requirements of honest design.'
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // === GLOBAL REACTION STATE ===
+
+    const state = {
+      screen: 'welcome', // 'welcome' | 'brief' | 'autopsy' | 'autopsy_results' | 'fixes' | 'final_report'
+      selectedCaseIdx: null,
+      autopsySelections: [], // indices of state.shuffledAutopsyCards
+      shuffledAutopsyCards: [], // cached list
+      fixSelections: {}, // violationIdx -> chosen index in state.fixes[violationIdx].options
+      currentFixIdx: 0,
+      runningScore: 0,
+      autopsyScore: 0,
+      autopsyMistakes: 0,
+      isRulesAccordionOpen: false
+    };
+
+    // Helper: Shuffle items deterministically or randomly (using modern JS)
+    function shuffleArray(arr) {
+      const result = [...arr];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    // === STATE CONTROLLERS ===
+
+    function selectCase(idx) {
+      state.selectedCaseIdx = idx;
+      renderApp();
+    }
+
+    function beginAudit() {
+      if (state.selectedCaseIdx === null) return;
+      state.screen = 'brief';
+      renderApp();
+    }
+
+    function proceedToAutopsy() {
+      const study = CASE_STUDIES[state.selectedCaseIdx];
+      // Generate shuffled autopsy logs so each play feels custom
+      state.shuffledAutopsyCards = shuffleArray(study.autopsy);
+      state.autopsySelections = [];
+      state.screen = 'autopsy';
+      renderApp();
+    }
+
+    function toggleAutopsySelection(idx) {
+      const selections = state.autopsySelections;
+      const indexPosition = selections.indexOf(idx);
+      if (indexPosition === -1) {
+        selections.push(idx);
+      } else {
+        selections.splice(indexPosition, 1);
+      }
+      renderApp();
+    }
+
+    function submitAutopsyDiagnosis() {
+      const study = CASE_STUDIES[state.selectedCaseIdx];
+      let autopsyScore = 0;
+      let mistakesCount = 0;
+
+      // Calculate score based on choice parameters
+      state.shuffledAutopsyCards.forEach((card, idx) => {
+        const isSelected = state.autopsySelections.includes(idx);
+        if (card.type === 'VIOLATION') {
+          if (isSelected) {
+            autopsyScore += 15; // Correctly flagged
+          }
+        } else if (card.type === 'DISTRACTOR') {
+          if (isSelected) {
+            mistakesCount++; // Incorrectly flagged standard practice
+          } else {
+            autopsyScore += 15; // Correctly rejected distractor
+          }
+        }
+      });
+
+      state.autopsyScore = autopsyScore;
+      state.autopsyMistakes = mistakesCount;
+      state.runningScore = autopsyScore;
+      state.screen = 'autopsy_results';
+      renderApp();
+    }
+
+    function beginFixModule() {
+      state.currentFixIdx = 0;
+      state.fixSelections = {};
+      state.screen = 'fixes';
+      renderApp();
+    }
+
+    function selectFixOption(optionIdx, optionPts) {
+      // Record choice
+      state.fixSelections[state.currentFixIdx] = optionIdx;
+      
+      // Calculate active scores
+      recalculateRunningScore();
+      renderApp();
+    }
+
+    function nextFixStep() {
+      const study = CASE_STUDIES[state.selectedCaseIdx];
+      if (state.currentFixIdx < study.fixes.length - 1) {
+        state.currentFixIdx++;
+        renderApp();
+      } else {
+        state.screen = 'final_report';
+        renderApp();
+      }
+    }
+
+    function recalculateRunningScore() {
+      const study = CASE_STUDIES[state.selectedCaseIdx];
+      let fixTotal = 0;
+      
+      Object.keys(state.fixSelections).forEach(fixIdxStr => {
+        const fixIdx = parseInt(fixIdxStr, 10);
+        const optionIdx = state.fixSelections[fixIdx];
+        const option = study.fixes[fixIdx].options[optionIdx];
+        fixTotal += option.pts;
+      });
+
+      state.runningScore = state.autopsyScore + fixTotal;
+    }
+
+    function restartAudit() {
+      state.screen = 'welcome';
+      state.selectedCaseIdx = null;
+      state.autopsySelections = [];
+      state.shuffledAutopsyCards = [];
+      state.fixSelections = {};
+      state.currentFixIdx = 0;
+      state.runningScore = 0;
+      state.autopsyScore = 0;
+      state.autopsyMistakes = 0;
+      state.isRulesAccordionOpen = false;
+      renderApp();
+    }
+
+    function toggleAccordion() {
+      state.isRulesAccordionOpen = !state.isRulesAccordionOpen;
+      renderApp();
+    }
+
+    // === TEMPLATE RENDER ENGINE ===
+
+    function renderApp() {
+      const container = document.getElementById('app-container');
+      const scoreboard = document.getElementById('header-scoreboard');
+      const liveScoreVal = document.getElementById('live-score-val');
+
+      // Update globally tracked Score Indicator
+      if (state.screen !== 'welcome' && state.screen !== 'brief') {
+        scoreboard.classList.remove('hidden');
+        liveScoreVal.textContent = state.runningScore;
+        
+        // Dynamic styling for score
+        if (state.runningScore >= 140) {
+          scoreboard.className = "flex items-center self-start sm:self-center gap-3 bg-emerald-50 text-emerald-900 font-black px-5 py-2.5 rounded-full shadow border border-emerald-100 transition-all duration-300 transform select-none";
+        } else if (state.runningScore >= 90) {
+          scoreboard.className = "flex items-center self-start sm:self-center gap-3 bg-sky-50 text-sky-900 font-black px-5 py-2.5 rounded-full shadow border border-sky-100 transition-all duration-300 transform select-none";
+        } else {
+          scoreboard.className = "flex items-center self-start sm:self-center gap-3 bg-amber-50 text-amber-900 font-black px-5 py-2.5 rounded-full shadow border border-amber-100 transition-all duration-300 transform select-none";
+        }
+      } else {
+        scoreboard.classList.add('hidden');
+      }
+
+      let html = '';
+
+      // Screen 1: Welcome
+      if (state.screen === 'welcome') {
+        html = `
+          <div class="space-y-8 fade-in">
+            <div class="text-center md:text-left">
+              <span class="inline-flex bg-indigo-50 text-indigo-700 text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider mb-3">
+                Interactive Learning Tool
+              </span>
+              <h2 class="text-3xl md:text-4.5xl font-extrabold text-slate-900 tracking-tight font-display">
+                Pre-Launch Forensic Log
+              </h2>
+            </div>
+
+            <!-- Introductory visual banner block matching mockup design aesthetics -->
+            <div class="p-6 md:p-8 bg-slate-50 border border-slate-100 rounded-3xl space-y-3">
+              <h3 class="font-bold text-slate-900 text-base md:text-lg leading-tight">
+                Success in professional software engineering starts with owning its ethical codes.
+              </h3>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Whether you are evaluating automated hiring algorithms, family monitoring tracking databases, or online emotional targeting personalization networks, adhering to professional standards of transparency and user welfare is non-negotiable. 
+                This custom workspace is designed to build rapid forensic diagnoses and isolate codebases that compromise core safety codes. Choose a system case-file brief below to begin.
+              </p>
+            </div>
+
+            <div class="space-y-4">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 font-mono">
+                ✦ Select Case File Briefing
+              </h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${CASE_STUDIES.map((study, idx) => {
+                  const isSelected = state.selectedCaseIdx === idx;
+                  return `
+                    <button
+                      type="button"
+                      onclick="selectCase(${idx})"
+                      class="relative text-left p-6 md:p-8 border rounded-3xl transition-all duration-200 cursor-pointer flex flex-col justify-between h-full group ${
+                        isSelected
+                          ? 'border-indigo-500 bg-indigo-50/10 shadow-lg ring-1 ring-indigo-500/20'
+                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md'
+                      }"
+                    >
+                      <div class="absolute top-0 right-0 bg-slate-100 border-l border-b border-slate-200 text-slate-600 text-[9px] font-mono px-3 py-1 rounded-bl-xl rounded-tr-3xl font-bold">
+                        REF ${study.id}
+                      </div>
+
+                      <div class="space-y-4 pr-6">
+                        <div class="flex items-center gap-4">
+                          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-3xl shrink-0 ${study.iconBg}">
+                            ${study.icon}
+                          </div>
+                          <div>
+                            <h4 class="font-bold text-slate-950 text-base font-display leading-tight">${study.name}</h4>
+                            <span class="inline-block mt-1 text-[9px] uppercase tracking-wider bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full text-slate-700 font-bold font-mono">
+                              ${study.badge}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p class="text-slate-500 text-sm leading-relaxed">
+                          ${study.desc}
+                        </p>
+                      </div>
+
+                      <div class="mt-5 pt-4 border-t border-slate-100 flex justify-end">
+                        ${isSelected ? `
+                          <span class="text-[10px] uppercase font-bold text-indigo-700 tracking-wider font-mono flex items-center gap-1.5">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-600 stroke-[3px]"></i> Selected for Autopsy
+                          </span>
+                        ` : `
+                          <span class="text-[10px] uppercase font-bold text-slate-400 group-hover:text-indigo-600 tracking-wider font-mono flex items-center gap-1">
+                            Analyze Dossier <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                          </span>
+                        `}
+                      </div>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Begin Audits trigger action -->
+            <div class="pt-6 border-t border-slate-100 flex justify-center md:justify-start">
+              <button
+                type="button"
+                onclick="beginAudit()"
+                ${state.selectedCaseIdx === null ? 'disabled' : ''}
+                class="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl uppercase tracking-wider text-xs transition duration-150 btn-active disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed shadow-md"
+              >
+                Begin Audit Investigation
+                <i data-lucide="arrow-right" class="w-4 h-4 stroke-[3px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Screen 2: Case Brief
+      else if (state.screen === 'brief') {
+        const study = CASE_STUDIES[state.selectedCaseIdx];
+        html = `
+          <div class="space-y-8 fade-in">
+            <!-- Header classified banner -->
+            <div class="relative overflow-hidden bg-slate-50 border-l-4 border-indigo-600 rounded-r-2xl p-6 border border-slate-150 shadow-sm">
+              <div class="absolute top-2 right-2 text-[8px] uppercase tracking-widest font-mono text-slate-400 border border-slate-200 px-2 py-0.5 select-none font-bold">
+                SECURE DOSSIER // LEVEL 3
+              </div>
+              
+              <div class="font-mono text-[11px] text-slate-600 space-y-1">
+                <p class="flex items-center gap-2">
+                  <span class="font-bold uppercase tracking-wider text-slate-400">Audit Codebase:</span> 
+                  <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-bold border border-indigo-100">
+                    ${study.name}
+                  </span>
+                </p>
+                <p>
+                  <span class="font-bold uppercase tracking-wider text-slate-400">Focus Standard:</span> <span class="text-slate-800 font-bold">${study.badge}</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">✦ Subject Summary</h3>
+              <p class="text-base text-slate-800 font-medium leading-relaxed">
+                ${study.desc}
+              </p>
+            </div>
+
+            <!-- Suspicious items listed -->
+            <div class="space-y-4">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 font-mono">
+                <i data-lucide="file-code" class="w-4 h-4 text-indigo-500"></i> Inspected Module Elements
+              </h3>
+              
+              <div class="bg-slate-50 border border-slate-150 rounded-3xl overflow-hidden shadow-sm">
+                <div class="bg-white px-5 py-3.5 border-b border-slate-150 text-[10px] font-bold font-mono text-slate-500 uppercase tracking-wider">
+                  Static Review Logs: ${study.features.length} Suspicious Features Flagged
                 </div>
-
-                <h3>Select a Case File</h3>
-                <div class="brief-grid" id="brief-selector">
-                    <!-- Brief cards will be injected here -->
-                </div>
-
-                <button id="btn-begin" class="btn btn-primary" disabled>Begin Investigation</button>
-            </section>
-
-            <!-- S2: Case File Screen -->
-            <section id="s2" class="screen">
-                <div class="classified-header">
-                    <h3>CASE FILE: <span id="case-title">APP_NAME</span></h3>
-                    <p>SUBJECT: Ethical Pre-Launch Audit</p>
-                    <p>ASSIGNED TO: <span class="student-display">NAME</span></p>
-                </div>
-
-                <p id="case-desc" style="margin-bottom: 24px; font-weight: 500; font-size: 16px;"></p>
-
-                <h3>Suspicious Features</h3>
-                <ul class="features-list" id="case-features">
-                    <!-- Injected features -->
+                <ul class="divide-y divide-slate-150 bg-[#fafbfc]">
+                  ${study.features.map((feature, i) => `
+                    <li class="flex gap-4 p-5 items-start bg-white hover:bg-slate-50/50 transition duration-150">
+                      <span class="text-indigo-600 font-mono text-xs mt-0.5"><i data-lucide="shield-alert" class="w-4 h-4 text-amber-500"></i></span>
+                      <span class="text-slate-700 text-sm leading-relaxed">${feature}</span>
+                    </li>
+                  `).join('')}
                 </ul>
+              </div>
+            </div>
 
-                <div class="reference-panel">
-                    <div class="reference-header" onclick="toggleRef()">
-                        <span>Ethics Code Quick Reference</span>
-                        <span id="ref-icon">▼</span>
-                    </div>
-                    <div class="reference-content" id="ref-content">
-                        <!-- Injected tenets -->
-                    </div>
+            <!-- Standard Rules accordion -->
+            <div class="border border-slate-150 rounded-2xl overflow-hidden bg-white hover:shadow-md transition">
+              <button
+                type="button"
+                onclick="toggleAccordion()"
+                class="w-full flex items-center justify-between px-5 py-4 bg-slate-50 hover:bg-slate-100 cursor-pointer transition select-none"
+              >
+                <div class="flex items-center gap-2 font-semibold text-slate-700 text-sm font-display">
+                  <i data-lucide="help-circle" class="w-4.5 h-4.5 text-indigo-500"></i>
+                  <span>Ethics Code Regulatory Guidelines</span>
                 </div>
+                <i data-lucide="${state.isRulesAccordionOpen ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-slate-500"></i>
+              </button>
 
-                <button onclick="showScreen('s3')" class="btn btn-primary">Open Autopsy →</button>
-            </section>
-
-            <!-- S3: Autopsy Screen -->
-            <section id="s3" class="screen">
-                <div class="progress-nav">
-                    <span class="progress-step active">Step 1: Autopsy</span>
-                    <span class="progress-step">Step 2: Results</span>
-                    <span class="progress-step">Step 3: Fix</span>
-                </div>
-
-                <h2>Phase 1: Identify Violations</h2>
-                <p>Select <strong>EVERY</strong> item below that you believe is an ethical violation. Not everything is a violation.</p>
-
-                <div class="autopsy-grid" id="autopsy-cards">
-                    <!-- Injected 6 cards -->
-                </div>
-
-                <div style="margin-top: 30px; display: flex; flex-direction: column; align-items: flex-start;">
-                    <button id="btn-submit-autopsy" class="btn btn-primary" disabled>Submit My Findings</button>
-                    <p id="selection-hint" class="hint-text">Please select at least 2 items to proceed.</p>
-                </div>
-            </section>
-
-            <!-- S4: Autopsy Results -->
-            <section id="s4" class="screen">
-                <div class="progress-nav">
-                    <span class="progress-step complete">Step 1: Autopsy</span>
-                    <span class="progress-step active">Step 2: Results</span>
-                    <span class="progress-step">Step 3: Fix</span>
-                </div>
-
-                <h2>Autopsy Results</h2>
-                <p id="autopsy-feedback-summary" style="margin-bottom: 20px; font-weight: 600;"></p>
-
-                <div class="autopsy-grid" id="autopsy-results">
-                    <!-- Results revealed here -->
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button onclick="startFixes()" class="btn btn-primary">Proceed to Fixes →</button>
-                </div>
-            </section>
-
-            <!-- S5: Fix Selection Screen -->
-            <section id="s5" class="screen">
-                <div class="progress-nav">
-                    <span class="progress-step complete">Step 1: Autopsy</span>
-                    <span class="progress-step complete">Step 2: Results</span>
-                    <span class="progress-step active">Step 3: Fix</span>
-                </div>
-
-                <div id="fix-stage-indicator" style="font-weight: 800; color: var(--sky-blue); margin-bottom: 10px;">Violation 1 of 4</div>
-                
-                <div class="fix-container" id="fix-content">
-                    <!-- Fix content injected here -->
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button id="btn-next-fix" class="btn btn-primary" style="display: none;">Next Violation →</button>
-                </div>
-            </section>
-
-            <!-- S6: Final Report Screen -->
-            <section id="s6" class="screen">
-                <div class="no-print">
-                    <h2>Final Investigation Report</h2>
-                    <p>Great work, <span class="student-display">Name</span>. Here is the summary of your ethical analysis for <span id="final-app-name">App</span>.</p>
-                </div>
-
-                <div class="print-header" style="display: none;">
-                    <h1>ETHICAL AUTOPSY REPORT</h1>
-                    <p>INVESTIGATOR: <span class="student-display">Name</span></p>
-                    <p>CASE: <span id="print-app-name">App</span></p>
-                    <hr style="margin: 20px 0;">
-                </div>
-
-                <div class="score-circle-container no-print">
-                    <div class="score-circle" id="final-score-val">0</div>
-                    <div class="badge-reveal" id="final-badge">Badge Name</div>
-                    <p style="margin-top: 10px; color: var(--gray);">Total Points: <span id="final-points-total">0</span>/120</p>
-                </div>
-
-                <div class="launch-statement">
-                    <h3>Your Launch Statement</h3>
-                    <p id="launch-statement-text"></p>
-                </div>
-
-                <h3>Audit Summary</h3>
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Violation</th>
-                            <th>Tenet</th>
-                            <th>Fix Quality</th>
-                            <th>Pts</th>
-                        </tr>
-                    </thead>
-                    <tbody id="report-table-body">
-                        <!-- Table rows -->
-                    </tbody>
-                </table>
-
-                <div class="no-print" style="margin-top: 40px; display: flex; gap: 16px; justify-content: center;">
-                    <button onclick="window.location.reload()" class="btn btn-outline">Try Another Brief</button>
-                    <button onclick="window.print()" class="btn btn-primary">Print My Report</button>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <script>
-        const DATA = [
-            {
-                id: 'A',
-                name: 'SnapGrade',
-                icon: '📚',
-                badge: 'ACM',
-                desc: 'SnapGrade is a study app for students aged 13–18 that claims to help them build better study habits through streaks, reminders, and performance analytics.',
-                features: [
-                    'A daily streak system that resets to zero if you miss even one day',
-                    'Push notifications at 11 PM comparing your study time to friends',
-                    'Study session data (topics, time, scores) sold to colleges as "learning analytics"',
-                    'Login requires your school email, granting the app access to your school account',
-                    'No notification or disclosure that any data is sold — it is buried in the 42-page Terms of Service'
-                ],
-                tenets: [
-                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
-                    { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems' },
-                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' }
-                ],
-                autopsy: [
-                    { text: 'The streak system resets completely to zero if a student misses a single day, creating anxiety and compulsive daily app-checking behavior.', type: 'VIOLATION', tenet: 'ACM 1.1', primary: true, reason: 'This creates harmful psychological pressure for a vulnerable audience.' },
-                    { text: 'Late-night notifications at 11 PM tell students exactly how long their friends studied, without those friends\' consent to share that data.', type: 'VIOLATION', tenet: 'ACM 2.5', reason: 'Using private data to drive peer pressure violates principles of thorough evaluation and consent.' },
-                    { text: 'All study data is sold to college admissions offices without telling students or parents, with disclosure only in a 42-page Terms of Service.', type: 'VIOLATION', tenet: 'ACM 1.1 + 2.8', reason: 'Hidden data sales without explicit consent is a significant breach of trust and privacy.' },
-                    { text: 'Logging in with a school email grants the app access to the student\'s entire school account — far beyond what the app needs.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Accessing resources beyond the minimum necessary for the app to function is unauthorized.' },
-                    { text: 'The app allows students to set their own daily study time goal.', type: 'DISTRACTOR', reason: 'User-controlled goals are a standard feature and do not violate ethics codes.' },
-                    { text: 'The app has a dark mode to reduce eye strain during late-night studying.', type: 'DISTRACTOR', reason: 'A UI feature that provides accessibility or comfort benefits is ethical.' }
-                ],
-                fixes: [
-                    {
-                        violationIdx: 0,
-                        options: [
-                            { text: 'Replace the streak with a flexible weekly goal (e.g., "study 5 days this week") that forgives missed days without resetting progress.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 1.1 by preserving motivation without harmful anxiety.' },
-                            { text: 'Add a "freeze" token that protects the streak once per week.', type: 'PARTIAL', pts: 10, reason: 'Reduces anxiety but still relies on a system that penalizes students for life interruptions.' },
-                            { text: 'Add a warning screen telling students "streaks can be stressful."', type: 'INSUFFICIENT', pts: 0, reason: 'Warning labels do not fix the underlying harmful design pattern.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 1,
-                        options: [
-                            { text: 'Remove peer data from notifications entirely. Instead show the student only their own study trends.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.5 as students\' data is no longer used to pressure others without consent.' },
-                            { text: 'Allow students to opt out of comparison notifications in settings.', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-out places the burden on the user rather than requiring consent by default.' },
-                            { text: 'Change the notification to 9 PM instead of 11 PM.', type: 'INSUFFICIENT', pts: 0, reason: 'The issue is unauthorized peer data use, not the timing of the alert.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 2,
-                        options: [
-                            { text: 'Add a clear, plain-language consent screen during signup explaining exactly what data is sold, to whom, and why.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 1.1 and 2.8 by ensuring informed, active agreement.' },
-                            { text: 'Add a one-paragraph data use summary to the app\'s main settings page.', type: 'PARTIAL', pts: 10, reason: 'Better than only a ToS, but not presented at the point of decision (signup).' },
-                            { text: 'Shorten the Terms of Service to 20 pages.', type: 'INSUFFICIENT', pts: 0, reason: 'Length isn\'t the problem; lack of active informed consent is.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 3,
-                        options: [
-                            { text: 'Create a separate app-specific login that requests only name and email. Do not request school account access.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.8 by limiting access to only what is required.' },
-                            { text: 'Display a permission screen listing what school data the app will access.', type: 'PARTIAL', pts: 10, reason: 'Transparency is good, but the app still collects more data than it truly needs.' },
-                            { text: 'Offer an optional "guest mode" with limited features.', type: 'INSUFFICIENT', pts: 0, reason: 'The default path still violates ethics for the majority of users.' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'B',
-                name: 'SafeKid Pro',
-                icon: '🛡️',
-                badge: 'ACM + IEEE',
-                desc: 'SafeKid Pro is a parental monitoring app marketed as "total privacy protection for your family," offering GPS tracking and content filtering for children aged 8–16.',
-                features: [
-                    'Real-time GPS location shared with parents AND with "advertising partners"',
-                    'All text messages scanned for "suspicious keywords" including: "gay," "depressed," "party"',
-                    'Every flagged message stored on company servers for 3 years',
-                    'Marketed as a "privacy solution" while selling location data to advertisers',
-                    'All data sharing with advertisers disclosed only in a 40-page Terms of Service'
-                ],
-                tenets: [
-                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
-                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' },
-                    { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
-                    { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates' }
-                ],
-                autopsy: [
-                    { text: 'The app shares children\'s real-time GPS location with advertising partners, without clear parental consent for this use of location data.', type: 'VIOLATION', tenet: 'ACM 2.8, IEEE I.1', primary: true, reason: 'Sharing minor\'s tracking data with 3rd parties without explicit consent is unsafe and unauthorized.' },
-                    { text: 'The keyword monitoring list flags the words "gay" and "depressed," treating identity and mental health expressions as security threats.', type: 'VIOLATION', tenet: 'ACM 1.1', reason: 'This can cause psychological harm by stigmatizing identity and mental health concerns.' },
-                    { text: 'Flagged messages are stored on company servers for 3 years without user awareness, long after they are needed.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Retention of private data without clear necessity or disclosure is an ethical breach.' },
-                    { text: 'The app is marketed as "privacy protection" while simultaneously selling children\'s location data to advertisers.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'This is a fundamentally dishonest and misleading claim about the product\'s core function.' },
-                    { text: 'Parents can set daily screen time limits for each app on the child\'s device.', type: 'DISTRACTOR', reason: 'Standard parental controls are a legitimate, advertised feature.' },
-                    { text: 'The app sends parents a daily summary email of their child\'s usage statistics.', type: 'DISTRACTOR', reason: 'Transparent reporting to the parent account is the intended purpose of the app.' }
-                ],
-                fixes: [
-                    {
-                        violationIdx: 0,
-                        options: [
-                            { text: 'Share GPS data only with the parent account and no third parties. Use non-location-based ads if needed.', type: 'BEST', pts: 20, reason: 'Fully satisfies safety (IEEE I.1) and authorization (ACM 2.8).' },
-                            { text: 'Add an on/off toggle for "Share location" in parent settings, defaulted to OFF.', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-in defaults are still risky for minor-focused products.' },
-                            { text: 'Add "location data may be shared" to the app store description.', type: 'INSUFFICIENT', pts: 0, reason: 'Store listings don\'t replace the need for active consent at the point of setup.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 1,
-                        options: [
-                            { text: 'Remove identity terms from the list entirely. Replace mental health terms with context-sensitive prompts.', type: 'BEST', pts: 20, reason: 'Protects the child\'s wellbeing (ACM 1.1) while maintaining a safety net.' },
-                            { text: 'Allow parents to customize the keyword list.', type: 'PARTIAL', pts: 10, reason: 'Gives control back, but the harmful defaults still exist.' },
-                            { text: 'Add more keywords to make the list more comprehensive.', type: 'INSUFFICIENT', pts: 0, reason: 'Monitoring more things doesn\'t resolve the harm of flagging identity.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 2,
-                        options: [
-                            { text: 'Delete logs within 30 days. Deliver alerts in real-time and do not store content on company servers.', type: 'BEST', pts: 20, reason: 'Satisfies ACM 2.8 by removing unnecessary data retention risk.' },
-                            { text: 'Reduce retention to 90 days and notify parents in the setup flow.', type: 'PARTIAL', pts: 10, reason: 'Better transparency, but still retains private content longer than necessary.' },
-                            { text: 'Encrypt the stored messages on the company servers.', type: 'INSUFFICIENT', pts: 0, reason: 'Encryption is a security step, but doesn\'t address the ethics of unnecessary collection.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 3,
-                        options: [
-                            { text: 'Stop selling data to advertisers. Switch to a subscription model and update marketing to be accurate.', type: 'BEST', pts: 20, reason: 'Eliminates the contradiction and satisfies IEEE I.3.' },
-                            { text: 'Add a disclaimer on the website: "Location data may be used for advertising."', type: 'PARTIAL', pts: 10, reason: 'Honest, but the product is still being marketed with a fundamental contradiction.' },
-                            { text: 'Rename the product to something that doesn\'t reference "privacy."', type: 'INSUFFICIENT', pts: 0, reason: 'Changing the name doesn\'t fix the underlying dishonest practice.' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'C',
-                name: 'HireFirst AI',
-                icon: '🤖',
-                badge: 'NSPE + ACM',
-                desc: 'HireFirst AI is a hiring tool used by employers to automatically screen and rank job applicants using machine learning trained on historical hiring data.',
-                features: [
-                    'Algorithm trained on data where 80% of past hires were men from 4 specific universities',
-                    'No independent bias audit has ever been conducted on the algorithm',
-                    'Employment gaps are automatically rejected with no exceptions for caregiving or military service',
-                    'Rejected candidates are never told a computer made the decision and have no appeal option',
-                    'Employers are told the system is "objective and data-driven" with no mention of bias risk'
-                ],
-                tenets: [
-                    { id: 'NSPE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
-                    { id: 'NSPE I.5', text: 'Act so as not to deceive the public' },
-                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
-                    { id: 'ACM 2.5', text: 'Give comprehensive and thorough evaluations of systems' }
-                ],
-                autopsy: [
-                    { text: 'The algorithm was trained on biased historical data, preferring candidates who match the demographics of past hires — mostly men from four universities.', type: 'VIOLATION', tenet: 'ACM 1.1, NSPE I.1', primary: true, reason: 'This perpetuates systemic bias and harms qualified applicants from underrepresented groups.' },
-                    { text: 'No independent audit for bias has ever been conducted, meaning the company does not know how unfairly the algorithm performs.', type: 'VIOLATION', tenet: 'ACM 2.5, NSPE I.1', reason: 'Failing to test for bias in a high-stakes tool is a failure of thorough evaluation.' },
-                    { text: 'Applicants with any gap in their employment history are automatically rejected, with no logic for caregiving, illness, or military service.', type: 'VIOLATION', tenet: 'ACM 1.1', reason: 'This causes unfair harm to individuals with legitimate life circumstances.' },
-                    { text: 'Rejected candidates are never informed that an AI made the decision and have no pathway to appeal.', type: 'VIOLATION', tenet: 'NSPE I.5, ACM 2.5', reason: 'Deceiving candidates about the nature of the decision-making process is unethical.' },
-                    { text: 'The system automatically sends acknowledgment emails to all applicants confirming receipt.', type: 'DISTRACTOR', reason: 'Automated communication about application status is a helpful standard practice.' },
-                    { text: 'The system ranks candidates alphabetically as a tiebreaker when scores are equal.', type: 'DISTRACTOR', reason: 'Neutral tie-breaking logic is not an ethical violation.' }
-                ],
-                fixes: [
-                    {
-                        violationIdx: 0,
-                        options: [
-                            { text: 'Retrain the algorithm using a cleaned, representative dataset. Conduct demographic parity analysis before deployment.', type: 'BEST', pts: 20, reason: 'Addresses the root cause of the bias directly (ACM 1.1).' },
-                            { text: 'Add a human review step for all candidates ranked in the bottom 20%.', type: 'PARTIAL', pts: 10, reason: 'Humans can catch some bias, but the underlying engine remains flawed.' },
-                            { text: 'Add more applicants to the training data without addressing the existing bias.', type: 'INSUFFICIENT', pts: 0, reason: 'More data doesn\'t fix biased data; it often reinforces it.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 1,
-                        options: [
-                            { text: 'Commission an independent third-party audit before deployment and annually thereafter.', type: 'BEST', pts: 20, reason: 'Provides the rigorous evaluation required for public welfare (NSPE I.1).' },
-                            { text: 'Have the internal development team review algorithm outputs for disparities.', type: 'PARTIAL', pts: 10, reason: 'Internal review is better than none, but lacks independence.' },
-                            { text: 'Create documentation about how the algorithm was built.', type: 'INSUFFICIENT', pts: 0, reason: 'Describing how it works doesn\'t prove it works fairly.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 2,
-                        options: [
-                            { text: 'Remove automatic rejection for gaps. Flag gaps for human review with context prompts.', type: 'BEST', pts: 20, reason: 'Reintroduces fairness and context for life events (ACM 1.1).' },
-                            { text: 'Create exception rules for military service and medical leave only.', type: 'PARTIAL', pts: 10, reason: 'Addresses some groups, but ignores caregivers and others.' },
-                            { text: 'Shorten the gap threshold from 6 months to 12 months before auto-rejection.', type: 'INSUFFICIENT', pts: 0, reason: 'Moving the goalpost doesn\'t fix the underlying fairness problem.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 3,
-                        options: [
-                            { text: 'Notify rejected applicants of the AI decision, factors considered, and provide a human review request option.', type: 'BEST', pts: 20, reason: 'Ensures honesty (NSPE I.5) and provides accountability.' },
-                            { text: 'Add a general statement to the job posting: "We use AI-assisted screening."', type: 'PARTIAL', pts: 10, reason: 'Better transparency, but doesn\'t provide recourse for specific decisions.' },
-                            { text: 'Add an FAQ page on the website explaining that AI is used in hiring.', type: 'INSUFFICIENT', pts: 0, reason: 'A website FAQ is not meaningful disclosure to an affected applicant.' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'D',
-                name: 'InstaLike',
-                icon: '📱',
-                badge: 'ACM + IEEE',
-                desc: 'InstaLike is a social media platform for users aged 13 and up that uses AI to personalize content feeds and improve engagement.',
-                features: [
-                    'AI analyzes selfies to detect emotions and serves extreme content when users are sad',
-                    'Facial recognition biometric data collected via a buried ToS clause',
-                    'Internal research showing algorithm increases self-comparison in girls was never disclosed',
-                    'Inaccurate or exaggerated "You\'re losing followers" notifications are sent to users',
-                    'Like counts are hidden from users, but are still used to rank feed content'
-                ],
-                tenets: [
-                    { id: 'ACM 1.1', text: 'Contribute to society and human well-being; avoid harm' },
-                    { id: 'ACM 2.8', text: 'Access computing resources only when authorized' },
-                    { id: 'IEEE I.1', text: 'Hold paramount the safety, health, and welfare of the public' },
-                    { id: 'IEEE I.3', text: 'Be honest and realistic in stating claims or estimates' }
-                ],
-                autopsy: [
-                    { text: 'The AI detects users\' emotional states from selfies and deliberately serves more emotionally extreme content when a user appears sad.', type: 'VIOLATION', tenet: 'ACM 1.1, IEEE I.1', primary: true, reason: 'Deliberately targeting emotionally vulnerable users with extreme content is a severe harm.' },
-                    { text: 'Facial recognition biometric data is collected from every photo, with consent buried in a ToS clause — not obtained explicitly.', type: 'VIOLATION', tenet: 'ACM 2.8', reason: 'Biometric data requires specific, informed consent at the point of collection.' },
-                    { text: 'Internal research found the algorithm increases self-comparison behavior in girls, but this was never disclosed to users or regulators.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'Withholding known safety risks is a violation of the requirement to be honest about claims.' },
-                    { text: '"You\'re losing followers" notifications are sent using inaccurate numbers to create anxiety and drive app usage.', type: 'VIOLATION', tenet: 'IEEE I.3', reason: 'Sending dishonest notifications to manipulate user behavior is unethical.' },
-                    { text: 'Users can choose any photo they want as their profile picture.', type: 'DISTRACTOR', reason: 'Basic user control over their profile is not an ethical violation.' },
-                    { text: 'The app includes a content reporting button so users can flag posts.', type: 'DISTRACTOR', reason: 'Safety reporting tools are a positive, ethical design feature.' }
-                ],
-                fixes: [
-                    {
-                        violationIdx: 0,
-                        options: [
-                            { text: 'Discontinue emotion-detection entirely. Base personalization only on user-selected preferences.', type: 'BEST', pts: 20, reason: 'Removes the harm (ACM 1.1) and respects user autonomy.' },
-                            { text: 'Add an opt-out setting for "mood-based content."', type: 'PARTIAL', pts: 10, reason: 'Better, but opt-outs are insufficient for a vulnerable teen audience.' },
-                            { text: 'Add a "Take a Break" notification after 30 minutes of scrolling.', type: 'INSUFFICIENT', pts: 0, reason: 'Does not address the underlying targeting of vulnerable emotional states.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 1,
-                        options: [
-                            { text: 'Remove biometric analysis OR present a standalone consent screen at first upload explaining collection.', type: 'BEST', pts: 20, reason: 'Ensures informed, authorized access to resources (ACM 2.8).' },
-                            { text: 'Move the disclosure from the ToS to a dedicated Privacy Policy page.', type: 'PARTIAL', pts: 10, reason: 'More visible, but still doesn\'t constitute explicit consent at the moment of collection.' },
-                            { text: 'Rewrite the ToS to make the biometric clause easier to find.', type: 'INSUFFICIENT', pts: 0, reason: 'The issue is the lack of explicit consent, not the readability of the ToS.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 2,
-                        options: [
-                            { text: 'Publish findings in a transparency report and brief regulators and parent advocacy groups.', type: 'BEST', pts: 20, reason: 'Honors the obligation to state safety risks honestly (IEEE I.3).' },
-                            { text: 'Share findings with the internal safety team and implement an internal review process.', type: 'PARTIAL', pts: 10, reason: 'Improves governance, but fails the public disclosure obligation.' },
-                            { text: 'Stop conducting internal research on user psychological outcomes.', type: 'INSUFFICIENT', pts: 0, reason: 'Ignoring the problem doesn\'t make the algorithm more ethical.' }
-                        ]
-                    },
-                    {
-                        violationIdx: 3,
-                        options: [
-                            { text: 'Remove follower-loss notifications entirely. Ensure all engagement metrics shared are accurate and neutral.', type: 'BEST', pts: 20, reason: 'Ensures honesty (IEEE I.3) and removes manipulative anxiety-driven design.' },
-                            { text: 'Make follower-loss notifications opt-in rather than the default.', type: 'PARTIAL', pts: 10, reason: 'Reduces exposure, but the inaccuracy problem remains for those who opt in.' },
-                            { text: 'Round the follower numbers shown in notifications to the nearest 10.', type: 'INSUFFICIENT', pts: 0, reason: 'Rounded dishonest data is still dishonest data.' }
-                        ]
-                    }
-                ]
-            }
-        ];
-
-        let state = {
-            studentName: '',
-            selectedBriefIndex: -1,
-            autopsySelections: [],
-            fixSelections: [],
-            currentFixIndex: 0,
-            score: 0
-        };
-
-        // Initialize App
-        window.onload = () => {
-            renderBriefs();
-            document.getElementById('student-name').addEventListener('input', validateS1);
-        };
-
-        function renderBriefs() {
-            const grid = document.getElementById('brief-selector');
-            grid.innerHTML = DATA.map((brief, index) => `
-                <div class="brief-card" id="brief-${index}" onclick="selectBrief(${index})">
-                    <span class="letter">${brief.id}</span>
-                    <span class="icon">${brief.icon}</span>
-                    <h3>${brief.name}</h3>
-                    <p style="font-size: 11px; color: var(--gray);">${brief.desc.substring(0, 60)}...</p>
-                    <span class="badge">${brief.badge}</span>
-                </div>
-            `).join('');
-        }
-
-        function selectBrief(index) {
-            state.selectedBriefIndex = index;
-            document.querySelectorAll('.brief-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(`brief-${index}`).classList.add('selected');
-            validateS1();
-        }
-
-        function validateS1() {
-            const name = document.getElementById('student-name').value.trim();
-            const btn = document.getElementById('btn-begin');
-            btn.disabled = !(name.length > 0 && state.selectedBriefIndex !== -1);
-            state.studentName = name;
-        }
-
-        document.getElementById('btn-begin').addEventListener('click', () => {
-            const brief = DATA[state.selectedBriefIndex];
-            document.getElementById('case-title').innerText = brief.name;
-            document.getElementById('case-desc').innerText = brief.desc;
-            document.querySelectorAll('.student-display').forEach(el => el.innerText = state.studentName);
-            
-            const featuresList = document.getElementById('case-features');
-            featuresList.innerHTML = brief.features.map(f => `<li>${f}</li>`).join('');
-
-            const refContent = document.getElementById('ref-content');
-            refContent.innerHTML = brief.tenets.map(t => `
-                <div style="margin-bottom: 12px;">
-                    <span class="tenet-pill">${t.id}</span>
-                    <p style="font-size: 13px;">${t.text}</p>
-                </div>
-            `).join('');
-
-            showScreen('s2');
-        });
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            window.scrollTo(0,0);
-
-            if (screenId === 's3') {
-                document.getElementById('score-counter').style.display = 'block';
-                renderAutopsyCards();
-            }
-        }
-
-        function toggleRef() {
-            const content = document.getElementById('ref-content');
-            const icon = document.getElementById('ref-icon');
-            content.classList.toggle('active');
-            icon.innerText = content.classList.contains('active') ? '▲' : '▼';
-        }
-
-        function renderAutopsyCards() {
-            const brief = DATA[state.selectedBriefIndex];
-            const cards = [...brief.autopsy];
-            // Fisher-Yates shuffle
-            for (let i = cards.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cards[i], cards[j]] = [cards[j], cards[i]];
-            }
-
-            const grid = document.getElementById('autopsy-cards');
-            grid.innerHTML = cards.map((c, i) => `
-                <div class="violation-card" onclick="toggleViolation(${i})" id="vcard-${i}">
-                    <div style="display: flex; align-items: flex-start;">
-                        <div class="check-box"></div>
-                        <div class="card-body">${c.text}</div>
-                    </div>
-                </div>
-            `).join('');
-            
-            state.tempCards = cards; // Store the shuffled order to check later
-            state.autopsySelections = [];
-            document.getElementById('btn-submit-autopsy').disabled = true;
-            document.getElementById('selection-hint').style.display = 'block';
-        }
-
-        function toggleViolation(index) {
-            const card = document.getElementById(`vcard-${index}`);
-            const isSelected = card.classList.toggle('selected');
-            
-            if (isSelected) state.autopsySelections.push(index);
-            else state.autopsySelections = state.autopsySelections.filter(i => i !== index);
-            
-            const canSubmit = state.autopsySelections.length >= 2;
-            document.getElementById('btn-submit-autopsy').disabled = !canSubmit;
-            document.getElementById('selection-hint').style.display = canSubmit ? 'none' : 'block';
-        }
-
-        document.getElementById('btn-submit-autopsy').addEventListener('click', () => {
-            processAutopsy();
-        });
-
-        function processAutopsy() {
-            let autopsyPoints = 0;
-            let foundCount = 0;
-            const brief = DATA[state.selectedBriefIndex];
-            const resultsGrid = document.getElementById('autopsy-results');
-            
-            resultsGrid.innerHTML = '';
-            
-            state.tempCards.forEach((card, index) => {
-                const isSelected = state.autopsySelections.includes(index);
-                let statusClass = '';
-                let statusText = '';
-                
-                if (card.type === 'VIOLATION') {
-                    if (isSelected) {
-                        statusClass = 'confirmed';
-                        statusText = '✅ Violation Confirmed';
-                        autopsyPoints += 10;
-                        foundCount++;
-                    } else {
-                        statusClass = 'missed';
-                        statusText = '⚠️ Violation Missed';
-                    }
-                } else {
-                    if (isSelected) {
-                        statusClass = 'not-violation';
-                        statusText = '❌ Not a Violation';
-                        autopsyPoints = Math.max(0, autopsyPoints - 5);
-                    } else {
-                        statusClass = 'correct-skip';
-                        statusText = '✓ Correctly Skipped';
-                    }
-                }
-
-                resultsGrid.innerHTML += `
-                    <div class="violation-card ${statusClass}">
-                        <span class="reveal-badge ${statusClass}">${statusText}</span>
-                        <div class="card-body">
-                            <p>${card.text}</p>
-                            <p style="margin-top: 10px; font-size: 12px; color: var(--navy);">
-                                <strong>${card.type === 'VIOLATION' ? 'Ethics Tenet:' : 'Note:'}</strong> 
-                                ${card.type === 'VIOLATION' ? card.tenet : card.reason}
-                            </p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            state.score += autopsyPoints;
-            updateScoreDisplay();
-            document.getElementById('autopsy-feedback-summary').innerText = `Autopsy complete. You identified ${foundCount} of 4 violations. Points gained: ${autopsyPoints}`;
-            showScreen('s4');
-        }
-
-        function updateScoreDisplay() {
-            const counter = document.getElementById('score-counter');
-            counter.innerText = `Points: ${state.score}`;
-            counter.classList.add('bounce');
-            setTimeout(() => counter.classList.remove('bounce'), 300);
-        }
-
-        function startFixes() {
-            state.currentFixIndex = 0;
-            state.fixSelections = [];
-            renderFixStep();
-            showScreen('s5');
-        }
-
-        function renderFixStep() {
-            const brief = DATA[state.selectedBriefIndex];
-            const fixData = brief.fixes[state.currentFixIndex];
-            
-            const violation = brief.autopsy.filter(a => a.type === 'VIOLATION')[state.currentFixIndex];
-            const wasFound = state.tempCards.some((c, i) => c.text === violation.text && state.autopsySelections.includes(i));
-
-            document.getElementById('fix-stage-indicator').innerText = `Violation ${state.currentFixIndex + 1} of 4`;
-            
-            const content = document.getElementById('fix-content');
-            content.innerHTML = `
-                <div class="violation-summary">
-                    <h3>Violation: ${violation.text.substring(0, 60)}...</h3>
-                    <div class="tenet-pill">${violation.tenet}</div>
-                    <p style="font-size: 14px; margin-top: 8px;">${violation.reason}</p>
-                    <div style="margin-top: 12px; font-weight: 700; color: ${wasFound ? 'var(--emerald)' : 'var(--gray)'}">
-                        ${wasFound ? '✓ You found this' : '⚠️ You missed this — but let\'s fix it anyway'}
-                    </div>
-                </div>
-
-                <h3>Choose Your Fix</h3>
-                <p style="margin-bottom: 16px;">Select the fix that best resolves this violation while still serving the user\'s legitimate need.</p>
-                
-                <div class="fix-options" id="fix-options-list">
-                    ${fixData.options.map((opt, i) => `
-                        <div class="fix-option-card ${opt.type.toLowerCase()}" onclick="selectFix(${i})">
-                            <div class="card-body">${opt.text}</div>
-                            <div class="fix-feedback">
-                                <strong>${opt.type === 'BEST' ? '🏆 BEST FIX' : (opt.type === 'PARTIAL' ? '⚡ PARTIAL FIX' : '✗ INSUFFICIENT')}</strong> — ${opt.reason}
-                            </div>
-                        </div>
+              ${state.isRulesAccordionOpen ? `
+                <div class="p-6 border-t border-slate-150 space-y-4 bg-slate-50/30 fade-in">
+                  <p class="text-[11px] text-slate-500 font-mono leading-relaxed">
+                    We invoke specific standards of the ACM, IEEE, and NSPE to test software viability. Leverage these tenets below to help identify which codebase traits violate ethics.
+                  </p>
+                  <div class="grid grid-cols-1 gap-4 mt-2">
+                    ${study.tenets.map((t) => `
+                      <div class="p-4 bg-white border border-slate-150 rounded-2xl shadow-sm">
+                        <span class="inline-block bg-indigo-50 text-indigo-700 text-[9px] uppercase font-mono px-2.5 py-1 rounded-full font-bold mb-2 border border-indigo-100">
+                          ${t.id}
+                        </span>
+                        <p class="text-xs text-slate-700 font-semibold leading-relaxed">${t.text}</p>
+                      </div>
                     `).join('')}
+                  </div>
                 </div>
-            `;
-            
-            document.getElementById('btn-next-fix').style.display = 'none';
-            document.getElementById('btn-next-fix').innerText = state.currentFixIndex === 3 ? 'Complete Report →' : 'Next Violation →';
-        }
+              ` : ''}
+            </div>
 
-        function selectFix(index) {
-            const options = document.querySelectorAll('.fix-option-card');
-            const brief = DATA[state.selectedBriefIndex];
-            const fixData = brief.fixes[state.currentFixIndex];
-            const selection = fixData.options[index];
+            <!-- Footer proceed controls -->
+            <div class="pt-6 border-t border-slate-100 flex justify-center md:justify-start">
+              <button
+                type="button"
+                onclick="proceedToAutopsy()"
+                class="flex items-center gap-2.5 justify-center w-full sm:w-auto px-8 py-4 bg-[#4f46e5] hover:bg-indigo-700 text-white font-bold rounded-2xl uppercase tracking-wider text-xs transition duration-150 btn-active shadow-md"
+              >
+                Proceed to Medical Autopsy
+                <i data-lucide="arrow-right" class="w-4 h-4 stroke-[3px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }
 
-            options.forEach((opt, i) => {
-                opt.classList.add('reveal');
-                if (i === index) opt.classList.add('selected');
-                else opt.classList.add('dimmed');
-            });
+      // Screen 3: Autopsy Diagnose
+      else if (state.screen === 'autopsy') {
+        const checkNeeded = 2;
+        const isEligible = state.autopsySelections.length >= checkNeeded;
+        
+        html = `
+          <div class="space-y-8 fade-in">
+            <div class="text-center md:text-left">
+              <span class="inline-flex bg-amber-50 text-amber-700 text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider mb-2">
+                Phase 1: Diagnosis & Autopsy
+              </span>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
+                Perform Code Autopsy
+              </h2>
+              <p class="text-slate-500 text-sm leading-relaxed mt-2">
+                Analyze the module architecture below. Select <strong>EVERY</strong> module component that constitutes a 
+                legitimate <strong>Ethical Violation</strong> according to standards. (Standard customizable designs are "distractors" and should be skipped).
+              </p>
+            </div>
 
-            state.fixSelections.push({
-                violationIdx: state.currentFixIndex,
-                choice: selection
-            });
-
-            state.score += selection.pts;
-            updateScoreDisplay();
-            
-            document.getElementById('btn-next-fix').style.display = 'inline-block';
-        }
-
-        document.getElementById('btn-next-fix').addEventListener('click', () => {
-            if (state.currentFixIndex < 3) {
-                state.currentFixIndex++;
-                renderFixStep();
-            } else {
-                generateFinalReport();
-            }
-        });
-
-        function generateFinalReport() {
-            const brief = DATA[state.selectedBriefIndex];
-            document.getElementById('final-points-total').innerText = state.score;
-            document.getElementById('final-score-val').innerText = Math.round((state.score / 120) * 100);
-            
-            let badge = '';
-            if (state.score >= 100) badge = '🏅 Master Investigator';
-            else if (state.score >= 80) badge = '🥈 Senior Analyst';
-            else if (state.score >= 60) badge = '🥉 Junior Analyst';
-            else badge = '🔍 Trainee — Keep Investigating';
-            
-            document.getElementById('final-badge').innerText = badge;
-            document.getElementById('final-app-name').innerText = brief.name;
-            document.getElementById('print-app-name').innerText = brief.name;
-
-            const foundViolationsCount = state.tempCards.filter((c, i) => c.type === 'VIOLATION' && state.autopsySelections.includes(i)).length;
-            const primaryViolation = brief.autopsy.find(v => v.primary);
-            const primaryFix = state.fixSelections.find(s => {
-                const vForFix = brief.autopsy.filter(a => a.type === 'VIOLATION')[s.violationIdx];
-                return vForFix.text === primaryViolation.text;
-            });
-            const bestFixes = state.fixSelections.filter(s => s.choice.type === 'BEST');
-            
-            let statement = '';
-            if (bestFixes.length > 0) {
-                const v1ForFix = brief.autopsy.filter(a => a.type === 'VIOLATION')[bestFixes[0].violationIdx];
-                const v1Name = v1ForFix.text.substring(0, 30);
-                const v2Name = bestFixes.length > 1 ? brief.autopsy.filter(a => a.type === 'VIOLATION')[bestFixes[1].violationIdx].text.substring(0, 30) : "others";
-                statement = `In reviewing ${brief.name}, I identified ${foundViolationsCount} ethical violations, including ${v1Name}... and ${v2Name}... The most critical issue was ${primaryViolation.text.substring(0, 50)}... By ${primaryFix.choice.text.split('.')[0]}, this app can satisfy ${primaryViolation.tenet} while still serving its users.`;
-            } else {
-                statement = `In reviewing ${brief.name}, I identified ${foundViolationsCount} violations. Addressing ${primaryViolation.text.substring(0, 50)}... is the highest priority — it directly violates ${primaryViolation.tenet} by ${primaryViolation.reason.toLowerCase()}`;
-            }
-            document.getElementById('launch-statement-text').innerText = statement;
-
-            const tbody = document.getElementById('report-table-body');
-            tbody.innerHTML = state.fixSelections.map(s => {
-                const violation = brief.autopsy.filter(a => a.type === 'VIOLATION')[s.violationIdx];
+            <!-- Grid card logs styled to match the visual look of mockup cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              ${state.shuffledAutopsyCards.map((card, idx) => {
+                const isSelected = state.autopsySelections.includes(idx);
                 return `
-                    <tr>
-                        <td>${violation.text.substring(0, 60)}...</td>
-                        <td><span class="tenet-pill">${violation.tenet}</span></td>
-                        <td><strong>${s.choice.type}</strong></td>
-                        <td>${s.choice.pts}</td>
-                    </tr>
-                `;
-            }).join('');
+                  <button
+                    type="button"
+                    onclick="toggleAutopsySelection(${idx})"
+                    class="text-left p-6 border rounded-3xl flex flex-col justify-between transition-all duration-150 select-none cursor-pointer group h-full relative ${
+                      isSelected
+                        ? 'border-amber-500 bg-amber-50/40 shadow-md ring-1 ring-amber-500/20'
+                        : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow shadow-slate-100/50'
+                    }"
+                  >
+                    <div class="space-y-4">
+                      <div class="flex items-start gap-3.5">
+                        <div
+                          class="w-5 h-5 rounded-md flex items-center justify-center border-2 transition-colors mt-0.5 shrink-0 ${
+                            isSelected
+                              ? 'border-amber-500 bg-amber-500 text-white'
+                              : 'border-slate-300 bg-white group-hover:border-slate-400'
+                          }"
+                        >
+                          ${isSelected ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[4px]"></i>' : ''}
+                        </div>
 
-            showScreen('s6');
-            document.getElementById('score-counter').style.display = 'none';
+                        <p class="text-xs text-slate-700 leading-relaxed font-semibold">
+                          ${card.text}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-end">
+                      ${isSelected ? `
+                        <span class="text-[8px] uppercase tracking-wider text-amber-600 font-extrabold font-mono bg-amber-100 px-2 py-0.5 rounded-full">
+                          SUSPECTED VIOLATION
+                        </span>
+                      ` : `
+                        <span class="text-[8px] uppercase tracking-wider text-slate-400 font-extrabold font-mono lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                          Click to Flag
+                        </span>
+                      `}
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="bg-indigo-50/50 border border-indigo-100 p-5 rounded-2xl flex items-start gap-3.5 shadow-sm">
+              <i data-lucide="info" class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"></i>
+              <p class="text-[11px] text-slate-500 font-mono leading-relaxed">
+                <strong>Need Help?</strong> Review code behaviors that breach security parameters, unauthorized student files exploitation, bias pipelines, or misleading claims. Flag at least ${checkNeeded} items to submit diagnostic forensics.
+              </p>
+            </div>
+
+            <!-- Submit verification bar -->
+            <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-4 justify-between">
+              <div>
+                ${!isEligible ? `
+                  <p class="text-xs font-bold text-rose-600 flex items-center gap-2 font-mono bg-rose-50 px-3.5 py-1.5 rounded-full border border-rose-100">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500 animate-pulse"></i>
+                    Minimum ${checkNeeded} selections required to complete preliminary diagnosis.
+                  </p>
+                ` : `
+                  <p class="text-xs font-bold text-emerald-700 flex items-center gap-2 font-mono bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-100">
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                    Diagnostic baseline prepared. ${state.autopsySelections.length} modules flagged.
+                  </p>
+                `}
+              </div>
+              
+              <button
+                type="button"
+                onclick="submitAutopsyDiagnosis()"
+                ${!isEligible ? 'disabled' : ''}
+                class="w-full sm:w-auto px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl uppercase tracking-wider text-xs shadow transition-all duration-150 btn-active disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
+              >
+                Submit Findings
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Screen 4: Autopsy Results
+      else if (state.screen === 'autopsy_results') {
+        const study = CASE_STUDIES[state.selectedCaseIdx];
+        
+        html = `
+          <div class="space-y-8 fade-in">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+              <div class="space-y-1">
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-3 font-display">
+                  <i data-lucide="award" class="w-6 h-6 text-indigo-600"></i>
+                  Autopsy Diagnosis Results
+                </h2>
+                <p class="text-slate-500 text-xs font-medium">
+                  Reviewing diagnostic precision against the Code of Ethics criteria.
+                </p>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="bg-slate-50 border border-slate-150 px-5 py-2.5 rounded-2xl text-center shadow-sm">
+                  <span class="block text-[8px] text-slate-400 uppercase tracking-wider font-mono">Phase 1 Score</span>
+                  <span class="text-lg font-black font-mono text-emerald-600">${state.autopsyScore} <span class="text-[10px] text-slate-400 font-normal">/ 90</span></span>
+                </div>
+                <div class="bg-slate-50 border border-slate-150 px-5 py-2.5 rounded-2xl text-center shadow-sm">
+                  <span class="block text-[8px] text-slate-400 uppercase tracking-wider font-mono">Decoy Mistakes</span>
+                  <span class="text-lg font-black font-mono ${state.autopsyMistakes > 0 ? 'text-rose-500' : 'text-slate-800'}">${state.autopsyMistakes}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Diagnostics log item list -->
+            <div class="space-y-4">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">✦ Forensic Diagnosis Logs</h3>
+              
+              <div class="space-y-4">
+                ${state.shuffledAutopsyCards.map((card, idx) => {
+                  const isSelected = state.autopsySelections.includes(idx);
+                  const isCorrect = (card.type === 'VIOLATION' && isSelected) || (card.type === 'DISTRACTOR' && !isSelected);
+                  
+                  return `
+                    <div class="p-6 border rounded-2xl flex flex-col md:flex-row items-start justify-between gap-6 transition-all duration-150 ${
+                      isCorrect 
+                        ? 'border-emerald-100 bg-emerald-50/20' 
+                        : 'border-rose-100 bg-rose-50/20'
+                    }">
+                      <div class="space-y-3.5 max-w-3xl">
+                        <!-- Flag indicator badge -->
+                        <div class="flex flex-wrap gap-2 items-center">
+                          <span class="flex items-center gap-1.5 text-[9px] uppercase font-bold px-2.5 py-1 rounded-full font-mono ${
+                            isCorrect 
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-250' 
+                              : 'bg-rose-100 text-rose-800 border border-rose-250'
+                          }">
+                            <i data-lucide="${isCorrect ? 'check-circle' : 'x-circle'}" class="w-3.5 h-3.5"></i>
+                            ${isCorrect ? 'Accurate Diagnostic' : 'Diagnostic Error'}
+                          </span>
+
+                          <span class="inline-block text-[9px] uppercase tracking-wider bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full text-slate-600 font-mono font-bold">
+                            ACTUAL: ${card.type}
+                          </span>
+
+                          ${card.tenet ? `
+                            <span class="inline-block text-[9px] uppercase tracking-wider bg-indigo-55 text-indigo-750 border border-indigo-150 px-2.5 py-1 rounded-full text-indigo-700 font-mono font-bold">
+                              CODE: ${card.tenet}
+                            </span>
+                          ` : ''}
+                        </div>
+
+                        <p class="text-xs text-slate-800 font-bold leading-relaxed">
+                          ${card.text}
+                        </p>
+
+                        <p class="text-[11px] text-slate-500 font-medium font-mono leading-normal pl-3 border-l-2 border-slate-300">
+                          <span class="text-slate-700 font-bold uppercase block text-[9px] tracking-wide mb-1 font-sans">Verification Rationale:</span>
+                          ${card.reason}
+                        </p>
+                      </div>
+
+                      <div class="flex items-center gap-2 font-bold select-none shrink-0 self-start md:self-center">
+                        <span class="text-xs font-mono uppercase text-slate-400">Earned:</span>
+                        <span class="text-base font-mono font-bold ${isCorrect ? 'text-emerald-600' : 'text-slate-400'}">
+                          ${isCorrect ? '+15' : '0'} <span class="text-[10px] text-slate-400 uppercase font-medium">pts</span>
+                        </span>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Proceed remediation -->
+            <div class="pt-6 border-t border-slate-100 flex justify-between items-center flex-wrap gap-4">
+              <p class="text-[11px] text-slate-500 max-w-md font-mono">
+                Now that you have isolated the ethical threats from normal custom inputs, you must re-engineer the system to fix the vulnerabilities.
+              </p>
+              
+              <button
+                type="button"
+                onclick="beginFixModule()"
+                class="flex items-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-600 text-[#2c1d0f] font-bold rounded-2xl uppercase tracking-wider text-xs transition duration-150 btn-active shadow-sm shadow-amber-200"
+              >
+                Deconstruct & Fix Codebase Violations
+                <i data-lucide="arrow-right" class="w-4 h-4 stroke-[3px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Screen 5: Fix Remediations
+      else if (state.screen === 'fixes') {
+        const study = CASE_STUDIES[state.selectedCaseIdx];
+        const activeFix = study.fixes[state.currentFixIdx];
+        const originalViolation = study.autopsy[activeFix.violationIdx];
+        const hasSelected = state.fixSelections[state.currentFixIdx] !== undefined;
+        const selectedChoiceIdx = state.fixSelections[state.currentFixIdx];
+        
+        let submittable = hasSelected;
+
+        html = `
+          <div class="space-y-8 fade-in">
+            <div class="space-y-1">
+              <div class="flex items-center justify-between flex-wrap gap-2 text-slate-500 text-xs font-mono">
+                <span>REMEDIATION QUEUE: STEP ${state.currentFixIdx + 1} OF ${study.fixes.length}</span>
+                <span class="bg-slate-100 border border-slate-200 text-[10px] text-slate-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                  ${study.badge}
+                </span>
+              </div>
+              <h2 class="text-2xl font-bold text-slate-900 font-display uppercase tracking-tight">re-engineer ethical breaches</h2>
+            </div>
+
+            <!-- Focus Breach Module Panel -->
+            <div class="p-6 bg-amber-50/40 border border-amber-100 rounded-2xl space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="flex items-center gap-1 text-[8px] bg-amber-100 text-amber-800 border border-amber-250 px-2.5 py-1 rounded-full font-mono font-black uppercase tracking-widest">
+                  <i data-lucide="alert-triangle" class="w-3 h-3"></i> Identified Vulnerability
+                </span>
+                <span class="text-[9px] tracking-wider text-indigo-700 font-mono font-bold">Standard Reference: ${originalViolation.tenet}</span>
+              </div>
+              
+              <p class="text-sm text-slate-800 leading-relaxed font-bold">
+                "${originalViolation.text}"
+              </p>
+            </div>
+
+            <!-- Fix Options Selector Grid -->
+            <div class="space-y-4">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest font-mono">✦ Select Resolution Architecture</h3>
+              
+              <div class="grid grid-cols-1 gap-4">
+                ${activeFix.options.map((option, choiceIdx) => {
+                  const isChoiceSelected = selectedChoiceIdx === choiceIdx;
+                  return `
+                    <button
+                      type="button"
+                      onclick="selectFixOption(${choiceIdx}, ${option.pts})"
+                      class="relative text-left p-6 border rounded-2xl transition-all duration-155 cursor-pointer flex flex-col justify-between h-full group ${
+                        isChoiceSelected
+                          ? 'border-indigo-500 bg-indigo-50/10 shadow hover:shadow-md ring-1 ring-indigo-500/10'
+                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow shadow-slate-100/30'
+                      }"
+                    >
+                      <div class="space-y-3">
+                        <div class="flex items-start gap-4">
+                          <div
+                            class="w-5 h-5 rounded-full flex items-center justify-center border-2 transition-colors mt-1 shrink-0 ${
+                              isChoiceSelected
+                                ? 'border-indigo-600 bg-indigo-600 text-white'
+                                : 'border-slate-300 bg-white group-hover:border-slate-400'
+                            }"
+                          >
+                            ${isChoiceSelected ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[4px]"></i>' : ''}
+                          </div>
+
+                          <div class="space-y-1">
+                            <p class="text-sm text-slate-800 leading-relaxed font-bold">
+                              ${option.text}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      ${isChoiceSelected ? `
+                        <div class="mt-4 pt-4 border-t border-indigo-100 space-y-3.5 fade-in">
+                          <div class="flex items-center justify-between flex-wrap gap-2">
+                            <span class="flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold ${
+                              option.type === 'BEST' 
+                                ? 'text-emerald-700 font-black' 
+                                : option.type === 'PARTIAL' 
+                                  ? 'text-amber-700 font-bold' 
+                                  : 'text-rose-700 font-bold'
+                            }">
+                              <i data-lucide="${
+                                option.type === 'BEST' 
+                                  ? 'shield-check' 
+                                  : option.type === 'PARTIAL' 
+                                    ? 'alert-circle' 
+                                    : 'x-circle'
+                              }" class="w-4 h-4"></i>
+                              RESOLUTION TYPE: ${option.type}
+                            </span>
+                            <span class="text-xs font-mono font-bold ${
+                              option.pts > 0 ? 'text-emerald-600' : 'text-slate-400'
+                            }">
+                              +${option.pts} pts awarded
+                            </span>
+                          </div>
+
+                          <p class="text-[11px] text-slate-500 font-mono leading-normal pl-3 border-l-2 border-indigo-200">
+                            <span class="text-slate-700 font-bold uppercase block text-[8px] tracking-wide mb-1 font-sans">Engineering Rationale:</span>
+                            ${option.reason}
+                          </p>
+                        </div>
+                      ` : ''}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Control actions footer -->
+            <div class="pt-5 border-t border-slate-150 flex justify-end">
+              <button
+                type="button"
+                onclick="nextFixStep()"
+                ${!submittable ? 'disabled' : ''}
+                class="w-full sm:w-auto px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl uppercase tracking-wider text-xs shadow transition-all duration-150 btn-active disabled:bg-slate-100 disabled:text-slate-450 disabled:cursor-not-allowed"
+              >
+                ${state.currentFixIdx < study.fixes.length - 1 ? 'Confirm & Next Breach' : 'Generate Inspection Certificate'}
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Screen 6: Final Autopsy Certification
+      else if (state.screen === 'final_report') {
+        const study = CASE_STUDIES[state.selectedCaseIdx];
+        
+        // Define Rank threshold and details
+        let rankName = 'Junior Compliance Trainee';
+        let rankColor = 'text-amber-700 border-amber-200 bg-amber-50/40';
+        let rankDesc = 'Requires deeper grounding in the ethical responsibilities of codebase deployment patterns. Review standards and retry.';
+
+        if (state.runningScore >= 160) {
+          rankName = 'Elite Algorithmic Ethicist (S-Rank)';
+          rankColor = 'text-emerald-700 border-emerald-250 bg-emerald-50/30';
+          rankDesc = 'Outstanding. You have demonstrated mastery of public-interest technology and completed pristine remediation of algorithmic breaches.';
+        } else if (state.runningScore >= 130) {
+          rankName = 'Senior Forensics Investigator (A-Rank)';
+          rankColor = 'text-indigo-700 border-indigo-200 bg-indigo-50/30';
+          rankDesc = 'Excellent precision. Successfully audited and resolved high-priority concerns to guard user self-care and resource standards.';
+        } else if (state.runningScore >= 105) {
+          rankName = 'Certified Ethics Auditor (B-Rank)';
+          rankColor = 'text-sky-700 border-sky-250 bg-sky-50/30';
+          rankDesc = 'Meets standard professional testing competencies. Some remediating choices left slight technical risk exposure.';
         }
-    </script>
+
+        html = `
+          <!-- Printable Forensic Container Block -->
+          <div class="space-y-8 fade-in">
+            
+            <div class="bg-white border-8 border-double border-slate-200 rounded-3xl p-6 md:p-12 space-y-8 relative overflow-hidden print:bg-white print:text-black print:shadow-none print:border-black shadow-lg" id="printable-certificate">
+              <!-- Retro Watermark Logo -->
+              <div class="absolute inset-0 opacity-[0.02] pointer-events-none flex items-center justify-center select-none">
+                <span class="text-7xl md:text-8xl font-black transform scale-[2] rotate-[22deg]">SECURE BY DESIGN</span>
+              </div>
+
+              <!-- Certificate Header -->
+              <div class="text-center space-y-2 relative z-10">
+                <div class="inline-flex items-center justify-center p-4 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full mb-2 print:border-black print:text-black">
+                  <i data-lucide="shield-check" class="w-10 h-10 stroke-[2]"></i>
+                </div>
+                <h2 class="text-2xl md:text-3.5xl font-extrabold tracking-tight uppercase font-display text-slate-900 print:text-black leading-tight">
+                  Algorithmic Integrity Certification
+                </h2>
+                <div class="h-1.5 w-32 bg-indigo-600 mx-auto rounded-full print:bg-black"></div>
+                <p class="text-[10px] uppercase font-mono tracking-widest text-slate-500 print:text-black font-bold mt-2">
+                  Pre-Launch Codebase Forensic Compliance Registry
+                </p>
+              </div>
+
+              <!-- Attestation Text with Dynamic Subject name -->
+              <div class="max-w-xl mx-auto text-center space-y-4 relative z-10 text-slate-700 print:text-black font-semibold leading-relaxed">
+                <p class="text-sm">
+                  This document officially attests that the application system code known as 
+                  <strong class="text-indigo-700 bg-indigo-50 px-3 py-1 rounded text-base border border-indigo-150 print:text-black print:bg-white font-display uppercase font-bold inline-block mx-1">
+                    ${study.name}
+                  </strong> 
+                  has undergone a comprehensive forensic diagnosis and remediation loop backplane.
+                </p>
+                <p class="text-xs text-slate-500 print:text-black text-center max-w-sm mx-auto font-mono">
+                  Audit evaluated under strict conformance metrics corresponding to the standards of 
+                  <strong>${study.badge}</strong>.
+                </p>
+              </div>
+
+              <!-- Certificate Specs Box -->
+              <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10 py-2">
+                <!-- Score results specs -->
+                <div class="p-6 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-between print:bg-white print:border-black">
+                  <div class="space-y-1">
+                    <span class="block text-[8px] text-slate-400 uppercase tracking-wider font-mono">Fidelity Audit Score</span>
+                    <span class="text-2.5xl font-black font-mono text-emerald-600 print:text-black leading-tight">
+                      ${state.runningScore} <span class="text-xs text-slate-450 font-normal uppercase">pts</span>
+                    </span>
+                  </div>
+                  <i data-lucide="award" class="w-8 h-8 text-emerald-600 print:text-black"></i>
+                </div>
+
+                <!-- Forensic Rank Award -->
+                <div class="p-6 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-between print:bg-white print:border-black">
+                  <div class="space-y-1">
+                    <span class="block text-[8px] text-slate-400 uppercase tracking-wider font-mono">Compliance Rank</span>
+                    <span class="text-sm font-bold font-display text-slate-850 print:text-black leading-tight uppercase block">
+                      ${rankName.split('(')[0]}
+                    </span>
+                    <span class="text-[10px] font-bold font-mono text-indigo-700 print:text-black inline-block">
+                      ${rankName.includes('(') ? '(' + rankName.split('(')[1] : ''}
+                    </span>
+                  </div>
+                  <i data-lucide="shield" class="w-8 h-8 text-indigo-600 print:text-black"></i>
+                </div>
+              </div>
+
+              <!-- Attestation details block -->
+              <div class="max-w-2xl mx-auto p-5 rounded-2xl border ${rankColor} text-center space-y-1 relative z-10">
+                <p class="text-xs leading-relaxed font-semibold">
+                  ${rankDesc}
+                </p>
+              </div>
+
+              <!-- Signature lines grid (Printable beauty) -->
+              <div class="border-t border-slate-100 pt-8 mt-4 grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-xl mx-auto relative z-10 text-center font-mono text-[10px] text-slate-400 print:border-black print:text-black font-bold">
+                <div class="space-y-3">
+                  <div class="h-6 flex items-end justify-center">
+                    <span class="font-display italic text-slate-600 text-xs tracking-wider select-none font-semibold print:text-black">
+                      Forensic Lab Operator
+                    </span>
+                  </div>
+                  <div class="border-t border-slate-200 mx-6 print:border-black"></div>
+                  <p class="uppercase tracking-wider">AUTHORIZED AUDITOR SIGNATURE</p>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="h-6 flex items-end justify-center font-black text-emerald-600 tracking-wide font-extrabold print:text-black">
+                    COMPLIANT SECURE DESIGN
+                  </div>
+                  <div class="border-t border-slate-200 mx-6 print:border-black"></div>
+                  <p class="uppercase tracking-wider">VERIFICATION CERTIFICATION SEAL</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Action panel with Print & Restart, completely hidden from media printing -->
+            <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
+              <p class="text-xs text-slate-450 font-mono">
+                Audit complete. Keep this record of your ethical investigation, or audit another production system.
+              </p>
+
+              <div class="flex flex-wrap gap-3 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onclick="window.print()"
+                  class="flex items-center justify-center gap-2 px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-800 font-bold rounded-2xl uppercase tracking-wider text-xs transition duration-150 btn-active w-full sm:w-auto cursor-pointer border border-slate-200 shadow-sm"
+                >
+                  <i data-lucide="printer" class="w-4 h-4"></i>
+                  Print Compliance Certificate
+                </button>
+
+                <button
+                  type="button"
+                  onclick="restartAudit()"
+                  class="flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl uppercase tracking-wider text-xs shadow transition-all duration-150 btn-active w-full sm:w-auto cursor-pointer"
+                >
+                  <i data-lucide="refresh-cw" class="w-4 h-4 text-white stroke-[3px]"></i>
+                  Audit Another System
+                </button>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }
+
+      // Render actual html content
+      container.innerHTML = html;
+
+      // Swap plain Lucide tags with clean responsive icons
+      lucide.createIcons();
+    }
+
+    // === START APPS ===
+    document.addEventListener('DOMContentLoaded', () => {
+      renderApp();
+    });
+  </script>
 </body>
 </html>
