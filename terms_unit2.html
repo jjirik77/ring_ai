@@ -3,1379 +3,1514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethics Vocab Command Center</title>
+    <title>Ethics Vocabulary Studio</title>
+    <!-- Google Fonts: Inter & Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #F1F5F9;
-            --panel: #FFFFFF;
-            --text-primary: #0F172A;
-            --text-secondary: #475569;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --border-soft: #F1F5F9;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
-            
-            --blue-accent: #2563EB;
-            --blue-bg: #EFF6FF;
-            --purple-accent: #7C3AED;
-            --purple-bg: #F5F3FF;
-            --amber-accent: #D97706;
-            --amber-bg: #FFFBEB;
-            
-            --correct: #16A34A;
-            --correct-bg: #F0FDF4;
-            --incorrect: #DC2626;
-            --incorrect-bg: #FEF2F2;
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons Browser Package -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
+    </script>
+    <style type="text/css">
+        /* Custom 3D flips */
+        .perspective-1200 {
+            perspective: 1200px;
         }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        #app-container {
-            width: 100%;
-            max-width: 1120px;
-            min-height: 850px;
-            background: var(--panel);
-            border-radius: 40px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            padding: 10px;
-        }
-
-        /* Top Header */
-        #header-bar {
-            padding: 32px 48px;
-            display: flex;
-            align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 100;
-        }
-
-        #exit-mode-btn {
-            background: #F1F5F9;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 12px;
-            padding: 10px 20px;
-            border-radius: 9999px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-sm);
-        }
-
-        #exit-mode-btn:hover {
-            color: var(--text-primary);
-            background: #E2E8F0;
-            border-color: #CBD5E1;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            min-height: 800px;
-            padding: 110px 48px 48px 48px;
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Welcome Screen Header Badges */
-        .badge-interactive {
-            display: inline-block;
-            background-color: var(--blue-bg);
-            color: var(--blue-accent);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            padding: 6px 16px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            border: 1px solid rgba(37, 99, 235, 0.12);
-        }
-
-        /* Welcome Screen Styling */
-        .welcome-content {
-            width: 100%;
-            max-width: 960px;
-            text-align: center;
-            margin: auto;
-            padding: 20px 10px;
-        }
-
-        .welcome-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 48px;
-            font-weight: 700;
-            line-height: 1.15;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #0F172A 0%, #2563EB 50%, #4F46E5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.03em;
-        }
-
-        .welcome-subtitle {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            margin-bottom: 36px;
-        }
-
-        /* Intro Box Container */
-        .intro-box {
-            background-color: #F8FAFC;
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 32px 40px;
-            max-width: 820px;
-            margin: 0 auto 48px auto;
-            text-align: left;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .intro-box-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .intro-box-desc {
-            color: var(--text-secondary);
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .mode-selection {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .mode-card {
-            background: #FFFFFF;
-            border: 1px solid var(--border);
-            padding: 36px 28px;
-            border-radius: 32px;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-        }
-
-        .mode-card:hover {
-            border-color: #CBD5E1;
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px -8px rgba(15, 23, 42, 0.08);
-        }
-
-        /* Mode-specific colors on hover */
-        .mode-card.flashcard-card:hover { border-color: var(--blue-accent); }
-        .mode-card.match-card:hover { border-color: var(--purple-accent); }
-        .mode-card.challenge-card:hover { border-color: var(--amber-accent); }
-
-        .mode-icon-circle {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .flashcard-card .mode-icon-circle { background-color: var(--blue-bg); color: var(--blue-accent); }
-        .match-card .mode-icon-circle { background-color: var(--purple-bg); color: var(--purple-accent); }
-        .challenge-card .mode-icon-circle { background-color: var(--amber-bg); color: var(--amber-accent); }
-
-        .mode-card h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-primary);
-        }
-
-        .mode-card p {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 24px;
-            flex-grow: 1;
-        }
-
-        /* Mode Action Tags */
-        .mode-tag {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            padding: 6px 14px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-
-        .mode-tag-blue { background-color: var(--blue-bg); color: var(--blue-accent); }
-        .mode-tag-purple { background-color: var(--purple-bg); color: var(--purple-accent); }
-        .mode-tag-amber { background-color: var(--amber-bg); color: var(--amber-accent); }
-
-        /* Score footer label */
-        .mode-score {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-            margin-top: auto;
-        }
-
-        /* Flashcard Screen Mode */
-        .card-view {
-            display: flex;
-            align-items: center;
-            gap: 48px;
-            margin: auto;
-        }
-
-        .card-container {
-            width: 520px;
-            height: 360px;
-            perspective: 2000px;
-            cursor: pointer;
-        }
-
-        .flashcard {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        .transform-style-3d {
             transform-style: preserve-3d;
         }
-
-        .flashcard.flipped { transform: rotateY(180deg); }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .backface-hidden {
             backface-visibility: hidden;
-            border-radius: 32px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 48px;
-            text-align: center;
-            border: 1px solid var(--border);
-            background: #FFFFFF;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
+            -webkit-backface-visibility: hidden;
         }
-
-        .card-front {
-            border-top: 10px solid var(--blue-accent);
-        }
-
-        .card-back {
-            background: #FAFCFF;
-            border: 2px solid var(--blue-accent);
+        .rotate-y-180 {
             transform: rotateY(180deg);
         }
 
-        .topic-icon {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 20px;
-            color: var(--blue-accent);
-        }
-
-        .card-term {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 38px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            letter-spacing: -0.01em;
-        }
-
-        .card-def {
-            font-size: 18px;
-            line-height: 1.6;
-            color: var(--text-primary);
-            font-weight: 500;
-            margin-bottom: 24px;
-        }
-
-        .card-example {
-            font-size: 14px;
-            font-style: italic;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            background: #F1F5F9;
-            padding: 12px 24px;
-            border-radius: 16px;
-            border-left: 4px solid var(--blue-accent);
-        }
-
-        .nav-btn-circle {
-            background: #FFFFFF;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .nav-btn-circle:hover {
-            border-color: var(--blue-accent);
-            color: var(--blue-accent);
-            background: var(--blue-bg);
-            transform: scale(1.1) translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.15);
-        }
-
-        .flip-hint {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            position: absolute;
-            bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            opacity: 0.6;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-
-        .card-container:hover .flip-hint {
-            opacity: 1;
-            transform: scale(1.03);
-        }
-
-        .self-rate-container {
-            display: none;
-            gap: 16px;
-            margin-top: 36px;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .self-rate-container.visible { display: flex; }
-
-        .btn-rate {
-            padding: 16px 36px;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.05em;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-mastered {
-            background: var(--correct);
-            color: #FFFFFF;
-        }
-
-        .btn-mastered:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);
-        }
-
-        .btn-repeat {
-            background: #F1F5F9;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-repeat:hover {
-            background: #E2E8F0;
-            transform: translateY(-1px);
-        }
-
-        /* Match Screen Styling */
-        .match-layout {
-            width: 100%;
-            max-width: 900px;
-            margin: auto;
-        }
-
-        .match-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        .chip-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .match-chip {
-            background: #FFFFFF;
-            border: 1px solid var(--border);
-            padding: 20px 24px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            min-height: 84px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: var(--shadow-sm);
-            color: var(--text-primary);
-        }
-
-        .match-chip:hover:not(.correct):not(.incorrect) {
-            border-color: var(--purple-accent);
-            transform: translateX(6px);
-            background: #FAF9FF;
-            box-shadow: var(--shadow-md);
-        }
-
-        .match-chip.selected {
-            border-color: var(--purple-accent);
-            background: rgba(124, 58, 237, 0.04);
-            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
-        }
-
-        .match-chip.correct {
-            border-color: var(--correct);
-            background-color: var(--correct-bg);
-            color: var(--correct);
-            pointer-events: none;
-            opacity: 0.8;
-            box-shadow: none;
-        }
-
-        .match-chip.incorrect {
-            border-color: var(--incorrect);
-            background-color: var(--incorrect-bg);
-            color: var(--incorrect);
-            animation: shake 0.4s;
-        }
-
+        /* High quality microinteractions & animations */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
-        /* Challenge Mode Styling */
-        .challenge-box {
-            width: 100%;
-            max-width: 760px;
-            background: #FFFFFF;
-            padding: 48px;
-            border-radius: 32px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            margin: auto;
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 0.5; }
         }
-
-        .q-meta {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--blue-accent);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .q-text {
-            font-size: 22px;
-            font-weight: 600;
-            line-height: 1.45;
-            margin-bottom: 36px;
-            color: var(--text-primary);
-        }
-
-        .answer-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        .answer-tile {
-            background: #FFFFFF;
-            border: 1px solid var(--border);
-            padding: 22px 24px;
-            border-radius: 18px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.4;
-        }
-
-        .answer-tile:hover:not(.disabled) {
-            border-color: var(--blue-accent);
-            background: #F8FAFC;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .answer-tile.correct {
-            background: var(--correct);
-            color: #FFFFFF;
-            border-color: var(--correct);
-            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25);
-        }
-
-        .answer-tile.incorrect {
-            background: var(--incorrect);
-            color: #FFFFFF;
-            border-color: var(--incorrect);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.15);
-        }
-
-        .answer-tile.disabled {
-            pointer-events: none;
-        }
-
-        .explanation-panel {
-            background: #F8FAFC;
-            border-left: 4px solid var(--blue-accent);
-            padding: 20px 24px;
-            border-radius: 12px;
-            margin: 24px 0;
-            display: none;
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-        }
-
-        .btn-next {
-            width: 100%;
-            background: var(--blue-accent);
-            color: #FFFFFF;
-            border: none;
-            padding: 18px;
-            border-radius: 16px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            display: none;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 13px;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-next:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Summary Panel Styling */
-        .summary-view {
-            text-align: center;
-            margin: auto;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin: 36px 0;
-        }
-
-        .stat-card {
-            background: #F8FAFC;
-            border: 1px solid var(--border);
-            padding: 28px;
-            border-radius: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .stat-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 40px;
-            font-weight: 700;
-            color: var(--blue-accent);
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-
-        .final-rating {
-            background: var(--blue-bg);
-            border: 1px solid rgba(37, 99, 235, 0.15);
-            padding: 28px;
-            border-radius: 24px;
-            margin-bottom: 36px;
-        }
-
-        .rating-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--blue-accent);
-            margin-bottom: 8px;
-        }
-
-        .rating-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .btn-reset {
-            background: var(--blue-accent);
-            color: #FFFFFF;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 16px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 13px;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
-        }
-
-        @media (max-width: 1000px) {
-            #app-container { min-height: 100vh; border-radius: 0; padding: 12px; }
-            .screen { padding: 90px 20px 32px 20px; }
-            .mode-selection { grid-template-columns: 1fr; }
-            .card-view { flex-direction: column; gap: 24px; }
-            .card-container { width: 90vw; height: 320px; }
-            .answer-grid { grid-template-columns: 1fr; }
-            .match-grid { grid-template-columns: 1fr; }
+        .animate-pulse-ring {
+            animation: pulse-ring 2s infinite ease-in-out;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex items-center justify-center p-3 sm:p-6 select-none">
 
-<div id="app-container">
-    <header id="header-bar">
-        <button id="exit-mode-btn" onclick="exitToBriefing()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Exit Mode
-        </button>
-    </header>
+    <!-- Container Frame -->
+    <main class="w-full max-w-5xl min-h-[640px] bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col justify-between">
+        
+        <!-- Screen Container -->
+        <div class="flex-grow flex flex-col justify-center py-8">
 
-    <!-- S1: Welcome -->
-    <div id="screen-S1" class="screen active">
-        <div class="welcome-content">
-            <span class="badge-interactive">Interactive Learning</span>
-            <h1 class="welcome-title">Ethics Vocabulary Studio</h1>
-            <div class="welcome-subtitle">RING Ethics Fundamentals — 17 Essential Terms for Lesson 1</div>
-
-            <div class="intro-box">
-                <p class="intro-box-title">Success in computer ethics starts with owning its language.</p>
-                <p class="intro-box-desc">
-                    Whether you are evaluating privacy protocols, professional codes of conduct, or analyzing digital rights management, possessing a razor-sharp lexicon is non-negotiable. This custom studio is designed to build fluid retrieval and application of 17 pivotal concepts. Choose a study mode below to explore cards, race against definitions, or test your reasoning in simulated scenarios.
-                </p>
-            </div>
-
-            <div class="mode-selection">
-                <div class="mode-card flashcard-card" onclick="startMode('flashcard')">
-                    <div class="mode-icon-circle">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <!-- ================= S1: INTRO / MENU ================= -->
+            <section id="s1-intro" class="max-w-4xl mx-auto px-4 sm:px-6 w-full">
+                <div class="text-center mb-10">
+                    <div class="inline-block bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-widest mb-3">
+                        Interactive Learning
                     </div>
-                    <h3>Flashcard</h3>
-                    <p>Active recall study with term, definition, and practical real-world examples.</p>
-                    <div class="mode-tag mode-tag-blue">17 Terms • Study Mode</div>
-                    <div class="mode-score" id="score-flashcards">0/17 Mastered</div>
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-neutral-900 mb-3 font-display">
+                        Ethics Vocabulary Studio
+                    </h1>
+                    <p class="text-base sm:text-lg font-medium text-slate-500 max-w-2xl mx-auto">
+                        RING Ethics Fundamentals — 17 Essential Terms for Lesson 1
+                    </p>
                 </div>
-                <div class="mode-card match-card" onclick="startMode('match')">
-                    <div class="mode-icon-circle">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    </div>
-                    <h3>Match</h3>
-                    <p>Connect terms to their definitions across 3 rapid pairing rounds.</p>
-                    <div class="mode-tag mode-tag-purple">17 Pairs • Rapid Match</div>
-                    <div class="mode-score" id="score-match">Best Score: Not Played</div>
-                </div>
-                <div class="mode-card challenge-card" onclick="startMode('challenge')">
-                    <div class="mode-icon-circle">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    </div>
-                    <h3>Challenge</h3>
-                    <p>Apply your knowledge to complex, scenario-based system design questions.</p>
-                    <div class="mode-tag mode-tag-amber">10 Scenarios • Scored Mode</div>
-                    <div class="mode-score" id="score-challenge">Best Score: Not Scored</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- S2: Flashcards -->
-    <div id="screen-flashcard" class="screen">
-        <div class="card-view">
-            <button class="nav-btn-circle" onclick="navCard(-1)">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            </button>
-            
-            <div style="text-align: center;">
-                <p class="q-meta" id="card-counter">1 / 17</p>
-                <div class="card-container" onclick="flipCard()">
-                    <div class="flashcard" id="active-card">
-                        <div class="card-face card-front">
-                            <div id="fc-icon-container"></div>
-                            <h2 class="card-term" id="fc-term">Ethics</h2>
-                            <div class="flip-hint">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                                Click Card to Reveal
-                            </div>
+                <div class="text-slate-600 text-[15px] leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl p-6 md:p-8 mb-12 shadow-xs">
+                    <p class="mb-4 font-semibold text-slate-800">
+                        Success in computer ethics starts with owning its language.
+                    </p>
+                    <p>
+                        Whether you are evaluating privacy protocols, professional codes of conduct, or analyzing digital rights management, possessing a razor-sharp lexicon is non-negotiable. This custom studio is designed to build fluid retrieval and application of <strong>17 pivotal concepts</strong>. Choose a study mode below to explore cards, race against definitions, or test your reasoning in simulated scenarios.
+                    </p>
+                </div>
+
+                <!-- Mode Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Flashcard Mode -->
+                    <div onclick="enterMode('flashcard')" class="flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 cursor-pointer shadow-xs hover:shadow-md hover:border-indigo-600 transition-all group">
+                        <div class="bg-blue-50 text-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-blue-100 group-hover:bg-blue-100 transition-colors">
+                            <i data-lucide="book-open" class="w-7 h-7"></i>
                         </div>
-                        <div class="card-face card-back">
-                            <p class="card-def" id="fc-def">Definition</p>
-                            <p class="card-example" id="fc-example">"Example sentence."</p>
-                            <div class="flip-hint">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 22v-6h6M2.66 8.43a10 10 0 1 1 .57 8.38l-5.67 5.67"/></svg>
-                                Click to Return
-                            </div>
+                        <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">FLASHCARD</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                            Active recall study with term, definition, and practical real-world examples.
+                        </p>
+                        <div class="mt-auto space-y-3">
+                          <div class="bg-blue-50 text-blue-700 border border-blue-100 text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider">
+                            17 Terms • Study Mode
+                          </div>
+                          <div id="intro-fc-progress" class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                            0/17 mastered
+                          </div>
                         </div>
                     </div>
-                </div>
-                <div class="self-rate-container" id="fc-rate-group">
-                    <button class="btn-rate btn-repeat" onclick="rateCard(false)">Repeat Review</button>
-                    <button class="btn-rate btn-mastered" onclick="rateCard(true)">Mastered</button>
-                </div>
-            </div>
 
-            <button class="nav-btn-circle" onclick="navCard(1)">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
+                    <!-- Match Mode -->
+                    <div onclick="enterMode('match')" class="flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 cursor-pointer shadow-xs hover:shadow-md hover:border-indigo-600 transition-all group">
+                        <div class="bg-purple-50 text-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-purple-100 group-hover:bg-purple-100 transition-colors">
+                            <i data-lucide="link" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">MATCH</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                            Connect terms to their definitions across 3 rapid pairing rounds.
+                        </p>
+                        <div class="mt-auto space-y-3">
+                          <div class="bg-purple-50 text-purple-700 border border-purple-100 text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider">
+                            17 Pairs • Rapid Match
+                          </div>
+                          <div id="intro-match-progress" class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                            Best score: Not played
+                          </div>
+                        </div>
+                    </div>
+
+                    <!-- Challenge Mode -->
+                    <div onclick="enterMode('challenge')" class="flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 cursor-pointer shadow-xs hover:shadow-md hover:border-indigo-600 transition-all group">
+                        <div class="bg-amber-50 text-amber-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-amber-100 group-hover:bg-amber-100 transition-colors">
+                            <i data-lucide="zap" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">CHALLENGE</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                            Apply your knowledge to complex, scenario-based model design questions.
+                        </p>
+                        <div class="mt-auto space-y-3">
+                          <div class="bg-amber-50 text-amber-700 border border-amber-100 text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider">
+                            10 Scenarios • Scored Mode
+                          </div>
+                          <div id="intro-challenge-progress" class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                            Best score: Not scored
+                          </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Trigger if progress exists -->
+                <div id="intro-report-div" class="hidden mt-12 flex justify-center border-t border-slate-100 pt-8 animate-fade-in">
+                    <button onclick="enterMode('mastery')" class="flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-750 text-white font-bold px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all font-display border border-indigo-600 cursor-pointer text-center">
+                        <i data-lucide="award" class="w-4 h-4"></i> View Study Mastery Report & Review List
+                    </button>
+                </div>
+            </section>
+
+            <!-- ================= S2: FLASHCARD MODE ================= -->
+            <section id="s2-flashcard" class="hidden max-w-3xl mx-auto px-4 sm:px-6 w-full">
+                <!-- Top Header Row -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                    <button onclick="returnToMenu()" class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Exit Mode
+                    </button>
+                    <span class="text-sm font-semibold tracking-wide text-slate-400 font-display text-center uppercase">
+                        FLASHCARD STUDIO • <span id="fc-overall-mastery" class="text-slate-800 font-bold">0/17 Mastered</span>
+                    </span>
+                    <span id="fc-progress-tag" class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5 uppercase tracking-wide">
+                        Card 1 of 17
+                    </span>
+                </div>
+
+                <!-- Empty Deck Alert state -->
+                <div id="fc-completed-state" class="hidden text-center bg-white border border-slate-200 rounded-3xl p-10 md:p-16 shadow-lg max-w-lg mx-auto">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 animate-bounce">
+                        <i data-lucide="check-circle" class="w-9 h-9"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-3 font-display">Completed the Deck!</h2>
+                    <p class="text-slate-500 leading-relaxed mb-8 text-sm">
+                        You have successfully reviewed and categorized all active terms in this study block. Go to the dashboard to reset or review your metrics.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <button onclick="resetFlashcards()" class="px-6 py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold hover:bg-neutral-800 tracking-wider transition-all uppercase flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Restudy Full List
+                        </button>
+                        <button onclick="enterMode('mastery')" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold tracking-wider transition-all uppercase flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                            <i data-lucide="award" class="w-4 h-4"></i> View Mastery Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Deck Active view -->
+                <div id="fc-active-state">
+                    <!-- Interactive Card Flip Platform -->
+                    <div onclick="toggleFlashcard()" class="w-full relative h-[420px] select-none group cursor-pointer perspective-1200">
+                        <div id="fc-card-body" class="w-full h-full relative transition-transform duration-500 transform-style-3d">
+                            
+                            <!-- Card FRONT -->
+                            <div class="absolute inset-0 w-full h-full bg-white border border-slate-200 hover:border-slate-400 group-hover:shadow-md rounded-2xl p-8 flex flex-col justify-center items-center shadow-xs transition-colors backface-hidden">
+                                <!-- Category Indicator Tag -->
+                                <div class="absolute top-6 left-6 flex items-center gap-2">
+                                    <span id="fc-front-color-indicator" class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                    <span id="fc-front-group-indicator" class="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase font-display">
+                                        FOUNDATIONS
+                                    </span>
+                                </div>
+                                <div id="fc-front-badge" class="absolute top-6 right-6"></div>
+
+                                <!-- Dynamic Vector SVG icon -->
+                                <div id="fc-front-icon-container" class="p-5 rounded-2xl mb-8 flex items-center justify-center shadow-xs">
+                                    <!-- Dynamic Icon Generated in JS -->
+                                </div>
+
+                                <!-- Core Term title -->
+                                <h2 id="fc-front-term" class="text-3xl sm:text-4.5xl font-extrabold tracking-tight text-slate-900 text-center mb-4 font-display">
+                                    Ethics
+                                </h2>
+
+                                <div class="absolute bottom-6 text-slate-400 text-[10px] font-mono tracking-widest uppercase mt-4">
+                                    Click card index or SPACE to flip
+                                </div>
+                            </div>
+
+                            <!-- Card BACK -->
+                            <div class="absolute inset-0 w-full h-full bg-white border border-slate-200 group-hover:shadow-md rounded-2xl p-8 flex flex-col justify-between shadow-xs rotate-y-180 overflow-y-auto backface-hidden">
+                                <!-- Header info -->
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span id="fc-back-color-indicator" class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                        <span id="fc-back-group-indicator" class="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase font-display">
+                                            FOUNDATIONS
+                                        </span>
+                                    </div>
+                                    <span id="fc-back-term" class="text-xs font-bold text-slate-900 font-display">Ethics</span>
+                                </div>
+
+                                <!-- Definition Container -->
+                                <div class="my-auto py-4 space-y-4">
+                                    <div>
+                                        <h4 class="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase font-mono mb-1.5">
+                                            CONCEPT DEFINITION
+                                        </h4>
+                                        <p id="fc-back-definition" class="text-base sm:text-lg font-medium text-slate-800 leading-relaxed">
+                                            The discipline dealing with what is good and bad and with moral duty and obligation.
+                                        </p>
+                                    </div>
+
+                                    <div class="bg-slate-50 border border-slate-150 rounded-xl p-4">
+                                        <h5 class="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase font-mono mb-1.5">
+                                            REAL-WORLD APPLICATION
+                                        </h5>
+                                        <p id="fc-back-example" class="text-xs text-slate-600 leading-relaxed italic">
+                                            "Deciding whether to share a friend's private message involves ethics."
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="text-center text-slate-400 text-[9px] font-mono tracking-widest uppercase mt-4">
+                                    Click card index to flip back
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Interactive Deck Actions Control Panel -->
+                    <div class="min-h-[64px] flex flex-col items-center justify-center my-6">
+                        <!-- Rating feedback buttons -->
+                        <div id="fc-rating-buttons" class="hidden flex gap-4 w-full max-w-sm justify-center select-none">
+                            <button onclick="recordFlashcardRating('review', event)" class="flex-1 bg-white hover:bg-slate-50 border border-amber-300 text-amber-700 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:shadow-xs transition-all cursor-pointer">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Review again
+                            </button>
+                            <button onclick="recordFlashcardRating('got-it', event)" class="flex-1 bg-green-600 hover:bg-green-700 text-white border border-green-600 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Got it
+                            </button>
+                        </div>
+                        
+                        <!-- Space instructions tip placeholder -->
+                        <div id="fc-keyboard-tip" class="text-xs text-center text-slate-400 flex items-center gap-2 bg-slate-50 border border-slate-150 rounded-lg px-4 py-2">
+                            💡 Use <strong>Spacebar</strong> to flip, and <strong>Left / Right Arrows</strong> to navigate
+                        </div>
+                    </div>
+
+                    <!-- Slide Progression controls -->
+                    <div class="flex gap-2 justify-center items-center py-2">
+                        <button onclick="prevFlashcard()" class="p-3 border border-slate-200 text-slate-600 hover:text-slate-900 bg-white rounded-xl hover:bg-slate-50 transition-all hover:shadow-xs cursor-pointer" title="Previous card">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="shuffleFlashcards()" class="px-5 py-3 border border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider bg-white rounded-xl hover:bg-slate-50 transition-all hover:shadow-xs flex items-center gap-2 cursor-pointer" title="Shuffle items">
+                            <i data-lucide="shuffle" class="w-3.5 h-3.5"></i> Shuffle
+                        </button>
+                        <button onclick="nextFlashcard()" class="p-3 border border-slate-200 text-slate-600 hover:text-slate-900 bg-white rounded-xl hover:bg-slate-50 transition-all hover:shadow-xs cursor-pointer" title="Next card">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= S3: MATCHING MODE ================= -->
+            <section id="s3-match" class="hidden max-w-4xl mx-auto px-4 sm:px-6 w-full">
+                <!-- Round / Score Bar -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                    <button onclick="returnToMenu()" class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Exit Mode
+                    </button>
+                    <span id="match-round-tag" class="text-sm font-semibold tracking-wide text-slate-400 font-display uppercase text-center">
+                        MATCHING PRESSURE • <span class="text-slate-800 font-bold">Round 1 of 3</span>
+                    </span>
+                    <span id="match-score-tag" class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5 font-display uppercase tracking-wider">
+                        First-Try Score: 0 / 17
+                    </span>
+                </div>
+
+                <!-- Match board grid coordinates -->
+                <div class="relative min-h-[480px]">
+                    <!-- Connective SVG vectors path lines -->
+                    <svg id="match-svg-canvas" class="absolute inset-0 pointer-events-none w-full h-full z-10"></svg>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 relative z-20">
+                        <!-- Left Columns: Terms -->
+                        <div>
+                            <h4 class="text-[10px] sm:text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-3 border-b border-slate-100 pb-2">
+                                TERMINOLOGY LIST
+                            </h4>
+                            <div id="match-terms-column" class="space-y-3">
+                                <!-- JS-generated terms -->
+                            </div>
+                        </div>
+
+                        <!-- Right Columns: Definitions -->
+                        <div>
+                            <h4 class="text-[10px] sm:text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-3 border-b border-slate-100 pb-2">
+                                DEFINITIONS
+                            </h4>
+                            <div id="match-defs-column" class="space-y-3">
+                                <!-- JS-generated definitions -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next loop navigation action cards -->
+                <div id="match-complete-panel" class="hidden mt-10 p-8 border border-neutral-900 bg-slate-50 rounded-2xl text-center max-w-md mx-auto shadow-sm animate-fade-in">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2 font-display">Round Completed!</h3>
+                    <p class="text-xs text-slate-500 mb-6 font-medium">
+                        All connections successfully aligned. Press below to advance.
+                    </p>
+                    <button onclick="advanceMatchRound()" id="match-continue-btn" class="w-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3 rounded-xl transition-colors text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                        <i data-lucide="play" class="w-3.5 h-3.5"></i> Continue Session
+                    </button>
+                </div>
+            </section>
+
+            <!-- ================= S4: CHALLENGE MODE ================= -->
+            <section id="s4-challenge" class="hidden max-w-3xl mx-auto px-4 sm:px-6 w-full">
+                <!-- Top Progress Tags -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                    <button onclick="returnToMenu()" class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Exit Mode
+                    </button>
+                    <span class="text-sm font-semibold tracking-wide text-slate-400 font-display uppercase tracking-wider text-center">
+                        Scenario Challenge Mode
+                    </span>
+                    <span id="challenge-q-tag" class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5 font-display">
+                        Scenario 1 of 10
+                    </span>
+                </div>
+
+                <!-- Scenario Display Board -->
+                <div class="bg-indigo-900/5 border border-indigo-150 rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2.5 bg-white text-indigo-600 rounded-xl shadow-xs border border-slate-100 flex items-center justify-center">
+                            <i id="q-category-icon" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span id="q-category-txt" class="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase font-mono block">
+                                FOUNDATIONS CONCEPT
+                            </span>
+                            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest font-display block mt-0.5">
+                                SCENARIO CHALLENGE
+                            </span>
+                        </div>
+                    </div>
+
+                    <p id="q-scenario-text" class="text-[15px] sm:text-[17px] font-bold text-slate-800 leading-relaxed max-w-3xl">
+                        A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which principle is violated?
+                    </p>
+                </div>
+
+                <!-- Answer options grid indices -->
+                <div id="challenge-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <!-- Dynamic multi choice elements -->
+                </div>
+
+                <!-- Explanation Feedback drawer -->
+                <div id="challenge-feedback-panel" class="hidden border border-slate-200 bg-white rounded-2xl p-6 shadow-sm mb-6 animate-fade-in">
+                    <div class="mb-4">
+                        <div id="challenge-status-badge" class="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                            <!-- JS injected verification text -->
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 mb-6">
+                        <i data-lucide="lightbulb" class="text-amber-500 shrink-0 mt-0.5 w-5 h-5"></i>
+                        <p id="challenge-explanation" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">
+                            Transparency requires honest disclosure of interests or business relations, which a paid review violates if not disclosed.
+                        </p>
+                    </div>
+
+                    <button onclick="advanceChallengeQuestion()" id="challenge-proceed-btn" class="w-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-6 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer">
+                        Next Question <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ================= S5: MASTERY REPORT ================= -->
+            <section id="s5-mastery" class="hidden max-w-3xl mx-auto px-4 sm:px-6 w-full">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <span class="text-[10px] font-black tracking-widest text-indigo-600 uppercase font-mono bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+                        Fluency Analytics
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 mt-3 font-display">
+                        Mastery Report
+                    </h1>
+                    <p class="text-xs sm:text-sm font-medium text-slate-400 mt-1.5 font-display">
+                        Live performance matrices and review list
+                    </p>
+                </div>
+
+                <!-- Mastery Metric Wheel Counter -->
+                <div class="relative flex justify-center mb-10">
+                    <div class="relative flex flex-col justify-center items-center w-40 h-40 bg-white shadow-md rounded-full border border-slate-150 animate-pulse-ring">
+                        <span id="report-percent-heading" class="text-4xl sm:text-5xl font-black text-neutral-900 font-display tracking-tight">
+                            0%
+                        </span>
+                        <span class="text-[9px] font-extrabold text-slate-400 tracking-wider uppercase mt-1">
+                            Total Fluency
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Study Module Progress bars -->
+                <div class="space-y-6 mb-12">
+                    <!-- Progress item 1: Flashcards -->
+                    <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2 text-slate-600">
+                                <i data-lucide="book-open" class="w-4 h-4 text-blue-500"></i>
+                                <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">
+                                    Active Recall Cards
+                                </span>
+                            </div>
+                            <span id="report-fc-txt" class="text-xs font-extrabold text-slate-800 font-display">
+                                0 / 17 mastered
+                              </span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                            <div id="report-fc-bar" class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progress item 2: Match -->
+                    <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2 text-slate-600">
+                                <i data-lucide="link" class="w-4 h-4 text-purple-500"></i>
+                                <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">
+                                    First-Try Match links
+                                </span>
+                            </div>
+                            <span id="report-match-txt" class="text-xs font-extrabold text-slate-800 font-display">
+                                0 / 17 Pairs
+                              </span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                            <div id="report-match-bar" class="bg-purple-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progress item 3: Scenario Challenge -->
+                    <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2 text-slate-600">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                                <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">
+                                    Scenario Challenge
+                                </span>
+                            </div>
+                            <span id="report-challenge-txt" class="text-xs font-extrabold text-slate-800 font-display">
+                                0 / 10 correct
+                              </span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                            <div id="report-challenge-bar" class="bg-amber-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rank Title Card -->
+                <div id="report-rank-card" class="border rounded-2xl p-6 sm:p-8 text-center shadow-xs mb-12 bg-slate-50 border-slate-200">
+                    <i data-lucide="award" class="mx-auto text-slate-600 mb-3 w-8 h-8"></i>
+                    <h3 id="report-rank-heading" class="text-xl font-bold tracking-wider font-display uppercase mb-2">
+                        EXPLORER
+                    </h3>
+                    <p id="report-rank-desc" class="text-xs sm:text-sm leading-relaxed max-w-lg mx-auto opacity-85">
+                        You are beginning to study the terms. Navigate back to Flashcards or Match to expand your score progress.
+                    </p>
+                </div>
+
+                <!-- Flagged for Review custom list -->
+                <div class="border border-slate-200 bg-white rounded-2xl p-6 sm:p-8 shadow-xs mb-12">
+                    <h3 class="text-xs font-bold text-slate-400 font-mono tracking-widest uppercase border-b border-slate-150 pb-3 mb-4 flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="text-amber-500 w-4.5 h-4.5"></i> Flagged for Reference & Review
+                    </h3>
+                    <div id="report-review-log-container" class="divide-y divide-slate-100 max-h-80 overflow-y-auto pr-2">
+                        <!-- Flagged elements dynamically painted -->
+                    </div>
+                </div>
+
+                <!-- Multi Navigation actions -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button onclick="enterMode('flashcard')" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Back to study
+                    </button>
+                    <button onclick="resetChallengeAndGo()" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Retry challenge
+                    </button>
+                    <button onclick="returnToMenu()" class="bg-neutral-900 border border-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                        <i data-lucide="home" class="w-3.5 h-3.5"></i> Reset Menu
+                    </button>
+                </div>
+
+            </section>
+
         </div>
-    </div>
 
-    <!-- S3: Match Mode -->
-    <div id="screen-match" class="screen">
-        <div class="match-layout">
-            <p class="q-meta" style="text-align: center; margin-bottom: 8px;">Correlation Protocol</p>
-            <h2 class="welcome-title" id="match-round-title" style="font-size: 32px; margin-bottom: 8px;">Round 1 / 3</h2>
-            <p style="text-align: center; color: var(--text-secondary); max-width: 650px; margin: 0 auto 32px auto; font-size: 14px; line-height: 1.6;">
-                <strong>Instructions:</strong> Click a term in the left column, then click its matching definition in the right column (or vice versa) to pair them. You can click any active selection again to unselect it.
+
+    </main>
+
+    <!-- Overlay Round Progress banner -->
+    <div id="overlay-banner" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity duration-300">
+        <div class="bg-white border-2 border-neutral-900 rounded-3xl p-8 md:p-12 text-center shadow-2xl max-w-sm w-full transform scale-100 transition-transform duration-300">
+            <span class="text-[10px] font-extrabold text-indigo-600 tracking-widest uppercase font-mono block mb-2">Curated Challenge</span>
+            <h2 id="overlay-round-title" class="text-3xl font-extrabold text-neutral-900 tracking-tight mb-4 font-display">ROUND 1</h2>
+            <div class="w-16 h-1 bg-neutral-900 mx-auto mb-6"></div>
+            <p id="overlay-round-desc" class="text-xs sm:text-sm text-slate-500 mb-8 leading-relaxed">
+                Connect the terminology blocks on the left with their exact definitions on the right. Shakes indicate mismatched links.
             </p>
-            <div class="match-grid">
-                <div class="chip-stack" id="match-terms"></div>
-                <div class="chip-stack" id="match-defs"></div>
+            <div class="flex items-center justify-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest font-mono">
+                ✨ Ready For Matching...
             </div>
         </div>
     </div>
 
-    <!-- S4: Challenge Mode -->
-    <div id="screen-challenge" class="screen">
-        <div class="challenge-box">
-            <p class="q-meta" id="ch-q-num">Mission 1 / 10</p>
-            <p class="q-text" id="ch-text">Question text...</p>
-            <div class="answer-grid" id="ch-answers"></div>
-            <div class="explanation-panel" id="ch-explanation"></div>
-            <button class="btn-next" id="ch-next" onclick="nextQuestion()">Proceed to Next Phase</button>
-        </div>
-    </div>
 
-    <!-- S5: Summary -->
-    <div id="screen-summary" class="screen">
-        <div class="summary-view">
-            <h2 class="welcome-title" style="font-size: 32px;">Session Briefing</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <p class="stat-value" id="res-match">0/17</p>
-                    <p class="stat-label">Number Correct</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-value" id="res-challenge">0/10</p>
-                    <p class="stat-label">Challenge Score</p>
-                </div>
-            </div>
+    <!-- ===================================================
+         STUDIO DATA INTERFACES & BACKBONE SCRIPTS
+         =================================================== -->
+    <script type="text/javascript">
+        // Color assignments
+        const CATEGORY_COLORS = {
+            'Foundations': '#2563eb',   // Blue
+            'Digital Rights & IP': '#ea580c', // Orange
+            'Platform Ethics': '#7c3aed',     // Purple
+            'User Privacy & Data': '#059669',// Green
+            'Information & Media': '#d97706' // Amber
+        };
 
-            <div class="final-rating">
-                <p class="rating-name" id="res-rating-title">Evaluating...</p>
-                <p class="rating-text" id="res-rating-desc">Aggregating session metrics.</p>
-            </div>
+        const CATEGORY_ICONS = {
+            'Foundations': 'scale',
+            'Digital Rights & IP': 'copyright',
+            'Platform Ethics': 'shield-check',
+            'User Privacy & Data': 'lock',
+            'Information & Media': 'newspaper'
+        };
 
-            <button class="btn-reset" onclick="location.reload()">Reset Command Center</button>
-        </div>
-    </div>
+        // Complete 17 computer ethics vocabulary terms
+        const VOCABULARY_TERMS = [
+            { id: 1, group: "Foundations", color: CATEGORY_COLORS["Foundations"], term: "Ethics", def: "The discipline dealing with what is good and bad and with moral duty and obligation", ex: "Deciding whether to share a friend's private message involves ethics." },
+            { id: 2, group: "Foundations", color: CATEGORY_COLORS["Foundations"], term: "Moral Integrity", def: "The act of adhering to an ethical or moral code of conduct", ex: "A programmer with moral integrity reports a bug even when it might delay a launch." },
+            { id: 3, group: "Digital Rights & IP", color: CATEGORY_COLORS["Digital Rights & IP"], term: "Plagiarism", def: "The act of using someone else's work and claiming it as your own", ex: "Submitting a paper written by an AI without disclosure is plagiarism." },
+            { id: 4, group: "Platform Ethics", color: CATEGORY_COLORS["Platform Ethics"], term: "Transparency", def: "The act of being honest about information, particularly as it relates to interests or business practices", ex: "An advertiser shows transparency by disclosing when a post is paid content." },
+            { id: 5, group: "Digital Rights & IP", color: CATEGORY_COLORS["Digital Rights & IP"], term: "Piracy", def: "The act of taking or using someone else's work without paying for it", ex: "Downloading a movie without purchase is digital piracy." },
+            { id: 6, group: "Foundations", color: CATEGORY_COLORS["Foundations"], term: "Trustworthiness", def: "The concept that a source can be counted on to provide accurate and honest information", ex: "A trustworthy AI system behaves consistently and does not conceal errors." },
+            { id: 7, group: "User Privacy & Data", color: CATEGORY_COLORS["User Privacy & Data"], term: "Privacy", def: "The concept of freedom from unauthorized intrusion", ex: "Location tracking without consent violates a user's privacy." },
+            { id: 8, group: "Platform Ethics", color: CATEGORY_COLORS["Platform Ethics"], term: "Bias", def: "An inclination toward a specific outlook or preference, often unfair", ex: "An AI trained only on data from one demographic may produce biased results." },
+            { id: 9, group: "Platform Ethics", color: CATEGORY_COLORS["Platform Ethics"], term: "Accountability", def: "The obligation to accept responsibility for one's actions and their consequences", ex: "A developer is accountable when they fix harm caused by their software." },
+            { id: 10, group: "Platform Ethics", color: CATEGORY_COLORS["Platform Ethics"], term: "Beneficence", def: "The quality of doing good and acting in the best interest of others", ex: "Designing accessible technology for users with disabilities reflects beneficence." },
+            { id: 11, group: "Platform Ethics", color: CATEGORY_COLORS["Platform Ethics"], term: "Fairness", def: "Treating all people equally and without favoritism or discrimination", ex: "A hiring algorithm is fair only if it produces equal outcomes across demographic groups." },
+            { id: 12, group: "User Privacy & Data", color: CATEGORY_COLORS["User Privacy & Data"], term: "Cookies", def: "Small data files stored by websites on a user's device to track behavior and preferences", ex: "Cookies allow a retailer to remember your cart — and track your browsing across sites." },
+            { id: 13, group: "Information & Media", color: CATEGORY_COLORS["Information & Media"], term: "Clickbait", def: "Content that uses exaggerated or misleading headlines to generate clicks regardless of actual value", ex: "A headline reading 'You Won't Believe What This App Does to Your Data' is clickbait." },
+            { id: 14, group: "Information & Media", color: CATEGORY_COLORS["Information & Media"], term: "Rage Bait", def: "Content deliberately engineered to provoke emotional outrage because angry users engage more", ex: "A post misrepresenting a policy to maximize anger is rage bait." },
+            { id: 15, group: "Digital Rights & IP", color: CATEGORY_COLORS["Digital Rights & IP"], term: "DRM", def: "Technological tools used to restrict copying, sharing, or modifying digital content", ex: "DRM prevents a purchased e-book from being copied and shared freely." },
+            { id: 16, group: "Information & Media", color: CATEGORY_COLORS["Information & Media"], term: "Media Literacy", def: "The ability to access, analyze, evaluate, and create media in all forms", ex: "Media literacy helps you identify when a statistic has been taken out of context." },
+            { id: 17, group: "Foundations", color: CATEGORY_COLORS["Foundations"], term: "Code of Ethics", def: "A set of principles that guide professional behavior and decision-making in a field", ex: "The ACM Code of Ethics requires computing professionals to avoid harm." }
+        ];
 
-    <!-- Toast Notification -->
-    <div id="toast-notification" style="
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translate(-50%, 50px);
-        background: #0F172A;
-        color: #FFFFFF;
-        padding: 12px 24px;
-        border-radius: 9999px;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
-    "></div>
-</div>
+        // 10 Scenario based problems matching original contents
+        const CHALLENGE_QUESTIONS = [
+            {
+                q: "A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which principle is violated?",
+                group: "Platform Ethics",
+                options: ["Privacy", "Transparency", "Fairness", "Moral Integrity"],
+                correct: 1,
+                feedback: "Transparency requires honest disclosure of interests or business relations, which a paid review violates if not disclosed."
+            },
+            {
+                q: "A news headline reads 'You Won't Believe What This Famous CEO Just Did to Their Employees!' designed solely to attract clicks regardless of quality. This content is:",
+                group: "Information & Media",
+                options: ["Clickbait", "Piracy", "Rage Bait", "Cookies"],
+                correct: 0,
+                feedback: "Exaggerated or misleading headlines meant to generate maximum traffic are known as clickbait."
+            },
+            {
+                q: "An online post exaggerates a minor software policy using hostile, loaded language to deliberately provoke outrage and maximize comment activity. This is:",
+                group: "Information & Media",
+                options: ["Rage Bait", "Plagiarism", "Bias", "Transparency"],
+                correct: 0,
+                feedback: "Content engineered specifically to incite anger and outrage for social engagement is rage bait."
+            },
+            {
+                q: "An artificial intelligence recruitment system consistently favors male applicants due to historical demographics in its training dataset. This shows:",
+                group: "Platform Ethics",
+                options: ["Plagiarism", "Bias", "Piracy", "Fairness"],
+                correct: 1,
+                feedback: "A biased system shows systematic, unfair preferences learned from its training data."
+            },
+            {
+                q: "A software engineer uncovers that their application is secretly tracking voice data in the background. Professional standards guide them to follow a professional:",
+                group: "Foundations",
+                options: ["Code of Ethics", "Moral Integrity", "Accountability", "DRM"],
+                correct: 0,
+                feedback: "A professional Code of Ethics (such as ACM or IEEE guidelines) dictates that computing professionals must prioritize public welfare and prevent harm."
+            },
+            {
+                q: "Small files stored on user devices that websites utilize to trace browsing activity and retain session preferences are known as:",
+                group: "User Privacy & Data",
+                options: ["Cookies", "DRM", "Privacy", "Ethics"],
+                correct: 0,
+                feedback: "Cookies store regional, authentication, and session details but can also be used to track user behavior across different sites."
+            },
+            {
+                q: "A security tool secretly tracks a user's geographical location and monitors personal notes without explicit request or consent. This violates:",
+                group: "User Privacy & Data",
+                options: ["Piracy", "Privacy", "Trustworthiness", "Accountability"],
+                correct: 1,
+                feedback: "Privacy is defined as the freedom from unauthorized intrusion into personal information."
+            },
+            {
+                q: "A developer takes an open source repository, strips the creator's metadata, and publishes it under their own name as original work. This is:",
+                group: "Digital Rights & IP",
+                options: ["Plagiarism", "Piracy", "DRM", "Moral Integrity"],
+                correct: 0,
+                feedback: "Plagiarism is using someone else's work and presenting it as one's own original output."
+            },
+            {
+                q: "Critically evaluating a viral news article for misleading claims, omissions, and context before sharing it is an example of:",
+                group: "Information & Media",
+                options: ["Moral Integrity", "Accountability", "Media Literacy", "Trustworthiness"],
+                correct: 2,
+                feedback: "Media literacy is the specific baseline ability to critically access, analyze, and evaluate digital media content."
+            },
+            {
+                q: "A gaming portal utilizes encoded license systems to stop users from copying, sharing, or playing games on unverified devices. This is:",
+                group: "Digital Rights & IP",
+                options: ["DRM", "Piracy", "Privacy", "Cookies"],
+                correct: 0,
+                feedback: "DRM (Digital Rights Management) encompasses tools used to control, verify, and limit the copying and alteration of digital materials."
+            }
+        ];
 
-<script>
-    const THEME_COLORS = {
-        blue: { primary: '#2563EB', bg: '#EFF6FF', text: '#1E40AF' },
-        emerald: { primary: '#10B981', bg: '#ECFDF5', text: '#065F46' },
-        rose: { primary: '#EF4444', bg: '#FEF2F2', text: '#991B1B' },
-        cyan: { primary: '#06B6D4', bg: '#ECFEFF', text: '#155E75' },
-        crimson: { primary: '#E11D48', bg: '#FFF1F2', text: '#9F1239' },
-        indigo: { primary: '#6366F1', bg: '#EEF2FF', text: '#3730A3' },
-        pink: { primary: '#EC4899', bg: '#FDF2F8', text: '#831843' },
-        amber: { primary: '#F59E0B', bg: '#FFFBEB', text: '#92400E' },
-        violet: { primary: '#8B5CF6', bg: '#F5F3FF', text: '#5B21B6' },
-        teal: { primary: '#0D9488', bg: '#F0FDFA', text: '#115E59' },
-        bronze: { primary: '#B45309', bg: '#FFFBEB', text: '#78350F' },
-        orange: { primary: '#EA580C', bg: '#FFF7ED', text: '#9A3412' },
-        red: { primary: '#EF4444', bg: '#FEF2F2', text: '#991B1B' },
-        slate: { primary: '#475569', bg: '#F8FAFC', text: '#334155' }
-    };
+        // Interactive pairing rounds (Split 17 items across 3 rounds cleanly)
+        const MATCH_ROUNDS = [
+            [1, 2, 3, 4, 5, 6],
+            [7, 8, 9, 10, 11, 12],
+            [13, 14, 15, 16, 17]
+        ];
 
-    const ICONS = {
-        ethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-ethics" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#60A5FA"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-ethics)" opacity="0.12"/><path d="M12 3v15M19 14c0 2.2-3.1 4-7 4s-7-1.8-7-4" stroke="url(#grad-ethics)" stroke-width="2" stroke-linecap="round"/><path d="M6 9l6-3 6 3" stroke="url(#grad-ethics)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 9a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm12 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" stroke="url(#grad-ethics)" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
-        moralintegrity: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-moral" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#34D399"/></linearGradient></defs><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#grad-moral)" opacity="0.12"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="url(#grad-moral)" stroke-width="2" stroke-linejoin="round"/><path d="M12 8l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L12 8z" fill="url(#grad-moral)"/></svg>`,
-        plagiarism: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-plag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#F87171"/></linearGradient></defs><rect x="3" y="3" width="13" height="15" rx="3" fill="url(#grad-plag)" opacity="0.12" stroke="url(#grad-plag)" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="8" y="7" width="13" height="15" rx="3" fill="#FFFFFF" stroke="url(#grad-plag)" stroke-width="2"/><path d="M11 11h7M11 15h4" stroke="url(#grad-plag)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="18" r="3.5" fill="url(#grad-plag)"/><path d="M17 18h2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/></svg>`,
-        transparency: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-transp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs><circle cx="9" cy="12" r="6" fill="url(#grad-transp)" opacity="0.15" stroke="url(#grad-transp)" stroke-width="2"/><circle cx="15" cy="12" r="6" fill="url(#grad-transp)" opacity="0.4" stroke="url(#grad-transp)" stroke-width="2"/><path d="M12 9l3 3-3 3" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-        piracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-piracy" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E11D48"/><stop offset="100%" stop-color="#FB7185"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-piracy)" opacity="0.12"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" stroke="url(#grad-piracy)" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="url(#grad-piracy)" stroke-width="2" stroke-linecap="round"/><path d="M10 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="url(#grad-piracy)"/><path d="M10 14.5s1 1 2 1 2-1 2-1" stroke="url(#grad-piracy)" stroke-width="1.8" stroke-linecap="round"/><path d="M4 4l16 16M20 4L4 20" stroke="url(#grad-piracy)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>`,
-        trustworthiness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-trust" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#818CF8"/></linearGradient></defs><path d="M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="url(#grad-trust)" opacity="0.12"/><path d="M12 2L9 5H5v4L2 12l3 3v4h4l3 3 3-3h4v-4l3-3-3-3V5h-4L12 2z" stroke="url(#grad-trust)" stroke-width="2" stroke-linejoin="round"/><polyline points="9 11.5 11 13.5 15 9.5" stroke="url(#grad-trust)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-        privacy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-priv" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EC4899"/><stop offset="100%" stop-color="#F472B6"/></linearGradient></defs><rect x="4" y="11" width="16" height="10" rx="3" fill="url(#grad-priv)" opacity="0.12"/><rect x="4" y="11" width="16" height="10" rx="3" stroke="url(#grad-priv)" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="url(#grad-priv)" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="1.5" fill="url(#grad-priv)"/><path d="M12 16.5v2" stroke="url(#grad-priv)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-        bias: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-bias" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" fill="url(#grad-bias)" opacity="0.1"/><path d="M12 3v15M12 18h4m-8 0h4" stroke="url(#grad-bias)" stroke-width="2" stroke-linecap="round"/><path d="M5 8l14 4" stroke="url(#grad-bias)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8l-2 6h4l-2-6zm14 4l-2 6h4l-2-6z" stroke="url(#grad-bias)" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
-        accountability: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-acc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-acc)" opacity="0.12"/><circle cx="12" cy="12" r="10" stroke="url(#grad-acc)" stroke-width="2"/><path d="M8 12.5l2.5 2.5 5.5-5.5" stroke="url(#grad-acc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="7" stroke="url(#grad-acc)" stroke-width="1" stroke-dasharray="2 2" fill="none"/></svg>`,
-        beneficence: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-bene" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#6EE7B7"/></linearGradient></defs><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" fill="url(#grad-bene)" opacity="0.12"/><path d="M12 6a3 3 0 0 0-3 3c0 3 3 6 3 6s3-3 3-6a3 3 0 0 0-3-3z" fill="url(#grad-bene)" opacity="0.8"/><path d="M3 14c4 0 5-3 9-3s5 3 9 3" stroke="url(#grad-bene)" stroke-width="2" stroke-linecap="round"/><path d="M12 11v6" stroke="url(#grad-bene)" stroke-width="2.2" stroke-linecap="round"/></svg>`,
-        fairness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-fair" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0D9488"/><stop offset="100%" stop-color="#2DD4BF"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-fair)" opacity="0.12"/><path d="M12 3v16M4 11h16M4 15h16" stroke="url(#grad-fair)" stroke-width="2.2" stroke-linecap="round"/></svg>`,
-        cookies: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-cook" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#B45309"/><stop offset="100%" stop-color="#F59E0B"/></linearGradient></defs><path d="M12 22a10 10 0 1 0-5.74-2c1.72-.1 3.23-1.12 3.86-2.73s.1-.3.1-.38v-.13c.43-.88.63-1.85.59-2.82l-.01-.35c-.09-2.3 1.15-4.45 3.2-5.55l.28-.15c.67-.36.93-1.16.63-1.86A9.97 9.97 0 0 0 12 2z" fill="url(#grad-cook)" opacity="0.15"/><circle cx="12" cy="12" r="9" stroke="url(#grad-cook)" stroke-width="2" stroke-dasharray="24 3 3 3"/><circle cx="8" cy="9" r="1.5" fill="url(#grad-cook)"/><circle cx="15.5" cy="10.5" r="1" fill="url(#grad-cook)"/><circle cx="10" cy="15" r="1.5" fill="url(#grad-cook)"/><circle cx="14.5" cy="15.5" r="1" fill="url(#grad-cook)"/></svg>`,
-        clickbait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-click" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EA580C"/><stop offset="100%" stop-color="#FB923C"/></linearGradient></defs><path d="M18 3c0 6-5 9-5 11a3 3 0 1 0 6 0" stroke="url(#grad-click)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8l4-4 4 4M12 4v12" stroke="url(#grad-click)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/><path d="M6 13a4 4 0 1 0 8 0v-5H6v5z" fill="url(#grad-click)" opacity="0.12"/><path d="M12 11h.01M10 14h.01M14 14h.01" stroke="url(#grad-click)" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-        ragebait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-rage" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#FB7185"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-rage)" opacity="0.12"/><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 8.58" stroke="url(#grad-rage)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 11l-4 6h5l-3 5" stroke="url(#grad-rage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="url(#grad-rage)"/></svg>`,
-        drm: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-drm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-drm)" opacity="0.12" stroke="url(#grad-drm)" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="url(#grad-drm)" stroke-width="1.8"/><path d="M12 7V2M12 22v-5M2 12h5M17 12h5" stroke="url(#grad-drm)" stroke-width="1.5" stroke-linecap="round"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#FFFFFF" stroke="url(#grad-drm)" stroke-width="1.8"/></svg>`,
-        medialiteracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-lit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><path d="M12 20h9M3 20h9M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H12v18H6.5A2.5 2.5 0 0 0 4 19.5z" fill="url(#grad-lit)" opacity="0.12" stroke="url(#grad-lit)" stroke-width="1.8"/><path d="M12 2v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-15H12z" stroke="url(#grad-lit)" stroke-width="1.8"/><circle cx="14" cy="10" r="3" fill="#FFFFFF" stroke="url(#grad-lit)" stroke-width="1.8"/><path d="M16 12l3.5 3.5" stroke="url(#grad-lit)" stroke-width="2" stroke-linecap="round"/></svg>`,
-        codeofethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-code" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="url(#grad-code)" opacity="0.12" stroke="url(#grad-code)" stroke-width="2"/><path d="M14 2v6h6M8 12h6M8 16h4" stroke="url(#grad-code)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-    };
+        // Global State Engine
+        const STATE = {
+            currentMode: 'intro',
+            flashcard: {
+                deck: [],
+                currentIndex: 0,
+                flipped: false,
+                mastered: new Set(),
+                reviewAgain: new Set(),
+                isPendingTransition: false
+            },
+            match: {
+                currentRound: 0,
+                selectedTermId: null,
+                matchedIds: new Set(),
+                score: 0,
+                attempts: {},
+                roundActive: false
+            },
+            challenge: {
+                currentQuestion: 0,
+                score: 0,
+                locked: false,
+                answeredLog: []
+            },
+            bestScores: {
+                match: 0,
+                challenge: 0
+            }
+        };
 
-    const DATA = {
-        terms: [
-            { id: 1, term: "Ethics", icon: ICONS.ethics, def: "The discipline dealing with what is good and bad and with moral duty and obligation", ex: "Deciding whether to share a friend's private message involves ethics." },
-            { id: 2, term: "Moral Integrity", icon: ICONS.moralintegrity, def: "The act of adhering to an ethical or moral code of conduct", ex: "A programmer with moral integrity reports a bug even when it might delay a launch." },
-            { id: 3, term: "Plagiarism", icon: ICONS.plagiarism, def: "The act of using someone else's work and claiming it as your own", ex: "Submitting a paper written by an AI without disclosure is plagiarism." },
-            { id: 4, term: "Transparency", icon: ICONS.transparency, def: "The act of being honest about information, particularly as it relates to interests or business practices", ex: "An advertiser shows transparency by disclosing when a post is paid content." },
-            { id: 5, term: "Piracy", icon: ICONS.piracy, def: "The act of taking or using someone else's work without paying for it", ex: "Downloading a movie without purchase is digital piracy." },
-            { id: 6, term: "Trustworthiness", icon: ICONS.trustworthiness, def: "The concept that a source can be counted on to provide accurate and honest information", ex: "A trustworthy AI system behaves consistently and does not conceal errors." },
-            { id: 7, term: "Privacy", icon: ICONS.privacy, def: "The concept of freedom from unauthorized intrusion", ex: "Location tracking without consent violates a user's privacy." },
-            { id: 8, term: "Bias", icon: ICONS.bias, def: "An inclination toward a specific outlook or preference, often unfair", ex: "An AI trained only on data from one demographic may produce biased results." },
-            { id: 9, term: "Accountability", icon: ICONS.accountability, def: "The obligation to accept responsibility for one's actions and their consequences", ex: "A developer is accountable when they fix harm caused by their software." },
-            { id: 10, term: "Beneficence", icon: ICONS.beneficence, def: "The quality of doing good and acting in the best interest of others", ex: "Designing accessible technology for users with disabilities reflects beneficence." },
-            { id: 11, term: "Fairness", icon: ICONS.fairness, def: "Treating all people equally and without favoritism or discrimination", ex: "A hiring algorithm is fair only if it produces equal outcomes across demographic groups." },
-            { id: 12, term: "Cookies", icon: ICONS.cookies, def: "Small data files stored by websites on a user's device to track behavior and preferences", ex: "Cookies allow a retailer to remember your cart — and track your browsing across sites." },
-            { id: 13, term: "Clickbait", icon: ICONS.clickbait, def: "Content that uses exaggerated or misleading headlines to generate clicks regardless of actual value", ex: "A headline reading 'You Won't Believe What This App Does to Your Data' is clickbait." },
-            { id: 14, term: "Rage Bait", icon: ICONS.ragebait, def: "Content deliberately engineered to provoke emotional outrage because angry users engage more", ex: "A post misrepresenting a policy to maximize anger is rage bait." },
-            { id: 15, term: "DRM", icon: ICONS.drm, def: "Technological tools used to restrict copying, sharing, or modifying digital content", ex: "DRM prevents a purchased e-book from being copied and shared freely." },
-            { id: 16, term: "Media Literacy", icon: ICONS.medialiteracy, def: "The ability to access, analyze, evaluate, and create media in all forms", ex: "Media literacy helps you identify when a statistic has been taken out of context." },
-            { id: 17, term: "Code of Ethics", icon: ICONS.codeofethics, def: "A set of principles that guide professional behavior and decision-making in a field", ex: "The ACM Code of Ethics requires computing professionals to avoid harm." }
-        ],
-        questions: [
-            { q: "A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which principle is violated?", options: ["Privacy", "Transparency", "Fairness", "Moral Integrity"], correct: 1, exp: "Transparency requires honest disclosure of interests or business relations, which a paid review violates if not disclosed." },
-            { q: "A news headline reads 'You Won't Believe What This Famous CEO Just Did to Their Employees!' designed solely to attract clicks regardless of quality. This content is:", options: ["Clickbait", "Piracy", "Rage Bait", "Cookies"], correct: 0, exp: "Exaggerated or misleading headlines meant to generate maximum traffic are known as clickbait." },
-            { q: "An online post exaggerates a minor software policy using hostile, loaded language to deliberately provoke outrage and maximize comment activity. This is:", options: ["Rage Bait", "Plagiarism", "Bias", "Transparency"], correct: 0, exp: "Content engineered specifically to incite anger and outrage for social engagement is rage bait." },
-            { q: "An artificial intelligence recruitment system consistently favors male applicants due to historical demographics in its training dataset. This shows:", options: ["Plagiarism", "Bias", "Piracy", "Fairness"], correct: 1, exp: "A biased system shows systematic, unfair preferences learned from its training data." },
-            { q: "A software engineer uncovers that their application is secretly tracking voice data in the background. Professional standards guide them to follow a professional:", options: ["Code of Ethics", "Moral Integrity", "Accountability", "DRM"], correct: 0, exp: "A professional Code of Ethics (such as ACM or IEEE guidelines) dictates that computing professionals must prioritize public welfare and prevent harm." },
-            { q: "Small files stored on user devices that websites utilize to trace browsing activity and retain session preferences are known as:", options: ["Cookies", "DRM", "Privacy", "Ethics"], correct: 0, exp: "Cookies store regional, authentication, and session details but can also be used to track user behavior across different sites." },
-            { q: "A security tool secretly tracks a user's geographical location and monitors personal notes without explicit request or consent. This violates:", options: ["Piracy", "Privacy", "Trustworthiness", "Accountability"], correct: 1, exp: "Privacy is defined as the freedom from unauthorized intrusion into personal information." },
-            { q: "A developer takes an open source repository, strips the creator's metadata, and publishes it under their own name as original work. This is:", options: ["Plagiarism", "Piracy", "DRM", "Moral Integrity"], correct: 0, exp: "Plagiarism is using someone else's work and presenting it as one's own original output." },
-            { q: "Critically evaluating a viral news article for misleading claims, omissions, and context before sharing it is an example of:", options: ["Moral Integrity", "Accountability", "Media Literacy", "Trustworthiness"], correct: 2, exp: "Media literacy is the specific baseline ability to critically access, analyze, and evaluate digital media content." },
-            { q: "A gaming portal utilizes encoded license systems to stop users from copying, sharing, or playing games on unverified devices. This is:", options: ["DRM", "Piracy", "Privacy", "Cookies"], correct: 0, exp: "DRM (Digital Rights Management) encompasses tools used to control, verify, and limit the copying and alteration of digital materials." }
-        ]
-    };
-
-    const STATE = {
-        flashcard: { filtered: [...DATA.terms], currentIdx: 0, mastered: new Set() },
-        match: { round: 0, firstTryCount: 0, selectedTerm: null, selectedDef: null, errors: new Set() },
-        challenge: { currentIdx: 0, score: 0 },
-        screen: "S1"
-    };
-
-    // Load persisted data
-    try {
-        const storedMastered = localStorage.getItem('ethics_mastered_ids');
-        if (storedMastered) {
-            const arr = JSON.parse(storedMastered);
-            STATE.flashcard.mastered = new Set(arr);
-        }
-    } catch(e) {
-        console.error("Error loading persisted mastered set", e);
-    }
-
-    function initHomepageScores() {
-        // Flashcard progress
-        const masteredCount = STATE.flashcard.mastered.size;
-        const fcScoreEl = document.getElementById('score-flashcards');
-        if (fcScoreEl) {
-            fcScoreEl.innerText = `${masteredCount}/17 Mastered`;
-        }
-
-        // Match High Score
-        const matchScoreEl = document.getElementById('score-match');
-        if (matchScoreEl) {
+        // Load Persistent State on Startup
+        try {
+            const storedMastered = localStorage.getItem('ethics_mastered_ids');
+            if (storedMastered) {
+                const arr = JSON.parse(storedMastered);
+                STATE.flashcard.mastered = new Set(arr);
+            }
             const storedMatch = localStorage.getItem('ethics_match_best');
             if (storedMatch !== null) {
-                matchScoreEl.innerText = `Best Score: ${storedMatch}/17 Correct`;
-            } else {
-                matchScoreEl.innerText = `Best Score: Not Played`;
+                STATE.bestScores.match = parseInt(storedMatch, 10);
             }
-        }
-
-        // Challenge High Score
-        const challengeScoreEl = document.getElementById('score-challenge');
-        if (challengeScoreEl) {
             const storedChallenge = localStorage.getItem('ethics_challenge_best');
             if (storedChallenge !== null) {
-                challengeScoreEl.innerText = `Best Score: ${storedChallenge}/10 Correct`;
+                STATE.bestScores.challenge = parseInt(storedChallenge, 10);
+            }
+        } catch(e) {
+            console.error("Error loading persisted scores", e);
+        }
+
+        // Initialize Applet & Event Bindings
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            syncHomepageMetrics();
+
+            // Keyboard navigation helpers
+            window.addEventListener('keydown', (e) => {
+                if (STATE.currentMode === 'flashcard') {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        toggleFlashcard();
+                    } else if (e.code === 'ArrowRight') {
+                        e.preventDefault();
+                        nextFlashcard();
+                    } else if (e.code === 'ArrowLeft') {
+                        e.preventDefault();
+                        prevFlashcard();
+                    }
+                }
+            });
+
+            // Adjust match connectors on screen adjustments
+            window.addEventListener('resize', () => {
+                if (STATE.currentMode === 'match' && STATE.match.roundActive) {
+                    recalculateMatchLines();
+                }
+            });
+        });
+
+        // Sync homepage UI scores
+        function syncHomepageMetrics() {
+            document.getElementById('intro-fc-progress').textContent = `${STATE.flashcard.mastered.size}/17 mastered`;
+            
+            if (STATE.bestScores.match > 0) {
+                document.getElementById('intro-match-progress').textContent = `Best score: ${STATE.bestScores.match}/17 Pairs`;
             } else {
-                challengeScoreEl.innerText = `Best Score: Not Scored`;
+                document.getElementById('intro-match-progress').textContent = `Best score: Not played`;
+            }
+
+            if (STATE.bestScores.challenge > 0) {
+                document.getElementById('intro-challenge-progress').textContent = `Best score: ${STATE.bestScores.challenge}/10 Scenarios`;
+            } else {
+                document.getElementById('intro-challenge-progress').textContent = `Best score: Not scored`;
+            }
+
+            // Reveal report banner if any activity recorded
+            if (STATE.flashcard.mastered.size > 0 || STATE.bestScores.match > 0 || STATE.bestScores.challenge > 0) {
+                document.getElementById('intro-report-div').classList.remove('hidden');
+            } else {
+                document.getElementById('intro-report-div').classList.add('hidden');
             }
         }
-    }
 
-    let toastTimeout = null;
-    function showToast(message) {
-        const toast = document.getElementById('toast-notification');
-        toast.innerText = message;
-        toast.style.opacity = '1';
-        toast.style.transform = 'translate(-50%, 0)';
-        
-        if (toastTimeout) clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translate(-50%, 50px)';
-        }, 2200);
-    }
+        // Section Router
+        function enterMode(modeName) {
+            STATE.currentMode = modeName;
+            
+            // Hide all layout sections
+            document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('screen-' + id).classList.add('active');
-        STATE.screen = id;
-        
-        const exitBtn = document.getElementById('exit-mode-btn');
-        if (id === 'S1') {
-            exitBtn.style.display = 'none';
-        } else {
-            exitBtn.style.display = 'flex';
-        }
+            // Show target section layout
+            const targetSec = document.getElementById(`s${getSectionIdx(modeName)}-${modeName}`);
+            if (targetSec) targetSec.classList.remove('hidden');
 
-        // Always sync homepage scores whenever returning to welcome screen
-        if (id === 'S1') {
-            initHomepageScores();
-        }
-    }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    function exitToBriefing() {
-        showScreen('S1');
-    }
-
-    function startMode(mode) {
-        if (mode === 'flashcard') initFlashcards();
-        if (mode === 'match') initMatchMode();
-        if (mode === 'challenge') initChallengeMode();
-        showScreen(mode);
-    }
-
-    // Flashcard Logic
-    function initFlashcards() {
-        STATE.flashcard.currentIdx = 0;
-        updateFlashcardUI();
-    }
-
-    function flipCard() {
-        const card = document.getElementById('active-card');
-        card.classList.toggle('flipped');
-        document.getElementById('fc-rate-group').classList.toggle('visible', card.classList.contains('flipped'));
-    }
-
-    function getTermTheme(termName) {
-        const mapping = {
-            "ethics": "blue",
-            "moral integrity": "emerald",
-            "plagiarism": "rose",
-            "transparency": "cyan",
-            "piracy": "crimson",
-            "trustworthiness": "indigo",
-            "privacy": "pink",
-            "bias": "amber",
-            "accountability": "violet",
-            "beneficence": "teal",
-            "fairness": "emerald",
-            "cookies": "bronze",
-            "clickbait": "orange",
-            "rage bait": "red",
-            "drm": "slate",
-            "media literacy": "indigo",
-            "code of ethics": "violet"
-        };
-        const key = termName.toLowerCase().trim();
-        const themeKey = mapping[key] || "blue";
-        return THEME_COLORS[themeKey] || THEME_COLORS.blue;
-    }
-
-    function updateFlashcardUI() {
-        const card = STATE.flashcard.filtered[STATE.flashcard.currentIdx];
-        const ui = document.getElementById('active-card');
-        ui.classList.remove('flipped');
-        document.getElementById('fc-rate-group').classList.remove('visible');
-
-        if (!card) return;
-
-        document.getElementById('fc-icon-container').innerHTML = card.icon;
-        document.getElementById('fc-term').innerText = card.term;
-        document.getElementById('fc-def').innerText = card.def;
-        document.getElementById('fc-example').innerText = card.ex;
-        document.getElementById('card-counter').innerText = `${STATE.flashcard.currentIdx + 1} / ${STATE.flashcard.filtered.length}`;
-
-        // Add styling indicator if already mastered
-        const isMastered = STATE.flashcard.mastered.has(card.id);
-        const frontFace = ui.querySelector('.card-front');
-        const backFace = ui.querySelector('.card-back');
-        const theme = getTermTheme(card.term);
-
-        if (frontFace) {
-            frontFace.style.background = `linear-gradient(135deg, #FFFFFF 0%, ${theme.bg} 100%)`;
-            if (isMastered) {
-                frontFace.style.borderColor = "var(--correct)";
-                frontFace.style.boxShadow = "0 8px 30px rgba(22, 163, 74, 0.08)";
-            } else {
-                frontFace.style.borderColor = theme.primary;
-                frontFace.style.boxShadow = `0 8px 30px rgba(37, 99, 235, 0.03)`;
+            // Initialize mode-specific models
+            if (modeName === 'flashcard') {
+                initFlashcards();
+            } else if (modeName === 'match') {
+                initMatchGame();
+            } else if (modeName === 'challenge') {
+                initChallengeGame();
+            } else if (modeName === 'mastery') {
+                renderMasteryReport();
             }
         }
-        if (backFace) {
-            backFace.style.background = `linear-gradient(135deg, ${theme.bg} 0%, #FFFFFF 100%)`;
-            backFace.style.borderColor = theme.primary;
-        }
-    }
 
-    function navCard(dir) {
-        const cardEl = document.getElementById('active-card');
-        if (cardEl.classList.contains('flipped')) {
-            cardEl.classList.remove('flipped');
-            document.getElementById('fc-rate-group').classList.remove('visible');
+        function returnToMenu() {
+            enterMode('intro');
+            syncHomepageMetrics();
+        }
+
+        function getSectionIdx(modeName) {
+            switch(modeName) {
+                case 'intro': return 1;
+                case 'flashcard': return 2;
+                case 'match': return 3;
+                case 'challenge': return 4;
+                case 'mastery': return 5;
+                default: return 1;
+            }
+        }
+
+
+        // ==========================================
+        // S2: FLASHCARD STUDY MANAGER
+        // ==========================================
+        function initFlashcards() {
+            const unmastered = VOCABULARY_TERMS.map(t => t.id).filter(id => !STATE.flashcard.mastered.has(id));
+            if (unmastered.length > 0) {
+                STATE.flashcard.deck = unmastered;
+            } else {
+                STATE.flashcard.deck = VOCABULARY_TERMS.map(t => t.id);
+            }
+
+            STATE.flashcard.currentIndex = 0;
+            STATE.flashcard.flipped = false;
+            STATE.flashcard.isPendingTransition = false;
+
+            document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+            document.getElementById('fc-overall-mastery').textContent = `${STATE.flashcard.mastered.size}/17 Mastered`;
+
+            renderCurrentFlashcard();
+        }
+
+        function renderCurrentFlashcard() {
+            const cardCompletedState = document.getElementById('fc-completed-state');
+            const cardActiveState = document.getElementById('fc-active-state');
+            const progressTag = document.getElementById('fc-progress-tag');
+
+            if (STATE.flashcard.deck.length === 0) {
+                cardCompletedState.classList.remove('hidden');
+                cardActiveState.classList.add('hidden');
+                progressTag.textContent = "All Done!";
+                return;
+            }
+
+            cardCompletedState.classList.add('hidden');
+            cardActiveState.classList.remove('hidden');
+
+            const currentId = STATE.flashcard.deck[STATE.flashcard.currentIndex];
+            const term = VOCABULARY_TERMS.find(t => t.id === currentId);
+
+            progressTag.textContent = `Card ${STATE.flashcard.currentIndex + 1} of ${STATE.flashcard.deck.length}`;
+
+            // Populate core terms values
+            document.getElementById('fc-front-term').textContent = term.term;
+            document.getElementById('fc-back-term').textContent = term.term;
+            document.getElementById('fc-back-definition').textContent = term.def;
+            document.getElementById('fc-back-example').textContent = `"${term.ex}"`;
+
+            // Draw Category labels & Indicators
+            document.getElementById('fc-front-group-indicator').textContent = term.group;
+            document.getElementById('fc-back-group-indicator').textContent = term.group;
+
+            document.getElementById('fc-front-color-indicator').style.backgroundColor = term.color;
+            document.getElementById('fc-back-color-indicator').style.backgroundColor = term.color;
+
+            // Set Mastery badges
+            const badgeBox = document.getElementById('fc-front-badge');
+            badgeBox.innerHTML = '';
+            if (STATE.flashcard.mastered.has(currentId)) {
+                badgeBox.innerHTML = '<span class="text-green-500" title="Mastered"><i data-lucide="check-circle" class="w-5 h-5"></i></span>';
+            } else if (STATE.flashcard.reviewAgain.has(currentId)) {
+                badgeBox.innerHTML = '<span class="text-amber-500" title="Flagged for Review"><i data-lucide="alert-circle" class="w-5 h-5"></i></span>';
+            }
+
+            // Draw Category design elements dynamically and reload icons
+            const iconKey = CATEGORY_ICONS[term.group] || 'scale';
+            const iconBox = document.getElementById('fc-front-icon-container');
+            iconBox.style.backgroundColor = `${term.color}15`;
+            iconBox.style.color = term.color;
+            iconBox.innerHTML = `<i id="fc-front-large-icon" data-lucide="${iconKey}" class="w-12 h-12"></i>`;
+
+            lucide.createIcons();
+
+            // Show or hide action ratings matching flip settings
+            const ratingUI = document.getElementById('fc-rating-buttons');
+            const keyboardTip = document.getElementById('fc-keyboard-tip');
+
+            if (STATE.flashcard.flipped) {
+                ratingUI.classList.remove('hidden');
+                keyboardTip.classList.add('hidden');
+            } else {
+                ratingUI.classList.add('hidden');
+                keyboardTip.classList.remove('hidden');
+            }
+        }
+
+        function toggleFlashcard() {
+            if (STATE.flashcard.isPendingTransition) return;
+            STATE.flashcard.flipped = !STATE.flashcard.flipped;
+            const cardBody = document.getElementById('fc-card-body');
+            
+            if (STATE.flashcard.flipped) {
+                cardBody.classList.add('rotate-y-180');
+            } else {
+                cardBody.classList.remove('rotate-y-180');
+            }
+
             setTimeout(() => {
-                STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
-                updateFlashcardUI();
-            }, 300);
-        } else {
-            STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
-            updateFlashcardUI();
-        }
-    }
-
-    function rateCard(gotIt) {
-        const currentTerm = STATE.flashcard.filtered[STATE.flashcard.currentIdx];
-        if (gotIt) {
-            STATE.flashcard.mastered.add(currentTerm.id);
-            showToast(`"${currentTerm.term}" marked as Mastered!`);
-        } else {
-            STATE.flashcard.mastered.delete(currentTerm.id);
-            showToast(`"${currentTerm.term}" kept in study list.`);
+                renderCurrentFlashcard();
+            }, 150);
         }
 
-        // Persist change
-        try {
-            localStorage.setItem('ethics_mastered_ids', JSON.stringify([...STATE.flashcard.mastered]));
-        } catch(e) {}
-
-        initHomepageScores();
-        navCard(1);
-    }
-
-    // Match Mode Logic
-    function initMatchMode() {
-        STATE.match.round = 0;
-        STATE.match.firstTryCount = 0;
-        STATE.match.errors.clear();
-        loadMatchRound();
-    }
-
-    function loadMatchRound() {
-        STATE.match.round++;
-        if (STATE.match.round > 3) {
-            showSummary();
-            return;
+        function nextFlashcard() {
+            if (STATE.flashcard.isPendingTransition || STATE.flashcard.deck.length <= 1) return;
+            
+            if (STATE.flashcard.flipped) {
+                STATE.flashcard.isPendingTransition = true;
+                STATE.flashcard.flipped = false;
+                document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+                
+                setTimeout(() => {
+                    STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex + 1) % STATE.flashcard.deck.length;
+                    renderCurrentFlashcard();
+                    STATE.flashcard.isPendingTransition = false;
+                }, 400);
+            } else {
+                STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex + 1) % STATE.flashcard.deck.length;
+                renderCurrentFlashcard();
+            }
         }
 
-        document.getElementById('match-round-title').innerText = `Round ${STATE.match.round} / 3`;
-        
-        // Distribute 17 items across 3 rounds cleanly
-        const roundIndices = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17]];
-        const currentSetIds = roundIndices[STATE.match.round - 1];
-        const currentSet = DATA.terms.filter(t => currentSetIds.includes(t.id));
-        
-        const termsContainer = document.getElementById('match-terms');
-        const defsContainer = document.getElementById('match-defs');
-        termsContainer.innerHTML = '';
-        defsContainer.innerHTML = '';
+        function prevFlashcard() {
+            if (STATE.flashcard.isPendingTransition || STATE.flashcard.deck.length <= 1) return;
 
-        const shuffledTerms = [...currentSet].sort(() => Math.random() - 0.5);
-        const shuffledDefs = [...currentSet].sort(() => Math.random() - 0.5);
+            if (STATE.flashcard.flipped) {
+                STATE.flashcard.isPendingTransition = true;
+                STATE.flashcard.flipped = false;
+                document.getElementById('fc-card-body').classList.remove('rotate-y-180');
 
-        shuffledTerms.forEach(t => {
-            const chip = document.createElement('div');
-            chip.className = 'match-chip';
-            chip.innerText = t.term;
-            chip.onclick = () => selectMatchItem(t.id, 'term', chip);
-            termsContainer.appendChild(chip);
-        });
-
-        shuffledDefs.forEach(t => {
-            const chip = document.createElement('div');
-            chip.className = 'match-chip';
-            chip.innerText = t.def;
-            chip.onclick = () => selectMatchItem(t.id, 'def', chip);
-            defsContainer.appendChild(chip);
-        });
-    }
-
-    function selectMatchItem(id, type, el) {
-        if (el.classList.contains('correct')) return;
-
-        const col = (type === 'term') ? 'selectedTerm' : 'selectedDef';
-
-        // Toggle logic: If clicking the already selected item, unselect it
-        if (STATE.match[col] && STATE.match[col].id === id) {
-            el.classList.remove('selected');
-            STATE.match[col] = null;
-            return;
+                setTimeout(() => {
+                    STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex - 1 + STATE.flashcard.deck.length) % STATE.flashcard.deck.length;
+                    renderCurrentFlashcard();
+                    STATE.flashcard.isPendingTransition = false;
+                }, 400);
+            } else {
+                STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex - 1 + STATE.flashcard.deck.length) % STATE.flashcard.deck.length;
+                renderCurrentFlashcard();
+            }
         }
 
-        // Remove selected styling from siblings
-        const siblings = el.parentElement.querySelectorAll('.match-chip');
-        siblings.forEach(s => s.classList.remove('selected'));
+        function recordFlashcardRating(ratingType, event) {
+            if (event) event.stopPropagation(); // Avoid card double flips
+            const currentId = STATE.flashcard.deck[STATE.flashcard.currentIndex];
 
-        el.classList.add('selected');
-        STATE.match[col] = { id, el };
+            if (ratingType === 'got-it') {
+                STATE.flashcard.mastered.add(currentId);
+                STATE.flashcard.reviewAgain.delete(currentId);
 
-        checkMatch();
-    }
+                // Save persisted Mastering metrics
+                try {
+                    localStorage.setItem('ethics_mastered_ids', JSON.stringify([...STATE.flashcard.mastered]));
+                } catch(e) {}
 
-    function checkMatch() {
-        const t = STATE.match.selectedTerm;
-        const d = STATE.match.selectedDef;
+                document.getElementById('fc-overall-mastery').textContent = `${STATE.flashcard.mastered.size}/17 Mastered`;
 
-        if (t && d) {
-            if (t.id === d.id) {
-                t.el.classList.add('correct');
-                d.el.classList.add('correct');
-                if (!t.el.dataset.failed) STATE.match.firstTryCount++;
-                STATE.match.selectedTerm = null;
-                STATE.match.selectedDef = null;
-                if (document.querySelectorAll('#match-terms .match-chip:not(.correct)').length === 0) {
-                    setTimeout(loadMatchRound, 1000);
+                if (STATE.flashcard.deck.length > 1) {
+                    STATE.flashcard.isPendingTransition = true;
+                    STATE.flashcard.flipped = false;
+                    document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+
+                    setTimeout(() => {
+                        const updated = STATE.flashcard.deck.filter(id => id !== currentId);
+                        STATE.flashcard.deck = updated;
+                        if (STATE.flashcard.currentIndex >= updated.length) {
+                            STATE.flashcard.currentIndex = 0;
+                        }
+                        renderCurrentFlashcard();
+                        STATE.flashcard.isPendingTransition = false;
+                    }, 400);
+                } else {
+                    STATE.flashcard.flipped = false;
+                    document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+                    STATE.flashcard.deck = [];
+                    renderCurrentFlashcard();
                 }
             } else {
-                t.el.classList.add('incorrect');
-                d.el.classList.add('incorrect');
-                t.el.dataset.failed = "true";
-                STATE.match.errors.add(t.id);
+                STATE.flashcard.reviewAgain.add(currentId);
+                
+                STATE.flashcard.isPendingTransition = true;
+                STATE.flashcard.flipped = false;
+                document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+
                 setTimeout(() => {
-                    t.el.classList.remove('incorrect', 'selected');
-                    d.el.classList.remove('incorrect', 'selected');
+                    renderCurrentFlashcard();
+                    STATE.flashcard.isPendingTransition = false;
                 }, 400);
-                STATE.match.selectedTerm = null;
-                STATE.match.selectedDef = null;
             }
         }
-    }
 
-    // Challenge Logic
-    function initChallengeMode() {
-        STATE.challenge.currentIdx = 0;
-        STATE.challenge.score = 0;
-        updateChallengeUI();
-    }
+        function shuffleFlashcards() {
+            if (STATE.flashcard.isPendingTransition || STATE.flashcard.deck.length <= 1) return;
+            const doFlipReset = STATE.flashcard.flipped;
 
-    function updateChallengeUI() {
-        const qData = DATA.questions[STATE.challenge.currentIdx];
-        document.getElementById('ch-q-num').innerText = `Mission ${STATE.challenge.currentIdx + 1} / 10`;
-        document.getElementById('ch-text').innerText = qData.q;
-        const grid = document.getElementById('ch-answers');
-        grid.innerHTML = '';
-        qData.options.forEach((opt, idx) => {
-            const btn = document.createElement('div');
-            btn.className = 'answer-tile';
-            btn.innerText = opt;
-            btn.onclick = () => selectAnswer(idx, btn);
-            grid.appendChild(btn);
-        });
-        document.getElementById('ch-explanation').style.display = 'none';
-        document.getElementById('ch-next').style.display = 'none';
-    }
+            if (doFlipReset) {
+                STATE.flashcard.isPendingTransition = true;
+                STATE.flashcard.flipped = false;
+                document.getElementById('fc-card-body').classList.remove('rotate-y-180');
+            }
 
-    function selectAnswer(idx, el) {
-        const qData = DATA.questions[STATE.challenge.currentIdx];
-        const tiles = document.querySelectorAll('.answer-tile');
-        tiles.forEach(t => t.classList.add('disabled'));
-        if (idx === qData.correct) {
-            el.classList.add('correct');
-            STATE.challenge.score++;
-        } else {
-            el.classList.add('incorrect');
-            tiles[qData.correct].classList.add('correct');
-        }
-        const exp = document.getElementById('ch-explanation');
-        exp.innerText = qData.exp;
-        exp.style.display = 'block';
-        document.getElementById('ch-next').style.display = 'block';
-    }
-
-    function nextQuestion() {
-        STATE.challenge.currentIdx++;
-        if (STATE.challenge.currentIdx < 10) updateChallengeUI();
-        else showSummary();
-    }
-
-    function showSummary() {
-        showScreen('summary');
-        document.getElementById('res-match').innerText = `${STATE.match.firstTryCount}/17`;
-        document.getElementById('res-challenge').innerText = `${STATE.challenge.score}/10`;
-
-        // Save Match Best Score
-        const currentBestMatch = localStorage.getItem('ethics_match_best');
-        if (currentBestMatch === null || STATE.match.firstTryCount > parseInt(currentBestMatch)) {
-            localStorage.setItem('ethics_match_best', STATE.match.firstTryCount);
-        }
-        
-        // Save Challenge Best Score
-        const currentBestChallenge = localStorage.getItem('ethics_challenge_best');
-        if (currentBestChallenge === null || STATE.challenge.score > parseInt(currentBestChallenge)) {
-            localStorage.setItem('ethics_challenge_best', STATE.challenge.score);
+            setTimeout(() => {
+                const arr = [...STATE.flashcard.deck];
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                STATE.flashcard.deck = arr;
+                STATE.flashcard.currentIndex = 0;
+                renderCurrentFlashcard();
+                STATE.flashcard.isPendingTransition = false;
+            }, doFlipReset ? 400 : 0);
         }
 
-        initHomepageScores();
-
-        const totalPoints = STATE.match.firstTryCount + STATE.challenge.score; 
-        let title = "Building Foundation";
-        let desc = "Continue reviewing the vocabulary to strengthen your command.";
-
-        if (totalPoints >= 24) {
-            title = "Command Level Mastery";
-            desc = "Excellent! You have demonstrated a superior command of lesson vocabulary.";
-        } else if (totalPoints >= 18) {
-            title = "Proficient";
-            desc = "Strong vocabulary command. You are ready for practical application of these principles.";
-        } else if (totalPoints >= 10) {
-            title = "Developing Fluency";
-            desc = "Knowledge is stabilizing. A few more sessions will solidify your mastery.";
+        function resetFlashcards() {
+            STATE.flashcard.mastered.clear();
+            STATE.flashcard.reviewAgain.clear();
+            try {
+                localStorage.removeItem('ethics_mastered_ids');
+            } catch(e) {}
+            initFlashcards();
         }
 
-        document.getElementById('res-rating-title').innerText = title;
-        document.getElementById('res-rating-desc').innerText = desc;
-    }
 
-    // Call interactive scores initially on boot
-    window.addEventListener('DOMContentLoaded', () => {
-        initHomepageScores();
-    });
-</script>
+        // ==========================================
+        // S3: MATCHING PROTOCOL STUDY GAME
+        // ==========================================
+        function initMatchGame() {
+            STATE.match.currentRound = 0;
+            STATE.match.score = 0;
+            STATE.match.attempts = {};
+            setupMatchRound();
+        }
+
+        function setupMatchRound() {
+            document.getElementById('match-complete-panel').classList.add('hidden');
+
+            const currentRoundIndex = STATE.match.currentRound;
+
+            // Show Round Banner modal instructions overlay
+            const overlay = document.getElementById('overlay-banner');
+            document.getElementById('overlay-round-title').textContent = `ROUND ${currentRoundIndex + 1}`;
+            document.getElementById('overlay-round-desc').textContent = `Begin matching round ${currentRoundIndex + 1} of 3. Differentiate terminology columns on the left with their exact definitions on the right.`;
+            overlay.classList.remove('hidden');
+
+            STATE.match.selectedTermId = null;
+            STATE.match.matchedIds.clear();
+            STATE.match.roundActive = false;
+
+            // Clear vector coordinates lines
+            document.getElementById('match-svg-canvas').innerHTML = '';
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                STATE.match.roundActive = true;
+                renderMatchRoundItems();
+            }, 1800);
+        }
+
+        function renderMatchRoundItems() {
+            const roundIdx = STATE.match.currentRound;
+            const termIndices = MATCH_ROUNDS[roundIdx];
+            
+            const roundTerms = termIndices.map(id => VOCABULARY_TERMS.find(t => t.id === id)).filter(Boolean);
+
+            document.getElementById('match-round-tag').innerHTML = `MATCHING PRESSURE • <span class="text-slate-800 font-bold">Round ${roundIdx + 1} of 3</span>`;
+            document.getElementById('match-score-tag').textContent = `First-Try Score: ${STATE.match.score} / 17`;
+
+            const shuffledDefinitions = [...roundTerms].sort(() => Math.random() - 0.5);
+
+            // Populate term elements column
+            const termsCol = document.getElementById('match-terms-column');
+            termsCol.innerHTML = '';
+            roundTerms.forEach(t => {
+                const chip = document.createElement('div');
+                chip.id = `match-term-${t.id}`;
+                chip.onclick = () => selectMatchTermItem(t.id);
+                chip.className = "border border-slate-205 bg-white rounded-xl px-4 py-3 min-h-[68px] flex items-center gap-3 hover:border-slate-400 hover:shadow-xs transition-all cursor-pointer";
+                
+                chip.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style="color: ${t.color}; background-color: ${t.color}15">
+                        <i data-lucide="${CATEGORY_ICONS[t.group] || 'scale'}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0 pr-1">
+                        <span class="font-bold font-display text-[13px] sm:text-[14px] text-slate-800 leading-tight block truncate">${t.term}</span>
+                        <span class="text-[8.5px] font-extrabold tracking-wider text-slate-400 uppercase font-mono block mt-0.5">${t.group}</span>
+                    </div>
+                `;
+                termsCol.appendChild(chip);
+            });
+
+            // Populate definitions items column
+            const defsCol = document.getElementById('match-defs-column');
+            defsCol.innerHTML = '';
+            shuffledDefinitions.forEach(t => {
+                const chip = document.createElement('div');
+                chip.id = `match-def-${t.id}`;
+                chip.onclick = () => selectMatchDefItem(t.id);
+                chip.className = "border border-slate-205 bg-white hover:border-slate-400 hover:shadow-xs rounded-xl px-4 py-3 min-h-[68px] flex items-center transition-all cursor-pointer";
+                
+                chip.innerHTML = `
+                    <p class="text-xs sm:text-xs font-semibold text-slate-600 leading-normal">${t.def}</p>
+                `;
+                defsCol.appendChild(chip);
+            });
+
+            lucide.createIcons();
+            recalculateMatchLines();
+        }
+
+        function selectMatchTermItem(termId) {
+            if (STATE.match.matchedIds.has(termId)) return;
+
+            // CSS classes resetting
+            document.querySelectorAll('#match-terms-column > div').forEach(div => {
+                div.classList.remove('border-neutral-900', 'bg-neutral-900', 'text-white', 'shadow-xs', 'ring-1', 'ring-neutral-900');
+                div.classList.add('bg-white', 'text-slate-800');
+            });
+
+            const targetChip = document.getElementById(`match-term-${termId}`);
+            if (targetChip) {
+                targetChip.classList.remove('bg-white', 'text-slate-800');
+                targetChip.classList.add('border-neutral-900', 'bg-neutral-900', 'text-white', 'shadow-xs', 'ring-1', 'ring-neutral-900');
+            }
+
+            STATE.match.selectedTermId = termId;
+        }
+
+        function selectMatchDefItem(defId) {
+            const activeTermId = STATE.match.selectedTermId;
+            if (activeTermId === null || STATE.match.matchedIds.has(defId)) return;
+
+            STATE.match.attempts[activeTermId] = (STATE.match.attempts[activeTermId] || 0) + 1;
+
+            const termChip = document.getElementById(`match-term-${activeTermId}`);
+            const defChip = document.getElementById(`match-def-${defId}`);
+
+            if (defId === activeTermId) {
+                // Connection successfully aligned!
+                const termMeta = VOCABULARY_TERMS.find(t => t.id === activeTermId);
+
+                if (STATE.match.attempts[activeTermId] === 1) {
+                    STATE.match.score += 1;
+                    document.getElementById('match-score-tag').textContent = `First-Try Score: ${STATE.match.score} / 17`;
+                }
+
+                termChip.classList.remove('border-neutral-900', 'bg-neutral-900', 'text-white', 'shadow-xs', 'ring-1', 'ring-neutral-900');
+                termChip.classList.add('bg-slate-50', 'text-slate-400', 'border-slate-205', 'border-dashed', 'opacity-60', 'cursor-default');
+                termChip.style.borderColor = termMeta.color;
+
+                defChip.classList.add('bg-slate-50', 'text-slate-400', 'border-slate-205', 'border-dashed', 'opacity-60', 'cursor-default');
+                defChip.style.borderColor = termMeta.color;
+
+                STATE.match.matchedIds.add(activeTermId);
+                STATE.match.selectedTermId = null;
+
+                recalculateMatchLines();
+
+                // Check round completed state
+                const activeRoundItems = MATCH_ROUNDS[STATE.match.currentRound].length;
+                if (STATE.match.matchedIds.size === activeRoundItems) {
+                    setTimeout(() => {
+                        document.getElementById('match-complete-panel').classList.remove('hidden');
+                        document.getElementById('match-complete-panel').scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }, 500);
+                }
+
+            } else {
+                // Failed path attempt shakes
+                termChip.classList.add('animate-shake');
+                defChip.classList.add('animate-shake');
+
+                setTimeout(() => {
+                    termChip.classList.remove('animate-shake');
+                    defChip.classList.remove('animate-shake');
+                }, 400);
+            }
+        }
+
+        function recalculateMatchLines() {
+            const svg = document.getElementById('match-svg-canvas');
+            if (!svg) return;
+
+            svg.innerHTML = '';
+            const svgBounds = svg.getBoundingClientRect();
+
+            STATE.match.matchedIds.forEach(id => {
+                const tEl = document.getElementById(`match-term-${id}`);
+                const dEl = document.getElementById(`match-def-${id}`);
+                const termNode = VOCABULARY_TERMS.find(t => t.id === id);
+
+                if (tEl && dEl && termNode) {
+                    const tRect = tEl.getBoundingClientRect();
+                    const dRect = dEl.getBoundingClientRect();
+
+                    const x1 = tRect.right - svgBounds.left;
+                    const y1 = tRect.top + tRect.height/2 - svgBounds.top;
+                    
+                    const x2 = dRect.left - svgBounds.left;
+                    const y2 = dRect.top + dRect.height/2 - svgBounds.top;
+
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', termNode.color);
+                    line.setAttribute('stroke-width', '2.5');
+                    line.setAttribute('stroke-linecap', 'round');
+                    line.setAttribute('opacity', '0.65');
+                    
+                    svg.appendChild(line);
+                }
+            });
+        }
+
+        function advanceMatchRound() {
+            if (STATE.match.currentRound < MATCH_ROUNDS.length - 1) {
+                STATE.match.currentRound += 1;
+                setupMatchRound();
+            } else {
+                // Match protocol complete
+                if (STATE.match.score > STATE.bestScores.match) {
+                    STATE.bestScores.match = STATE.match.score;
+                    try {
+                        localStorage.setItem('ethics_match_best', STATE.match.score);
+                    } catch(e) {}
+                }
+
+                // Push failed matches to study list
+                Object.entries(STATE.match.attempts).forEach(([termIdStr, count]) => {
+                    const id = parseInt(termIdStr, 10);
+                    if (count > 1) {
+                        STATE.flashcard.reviewAgain.add(id);
+                        STATE.flashcard.mastered.delete(id);
+                    }
+                });
+
+                enterMode('mastery');
+            }
+        }
+
+
+        // ==========================================
+        // S4: CHALLENGE DECISION QUESTIONS
+        // ==========================================
+        function initChallengeGame() {
+            STATE.challenge.currentQuestion = 0;
+            STATE.challenge.score = 0;
+            STATE.challenge.locked = false;
+            STATE.challenge.answeredLog = [];
+
+            renderChallengeScenario();
+        }
+
+        function renderChallengeScenario() {
+            const idx = STATE.challenge.currentQuestion;
+            const q = CHALLENGE_QUESTIONS[idx];
+
+            document.getElementById('challenge-q-tag').textContent = `Scenario ${idx + 1} of 10`;
+            document.getElementById('challenge-feedback-panel').classList.add('hidden');
+
+            document.getElementById('q-scenario-text').textContent = q.q;
+            document.getElementById('q-category-txt').textContent = `${q.group.toUpperCase()} CONCEPT`;
+
+            const relativeColor = CATEGORY_COLORS[q.group] || '#4f46e5';
+
+            const iconBox = document.getElementById('q-category-icon').parentElement;
+            iconBox.style.color = relativeColor;
+            iconBox.innerHTML = `<i id="q-category-icon" data-lucide="${CATEGORY_ICONS[q.group] || 'scale'}" class="w-5 h-5"></i>`;
+
+            // Display alternatives choice options
+            const grid = document.getElementById('challenge-options-grid');
+            grid.innerHTML = '';
+
+            q.options.forEach((optStr, choiceIdx) => {
+                const choiceBtn = document.createElement('div');
+                choiceBtn.className = "p-5 rounded-2xl border border-slate-205 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold font-display leading-snug flex items-center justify-between transition-all shadow-xs cursor-pointer";
+                choiceBtn.onclick = () => submitChallengeAnswer(choiceIdx, choiceBtn);
+
+                choiceBtn.innerHTML = `
+                    <div class="flex items-center gap-3 pr-2">
+                        <span class="w-6 h-6 rounded-lg text-xs font-black flex items-center justify-center border border-slate-200 bg-slate-50 text-slate-500 uppercase font-mono shrink-0">
+                            ${String.fromCharCode(65 + choiceIdx)}
+                        </span>
+                        <span class="text-xs sm:text-sm font-semibold">${optStr}</span>
+                    </div>
+                    <div class="status-marker shrink-0"></div>
+                `;
+
+                grid.appendChild(choiceBtn);
+            });
+
+            STATE.challenge.locked = false;
+            lucide.createIcons();
+        }
+
+        function submitChallengeAnswer(choiceIndex, element) {
+            if (STATE.challenge.locked) return;
+            STATE.challenge.locked = true;
+
+            const idx = STATE.challenge.currentQuestion;
+            const q = CHALLENGE_QUESTIONS[idx];
+            const isCorrect = choiceIndex === q.correct;
+
+            if (isCorrect) {
+                STATE.challenge.score += 1;
+                element.classList.remove('border-slate-205', 'hover:border-slate-400', 'bg-white', 'hover:bg-slate-50', 'text-slate-700');
+                element.classList.add('border-green-600', 'bg-green-50', 'text-green-900', 'ring-1', 'ring-green-600');
+                element.querySelector('.status-marker').innerHTML = '<i data-lucide="check-circle" class="text-green-600 w-5 h-5"></i>';
+            } else {
+                element.classList.remove('border-slate-205', 'hover:border-slate-400', 'bg-white', 'hover:bg-slate-50', 'text-slate-700');
+                element.classList.add('border-red-600', 'bg-red-50', 'text-red-900', 'ring-1', 'ring-red-600', 'animate-shake');
+                element.querySelector('.status-marker').innerHTML = '<i data-lucide="x-circle" class="text-red-600 w-5 h-5"></i>';
+
+                const rightOptBtn = document.getElementById('challenge-options-grid').children[q.correct];
+                if (rightOptBtn) {
+                    rightOptBtn.classList.remove('border-slate-205', 'hover:border-slate-400');
+                    rightOptBtn.classList.add('border-green-600', 'bg-green-50', 'text-green-900', 'ring-1', 'ring-green-600');
+                    rightOptBtn.querySelector('.status-marker').innerHTML = '<i data-lucide="check-circle" class="text-green-600 w-5 h-5"></i>';
+                }
+            }
+
+            document.querySelectorAll('#challenge-options-grid > div').forEach((btn, bIdx) => {
+                if (bIdx !== choiceIndex && bIdx !== q.correct) {
+                    btn.classList.add('opacity-45', 'border-slate-150', 'cursor-default');
+                }
+            });
+
+            // Show feedback explanations panel
+            const badge = document.getElementById('challenge-status-badge');
+            badge.className = isCorrect ? "inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono bg-green-50 text-green-700" :
+                                          "inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono bg-red-50 text-red-700";
+            badge.innerHTML = isCorrect ? '<i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Correct Application' :
+                                          '<i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Incorrect Application';
+
+            document.getElementById('challenge-explanation').textContent = q.feedback;
+            document.getElementById('challenge-proceed-btn').innerHTML = (idx < 9) ? 'Next Question <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>' : 'View Mastery Report <i data-lucide="award" class="w-3.5 h-3.5"></i>';
+
+            STATE.challenge.answeredLog.push({
+                qIdx: idx,
+                correct: isCorrect,
+                selectedIndex: choiceIndex
+            });
+
+            document.getElementById('challenge-feedback-panel').classList.remove('hidden');
+            document.getElementById('challenge-feedback-panel').scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+            lucide.createIcons();
+        }
+
+        function advanceChallengeQuestion() {
+            if (STATE.challenge.currentQuestion < CHALLENGE_QUESTIONS.length - 1) {
+                STATE.challenge.currentQuestion += 1;
+                renderChallengeScenario();
+            } else {
+                // Completed scoring challenge
+                if (STATE.challenge.score > STATE.bestScores.challenge) {
+                    STATE.bestScores.challenge = STATE.challenge.score;
+                    try {
+                        localStorage.setItem('ethics_challenge_best', STATE.challenge.score);
+                    } catch(e) {}
+                }
+
+                // If wrong, flag corresponding vocabulary references in study review pile
+                STATE.challenge.answeredLog.forEach(log => {
+                    if (!log.correct) {
+                        const questionMeta = CHALLENGE_QUESTIONS[log.qIdx];
+                        const related = VOCABULARY_TERMS.filter(t => t.group === questionMeta.group);
+                        related.slice(0, 1).forEach(term => {
+                            STATE.flashcard.reviewAgain.add(term.id);
+                            STATE.flashcard.mastered.delete(term.id);
+                        });
+                    }
+                });
+
+                enterMode('mastery');
+            }
+        }
+
+        function resetChallengeAndGo() {
+            STATE.challenge.score = 0;
+            enterMode('challenge');
+        }
+
+
+        // ==========================================
+        // S5: FLUENCY & MASTERY RESULTS ANALYSIS
+        // ==========================================
+        function renderMasteryReport() {
+            const fcSize = STATE.flashcard.mastered.size;
+            const matchScore = STATE.bestScores.match;
+            const challengeScore = STATE.bestScores.challenge;
+
+            const totalScore = fcSize + matchScore + challengeScore;
+            // Mastery Score bounds: 17 cards + 17 Match + 10 Challenge = 44 points total
+            const percentage = Math.round((totalScore / 44) * 100);
+
+            animatePercentHeading(percentage);
+
+            document.getElementById('report-fc-txt').textContent = `${fcSize} / 17 Mastered`;
+            document.getElementById('report-fc-bar').style.width = `${(fcSize / 17) * 100}%`;
+
+            document.getElementById('report-match-txt').textContent = `${matchScore} / 17 Pairs`;
+            document.getElementById('report-match-bar').style.width = `${(matchScore / 17) * 100}%`;
+
+            document.getElementById('report-challenge-txt').textContent = `${challengeScore} / 10 correct`;
+            document.getElementById('report-challenge-bar').style.width = `${(challengeScore / 10) * 100}%`;
+
+            // Assessment rankings
+            const rankTitle = document.getElementById('report-rank-heading');
+            const rankDesc = document.getElementById('report-rank-desc');
+            const rankCard = document.getElementById('report-rank-card');
+
+            rankCard.className = "border rounded-2xl p-6 sm:p-8 text-center shadow-xs mb-12 transition-all duration-300";
+
+            if (percentage >= 90) {
+                rankTitle.textContent = "ETHICAL COMMAND MASTER";
+                rankDesc.textContent = "Excellent fluency achieved! You demonstrate full, razor-sharp operational understanding of standard privacy principles, copyright protocols, user data tracing, and professional codes.";
+                rankCard.classList.add('bg-indigo-50', 'border-indigo-200', 'text-indigo-800');
+            } else if (percentage >= 75) {
+                rankTitle.textContent = "ETHICAL ANALYST";
+                rankDesc.textContent = "Strong contextual background! You can comfortably identify privacy bounds, analyze resource copyright protocols, and resolve abstract scenario models.";
+                rankCard.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+            } else if (percentage >= 50) {
+                rankTitle.textContent = "DEVELOPING APPRENTICE";
+                rankDesc.textContent = "Ethics fluency is expanding rapidly. Recompute pairing rounds or re-study flagged terms to perfect your recall time.";
+                rankCard.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-800');
+            } else {
+                rankTitle.textContent = "EXPLORER";
+                rankDesc.textContent = "First steps taken! Broaden your active vocabulary base with deep study blocks or flashcard recall sessions.";
+                rankCard.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-850');
+            }
+
+            // Populate current Flagged review items list
+            const loggedList = document.getElementById('report-review-log-container');
+            loggedList.innerHTML = '';
+
+            if (STATE.flashcard.reviewAgain.size === 0) {
+                loggedList.innerHTML = `
+                    <div class="text-center py-8">
+                        <i data-lucide="sparkles" class="text-green-500 mx-auto mb-2 w-7 h-7 animate-pulse"></i>
+                        <p class="text-xs font-bold text-green-700 uppercase tracking-widest leading-relaxed">
+                            Excellent work! No terms flagged for review.
+                        </p>
+                    </div>
+                `;
+            } else {
+                STATE.flashcard.reviewAgain.forEach(id => {
+                    const t = VOCABULARY_TERMS.find(item => item.id === id);
+                    if (t) {
+                        const tr = document.createElement('div');
+                        tr.className = "py-3.5 flex items-center justify-between gap-4";
+                        tr.innerHTML = `
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0 animate-pulse" style="background-color: ${t.color}"></span>
+                                <span class="font-bold text-xs sm:text-sm text-slate-800 font-display truncate">${t.term}</span>
+                            </div>
+                            <span class="text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-md shrink-0 tracking-wider text-center" style="background-color: ${t.color}12; color: ${t.color}">
+                                ${t.group}
+                            </span>
+                        `;
+                        loggedList.appendChild(tr);
+                    }
+                });
+            }
+
+            lucide.createIcons();
+        }
+
+        function animatePercentHeading(targetPercent) {
+            const el = document.getElementById('report-percent-heading');
+            let start = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function refresh(now) {
+                const elapsed = now - startTime;
+                const ratio = Math.min(elapsed / duration, 1);
+                el.textContent = `${Math.round(start + (targetPercent - start) * ratio)}%`;
+                if (ratio < 1) requestAnimationFrame(refresh);
+            }
+
+            requestAnimationFrame(refresh);
+        }
+
+    </script>
 </body>
 </html>
