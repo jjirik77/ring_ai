@@ -1,838 +1,1536 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUTONOMA X1 // Ethics Engineering Simulation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Inter, Space Grotesk, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --emate-blue: #0056b3;
-            --emate-blue-dark: #004494;
-            --emate-light-blue: #e7f1ff;
-            --emate-teal: #20c997;
-            --emate-bg: #fdfdfe;
-            --emate-white: #ffffff;
-            --emate-text: #1a1d21;
-            --emate-text-sec: #64748b;
-            --emate-border: #e2e8f0;
-            --emate-shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-            --emate-shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
-            --emate-shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.04);
-            --emate-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .meter-fill {
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background: radial-gradient(at top left, #e7f1ff, #f8fafc);
-            font-family: 'Inter', sans-serif;
-            color: var(--emate-text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
+        .animate-scan {
+            animation: scanLidar 2.4s infinite ease-in-out;
         }
-
-        #emate-app {
-            width: 1024px;
-            height: 768px;
-            background-color: var(--emate-bg);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--emate-shadow-lg);
-            overflow: hidden;
+        @keyframes scanLidar {
+            0% { transform: scaleX(0.8) opacity(0.12); }
+            50% { transform: scaleX(1.2) opacity(0.38); }
+            100% { transform: scaleX(0.8) opacity(0.12); }
+        }
+        .perspective-frame {
+            perspective: 1200px;
+        }
+        .isometric-3d {
+            transform: rotateX(8deg) rotateY(0deg);
+            transition: transform 0.5s ease;
+        }
+        /* Custom scrollbar to keep layout clean */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
             border-radius: 4px;
         }
-
-        header {
-            height: 70px;
-            background: var(--emate-white);
-            border-bottom: 1px solid var(--emate-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 10;
-        }
-
-        .header-title {
-            color: var(--emate-blue);
-            font-weight: 700;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .progress-dots {
-            display: flex;
-            gap: 14px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--emate-border);
-            transition: var(--transition);
-        }
-
-        .dot.active {
-            background: var(--emate-blue);
-            transform: scale(1.3);
-            box-shadow: 0 0 0 4px var(--emate-light-blue);
-        }
-
-        footer {
-            height: 80px;
-            background: var(--emate-white);
-            border-top: 1px solid var(--emate-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 10;
-        }
-
-        main {
-            flex: 1;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .content-card {
-            background: var(--emate-white);
-            border: 1px solid var(--emate-border);
-            border-radius: var(--emate-radius);
-            box-shadow: var(--emate-shadow-md);
-            width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            animation: cardEnter 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            overflow: hidden;
-        }
-
-        .content-card.active {
-            display: flex;
-        }
-
-        @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(15px) scale(0.99); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .sidebar-layout {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            height: 100%;
-        }
-
-        .sidebar {
-            background: #f8fafc;
-            border-right: 1px solid var(--emate-border);
-            padding: 24px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 18px 28px;
-            text-align: left;
-            font-weight: 500;
-            color: var(--emate-text-sec);
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .tab-btn:hover { color: var(--emate-blue); background: rgba(0, 86, 179, 0.03); }
-        .tab-btn.active { 
-            background: var(--emate-blue); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
-        }
-        .tab-btn.complete::after { 
-            content: ''; 
-            width: 6px; height: 6px; background: var(--emate-teal); border-radius: 50%;
-        }
-        .tab-btn.active.complete::after { background: white; }
-
-        .tab-content {
-            padding: 48px;
-            overflow-y: auto;
-            background: linear-gradient(to bottom right, #ffffff, #fafafa);
-        }
-
-        .emate-btn {
-            padding: 12px 28px;
-            border-radius: 8px;
-            border: 1px solid var(--emate-blue);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary { 
-            background: var(--emate-blue); 
-            color: white; 
-            box-shadow: 0 2px 4px rgba(0, 86, 179, 0.1);
-        }
-        .btn-primary:hover:not(:disabled) { 
-            background: var(--emate-blue-dark); 
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
-        }
-        .btn-outline { background: transparent; color: var(--emate-blue); }
-        .btn-outline:hover { background: var(--emate-light-blue); }
-        .btn-restart { color: var(--emate-text-sec); border-color: var(--emate-border); }
-        .btn-restart:hover { background: #f1f5f9; border-color: #cbd5e1; }
-
-        .emate-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .h-large { font-size: 34px; color: var(--emate-blue); margin-bottom: 24px; font-weight: 800; letter-spacing: -0.5px; }
-        .h-medium { font-size: 22px; margin-bottom: 16px; font-weight: 700; color: #1e293b; }
-        .text-body { font-size: 16px; line-height: 1.7; color: #475569; }
-        
-        .option-pill {
-            border: 1px solid var(--emate-border);
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-            background: white;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .option-pill:hover { border-color: var(--emate-blue); transform: translateX(4px); box-shadow: var(--emate-shadow-sm); }
-        .option-pill.active { 
-            border-color: var(--emate-blue); 
-            background: var(--emate-light-blue); 
-            box-shadow: inset 0 0 0 1px var(--emate-blue);
-        }
-
-        .scenario-grid { display: grid; grid-template-columns: 1fr 360px; gap: 40px; height: 100%; padding: 40px; }
-        .canvas-container { 
-            background: #0f172a; 
-            border-radius: 12px; 
-            position: relative; 
-            overflow: hidden; 
-            height: 100%;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
-        }
-        .data-panel { display: flex; flex-direction: column; gap: 24px; padding-right: 10px; overflow-y: auto; }
-        .impact-meter-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--emate-text-sec); margin-bottom: 4px; }
-        .impact-meter { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
-        .meter-fill { height: 100%; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
-
-        .quote-box {
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 8px;
-            border-left: 3px solid var(--emate-blue);
-            font-size: 14px;
-            line-height: 1.5;
-            color: #334155;
-            font-style: italic;
-        }
-
-        .impact-overlay { 
-            position: absolute; top:0; left:0; width:100%; height:100%; 
-            background: rgba(239, 68, 68, 0.2); display:none; pointer-events:none; 
-            z-index: 5;
-            mix-blend-mode: overlay;
-        }
-
-        .tab-content::-webkit-scrollbar, .data-panel::-webkit-scrollbar { width: 4px; }
-        .tab-content::-webkit-scrollbar-thumb, .data-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .badge-container {
-            padding: 40px;
-            text-align: center;
-            background: radial-gradient(circle at center, #ffffff, #f8f9ff);
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 1px solid var(--emate-light-blue);
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        /* Modern SVG Styles */
-        .car-body { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
-        .car-lights { animation: pulseLights 2s infinite alternate; }
-        .lidar-beam { animation: scanLidar 1.5s infinite ease-in-out; }
-        .road-stripes { animation: roadScroll 0.5s linear infinite; }
-        .road-stripes.paused { animation-play-state: paused !important; }
-
-        @keyframes pulseLights {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes scanLidar {
-            0% { transform: scaleX(0.8); opacity: 0.1; }
-            50% { transform: scaleX(1.1); opacity: 0.3; }
-            100% { transform: scaleX(0.8); opacity: 0.1; }
-        }
-
-        @keyframes roadScroll {
-            from { stroke-dashoffset: 60; }
-            to { stroke-dashoffset: 0; }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col justify-between font-sans selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden antialiased">
 
-    <div id="emate-app">
-        <header>
-            <div class="header-title">Autonoma X1 // Engineering Portal</div>
-            <div class="progress-dots" id="dots">
-                <div class="dot active"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+    <!-- Header containing centered step dots -->
+    <header class="px-6 py-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-center items-center z-20 shrink-0 shadow-sm">
+        <!-- Step Indicator Panel -->
+        <div class="flex items-center gap-2">
+            <div class="step-dot w-2 h-2 rounded-full bg-amber-500 scale-125 shadow shadow-amber-500/20 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Container -->
+    <main class="flex-1 w-full max-w-7xl mx-auto flex items-center justify-center p-6 relative z-10">
+        
+        <!-- STEP 0: Introduction Screen -->
+        <div id="step-card-0" class="step-view flex flex-col items-center justify-center text-center max-w-4xl mx-auto py-8 transition-all duration-500">
+            <div class="text-amber-600 mb-8 relative inline-flex p-6 bg-white border border-slate-200 rounded-3xl shadow-xl">
+                <svg class="w-14 h-14 stroke-[1.25]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 16 12 12 8 16" />
+                    <path d="m12 12-4-4" />
+                    <path d="m12 12 4-4" />
+                    <path d="M20 12A8 8 0 1 0 4 12a8 8 0 0 0 16 0" />
+                </svg>
+                <div class="absolute inset-0 bg-amber-500/5 rounded-3xl filter blur-xl animate-pulse"></div>
             </div>
-        </header>
 
-        <main id="main-content">
-            <!-- S1: Introduction -->
-            <div id="step-0" class="content-card active">
-                <div style="padding: 80px 60px; text-align: center; background: radial-gradient(circle at 50% 10%, rgba(0, 86, 179, 0.05) 0%, transparent 50%);">
-                    <div style="color: var(--emate-blue); margin-bottom: 40px; animation: float 3s ease-in-out infinite;">
-                        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="8" rx="2"/><path d="M7 10V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5"/><circle cx="8" cy="18" r="1.5" fill="var(--emate-blue)"/><circle cx="16" cy="18" r="1.5" fill="var(--emate-blue)"/></svg>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 font-display mb-6">
+                Who Should Live?
+            </h1>
+
+            <p class="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed mb-10">
+                In 1967, philosopher Philippa Foot posed a core ethical dilemma: a runaway trolley is headed toward five people. You can pull a lever to divert it—but it will kill one person on the side track instead. How should autonomous driving engines weigh these calculations in unexpected emergencies?
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3.5xl mb-12 text-left">
+                <!-- Card 1 -->
+                <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 text-amber-600 font-semibold mb-3 font-display">
+                        <span class="p-2 bg-amber-50 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10V2z" stroke-width="2"/></svg>
+                        </span>
+                        <span>Utilitarian Calculus</span>
                     </div>
-                    <h1 class="h-large">The Trolley Problem</h1>
-                    <p class="text-body" style="max-width: 720px; margin: 0 auto; font-size: 18px;">
-                        In 1967, philosopher Philippa Foot posed a thought experiment: a runaway trolley is headed toward five people. You can pull a lever and divert it — but it will then kill one person on the other track.
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Assess systematic options to mathematically minimize aggregate casualties and optimize public road safety.
                     </p>
-                    <br>
-                    <p class="text-body" style="max-width: 720px; margin: 0 auto; opacity: 0.8;">
-                        Today, autonomous vehicles must be programmed to make these choices before they ever reach the road. As an ethics engineer, you will write the <strong>Moral Algorithm</strong> that decides who lives and who dies in an unavoidable crash.
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 text-indigo-600 font-semibold mb-3 font-display">
+                        <span class="p-2 bg-indigo-50 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/><path d="M12 2v9m-4-6h8" stroke-width="2"/></svg>
+                        </span>
+                        <span>Contractual Duty</span>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Evaluate the core fiduciary agreement protecting paying cabin occupants in high-speed collision vectors.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-3 text-rose-600 font-semibold mb-3 font-display">
+                        <span class="p-2 bg-rose-50 rounded-lg">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0-8v6m0-8a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </span>
+                        <span>Real Calibration</span>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Commit your moral coefficients to the active autopilot stack. These guidelines direct autonomous physics in real-time.
                     </p>
                 </div>
             </div>
 
-            <!-- S2: Meet Vehicle (Engineering Portal) -->
-            <div id="step-1" class="content-card">
-                <div style="display:grid; grid-template-columns: 1.2fr 1fr; height: 100%;">
-                    <div style="padding: 40px; border-right: 1px solid var(--emate-border); background: #fdfdfe; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; background: var(--emate-light-blue); opacity: 0.2; border-radius: 50%;"></div>
-                        <h2 class="h-medium" style="margin-bottom: 30px;">Autonoma X1 Core</h2>
-                        <svg width="240" height="340" viewBox="0 0 100 150">
-                            <defs>
-                                <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" style="stop-color:var(--emate-blue);stop-opacity:1" />
-                                  <stop offset="100%" style="stop-color:var(--emate-blue-dark);stop-opacity:1" />
-                                </linearGradient>
-                                <filter id="glowEffect">
-                                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                                    <feMerge>
-                                        <feMergeNode in="coloredBlur"/>
-                                        <feMergeNode in="SourceGraphic"/>
-                                    </feMerge>
-                                </filter>
-                            </defs>
-                            <g transform="translate(5, 5) scale(0.9)">
-                                <path d="M50,12 C70,12 80,25 80,45 L80,115 C80,135 70,145 50,145 C30,145 20,135 20,115 L20,45 C20,25 30,12 50,12 Z" fill="#000" opacity="0.1" transform="translate(2, 4)" />
-                                <path d="M50,10 C70,10 80,22 80,42 L80,112 C80,132 70,142 50,142 C30,142 20,132 20,112 L20,42 C20,22 30,10 50,10 Z" fill="none" stroke="url(#carGrad)" stroke-width="2.5" />
-                                <path d="M50,12 C68,12 78,24 78,44 L78,110 C78,128 68,140 50,140 C32,140 22,128 22,110 L22,44 C22,24 32,12 50,12 Z" fill="#f8fafc" opacity="0.3" />
-                                <path d="M28,48 Q50,42 72,48 L70,72 Q50,66 30,72 Z" fill="var(--emate-blue)" opacity="0.1" stroke="var(--emate-blue)" stroke-width="0.5" />
-                                <rect x="28" y="16" width="12" height="5" rx="2" fill="var(--emate-blue)" opacity="0.8" />
-                                <rect x="60" y="16" width="12" height="5" rx="2" fill="var(--emate-blue)" opacity="0.8" />
-                                <circle cx="50" cy="85" r="10" fill="var(--emate-blue)" opacity="0.1" filter="url(#glowEffect)">
-                                    <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
-                                    <animate attributeName="opacity" values="0.1;0.2;0.1" dur="2s" repeatCount="indefinite" />
-                                </circle>
-                                <circle cx="50" cy="85" r="4" fill="var(--emate-blue)" />
-                                <line x1="35" y1="85" x2="65" y2="85" stroke="var(--emate-blue)" stroke-width="0.5" opacity="0.5">
-                                    <animate attributeName="x1" values="35;25;35" dur="1s" repeatCount="indefinite" />
-                                    <animate attributeName="x2" values="65;75;65" dur="1s" repeatCount="indefinite" />
-                                </line>
+            <button onclick="navigate(1)" class="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold tracking-wide rounded-xl shadow-lg shadow-slate-950/25 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]">
+                Open Engineering Laboratory
+            </button>
+        </div>
+
+        <!-- STEP 1: Engineering Constraints Screen -->
+        <div id="step-card-1" class="step-view hidden w-full flex flex-col transition-all duration-500">
+            <div class="text-center mb-6">
+                <span class="text-xs font-semibold tracking-wider text-amber-600 uppercase font-mono">SYS_INIT // CHASSIS VECTORS</span>
+                <h1 class="text-3xl font-bold text-slate-900 font-display mt-1">Autonoma X1 Core System</h1>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1">
+                <!-- Vehicle Outline Render -->
+                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 flex flex-col justify-center items-center relative overflow-hidden shadow-sm">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full filter blur-2xl pointer-events-none"></div>
+                    <h2 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-widest mb-6">3D CAD / Sensors & Traction</h2>
+                    
+                    <div class="relative w-48 h-72 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
+                        
+                        <svg viewBox="0 0 100 150" class="w-full h-full max-h-[260px]">
+                            <g>
+                                <!-- Tires -->
+                                <rect x="8" y="24" width="10" height="20" rx="3" fill="#334155" />
+                                <rect x="82" y="24" width="10" height="20" rx="3" fill="#334155" />
+                                <rect x="8" y="106" width="10" height="20" rx="3" fill="#334155" />
+                                <rect x="82" y="106" width="10" height="20" rx="3" fill="#334155" />
+
+                                <!-- Main Core Chassis Shell -->
+                                <path d="M50,8 C70,8 80,22 80,42 L80,108 C80,128 70,142 50,142 C30,142 20,128 20,108 L20,42 C20,22 30,8 50,8 Z" fill="none" stroke="#e2e8f0" stroke-width="4" />
+                                <path d="M50,8 C70,8 80,22 80,42 L80,108 C80,128 70,142 50,142 C30,142 20,128 20,108 L20,42 C20,22 30,8 50,8 Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="100,6" />
+                                
+                                <!-- Laser Scanning Ray -->
+                                <path d="M20,42 Q50,35 80,42 L78,66 Q50,59 22,66 Z" fill="rgba(245, 158, 11, 0.08)" stroke="#f59e0b" stroke-width="1" opacity="0.6" class="animate-pulse"></path>
+
+                                <!-- Cabin Windows -->
+                                <path d="M30,46 Q50,40 70,46 L66,86 Q50,92 34,86 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5" />
+                                <path d="M35,50 Q50,45 65,50 L61,80 Q50,85 39,80 Z" fill="#94a3b8" />
                             </g>
                         </svg>
-                        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 30px;">
-                            <span style="font-size:10px; font-weight:700; background:white; color:var(--emate-blue); border: 1px solid var(--emate-border); padding:6px 10px; border-radius:6px; box-shadow: var(--emate-shadow-sm);">360° LIDAR</span>
-                            <span style="font-size:10px; font-weight:700; background:white; color:var(--emate-blue); border: 1px solid var(--emate-border); padding:6px 10px; border-radius:6px; box-shadow: var(--emate-shadow-sm);">0.001s REACTION</span>
-                            <span style="font-size:10px; font-weight:700; background:white; color:var(--emate-blue); border: 1px solid var(--emate-border); padding:6px 10px; border-radius:6px; box-shadow: var(--emate-shadow-sm);">AI ETHICS CORE</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 justify-center mt-6">
+                        <span class="text-[10px] font-mono font-bold px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-600 rounded-md">360° LIDAR ARRAY</span>
+                        <span class="text-[10px] font-mono font-bold px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-600 rounded-md">TRACTION INTERCEPTOR</span>
+                    </div>
+                </div>
+
+                <!-- Engineering Parameters List -->
+                <div class="lg:col-span-7 flex flex-col justify-between h-full py-2">
+                    <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                        <h2 class="text-xl font-bold text-slate-900 font-display mb-4">Autonomous Control Parameters</h2>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                            Deploying the Autonoma X1 requires calibrating the structural ethical matrix. Once active, the system's sensors deconvolve obstacle pathways with absolute accuracy. However, kinematic limitations mean stopping distances are physically locked: when hazards occur too close, the mechanical system must execute pre-programmed lane allocation rules.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-amber-600 h-fit shrink-0">
+                                    <svg class="w-5 h-5 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><path d="M9 9h6v6H9z" stroke-width="2"/></svg>
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900">Morality Compiler Core</h4>
+                                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Calibrates vehicle decision paths, swerve dynamics, and obstacle triage weights inside mathematical bounds.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-amber-600 h-fit shrink-0">
+                                    <svg class="w-5 h-5 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 8v8m-4-4h8" stroke-width="2"/></svg>
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900">Multimodal Sensory Fusion</h4>
+                                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Integrates thermal, optical, and radar trackers to quantify pedestrian classifications and roadway signals.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-amber-50/60 border border-amber-200 text-amber-900 rounded-xl flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <p class="text-xs leading-relaxed">
+                                <strong>Operator Note:</strong> Your moral calibrations are compiled directly into the vehicle's permanent firmware, defining live priority vectors in unavoidable accidents.
+                            </p>
                         </div>
                     </div>
-                    <div style="padding: 60px 50px;">
-                        <h2 class="h-medium">Engineering Constraints</h2>
-                        <p class="text-body" style="margin-bottom: 24px; opacity: 0.9;">The vehicle is fully autonomous. It can calculate probabilities with 99.9% accuracy, but physics still applies: it cannot stop instantly when a collision zone is breached.</p>
-                        <div style="background: var(--emate-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--emate-border); position: relative;">
-                            <div style="position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: var(--emate-blue); border-radius: 12px 0 0 12px;"></div>
-                            <p style="font-weight: 700; font-size: 13px; color: var(--emate-blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Deployment Notice</p>
-                            <p style="font-size: 14px; color: #64748b; line-height: 1.6;">Once you commit your algorithm, the vehicle will execute these rules in every collision without human intervention. Your rules become law.</p>
+
+                    <div class="flex justify-between items-center gap-4 mt-8">
+                        <button onclick="navigate(-1)" class="px-6 py-3 border border-slate-200 hover:bg-white text-slate-600 font-semibold rounded-xl cursor-not-allowed cursor-pointer transition-colors text-sm">
+                            Back
+                        </button>
+                        <button onclick="navigate(1)" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl cursor-pointer transition-colors text-sm shadow hover:scale-[1.01] active:scale-[0.99]">
+                            Begin Matrix Calibration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Rule Configuration Panel -->
+        <div id="step-card-2" class="step-view hidden w-full flex flex-col transition-all duration-500">
+            <div class="mb-5 text-center lg:text-left">
+                <span class="text-xs font-semibold text-amber-600 block font-mono">PHASE 1 // ALGORITHM COEFFICIENTS</span>
+                <h1 class="text-2xl font-bold text-slate-900 font-display mt-0.5">Parameters Configurator</h1>
+                <p class="text-slate-500 text-xs mt-1">
+                    Configure the safety engine profiles to build the core operational software logic.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-[440px]">
+                <!-- Module Tabs -->
+                <div class="lg:col-span-4 flex flex-col gap-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block px-2.5 py-1.5 font-mono">
+                        Active Coefficients
+                    </span>
+                    <div class="space-y-1.5 overflow-y-auto pr-1 flex-1 max-h-[300px]" id="config-modules-list">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 mt-auto">
+                        <div class="flex items-center gap-2 text-slate-700 text-xs font-semibold mb-1">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            <span>Deployment Criteria</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-normal">
+                          All <strong class="text-slate-900 font-semibold" id="module-progress-txt">0/5</strong> modules must be fully calibrated before physics deployment triggers.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Active Module Detail -->
+                <div class="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+                    <div class="flex-1 flex flex-col justify-start" id="active-module-detail">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <div class="flex justify-between items-center border-t border-slate-100 pt-6 mt-6">
+                        <button onclick="navigate(-1)" class="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-500 rounded-xl text-sm transition-all cursor-pointer">
+                            Back
+                        </button>
+                        <div class="flex gap-3">
+                            <button id="next-module-btn" onclick="nextModuleTab()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm flex items-center gap-1.5 cursor-pointer transition-all">
+                                Next Module
+                            </button>
+                            <button id="commit-rules-btn" onclick="navigate(1)" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-sm shadow cursor-pointer hidden transition-all hover:scale-[1.01] active:scale-[0.99]">
+                                Commit & Unlock Sandboxes
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- S3: Set Ethics Rules -->
-            <div id="step-2" class="content-card">
-                <div class="sidebar-layout">
-                    <div class="sidebar" id="rules-sidebar">
-                        <button class="tab-btn active" onclick="showRule(0, this)">Rule 1: Priority</button>
-                        <button class="tab-btn" onclick="showRule(1, this)">Rule 2: Interaction</button>
-                        <button class="tab-btn" onclick="showRule(2, this)">Rule 3: Age Factor</button>
-                        <button class="tab-btn" onclick="showRule(3, this)">Rule 4: Quantity</button>
-                        <button class="tab-btn" onclick="showRule(4, this)">Rule 5: Uncertainty</button>
+        <!-- STEPS 3, 4, 5: Live Sandboxes for Scenarios 1, 2, 3 -->
+        <div id="step-card-scenario" class="step-view hidden w-full flex flex-col transition-all duration-500">
+            <div class="mb-4 text-center">
+                <span id="scen-step-marker" class="text-xs font-semibold tracking-widest text-amber-600 uppercase font-mono">
+                  Sandbox Testing // Scenario 1 of 3
+                </span>
+                <h1 id="scen-main-title" class="text-2xl font-bold text-slate-900 font-display mt-0.5">Scenario</h1>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1">
+                <!-- Sandbox Canvas with Vehicle Overlay -->
+                <!-- Overflow-visible added so that road elements appear to run gorgeously beyond the card layout boundaries! -->
+                <div class="lg:col-span-6 bg-slate-100 border border-slate-200/80 rounded-3xl relative overflow-hidden h-full min-h-[480px] flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-500 perspective-frame">
+                    
+                    <div class="absolute top-4 left-4 z-20 flex flex-col gap-1.5 pointer-events-none">
+                        <span id="scen-loc-tag" class="text-[9px] font-mono tracking-wider text-slate-600 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-slate-100 shadow-sm">
+                            LOC: DOWNTOWN
+                        </span>
+                        <span id="scen-speed-tag" class="text-[9px] font-mono tracking-wider text-slate-600 bg-white/95 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-slate-100 shadow-sm animate-pulse">
+                            VELOCITY: 35 MPH
+                        </span>
                     </div>
-                    <div class="tab-content" id="rule-content"></div>
+
+                    <!-- Sandbox SVG Highway Area - isometric-3d styles applied for extreme fidelity and modern look -->
+                    <div class="w-full h-full relative isometric-3d overflow-hidden" id="sandbox-svg-container">
+                        <!-- Filled dynamically by JS renderSandboxSVG -->
+                    </div>
+
+                    <div id="impact-overlay" class="absolute inset-0 bg-rose-600/20 pointer-events-none transition-opacity duration-150 opacity-0 z-20"></div>
+                </div>
+
+                <!-- Logic Output Details Panel -->
+                <div class="lg:col-span-6 flex flex-col justify-between h-full bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                    <div class="space-y-6 overflow-y-auto pr-1 flex-1 max-h-[460px]">
+                        <div>
+                            <span class="text-[9.5px] font-mono font-bold text-slate-400 uppercase tracking-widest">Acoustic Scenario Dossier</span>
+                            <h2 class="text-xl font-bold text-slate-900 font-display mt-0.5">Conflict Directive</h2>
+                            <p id="scen-description-txt" class="text-slate-600 text-sm mt-2 leading-relaxed font-sans">
+                                Objective text goes here.
+                            </p>
+                        </div>
+
+                        <div class="p-4.5 bg-slate-50 border border-slate-100 rounded-2xl">
+                             <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-2">
+                                Autonomous Rules Integration Trace
+                             </span>
+                             <div id="logic-factors-label" class="text-xs text-slate-600 leading-relaxed font-sans mt-1">
+                                Calculations based on configured rules identify target prioritization:
+                             </div>
+                             <div class="flex gap-2.5 items-center text-xs font-bold text-slate-900 mt-3 p-3 bg-white border border-slate-200/60 rounded-xl shadow-xs">
+                                 <svg class="w-4.5 h-4.5 text-amber-500 fill-amber-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                 <span id="scen-calculated-path-txt" class="font-display">PATH A: Maintain trajectory</span>
+                             </div>
+                        </div>
+
+                        <!-- Simulation Stats Outcomes Panel -->
+                        <div id="simulation-stats-panel" class="space-y-4 hidden pt-2 transition-all duration-500">
+                            <!-- Header status -->
+                            <div class="p-4 bg-slate-900 border border-slate-950 rounded-2xl text-white shadow-md">
+                                <span class="text-[9px] font-mono font-bold text-amber-400 uppercase tracking-wider block mb-1">
+                                    Simulated Trajectory Outcome
+                                </span>
+                                <p id="scen-success-result-txt" class="text-sm font-extrabold tracking-tight leading-snug font-display">STRIKE PEDESTRIANS</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Regulatory Alignment -->
+                                <div class="p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xs flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                                            Regulatory Alignment
+                                        </span>
+                                        <div class="flex items-baseline gap-1.5 mt-1">
+                                            <span id="scen-regulatory-pct" class="text-2xl font-black font-display text-slate-900">0%</span>
+                                            <span id="scen-regulatory-level" class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Level</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                            <div id="scen-regulatory-bar" class="meter-fill bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                        <p id="scen-regulatory-desc" class="text-[10.5px] text-slate-500 mt-2 leading-tight">Regulatory description here.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Corporate Liability Risk -->
+                                <div class="p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xs flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                                            Corporate Liability Risk
+                                        </span>
+                                        <div class="flex items-baseline gap-1.5 mt-1">
+                                            <span id="scen-liability-pct" class="text-2xl font-black font-display text-slate-900">0%</span>
+                                            <span id="scen-liability-level" class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Level</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                            <div id="scen-liability-bar" class="meter-fill bg-rose-500 h-1.5 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                        <p id="scen-liability-desc" class="text-[10.5px] text-slate-500 mt-2 leading-tight">Liability description here.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Public Perception -->
+                                <div class="p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xs flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1">
+                                            Public Perception
+                                        </span>
+                                        <div class="flex items-baseline gap-1.5 mt-1">
+                                            <span id="scen-perception-pct" class="text-2xl font-black font-display text-slate-900">0%</span>
+                                            <span id="scen-perception-level" class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">Level</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                            <div id="scen-perception-bar" class="meter-fill bg-amber-500 h-1.5 rounded-full" style="width: 0%"></div>
+                                        </div>
+                                        <p id="scen-perception-desc" class="text-[10.5px] text-slate-500 mt-2 leading-tight">Public perception description here.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Moral & Juridical Commentary</span>
+                                <p id="scen-quote-txt" class="text-xs text-slate-600 leading-relaxed italic">"The analysis"</p>
+                            </div>
+                        </div>
+
+                        <!-- User Reflection Selector -->
+                        <div id="reflection-log-panel" class="space-y-3 pt-2 hidden">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">
+                                Engineering Incident Statement & Authorization:
+                            </label>
+                            <select id="scen-reflection-selector" onchange="handleReflectionChange()" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-xs focus:ring-2 focus:ring-amber-400 focus:outline-none transition-all cursor-pointer shadow-xs">
+                                <option value="" disabled selected>Select ethical certification statement...</option>
+                                <option value="stand">I certify and execute this path code under current core rules.</option>
+                                <option value="revise">I would modify my algorithmic rules to mandate swerving.</option>
+                                <option value="complex">Traffic dilemmas reflect high-complexity social constraints beyond standardized logic.</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sandbox Controls Footer -->
+                    <div class="flex justify-between items-center mt-6 border-t border-slate-100 pt-5">
+                        <button onclick="navigate(-1)" class="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-500 rounded-xl text-sm transition-all cursor-pointer">
+                            Back
+                        </button>
+
+                        <button id="trigger-simulation-btn" onclick="executeSimPlay()" class="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all text-sm font-display">
+                            <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 4 12 8-12 8V4z" /></svg>
+                            Execute Sandbox Physics
+                        </button>
+
+                        <button id="advance-scenario-btn" onclick="navigate(1)" disabled class="px-6 py-3 bg-slate-200 text-slate-400 cursor-not-allowed font-bold rounded-xl flex items-center gap-2 text-sm transition-all hidden">
+                            Advance System Phase
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Scenarios -->
-            <div id="step-3" class="content-card"></div>
-            <div id="step-4" class="content-card"></div>
-            <div id="step-5" class="content-card"></div>
+        <!-- STEP 6: Ethical Review Board & Medal Credentials -->
+        <div id="step-card-board" class="step-view hidden w-full flex flex-col transition-all duration-500">
+            <div class="mb-6 text-center">
+                <span class="text-xs font-semibold text-amber-600 font-mono tracking-widest block">COMPILATION SUCCESS // MORAL CORE ENCODED</span>
+                <h1 class="text-2xl font-bold text-slate-900 font-display mt-0.5">Ethical Synthesis Panel</h1>
+                <p class="text-slate-500 text-xs mt-1">
+                    Your compiled system parameters have been audited by global transportation experts and legal authorities.
+                </p>
+            </div>
 
-            <!-- S7: Review Board (Final Audit Screen) -->
-            <div id="step-6" class="content-card">
-                <div class="sidebar-layout">
-                    <div class="sidebar" id="board-sidebar">
-                        <button class="tab-btn active" onclick="showBoard(0, this)">The Ethicist</button>
-                        <button class="tab-btn" onclick="showBoard(1, this)">The Engineer</button>
-                        <button class="tab-btn" onclick="showBoard(2, this)">The Regulator</button>
-                        <button class="tab-btn" onclick="showBoard(3, this)" id="final-badge-tab" style="display:none; font-weight:700; color: var(--emate-teal);">Final Verdict</button>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1">
+                <!-- Board Audit tabs -->
+                <div class="lg:col-span-4 flex flex-col gap-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block px-2.5 py-1.5 font-mono">
+                        Panel Reviewers
+                    </span>
+                    <div class="space-y-2 overflow-y-auto pr-1 flex-1 max-h-[260px]" id="board-tabs-list">
+                        <!-- Populated by JS -->
                     </div>
-                    <div class="tab-content" id="board-content"></div>
+
+                    <button id="final-verdict-tab" onclick="selectBoardTab('badge')" class="w-full mt-2 p-3.5 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 cursor-pointer font-bold flex items-center gap-3 transition-all">
+                        <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-900">Release Compiler Certificate</h4>
+                            <p class="text-[10px] font-normal leading-normal text-slate-400 mt-0.5">
+                                Generate official safety permit.
+                            </p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Active Audit report -->
+                <div class="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-6 flex flex-col justify-between min-h-[440px] shadow-sm">
+                    <div id="board-content-panel" class="flex-1 flex flex-col justify-start">
+                        <!-- Filled by JS -->
+                    </div>
+
+                    <div class="flex justify-center items-center mt-8 pt-4 border-t border-slate-100">
+                        <button onclick="restartSimulation()" class="px-6 py-3 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl font-bold flex items-center gap-2 cursor-pointer text-sm transition-all hover:scale-[1.01] active:scale-[0.99]">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5"/></svg>
+                            Reset Compiler Parameters
+                        </button>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
 
-        <footer>
-            <button class="emate-btn btn-restart" onclick="restart()">Restart Simulation</button>
-            <div style="display: flex; gap: 12px;">
-                <button class="emate-btn btn-outline" id="back-btn" onclick="navigate(-1)">Back</button>
-                <button class="emate-btn btn-primary" id="next-btn" onclick="navigate(1)">Next Step</button>
-            </div>
-        </footer>
-    </div>
+    </main>
 
+
+
+    <!-- Static Rules, Scenarios & Dynamic Board State Controller -->
     <script>
-        const STATE = {
-            step: 0,
-            rules: [null, null, null, null, null],
-            outcomes: [],
-            totalApproval: 0,
-            totalControversy: 0,
-            activeRuleTab: 0,
-            scenarioStates: [false, false, false],
-            scenarioReflections: [false, false, false]
-        };
-
-        const SCENARIO_UI_TEMPLATE = `
-            <div class="scenario-grid">
-                <div class="canvas-container">
-                    <svg id="scene-svg-{{idx}}" width="100%" height="100%" viewBox="0 0 400 600"></svg>
-                    <div id="impact-overlay-{{idx}}" class="impact-overlay"></div>
-                </div>
-                <div class="data-panel">
-                    <h2 class="h-medium" id="scen-title-{{idx}}">Scenario</h2>
-                    <p class="text-body" id="scen-desc-{{idx}}" style="font-size: 14px; line-height: 1.6;"></p>
-                    
-                    <div style="padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #f1f5f9;">
-                        <p style="font-size: 11px; font-weight: 800; color: var(--emate-blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Algorithm Evaluation</p>
-                        <p id="scen-logic-{{idx}}" style="font-size: 13px; line-height: 1.5; color: #475569;"></p>
-                    </div>
-
-                    <div id="scen-reaction-{{idx}}" style="display:none; animation: fadeIn 0.4s ease-out;">
-                        <div class="impact-meter-label"><span>Public Approval</span><span id="app-val-{{idx}}"></span></div>
-                        <div class="impact-meter"><div id="app-meter-{{idx}}" class="meter-fill" style="background: var(--emate-teal);"></div></div>
-                        <div style="height:12px;"></div>
-                        <div class="impact-meter-label"><span>Controversy Score</span><span id="con-val-{{idx}}"></span></div>
-                        <div class="impact-meter"><div id="con-meter-{{idx}}" class="meter-fill" style="background: #ef4444;"></div></div>
-                        <div style="height:20px;"></div>
-                        <div class="quote-box" id="scen-quote-{{idx}}"></div>
-                    </div>
-
-                    <button id="scen-run-{{idx}}" class="emate-btn btn-primary" style="margin-top:auto;" onclick="runScenario({{idx}})">Run Simulation</button>
-                    
-                    <div id="scen-reflection-{{idx}}" style="display:none; margin-top: 15px;">
-                        <p style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--emate-text-sec);">ENGINEER REFLECTION</p>
-                        <select id="scen-sel-{{idx}}" onchange="checkScenarioComplete({{idx}})" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--emate-border); font-family:inherit; font-size:13px; background:white; cursor:pointer;">
-                            <option value="" disabled selected>Select your response...</option>
-                            <option value="stand">I stand by my algorithm.</option>
-                            <option value="revise">I would revise this rule.</option>
-                            <option value="complex">The ethics are too complex for a rule.</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        const RULE_DATA = [
-            {
-                title: "Rule 1: General Priority",
-                desc: "When a collision is unavoidable, what is the primary objective?",
-                options: [
-                    { id: "protect_passengers", title: "Passenger Priority", text: "Always protect the people inside the vehicle." },
-                    { id: "minimize_casualties", title: "Utilitarian", text: "Choose path with the fewest total deaths." },
-                    { id: "protect_3to1", title: "Balanced", text: "Protect passengers unless outnumbered 3-to-1." }
-                ]
-            },
-            {
-                title: "Rule 2: Pedestrian Interaction",
-                desc: "How should the car react to legal crosswalk scenarios?",
-                options: [
-                    { id: "swerve_always", title: "Always Swerve", text: "Protect pedestrians even if passengers are harmed." },
-                    { id: "count_lives", title: "Math Driven", text: "Decide purely on the number of lives involved." },
-                    { id: "jaywalk_penalty", title: "Legal Focus", text: "Prioritize passengers if pedestrians are jaywalking." }
-                ]
-            },
-            {
-                title: "Rule 3: Age Factor",
-                desc: "Does the age of those involved factor into the decision?",
-                options: [
-                    { id: "age_neutral", title: "Age Neutral", text: "All lives are equal; age is not a variable." },
-                    { id: "prioritize_children", title: "Younger First", text: "Prioritize children over adults." },
-                    { id: "expectancy", title: "Future Focus", text: "Factor in remaining life expectancy." }
-                ]
-            },
-            {
-                title: "Rule 4: Quantitative Thresholds",
-                desc: "At what ratio do pedestrians outweigh passengers?",
-                options: [
-                    { id: "protect_always", title: "Passenger Absolute", text: "1 passenger > 100 pedestrians." },
-                    { id: "minimize", title: "Simple Majority", text: "Always choose the smaller death toll." },
-                    { id: "protect_5to1", title: "High Threshold", text: "Passengers first unless outnumbered 5-to-1." }
-                ]
-            },
-            {
-                title: "Rule 5: Sensor Uncertainty",
-                desc: "How to handle a 70% probability of a pedestrian?",
-                options: [
-                    { id: "assume_real", title: "Cautious", text: "Assume they are real; act to avoid." },
-                    { id: "confirmed_only", title: "Strict", text: "Act only on 100% confirmed detections." },
-                    { id: "threshold_50", title: "Probabilistic", text: "Act if probability exceeds 50%." }
-                ]
-            }
+        // Data declarations
+        const ETHICS_RULES = [
+          {
+            id: 0,
+            title: "Rule 1: General Priority",
+            desc: "When a collision is entirely unavoidable, what represents the vehicle's primary objective?",
+            options: [
+              { id: "protect_passengers", title: "Occupant Protection", text: "Prioritize the safety of the occupants inside the vehicle cabin above all else." },
+              { id: "minimize_casualties", title: "Utilitarian Calculation", text: "Minimize total human casualties mathematically, weighting all people equally." },
+              { id: "prioritize_external", title: "External Vulnerability Focus", text: "Prioritize vulnerable road users outside the vehicle, swerving to avoid pedestrians who lack structural shielding." }
+            ]
+          },
+          {
+            id: 1,
+            title: "Rule 2: Pedestrian Interaction",
+            desc: "How does the autonomous pilot factor the legal status of pedestrians inside the path?",
+            options: [
+              { id: "swerve_always", title: "Vulnerable User Rights", text: "Protect pedestrians in all traffic situations, regardless of their compliance with roadway laws." },
+              { id: "count_lives", title: "Scale-Neutral Fairness", text: "Ignore legal status; make traction decisions based solely on minimizing total expected casualties." },
+              { id: "jaywalk_penalty", title: "Legality & Responsibility Focus", text: "Maintain trajectory if pedestrians are actively jaywalking or violating traffic signals, to avoid routing occupants into unapproved hazards." }
+            ]
+          },
+          {
+            id: 2,
+            title: "Rule 3: Demographic Classification",
+            desc: "Is the safety engine allowed to adjust priority vectors based on computed physical attributes? Note: Sensors cannot read a pedestrian's age; classification estimates are based on height and gait heuristics, making automated age profiling highly imprecise and controversial.",
+            options: [
+              { id: "age_neutral", title: "Egalitarian Dignity (Age-Neutral)", text: "Treat all human lives as equivalent, rejecting demographic profiling to comply with international safety standards." },
+              { id: "prioritize_children", title: "Height-Based Child Heuristic", text: "Adjust safety pathways to avoid smaller height profiles representing children, prioritizing their protection over adults." },
+              { id: "expectancy", title: "Life-Year Expectancy Estimate", text: "Calculate path allocation by choosing to protect those with greater projected years of remaining life (subject to high margin of sensor error)." }
+            ]
+          },
+          {
+            id: 3,
+            title: "Rule 4: Quantitative Ratios",
+            desc: "At what headcount ratio do pedestrian lives outweigh the protection of in-vehicle occupants?",
+            options: [
+              { id: "protect_always", title: "Unconditional Occupant Protection", text: "Maintain occupant safety regardless of the numeric ratio of pedestrians in the hazard path." },
+              { id: "minimize", title: "Equal Numerical Balance", text: "Apply equal weighting. Program the vehicle to swerve if pedestrian headcount exceeds passenger count." },
+              { id: "protect_5to1", title: "Disparity Threshold (5-to-1)", text: "Maintain occupant priority unless pedestrians outnumber occupants by a significant margin (5-to-1 or greater)." }
+            ]
+          },
+          {
+            id: 4,
+            title: "Rule 5: Sensory Certainty",
+            desc: "How does the computer execute critical path decisions under sensor confidence variables?",
+            options: [
+              { id: "assume_real", title: "Precautionary Action Threshold", text: "Treat any low-confidence thermal or visual outline (above 30%) as a person, executing evasive action immediately." },
+              { id: "confirmed_only", title: "Anti-Phantom Braking Standard", text: "Avoid reactive evasive maneuvers for noise; authorize course changes only on highly confirmed (100%) sensor tracks." },
+              { id: "threshold_50", title: "Balanced Confidence Threshold", text: "Initiate evasive action only when confidence of human presence exceeds a steady 50% threshold." }
+            ]
+          }
         ];
 
         const SCENARIO_DATA = [
-            {
-                title: "Scenario 1: The Crosswalk",
-                desc: "Traveling 35 mph. Brake failure. 3 pedestrians in crosswalk legally. Path A: Continue (hit 3). Path B: Swerve into barrier (injure 1 passenger).",
-                evaluate: (rules) => {
-                    if (rules[0] === 'protect_passengers' || rules[3] === 'protect_always') return 'PATH_A';
-                    if (rules[0] === 'minimize_casualties' || rules[3] === 'minimize') return 'PATH_B';
-                    return 'PATH_A'; 
-                },
-                results: {
-                    'PATH_A': { text: 'STRIKE PEDESTRIANS. 3 fatalities.', app: 25, con: 15, quote: 'The car protected its passengers. Isn’t that what we paid for? — Consumer Advocate' },
-                    'PATH_B': { text: 'SWERVE. 1 passenger severe injury.', app: 15, con: 25, quote: 'A machine just harmed the passenger to save people who weren’t even in the car. — Safety Org' }
-                }
+          {
+            id: 0,
+            title: "Scenario 1: Crosswalk Encroach",
+            location: "Downtown Boulevard",
+            speed: "35 MPH",
+            desc: "Traveling at 35 mph with 1 passenger occupant inside the Autonoma X1 cabin. Front brakes experience sudden catastrophic failure. Three pedestrians are legally crossing inside a designated crosswalk with the active green signal directly ahead. You must evaluate between maintaining trajectory (PATH A: striking the 3 lawful pedestrians in a 3-to-1 headcount ratio imbalance) or executing an emergency swerve into a concrete barrier (PATH B: causing severe injury/casualty to the 1 passenger occupant).",
+            rulesChecked: ["Rule 1 (General Priority)", "Rule 4 (Quant Ratios)"],
+            evaluate: (rules) => {
+              if (rules[0] === 'protect_passengers' || rules[3] === 'protect_always') return 'PATH_A';
+              if (rules[0] === 'minimize_casualties' || rules[3] === 'minimize' || rules[0] === 'prioritize_external') return 'PATH_B';
+              if (rules[3] === 'protect_5to1') return 'PATH_A';
+              return 'PATH_A';
             },
-            {
-                title: "Scenario 2: The School Zone",
-                desc: "School zone. 5 children jaywalking. Path A: Strike 5 children. Path B: Swerve, kill 2 adult passengers.",
-                evaluate: (rules) => {
-                    if (rules[2] === 'prioritize_children' || rules[2] === 'expectancy') return 'PATH_B';
-                    if (rules[0] === 'protect_passengers') return 'PATH_A';
-                    if (rules[0] === 'minimize_casualties' || rules[3] === 'minimize') return 'PATH_B';
-                    return 'PATH_A';
-                },
-                results: {
-                    'PATH_A': { text: 'STRIKE CHILDREN. 5 fatalities.', app: 5, con: 55, quote: 'An algorithm valued adults more than five children. — Parent Group' },
-                    'PATH_B': { text: 'SWERVE. 2 passengers killed.', app: 20, con: 30, quote: 'The passengers trusted this car. It failed them. — Industry Analyst' }
-                }
-            },
-            {
-                title: "Scenario 3: The Edge Case",
-                desc: "Night. 68% probability of elderly pedestrian. Path A: Swerve into oncoming lane (2 drivers). Path B: Continue.",
-                evaluate: (rules) => {
-                    if (rules[4] === 'confirmed_only') return 'PATH_B';
-                    return 'PATH_A';
-                },
-                results: {
-                    'PATH_A': { text: 'SWERVE. Multi-vehicle collision. 2 fatalities.', app: 10, con: 35, quote: 'The car swerved for a ghost and killed innocent drivers. — Legal Expert' },
-                    'PATH_B': { text: 'CONTINUE. Elderly pedestrian killed.', app: 30, con: 10, quote: 'The sensor was correct. The drivers survived. — Risk Analyst' }
-                }
+            results: {
+              PATH_A: {
+                text: "TRAJECTORY RETAINED. The X1 maintains course. 3 pedestrian casualties recorded.",
+                regPct: 15,
+                regValue: "Non-Compliant",
+                regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                regDesc: "Fails standard pedestrian yielding laws.",
+                liabPct: 90,
+                liabValue: "High",
+                liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                liabDesc: "High risk of criminal civil negligence claims.",
+                perceptPct: 8,
+                perceptValue: "Critical Failure",
+                perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                perceptDesc: "Severe public protest on pedestrian strikes.",
+                quote: "The system prioritized the cabin's occupants over external pedestrians. While consistent with an occupant-centric product model, striking pedestrians inside a designated, lawful crosswalk generates extreme regulatory non-compliance and public scrutiny. — Autonomous Transportation Legal Review"
+              },
+              PATH_B: {
+                text: "EMERGENCY SWERVE. The X1 swerves into a concrete barrier. 1 passenger casualty recorded.",
+                regPct: 95,
+                regValue: "Compliant",
+                regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                regDesc: "Meets external vulnerable safety codes.",
+                liabPct: 45,
+                liabValue: "Moderate",
+                liabColor: "text-amber-600 bg-amber-50/50 border-amber-200",
+                liabDesc: "Risk of occupant contractual lawsuit claims.",
+                perceptPct: 72,
+                perceptValue: "Acceptable",
+                perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                perceptDesc: "Altruistic path receives broad social support.",
+                quote: "By prioritizing total casualty minimization, the autopilot protected the vulnerable pedestrians. However, programming a commercial vehicle to proactively sacrifice its own occupant introduces severe legal, ethical, and marketing questions for the automotive industry. — Global Insurance Council"
+              }
             }
+          },
+          {
+            id: 1,
+            title: "Scenario 2: School Zone Breach",
+            location: "Oakwood Elementary School Zone",
+            speed: "20 MPH",
+            desc: "Traveling at 20 mph with 2 passenger occupants inside the Autonoma X1 cabin. Five young children chasing a ball suddenly run into the center lane (crossing illegally outside the markings/jaywalking in an active, signed school zone). Wet leaves on the asphalt prevent stopping. Path A maintains course to strike the 5 children. Path B swerves into an oncoming cement mixer truck, causing massive cabin breach and fatal trauma to the 2 passenger occupants inside.",
+            rulesChecked: ["Rule 2 (Pedestrians)", "Rule 3 (Demographic Classification)"],
+            evaluate: (rules) => {
+              if (rules[1] === 'jaywalk_penalty') return 'PATH_A';
+              if (rules[0] === 'protect_passengers' || rules[3] === 'protect_always') return 'PATH_A';
+              if (rules[2] === 'prioritize_children' || rules[2] === 'expectancy') return 'PATH_B';
+              if (rules[1] === 'swerve_always' || rules[0] === 'minimize_casualties' || rules[3] === 'minimize' || rules[0] === 'prioritize_external') return 'PATH_B';
+              return 'PATH_A';
+            },
+            results: {
+              PATH_A: {
+                text: "TRAJECTORY RETAINED. The X1 maintains course. 5 schoolchild casualties recorded.",
+                regPct: 5,
+                regValue: "Felonious Breach",
+                regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                regDesc: "Severe failure in a signed school speed zone.",
+                liabPct: 98,
+                liabValue: "Catastrophic",
+                liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                liabDesc: "Massive punitive claims against manufacture.",
+                perceptPct: 2,
+                perceptValue: "Reputational Ruin",
+                perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                perceptDesc: "Total loss of public trust in company safety.",
+                quote: "The vehicle maintained its lane because the children entered the roadway illegally. However, failing to take evasive action to protect children in a signed school speed zone is completely outside acceptable public safety expectations, regardless of the pedestrians' legal fault. — National Roadway Safety Association"
+              },
+              PATH_B: {
+                text: "EMERGENCY SWERVE. The X1 swerves into the oncoming cement truck. 2 passenger casualties recorded.",
+                regPct: 85,
+                regValue: "Compliant",
+                regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                regDesc: "Protects high-priority infant classifications.",
+                liabPct: 75,
+                liabValue: "Prejudicial",
+                liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                liabDesc: "Direct programming of active occupant sacrifice.",
+                perceptPct: 80,
+                perceptValue: "Altruistic",
+                perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                perceptDesc: "Public defends saving kids in a tragedy.",
+                quote: "Swerving into a massive oncoming chassis successfully spared the children crossing the road. While widely seen as an act of absolute altruism, this choice directly exposes the vehicle manufacturer to unprecedented liability for pre-programmed occupant casualties. — Ethics and Robotics Research Council"
+              }
+            }
+          },
+          {
+            id: 2,
+            title: "Scenario 3: Sensor Ambiguity",
+            location: "Rural Expressway",
+            speed: "50 MPH",
+            desc: "Traveling at 50 mph through an unlit rural expressway where pedestrian presence is strictly prohibited. With 2 passenger occupants inside, night sensors register a thermal footprint in the center of the lane with a fluctuating 68% confidence probability. Swerving (PATH B) routes the vehicle off an embankment into a rolling collision (fatal to the 2 occupants). Maintaining course (PATH A) will strike whatever is in the lane. You must evaluate the risk threshold under sensor noise.",
+            rulesChecked: ["Rule 5 (Sensory Certainty)"],
+            evaluate: (rules) => {
+              if (rules[4] === 'confirmed_only') return 'PATH_A';
+              if (rules[4] === 'assume_real' || rules[4] === 'threshold_50') return 'PATH_B';
+              return 'PATH_A';
+            },
+            results: {
+              PATH_A: {
+                text: "TRAJECTORY RETAINED. Course maintained. The obstacle is confirmed to be an inanimate pile of tumbleweed. 0 casualties.",
+                regPct: 99,
+                regValue: "Standard Aligned",
+                regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                regDesc: "Meets basic highway lane keeping standards.",
+                liabPct: 5,
+                liabValue: "Optimal",
+                liabColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                liabDesc: "Zero damage, avoids erratic false-alarms.",
+                perceptPct: 96,
+                perceptValue: "Lauded",
+                perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
+                perceptDesc: "Praised for ignoring ghost/phantom targets.",
+                quote: "By setting a conservative sensory threshold, the X1 avoided a catastrophic phantom swerve. The thermal outline turned out to be an inanimate pile of tumbleweed, proving that reacting to ambiguous, sub-threshold sensor signals on high-speed roads introduces immense danger. — Automotive Technology Report"
+              },
+              PATH_B: {
+                text: "EMERGENCY SWERVE. The X1 swerves into the high embankment, causing a rollover. 2 passenger casualties recorded.",
+                regPct: 25,
+                regValue: "Sub-Optimal",
+                regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                regDesc: "Swerve executed below standard safety margin.",
+                liabPct: 92,
+                liabValue: "Absolute",
+                liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                liabDesc: "Severe liability for passenger death on false readings.",
+                perceptPct: 10,
+                perceptValue: "Negative",
+                perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
+                perceptDesc: "Extreme fear of over-sensitive vehicle bugs.",
+                quote: "An emergency swerve was triggered on a low-confidence 68% signal, rolling the vehicle and causing passenger casualties for an empty roadway. This showcases the extreme danger of over-reactive precautionary coding in multi-sensor autonomous architectures. — Federal Highway Safety Agency Board"
+              }
+            }
+          }
         ];
 
-        function navigate(dir) {
-            const nextStep = STATE.step + dir;
+        const BOARD_MEMBERS = [
+          {
+            id: 0,
+            name: "Dr. Alistair Vance",
+            role: "Senior Ethicist & Moral Philosopher",
+            avatar: "Scale",
+            getComment: (rules) => {
+              const rule1 = rules[0];
+              const rule4 = rules[3];
+              if (rule1 === 'minimize_casualties' || rule4 === 'minimize') {
+                return "Your configuration relies on an aggregate utilitarian calculus. While mathematically elegant and aligned with welfare-minimization principles, evaluating human survival as a pure arithmetic equation ignores deontological rights. It treats individuals as mere variables rather than ends in themselves, which remains deeply controversial in normative ethics.";
+              } else if (rule1 === 'prioritize_external' || rule4 === 'prioritize_vulnerable') {
+                return "By prioritizing vulnerable road users outside the vehicle, you honor a strong humanist duty of care. Pedestrians have no metal chassis or airbag protection, making them exceptionally vulnerable. However, intentionally turning a vehicle on its own occupants is a severe ethical transgression from a contractualist standpoint.";
+              } else {
+                return "You have configured a protective occupant egoism, prioritizing the consumer in all traffic dilemmas. While this honors the commercial safety agreement and fiduciary duty between the manufacturer and the buyer, establishing a system-level policy that values public bystanders less is a significant challenge for public moral consent.";
+              }
+            }
+          },
+          {
+            id: 1,
+            name: "Elena Rostova",
+            role: "Lead Systems & Robotics Architect",
+            avatar: "Cpu",
+            getComment: (rules) => {
+              const rule5 = rules[4];
+              if (rule5 === 'confirmed_only') {
+                return "The decision to execute evasive actions only on 100% verified optical and radar tracks is the most stable path from a control systems engineering perspective. It successfully eliminates hazardous 'phantom braking' and erratic highway swerves on ambiguous sensory signal noise. However, under-reacting in sudden, low-light occluded environments remains a critical risk vector.";
+              } else if (rule5 === 'assume_real') {
+                return "Adopting a highly sensitive precautionary action threshold ensures the vehicle treats any low-confidence thermal outline as a lives-first priority. However, in active field validation, high sensitivity (any object over 30% confidence) leads to high false-positive rates, triggering sudden evasive behaviors for harmless debris and exposing passengers to severe lane-deviation risks.";
+              } else {
+                return "A 50% majority confidence threshold represents a balanced computational trade-off between precautionary safety and kinematic stability. While a reasonable middle-ground engineering heuristic, under high-speed operation (like 50 MPH), wait-times for sensor signal confirmation can exhaust the braking distance envelope before an evasive path is selected.";
+              }
+            }
+          },
+          {
+            id: 2,
+            name: "Commissioner Sarah Jenkins",
+            role: "Legal Specialist & Regulatory Compliance Officer",
+            avatar: "FileSpreadsheet",
+            getComment: (rules) => {
+              const rule2 = rules[1];
+              const rule3 = rules[2];
+              
+              let legalNotice = "";
+              if (rule3 !== 'age_neutral') {
+                legalNotice = " Furthermore, programming explicit demographic profiling (such as favoring juveniles or calculating remainder life expectancy) conflicts directly with leading global safety standards. For instance, the German Ethics Commission on Automated Driving rules that any classification based on age or demographics is legally problematic, complicating certifiability.";
+              } else {
+                legalNotice = " Additionally, maintaining age neutrality conforms with international constitutional standards that prohibit algorithmic discrimination of life worth based on demographic indicators.";
+              }
+
+              if (rule2 === 'jaywalk_penalty') {
+                return "Your configuration enforces strict legality compliance, maintaining track over jaywalkers. While this supports legal liability rules, the general duty to mitigate accidents remains absolute; pre-programming a vehicle to choose impact based on crossing violations exposes the system to extreme public negligence lawsuits." + legalNotice;
+              } else if (rule2 === 'swerve_always') {
+                return "Always prioritizing external pedestrians, regardless of compliance, aligns with robust common-law duties of care where human life holds precedence over machine trajectories." + legalNotice;
+              } else {
+                return "A scale-neutral fairness policy that targets raw casualty numbers is computationally straightforward. However, completely disregarding legal signals in a litigation process may complicate insurance and manufacturer blame allocation." + legalNotice;
+              }
+            }
+          }
+        ];
+
+        // Global State
+        const STATE = {
+            step: 0, // 0 to 6
+            selectedRules: [null, null, null, null, null],
+            activeConfigTab: 0,
+            scenarioSimulated: [false, false, false],
+            scenarioReflections: [null, null, null],
+            activeBoardTab: '0' // '0', '1', '2', 'badge'
+        };
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderStepUI();
+        });
+
+        function navigate(direction) {
+            const nextStep = STATE.step + direction;
             if (nextStep < 0 || nextStep > 6) return;
-            
-            if (STATE.step === 2 && dir === 1 && STATE.rules.includes(null)) {
-                alert("Engineering Error: Please configure all 5 rules before deployment.");
-                return;
+
+            // Step 2 Guard: must configure all rules before advancing
+            if (STATE.step === 2 && direction === 1) {
+                if (STATE.selectedRules.includes(null)) {
+                    alert('System Guard: Please configure all 5 Autopilot Modules before deployment.');
+                    return;
+                }
             }
 
-            if (STATE.step >= 3 && STATE.step <= 5 && dir === 1) {
-                const idx = STATE.step - 3;
-                if (!STATE.scenarioStates[idx] || !STATE.scenarioReflections[idx]) {
-                    alert("Module Requirement: You must run the simulation and provide an engineer's reflection before moving to the next phase.");
+            // Scenario Steps Guards
+            if (STATE.step >= 3 && STATE.step <= 5 && direction === 1) {
+                const scenarioIdx = STATE.step - 3;
+                if (!STATE.scenarioSimulated[scenarioIdx]) {
+                    alert('System Guard: You must execute the physics simulation scenario first.');
+                    return;
+                }
+                if (!STATE.scenarioReflections[scenarioIdx]) {
+                    alert('System Guard: Please log your ethical statement to proceed.');
                     return;
                 }
             }
 
             STATE.step = nextStep;
-            updateUI();
+            renderStepUI();
         }
 
-        function updateUI() {
-            document.querySelectorAll('.content-card').forEach((card, idx) => {
-                card.classList.toggle('active', idx === STATE.step);
+        function renderStepUI() {
+            // Update Step Dot Highlights
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.className = "step-dot w-2 h-2 rounded-full transition-all duration-300";
+                if (STATE.step > index) {
+                    dot.classList.add('bg-amber-500/35', 'scale-90');
+                } else if (STATE.step === index) {
+                    dot.classList.add('bg-amber-600', 'scale-125', 'shadow-md', 'shadow-amber-500/25');
+                } else {
+                    dot.classList.add('bg-slate-200');
+                }
             });
 
-            document.querySelectorAll('.dot').forEach((dot, idx) => {
-                dot.classList.toggle('active', idx === STATE.step);
+            // Toggle active card views
+            document.querySelectorAll('.step-view').forEach((card) => {
+                card.classList.add('hidden');
+                card.classList.remove('opacity-100');
             });
 
-            document.getElementById('back-btn').disabled = (STATE.step === 0);
-            
-            // Remove Next button on the final step
-            const nextBtn = document.getElementById('next-btn');
-            if (STATE.step === 6) {
-                nextBtn.style.display = "none";
-            } else {
-                nextBtn.style.display = "flex";
-                nextBtn.innerText = "Next Step";
+            let currentCard = null;
+            if (STATE.step === 0) {
+                currentCard = document.getElementById('step-card-0');
+            } else if (STATE.step === 1) {
+                currentCard = document.getElementById('step-card-1');
+            } else if (STATE.step === 2) {
+                currentCard = document.getElementById('step-card-2');
+                renderConfigurationUI();
+            } else if (STATE.step >= 3 && STATE.step <= 5) {
+                currentCard = document.getElementById('step-card-scenario');
+                renderScenarioUI();
+            } else if (STATE.step === 6) {
+                currentCard = document.getElementById('step-card-board');
+                renderBoardUI();
             }
 
-            if (STATE.step === 2) renderRules();
-            if (STATE.step >= 3 && STATE.step <= 5) renderScenarioScreen(STATE.step - 3);
-            if (STATE.step === 6) renderBoard();
+            if (currentCard) {
+                currentCard.classList.remove('hidden');
+                setTimeout(() => currentCard.classList.add('opacity-100'), 50);
+            }
         }
 
-        function renderRules() {
-            const container = document.getElementById('rule-content');
-            const data = RULE_DATA[STATE.activeRuleTab];
-            
-            container.innerHTML = `
-                <h2 class="h-medium" style="animation: fadeIn 0.3s ease-out;">${data.title}</h2>
-                <p class="text-body" style="margin-bottom: 32px; opacity: 0.8; animation: fadeIn 0.4s ease-out;">${data.desc}</p>
-                <div id="rule-options">
-                    ${data.options.map((opt, i) => `
-                        <div class="option-pill ${STATE.rules[STATE.activeRuleTab] === opt.id ? 'active' : ''}" 
-                             style="animation: fadeIn ${0.5 + (i*0.1)}s ease-out;"
-                             onclick="selectRule('${opt.id}')">
-                            <p style="font-weight: 700; color: var(--emate-blue); font-size: 15px;">${opt.title}</p>
-                            <p style="font-size: 13px; margin-top: 5px; opacity: 0.8; color: #1e293b;">${opt.text}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
+        /* CONFIGURATION METHOD UTILS */
+        function renderConfigurationUI() {
+            const modulesContainer = document.getElementById('config-modules-list');
+            modulesContainer.innerHTML = '';
 
-        function showRule(idx, btn) {
-            STATE.activeRuleTab = idx;
-            document.querySelectorAll('#rules-sidebar .tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', i === idx);
-            });
-            renderRules();
-        }
+            ETHICS_RULES.forEach((rule, idx) => {
+                const isSelected = STATE.selectedRules[idx] !== null;
+                const isActive = STATE.activeConfigTab === idx;
 
-        function selectRule(val) {
-            STATE.rules[STATE.activeRuleTab] = val;
-            const btn = document.querySelectorAll('#rules-sidebar .tab-btn')[STATE.activeRuleTab];
-            btn.classList.add('complete');
-            renderRules();
-        }
-
-        function renderScenarioScreen(idx) {
-            const cardId = `step-${idx + 3}`;
-            const card = document.getElementById(cardId);
-            
-            if (card.innerHTML === '') {
-                card.innerHTML = SCENARIO_UI_TEMPLATE.split('{{idx}}').join(idx);
-                
-                const s = SCENARIO_DATA[idx];
-                document.getElementById(`scen-title-${idx}`).innerText = s.title;
-                document.getElementById(`scen-desc-${idx}`).innerText = s.desc;
-                document.getElementById(`scen-logic-${idx}`).innerText = `If Rules [${idx === 0 ? '1, 4' : idx === 1 ? '2, 3, 4' : '5'}] dictate collision priority...`;
-                
-                const svg = document.getElementById(`scene-svg-${idx}`);
-                const carSVG = `
-                    <g id="car-group-${idx}" transform="translate(180, 500)">
-                        <path class="lidar-beam" d="M-40,-60 L60,-60 L10,20 Z" fill="var(--emate-blue)" opacity="0.1" />
-                        <rect class="car-body" x="0" y="0" width="40" height="75" rx="8" fill="#1e293b" />
-                        <rect x="2" y="2" width="36" height="71" rx="6" fill="#0f172a" />
-                        <path d="M5,15 Q20,10 35,15 L32,35 Q20,30 8,35 Z" fill="#334155" />
-                        <rect class="car-lights" x="5" y="0" width="8" height="4" rx="1" fill="#e7f1ff" />
-                        <rect class="car-lights" x="27" y="0" width="8" height="4" rx="1" fill="#e7f1ff" />
-                        <rect x="8" y="55" width="24" height="12" rx="2" fill="#334155" />
-                    </g>
+                const btn = document.createElement('button');
+                btn.className = `w-full flex items-center justify-between p-3.5 rounded-xl text-left font-sans transition-all cursor-pointer border ${
+                    isActive
+                      ? "bg-slate-900 border-transparent text-white font-semibold shadow-md"
+                      : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/80"
+                }`;
+                btn.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[9px] uppercase tracking-wider font-mono ${isActive ? "text-amber-400" : "text-slate-400"}">
+                            Module 0${idx + 1}
+                        </span>
+                        <span class="text-xs truncate max-w-[210px] font-bold font-display">${rule.title.split(': ')[1]}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${isSelected ? `
+                            <span class="p-1 rounded-full ${isActive ? 'bg-[#fffbeb] text-amber-600' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            </span>
+                        ` : ''}
+                        <svg class="w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
                 `;
+                btn.onclick = () => {
+                    STATE.activeConfigTab = idx;
+                    renderConfigurationUI();
+                };
+                modulesContainer.appendChild(btn);
+            });
 
-                const pedCount = idx === 0 ? 3 : (idx === 1 ? 5 : 1);
-                let pedsSVG = '';
-                for(let i=0; i<pedCount; i++) {
-                    const spacing = 18;
-                    const startX = 200 - ((pedCount - 1) * spacing / 2);
-                    const x = startX + (i * spacing);
-                    pedsSVG += `
-                        <g transform="translate(${x}, 80)">
-                            <circle cx="0" cy="0" r="5" fill="#f8fafc" />
-                            <path d="M-4,5 L4,5 L6,15 L-6,15 Z" fill="#f8fafc" />
-                        </g>
+            // Update Progress Counts
+            const completedCount = STATE.selectedRules.filter(r => r !== null).length;
+            document.getElementById('module-progress-txt').innerText = `${completedCount}/5`;
+
+            // Render current active layout details
+            const activeRule = ETHICS_RULES[STATE.activeConfigTab];
+            const detailContainer = document.getElementById('active-module-detail');
+            detailContainer.innerHTML = `
+                <div class="mb-5">
+                    <span class="text-xs font-semibold text-amber-600 uppercase font-mono">Module Selection Layer</span>
+                    <h2 class="text-xl font-bold text-slate-900 font-display mt-0.5">${activeRule.title}</h2>
+                    <p class="text-slate-500 text-sm mt-1.5 leading-relaxed">${activeRule.desc}</p>
+                </div>
+                <div class="space-y-3" id="options-stack"></div>
+            `;
+
+            const stack = document.getElementById('options-stack');
+            activeRule.options.forEach((opt) => {
+                const isSelected = STATE.selectedRules[STATE.activeConfigTab] === opt.id;
+
+                const opBtn = document.createElement('button');
+                opBtn.className = `w-full p-4 rounded-xl border text-left flex items-start gap-4 cursor-pointer transition-all ${
+                    isSelected
+                      ? "bg-amber-500/5 border-amber-300 shadow-xs"
+                      : "bg-slate-50/50 border-slate-100 hover:border-slate-300 text-slate-500 hover:text-slate-700"
+                }`;
+                opBtn.innerHTML = `
+                    <div class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
+                        isSelected
+                          ? "border-amber-500 bg-amber-500 text-slate-950"
+                          : "border-slate-300 bg-white"
+                    }">
+                        ${isSelected ? `
+                            <svg class="w-3 h-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        ` : ''}
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold ${isSelected ? "text-slate-950" : "text-slate-800"}">
+                            ${opt.title}
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1 lines-relaxed font-sans">${opt.text}</p>
+                    </div>
+                `;
+                opBtn.onclick = () => {
+                    STATE.selectedRules[STATE.activeConfigTab] = opt.id;
+                    renderConfigurationUI();
+                };
+                stack.appendChild(opBtn);
+            });
+
+            // Toggle commit vs next tab elements
+            const isLastModule = STATE.activeConfigTab === ETHICS_RULES.length - 1;
+            const allCompleted = STATE.selectedRules.every(r => r !== null);
+
+            if (isLastModule) {
+                document.getElementById('next-module-btn').classList.add('hidden');
+                document.getElementById('commit-rules-btn').classList.remove('hidden');
+                if (allCompleted) {
+                    document.getElementById('commit-rules-btn').disabled = false;
+                    document.getElementById('commit-rules-btn').className = "px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-sm shadow cursor-pointer";
+                } else {
+                    document.getElementById('commit-rules-btn').disabled = true;
+                    document.getElementById('commit-rules-btn').className = "px-6 py-2.5 bg-slate-100 text-slate-400 border border-slate-200 font-bold rounded-xl text-sm cursor-not-allowed";
+                }
+            } else {
+                document.getElementById('next-module-btn').classList.remove('hidden');
+                document.getElementById('commit-rules-btn').classList.add('hidden');
+            }
+        }
+
+        function nextModuleTab() {
+            if (STATE.activeConfigTab < ETHICS_RULES.length - 1) {
+                STATE.activeConfigTab++;
+                renderConfigurationUI();
+            }
+        }
+
+        /* SCENARIO METHOD UTILS */
+        function renderScenarioUI() {
+            const scenarioIdx = STATE.step - 3;
+            const scenario = SCENARIO_DATA[scenarioIdx];
+            const isSimulated = STATE.scenarioSimulated[scenarioIdx];
+
+            // Render labels
+            document.getElementById('scen-step-marker').innerText = `Sandbox Scenario // Dilemma ${scenarioIdx + 1} of 3`;
+            document.getElementById('scen-main-title').innerText = scenario.title;
+            document.getElementById('scen-loc-tag').innerText = `LOC: ${scenario.location.toUpperCase()}`;
+            document.getElementById('scen-speed-tag').innerText = `VELOCITY: ${scenario.speed}`;
+            document.getElementById('scen-description-txt').innerText = scenario.desc;
+
+            // Algorithm calculations preview
+            const projectedPath = scenario.evaluate(STATE.selectedRules);
+            
+            // Build absolute mathematical/logic track execution trace
+            let calculationTrace = `<div class="space-y-2.5 text-xs text-slate-700 font-mono mt-3">`;
+            scenario.rulesChecked.forEach(ruleName => {
+                const ruleIdx = ETHICS_RULES.findIndex(r => r.title.startsWith(ruleName.split(' ')[0] + ' '));
+                if (ruleIdx !== -1) {
+                    const selectedOptId = STATE.selectedRules[ruleIdx];
+                    const ruleObj = ETHICS_RULES[ruleIdx];
+                    const optObj = ruleObj.options.find(o => o.id === selectedOptId);
+                    calculationTrace += `
+                        <div class="border-b border-slate-100 pb-2 last:border-0 last:pb-0">
+                            <span class="text-amber-700 font-bold block mb-0.5">${ruleObj.title}:</span> 
+                            <span class="text-slate-900 font-sans font-semibold text-xs leading-tight block">${optObj ? optObj.title : 'Unset'}</span>
+                            <div class="text-[11px] text-slate-500 font-sans italic mt-1 leading-relaxed">${optObj ? optObj.text : ''}</div>
+                        </div>
                     `;
                 }
+            });
+            calculationTrace += `</div>`;
 
-                svg.innerHTML = `
-                    <defs>
-                        <pattern id="road-texture-${idx}" width="100" height="100" patternUnits="userSpaceOnUse">
-                            <rect width="100" height="100" fill="#0f172a"/>
-                            <line id="stripes-${idx}" class="road-stripes" x1="50" y1="0" x2="50" y2="100" stroke="#334155" stroke-width="3" stroke-dasharray="30, 30" />
-                        </pattern>
-                    </defs>
-                    <rect x="120" y="0" width="160" height="600" fill="url(#road-texture-${idx})" />
-                    <rect x="115" y="0" width="5" height="600" fill="#1e293b" />
-                    <rect x="280" y="0" width="5" height="600" fill="#1e293b" />
-                    ${carSVG}
-                    ${pedsSVG}
+            document.getElementById('logic-factors-label').innerHTML = `
+                <div class="text-xs text-slate-500 leading-relaxed font-sans mb-1">
+                    The autonomous firmware processes active compiler inputs to project the collision path:
+                </div>
+                ${calculationTrace}
+            `;
+
+            document.getElementById('scen-calculated-path-txt').innerText = projectedPath === 'PATH_A' 
+                ? "PATH A: Retain original trajectory (Impact Obstacles)" 
+                : "PATH B: Active Swerve Action (Swerve into Collision)";
+
+            renderSandboxSVG(scenarioIdx, projectedPath);
+
+            // Toggle simulation stats sections
+            const statsPanel = document.getElementById('simulation-stats-panel');
+            const reflectionPanel = document.getElementById('reflection-log-panel');
+            const runBtn = document.getElementById('trigger-simulation-btn');
+            const nextBtn = document.getElementById('advance-scenario-btn');
+
+            if (isSimulated) {
+                statsPanel.classList.remove('hidden');
+                reflectionPanel.classList.remove('hidden');
+                runBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+
+                const chosenRes = scenario.results[projectedPath];
+                document.getElementById('scen-success-result-txt').innerText = chosenRes.text;
+                
+                // Show Regulation Alignment
+                document.getElementById('scen-regulatory-pct').innerText = `${chosenRes.regPct}%`;
+                const regEl = document.getElementById('scen-regulatory-level');
+                regEl.innerText = chosenRes.regValue;
+                regEl.className = `text-[9px] font-bold px-1.5 py-0.5 rounded border inline-block select-none ${chosenRes.regColor}`;
+                document.getElementById('scen-regulatory-desc').innerText = chosenRes.regDesc;
+                const regBar = document.getElementById('scen-regulatory-bar');
+                setTimeout(() => { regBar.style.width = `${chosenRes.regPct}%`; }, 50);
+                
+                if (chosenRes.regPct >= 70) {
+                    regBar.className = 'meter-fill bg-emerald-500 h-1.5 rounded-full';
+                } else if (chosenRes.regPct >= 40) {
+                    regBar.className = 'meter-fill bg-amber-500 h-1.5 rounded-full';
+                } else {
+                    regBar.className = 'meter-fill bg-rose-500 h-1.5 rounded-full';
+                }
+
+                // Show Corporate Liability Risk
+                document.getElementById('scen-liability-pct').innerText = `${chosenRes.liabPct}%`;
+                const liabEl = document.getElementById('scen-liability-level');
+                liabEl.innerText = chosenRes.liabValue;
+                liabEl.className = `text-[9px] font-bold px-1.5 py-0.5 rounded border inline-block select-none ${chosenRes.liabColor}`;
+                document.getElementById('scen-liability-desc').innerText = chosenRes.liabDesc;
+                const liabBar = document.getElementById('scen-liability-bar');
+                setTimeout(() => { liabBar.style.width = `${chosenRes.liabPct}%`; }, 50);
+
+                if (chosenRes.liabPct >= 75) {
+                    liabBar.className = 'meter-fill bg-rose-500 h-1.5 rounded-full';
+                } else if (chosenRes.liabPct >= 40) {
+                    liabBar.className = 'meter-fill bg-amber-500 h-1.5 rounded-full';
+                } else {
+                    liabBar.className = 'meter-fill bg-emerald-500 h-1.5 rounded-full';
+                }
+
+                // Show Public Perception
+                document.getElementById('scen-perception-pct').innerText = `${chosenRes.perceptPct}%`;
+                const perceptEl = document.getElementById('scen-perception-level');
+                perceptEl.innerText = chosenRes.perceptValue;
+                perceptEl.className = `text-[9px] font-bold px-1.5 py-0.5 rounded border inline-block select-none ${chosenRes.perceptColor}`;
+                document.getElementById('scen-perception-desc').innerText = chosenRes.perceptDesc;
+                const perceptBar = document.getElementById('scen-perception-bar');
+                setTimeout(() => { perceptBar.style.width = `${chosenRes.perceptPct}%`; }, 50);
+
+                if (chosenRes.perceptPct >= 70) {
+                    perceptBar.className = 'meter-fill bg-emerald-500 h-1.5 rounded-full';
+                } else if (chosenRes.perceptPct >= 40) {
+                    perceptBar.className = 'meter-fill bg-amber-500 h-1.5 rounded-full';
+                } else {
+                    perceptBar.className = 'meter-fill bg-rose-500 h-1.5 rounded-full';
+                }
+
+                document.getElementById('scen-quote-txt').innerText = `${chosenRes.quote}`;
+
+                // Setup reflection state
+                const selector = document.getElementById('scen-reflection-selector');
+                const userVal = STATE.scenarioReflections[scenarioIdx];
+                if (userVal) {
+                    selector.value = userVal;
+                    nextBtn.disabled = false;
+                    nextBtn.className = "px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
+                } else {
+                    selector.value = "";
+                    nextBtn.disabled = true;
+                    nextBtn.className = "px-6 py-3 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 font-bold rounded-xl flex items-center gap-2 text-sm";
+                }
+            } else {
+                statsPanel.classList.add('hidden');
+                reflectionPanel.classList.add('hidden');
+                runBtn.classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+                runBtn.disabled = false;
+                runBtn.innerHTML = `
+                    <svg class="w-4 h-4 fill-white animate-pulse" viewBox="0 0 24 24" stroke="currentColor"><path d="m7 4 12 8-12 8V4z" stroke-width="2" stroke-linejoin="round" /></svg>
+                    Run Physics Simulation
                 `;
             }
         }
 
-        function runScenario(idx) {
-            const s = SCENARIO_DATA[idx];
-            const decision = s.evaluate(STATE.rules);
-            const res = s.results[decision];
-            
-            const stripes = document.getElementById(`stripes-${idx}`);
-            const car = document.getElementById(`car-group-${idx}`);
-            
-            car.style.transition = 'transform 2.5s cubic-bezier(0.22, 1, 0.36, 1)';
-            
-            if (decision === 'PATH_A') {
-                car.style.transform = 'translate(180px, 80px)';
-            } else {
-                car.style.transform = 'translate(280px, 80px) rotate(22deg)';
+        function renderSandboxSVG(scenarioIdx, projectedPath, animatePos = null) {
+            const container = document.getElementById('sandbox-svg-container');
+            container.innerHTML = '';
+
+            const scenario = SCENARIO_DATA[scenarioIdx];
+            let pedCount = 3;
+            if (scenario.id === 1) pedCount = 5;
+            if (scenario.id === 2) pedCount = 1;
+
+            const spacing = 18;
+            const startX = 200 - ((pedCount - 1) * spacing) / 2;
+
+            // Renders highly detailed, beautiful vector graphic representations
+            let pedsSVG = '';
+            for (let i = 0; i < pedCount; i++) {
+                const x = startX + (i * spacing);
+                // Adjust size and look of pedestrians based on scenario (for school zone kids, render smaller items with blue/amber)
+                const isChild = scenario.id === 1;
+                const rRatio = isChild ? 4.5 : 5.8;
+                const hHeight = isChild ? 10 : 13;
+                const legLen = isChild ? 16 : 22;
+                const color = isChild ? '#0284c7' : '#ef4444'; // children blue, lawful crosswalk red
+                const iconPath = isChild 
+                    ? `<path d="M-3,5 L3,5 L4.5,${hHeight} L-4.5,${hHeight} Z" fill="${color}" opacity="0.95" />`
+                    : `<path d="M-4,5 L4,5 L6,${hHeight} L-6,${hHeight} Z" fill="${color}" opacity="0.95" />`;
+
+                pedsSVG += `
+                    <g transform="translate(${x}, 150)">
+                        <!-- Silhouette Glow vector -->
+                        <circle cx="0" cy="0" r="${rRatio}" fill="${color}" opacity="0.8" />
+                        ${iconPath}
+                        <!-- Left Foot -->
+                        <line x1="-2.5" y1="${hHeight}" x2="-2" y2="${legLen}" stroke="${color}" stroke-width="1.8" />
+                        <!-- Right Foot -->
+                        <line x1="2.5" y1="${hHeight}" x2="2" y2="${legLen}" stroke="${color}" stroke-width="1.8" />
+                        <!-- Backpack vector if child -->
+                        ${isChild ? `<rect x="-3" y="6" width="6" height="5" rx="1.2" fill="#e11d48" opacity="0.9" />` : ''}
+                    </g>
+                `;
             }
 
-            setTimeout(() => {
-                if (stripes) stripes.classList.add('paused');
-                
-                const overlay = document.getElementById(`impact-overlay-${idx}`);
-                if (overlay) {
-                    overlay.style.display = 'block';
-                    setTimeout(() => overlay.style.display = 'none', 150);
+            // Calculate current coordinates for auto play
+            let carX = 200;
+            let carY = 560;
+            let rotate = 0;
+
+            if (animatePos) {
+                carX = animatePos.x;
+                carY = animatePos.y;
+                rotate = animatePos.rotate;
+            } else if (STATE.scenarioSimulated[scenarioIdx]) {
+                if (projectedPath === 'PATH_A') {
+                    carX = 200; carY = 170; rotate = 0;
+                } else {
+                    carX = 295; carY = 170; rotate = 20;
+                }
+            }
+
+            // High aesthetic design with light grids, rich surrounding vegetation, real curb lines and receding traffic lanes
+            const markup = `
+                <svg width="100%" height="100%" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid meet" class="absolute inset-0 bg-[#e2e8f0]">
+                    <defs>
+                        <pattern id="dotGridLight" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <circle cx="2" cy="2" r="1.2" fill="#cbd5e1" />
+                        </pattern>
+                        <!-- volumetric headlight beam gradient -->
+                        <linearGradient id="headlightBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color: #fef08a; stop-opacity: 0.7" />
+                            <stop offset="100%" style="stop-color: #fef08a; stop-opacity: 0.0" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Laboratory Grid backdrop -->
+                    <rect width="100%" height="100%" fill="url(#dotGridLight)" />
+
+                    <!-- Landscape Grass Borders (bleeds out of window limits) -->
+                    <rect x="0" y="0" width="105" height="600" fill="#f1f5f9" />
+                    <rect x="295" y="0" width="105" height="600" fill="#f1f5f9" />
+
+                    <!-- Subtle vector trees to establish realism -->
+                    <g opacity="0.6">
+                        <circle cx="50" cy="50" r="12" fill="#cbd5e1" />
+                        <circle cx="45" cy="46" r="8" fill="#94a3b8" />
+                        <line x1="50" y1="50" x2="50" y2="72" stroke="#475569" stroke-width="2" />
+
+                        <circle cx="350" cy="530" r="14" fill="#cbd5e1" />
+                        <circle cx="344" cy="524" r="10" fill="#94a3b8" />
+                        <line x1="350" y1="530" x2="350" y2="554" stroke="#475569" stroke-width="2" />
+
+                        <circle cx="360" cy="180" r="12" fill="#cbd5e1" />
+                        <circle cx="355" cy="176" r="8" fill="#94a3b8" />
+                        <line x1="360" y1="180" x2="360" y2="202" stroke="#475569" stroke-width="2" />
+                    </g>
+
+                    <!-- Roadway curbs -->
+                    <rect x="105" y="0" width="190" height="600" fill="#334155" />
+                    <line x1="105" y1="0" x2="105" y2="600" stroke="#f1f5f9" stroke-width="3" />
+                    <line x1="295" y1="0" x2="295" y2="600" stroke="#f1f5f9" stroke-width="3" />
+
+                    <!-- Sidewalk curbs painted yellow or gray guidelines -->
+                    <line x1="107" y1="0" x2="107" y2="600" stroke="#f1f5f9" stroke-dasharray="14,14" stroke-width="2" />
+                    <line x1="293" y1="0" x2="293" y2="600" stroke="#fbbf24" stroke-dasharray="20,15" stroke-width="2" />
+
+                    <!-- Central dash paint division representing double lanes receding infinitely -->
+                    <line x1="200" y1="0" x2="200" y2="600" stroke="#f8fafc" stroke-width="2" stroke-dasharray="16, 26" />
+
+                    <!-- Scenario Crosswalk Paint underneath index layers -->
+                    <g transform="translate(105, 128)">
+                        <!-- Multi-bar custom zebra graphics -->
+                        <rect x="0" y="0" width="190" height="44" fill="rgba(255, 255, 255, 0.1)" />
+                        <rect x="15" y="0" width="20" height="44" fill="#f8fafc" opacity="0.85" />
+                        <rect x="50" y="0" width="20" height="44" fill="#f8fafc" opacity="0.85" />
+                        <rect x="85" y="0" width="20" height="44" fill="#f8fafc" opacity="0.85" />
+                        <rect x="120" y="0" width="20" height="44" fill="#f8fafc" opacity="0.85" />
+                        <rect x="155" y="0" width="20" height="44" fill="#f8fafc" opacity="0.85" />
+                    </g>
+
+                    <!-- Concrete Barrier Block / Oncoming truck chassis depiction -->
+                    ${scenario.id === 1 ? `
+                        <!-- Oncoming Cement mixer vehicle design for Scenario 2 swerve route -->
+                        <g transform="translate(265, 130)">
+                            <rect x="0" y="0" width="26" height="52" rx="4" fill="#64748b" />
+                            <!-- Cabin grill -->
+                            <rect x="3" y="0" width="20" height="10" fill="#1e293b" />
+                            <circle cx="6" cy="1" r="2" fill="#fbbf24" />
+                            <circle cx="20" cy="1" r="2" fill="#fbbf24" />
+                            <!-- Warning text -->
+                            <text x="-4" y="30" fill="#94a3b8" font-size="7" font-family="monospace">MIXER</text>
+                        </g>
+                    ` : `
+                        <!-- Concrete Highway Terminal Divider Block -->
+                        <g transform="translate(280, 128)">
+                            <rect x="0" y="0" width="15" height="48" rx="2" fill="#475569" />
+                            <line x1="0" y1="0" x2="15" y2="48" stroke="#1e293b" stroke-width="1.2" />
+                            <line x1="0" y1="48" x2="15" y2="0" stroke="#1e293b" stroke-width="1.2" />
+                            <!-- Caution amber indicators -->
+                            <circle cx="4" cy="5" r="1.5" fill="#f59e0b" />
+                            <circle cx="11" cy="43" r="1.5" fill="#f59e0b" />
+                        </g>
+                    `}
+
+                    <!-- Pedestrians group placement -->
+                    ${pedsSVG}
+
+                    <!-- Autonoma X1 Premium Vehicle Vector layout -->
+                    <g transform="translate(${carX - 22}, ${carY - 38}) rotate(${rotate}, 22, 38)">
+                        
+                        <!-- Lidar Dynamic Scan Overlay during scanning -->
+                        ${!STATE.scenarioSimulated[scenarioIdx] ? `
+                            <path d="M 22 -38 L -55 -170 L 100 -170 Z" fill="url(#headlightBeam)" opacity="0.16" />
+                            <path d="M 22 -30 Q 22 -38 -45 -140 Q 22 -150 90 -140 Z" fill="none" stroke="#f59e0b" stroke-dasharray="3,3" stroke-width="1" class="animate-scan" />
+                        ` : ''}
+
+                        <!-- Left Front Headlight beam Projection -->
+                        <polygon points="5,-6 -40,-130 18,-130" fill="url(#headlightBeam)" opacity="0.65" />
+                        <!-- Right Front Headlight beam Projection -->
+                        <polygon points="39,-6 10,-130 84,-130" fill="url(#headlightBeam)" opacity="0.65" />
+                        
+                        <!-- High Fidelity Car Body Chassis -->
+                        <rect x="0" y="0" width="44" height="76" rx="10" fill="#f59e0b" stroke="#d97706" stroke-width="1.8" />
+                        <!-- Windshield reflecting sky glass pane -->
+                        <rect x="3" y="16" width="38" height="26" rx="4" fill="#1e293b" />
+                        <path d="M 5 24 Q 22 17 39 24 L 35 38 Q 22 41 9 38 Z" fill="#475569" opacity="0.85" />
+                        
+                        <!-- Active Headlamps glow nodes -->
+                        <circle cx="6" cy="1.5" r="3.2" fill="#fef08a" />
+                        <circle cx="38" cy="1.5" r="3.2" fill="#fef08a" />
+
+                        <!-- Active Braking taillamps nodes (glows red on impact or dynamic halt) -->
+                        <rect x="5" y="72.5" width="8" height="2.8" rx="1" fill="#ef4444" />
+                        <rect x="31" y="72.5" width="8" height="2.8" rx="1" fill="#ef4444" />
+
+                        <!-- Dynamic Roof Camera and Lidar Pod vector decoration -->
+                        <rect x="17" y="42" width="10" height="12" rx="2" fill="#0f172a" />
+                        <circle cx="22" cy="48" r="3" fill="#38bdf8" />
+                    </g>
+                </svg>
+            `;
+
+            container.innerHTML = markup;
+        }
+
+        function executeSimPlay() {
+            const scenarioIdx = STATE.step - 3;
+            const scenario = SCENARIO_DATA[scenarioIdx];
+            const projectedPath = scenario.evaluate(STATE.selectedRules);
+
+            const runBtn = document.getElementById('trigger-simulation-btn');
+            runBtn.disabled = true;
+            runBtn.innerHTML = `
+                <svg class="w-4 h-4 animate-spin text-slate-800 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                Evaluating Physics Models...
+            `;
+
+            let currentPct = 0;
+            const interval = setInterval(() => {
+                currentPct += 2.5;
+                if (currentPct <= 100) {
+                    const startY = 560;
+                    const finalY = 170;
+                    const nextY = startY - ((startY - finalY) * (currentPct / 100));
+                    
+                    let nextX = 200;
+                    let nextRotate = 0;
+
+                    if (projectedPath === 'PATH_B') {
+                        // Dynamic swerve to the right concrete lane index
+                        nextX = 200 + ((295 - 200) * (currentPct / 100));
+                        nextRotate = 20 * (currentPct / 100);
+                    }
+
+                    renderSandboxSVG(scenarioIdx, projectedPath, { x: nextX, y: nextY, rotate: nextRotate });
+                } else {
+                    clearInterval(interval);
+                    
+                    // Trigger visual shake / red flash on final contact
+                    const overlay = document.getElementById('impact-overlay');
+                    overlay.style.opacity = '1';
+                    setTimeout(() => overlay.style.opacity = '0', 185);
+
+                    // Complete simulation
+                    STATE.scenarioSimulated[scenarioIdx] = true;
+                    renderScenarioUI();
+
+                    // Smooth scroll down to detailed telemetry metrics after simulation triggers
+                    setTimeout(() => {
+                        const targetPanel = document.getElementById('simulation-stats-panel');
+                        if (targetPanel) {
+                            targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 240);
+                }
+            }, 30);
+        }
+
+        function handleReflectionChange() {
+            const scenarioIdx = STATE.step - 3;
+            const selector = document.getElementById('scen-reflection-selector');
+            STATE.scenarioReflections[scenarioIdx] = selector.value;
+
+            const nextBtn = document.getElementById('advance-scenario-btn');
+            nextBtn.disabled = false;
+            nextBtn.className = "px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
+        }
+
+        /* AUDIT BOARD DETAIL UTILS */
+        function renderBoardUI() {
+            const tabsList = document.getElementById('board-tabs-list');
+            tabsList.innerHTML = '';
+
+            BOARD_MEMBERS.forEach((member, idx) => {
+                const isActive = STATE.activeBoardTab === idx.toString();
+                const tabBtn = document.createElement('button');
+                tabBtn.className = `w-full text-left p-3.5 rounded-xl transition-all cursor-pointer border ${
+                    isActive
+                      ? "bg-slate-900 text-white font-semibold shadow border-transparent"
+                      : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/80"
+                }`;
+
+                let iconMarkup = `
+                    <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0-8v6m0-8a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                `;
+                if (member.avatar === 'Scale') {
+                    iconMarkup = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5" /></svg>`;
+                } else if (member.avatar === 'Cpu') {
+                    iconMarkup = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 5h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2z" /></svg>`;
+                } else if (member.avatar === 'FileSpreadsheet') {
+                    iconMarkup = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`;
                 }
 
-                document.getElementById(`scen-reaction-${idx}`).style.display = 'block';
-                document.getElementById(`scen-reflection-${idx}`).style.display = 'block';
-                document.getElementById(`app-meter-${idx}`).style.width = res.app + '%';
-                document.getElementById(`con-meter-${idx}`).style.width = res.con + '%';
-                document.getElementById(`app-val-${idx}`).innerText = res.app + '%';
-                document.getElementById(`con-val-${idx}`).innerText = res.con + '%';
-                document.getElementById(`scen-quote-${idx}`).innerText = res.quote;
-                document.getElementById(`scen-run-${idx}`).disabled = true;
-
-                STATE.totalApproval += res.app;
-                STATE.totalControversy += res.con;
-                STATE.scenarioStates[idx] = true;
-            }, 2300);
-        }
-
-        function checkScenarioComplete(idx) {
-            const sel = document.getElementById(`scen-sel-${idx}`);
-            if (sel && sel.value !== "") {
-                STATE.scenarioReflections[idx] = true;
-            }
-        }
-
-        function renderBoard() {
-            showBoard(0);
-        }
-
-        function showBoard(idx, btn) {
-            const content = document.getElementById('board-content');
-            document.querySelectorAll('#board-sidebar .tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', i === idx);
+                tabBtn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="${isActive ? "text-amber-400" : "text-amber-600"}">${iconMarkup}</div>
+                        <div>
+                            <h4 class="text-xs font-bold leading-tight">${member.name}</h4>
+                            <p class="text-[9.5px] uppercase tracking-wider block mt-0.5 font-mono ${isActive ? "text-slate-300" : "text-slate-400"}">
+                                ${member.role}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                tabBtn.onclick = () => selectBoardTab(idx.toString());
+                tabsList.appendChild(tabBtn);
             });
 
-            const ethicistVerdict = (STATE.rules[0] === 'minimize_casualties') 
-                ? "Your algorithm reflects a mathematically consistent utilitarian framework. You prioritize the many over the few, which is logically defensible but creates significant legal liability in human-centric courts."
-                : "Your algorithm follows a passenger-first social contract. This makes the vehicle marketable to consumers but creates a public space where pedestrians bear all the risk.";
-
-            const boards = [
-                { title: "The Ethicist", text: ethicistVerdict },
-                { title: "The Engineer", text: "Your algorithm will execute precisely as written 2.3 million times per year across the fleet. At this scale, even rare 'edge cases' become daily occurrences. Ensure you are comfortable with the statistics of these choices." },
-                { title: "The Regulator", text: "Current EU guidelines prohibit age-based discrimination in collision logic. Your Rule 3 selection may require certification review depending on the specific jurisdiction of deployment." },
-                { title: "Final Verdict", text: getBadge() }
-            ];
-
-            const b = boards[idx];
-            content.innerHTML = `
-                <h2 class="h-medium" style="animation: fadeIn 0.3s ease-out;">${b.title}</h2>
-                <div class="text-body" style="animation: fadeIn 0.5s ease-out;">${b.text}</div>
-                ${idx === 2 ? `<br><button class="emate-btn btn-primary" style="animation: fadeIn 0.6s ease-out;" onclick="revealBadge()">Generate Final Certificate</button>` : ''}
-            `;
-        }
-
-        function revealBadge() {
-            document.getElementById('final-badge-tab').style.display = 'flex';
-            showBoard(3, document.getElementById('final-badge-tab'));
-        }
-
-        function getBadge() {
-            let title = "Safety Analyst";
-            let sub = "You navigate the shades of gray in machine ethics, balancing liability and safety with caution.";
-            
-            if (STATE.rules[0] === 'minimize_casualties') {
-                title = "Utilitarian Architect";
-                sub = "You prioritize the preservation of life as a numerical absolute, valuing the many above the few.";
-            } else if (STATE.rules[0] === 'protect_passengers') {
-                title = "Social Contract Engineer";
-                sub = "You honor the bond between user and machine, ensuring the vehicle protects its own first.";
+            // Update Issue classification tab style
+            const isBadgeActive = STATE.activeBoardTab === 'badge';
+            const badgeTab = document.getElementById('final-verdict-tab');
+            if (isBadgeActive) {
+                badgeTab.className = "w-full mt-2 p-3.5 rounded-2xl text-left border border-transparent bg-amber-500 text-slate-950 shadow-md cursor-pointer font-bold flex items-center gap-3 transition-all";
+            } else {
+                badgeTab.className = "w-full mt-2 p-3.5 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 cursor-pointer font-bold flex items-center gap-3 transition-all";
             }
 
-            return `<div class="badge-container">
-                <div style="font-size: 11px; font-weight: 800; color: var(--emate-teal); letter-spacing: 2px; margin-bottom: 10px;">CREDENTIAL ISSUED</div>
-                <h1 class="h-large" style="margin-bottom:12px;">${title}</h1>
-                <p class="text-body" style="font-size: 15px; opacity: 0.8;">${sub}</p>
-                <div style="margin-top:30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid var(--emate-border); padding-top: 20px;">
-                    <div>
-                        <div style="font-size:10px; color:var(--emate-text-sec);">APPROVAL</div>
-                        <div style="font-size:24px; font-weight:700; color:var(--emate-teal);">${STATE.totalApproval}</div>
+            const contentPanel = document.getElementById('board-content-panel');
+            if (STATE.activeBoardTab !== 'badge') {
+                const activeIdx = parseInt(STATE.activeBoardTab);
+                const currentMember = BOARD_MEMBERS[activeIdx];
+
+                let iconMarkup = `
+                    <svg class="w-6 h-6 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 15v2m0-8v6m0-8a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                `;
+                if (currentMember.avatar === 'Scale') {
+                    iconMarkup = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5" /></svg>`;
+                } else if (currentMember.avatar === 'Cpu') {
+                    iconMarkup = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 5h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2z" /></svg>`;
+                }
+
+                contentPanel.innerHTML = `
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="p-2.5 bg-amber-50 text-amber-600 rounded-xl border border-amber-100">${iconMarkup}</span>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900 font-display">${currentMember.name}</h3>
+                            <p class="text-xs text-slate-500 font-medium">${currentMember.role}</p>
+                        </div>
                     </div>
-                    <div>
-                        <div style="font-size:10px; color:var(--emate-text-sec);">CONTROVERSY</div>
-                        <div style="font-size:24px; font-weight:700; color:#ef4444;">${STATE.totalControversy}</div>
+
+                    <div class="bg-slate-50 p-6 border border-slate-100 rounded-2xl mt-4 leading-relaxed">
+                        <p class="text-sm text-slate-700 italic font-sans">
+                            "${currentMember.getComment(STATE.selectedRules)}"
+                        </p>
                     </div>
-                </div>
-            </div>`;
+
+                    <div class="mt-6 p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2 font-mono">
+                            Firmware Compiler Audit Logs
+                        </span>
+                        <p class="text-xs text-slate-500 leading-relaxed font-sans">
+                            Calibration states map correctly to verified structural standards. Final coefficients comply with algorithmic highway containment rules.
+                        </p>
+                    </div>
+                `;
+            } else {
+                // Issue final verdict badge profile
+                const passengerCount = STATE.selectedRules.filter(r => r === 'protect_passengers' || r === 'protect_always').length;
+                const utilitarianCount = STATE.selectedRules.filter(r => r === 'minimize_casualties' || r === 'minimize').length;
+
+                let profileTitle = "Systems Integrator";
+                let profileTheme = "Balanced Regulatory Approach";
+                let profileDesc = "Your settings implement a balanced systems approach, proportioning legal compliance, safety-to-ratio filters, and conservative sensory thresholds to optimize operational predictability in general traffic.";
+                let badgeStyle = "text-indigo-600 bg-indigo-50 border-indigo-200";
+                
+                let ethicsStanding = "Hybrid Risk Allocation";
+                let certificationClass = "Standard Traffic Permit";
+
+                if (utilitarianCount >= 3) {
+                    profileTitle = "Utilitarian Safety Core";
+                    profileTheme = "Welfare-Maximization Focus";
+                    profileDesc = "Your settings prioritize welfare-maximization, aiming to mathematically minimize aggregate road casualties. This aligns with public utility principles by treating all public space users as structurally equivalent.";
+                    badgeStyle = "text-emerald-700 bg-emerald-50 border-emerald-200";
+                    
+                    ethicsStanding = "Aggregate Utility Priority";
+                    certificationClass = "Conditional Transit Permit";
+                } else if (passengerCount >= 3) {
+                    profileTitle = "Passenger Protection Paradigm";
+                    profileTheme = "In-Cabin Fiduciary Focus";
+                    profileDesc = "Your settings prioritize passenger protection, aligning with standard private consumer safety expectations and manufacturing treaties that emphasize the fiduciary duty to preserve cabin occupants.";
+                    badgeStyle = "text-rose-600 bg-rose-50 border-rose-200";
+                    
+                    ethicsStanding = "In-Cabin Fiduciary Duty";
+                    certificationClass = "Commercial Vehicle Endorsement";
+                }
+
+                contentPanel.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-center p-4">
+                        <div class="p-5 rounded-3xl border ${badgeStyle} mb-5 shadow-sm animate-bounce">
+                            <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4l-3-3m0 0l3-3m-3 3h-4M6 21v-3a4 4 0 014-4h4a4 4 0 014 4v3" /></svg>
+                        </div>
+
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest font-mono">
+                            Operational Certificate Activated
+                        </span>
+
+                        <h2 class="text-2xl font-extrabold text-slate-900 font-display mt-2 mb-1">${profileTitle}</h2>
+                        <span class="text-xs text-slate-500 font-semibold mb-4 block">Design Paradigm: ${profileTheme}</span>
+
+                        <p class="text-sm text-slate-600 max-w-lg leading-relaxed mb-6 font-sans">
+                            ${profileDesc}
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-8 w-full max-w-md border-t border-slate-100 pt-6">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase block font-mono">
+                                    CORE MORALITY VECTOR
+                                </span>
+                                <span class="text-xs font-semibold text-slate-900 block mt-1.5">${ethicsStanding}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase block font-mono">
+                                    CERTIFICATION CLASS
+                                </span>
+                                <span class="text-xs font-semibold text-slate-900 block mt-1.5">${certificationClass}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
-        function restart() {
-            if(confirm("Engineering Log: Restarting will clear all rule configurations. Proceed?")) location.reload();
+        function selectBoardTab(tabId) {
+            STATE.activeBoardTab = tabId;
+            renderBoardUI();
         }
 
-        updateUI();
+        function restartSimulation() {
+            if (confirm("Compiler Warning: Proceeding will erase all custom coefficients inside active registers. Reset anyway?")) {
+                STATE.step = 0;
+                STATE.selectedRules = [null, null, null, null, null];
+                STATE.activeConfigTab = 0;
+                STATE.scenarioSimulated = [false, false, false];
+                STATE.scenarioReflections = [null, null, null];
+                STATE.activeBoardTab = '0';
+                renderStepUI();
+            }
+        }
     </script>
 </body>
 </html>
