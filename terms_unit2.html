@@ -9,20 +9,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #F8FAFC;
+            --bg: #F1F5F9;
             --panel: #FFFFFF;
-            --accent: #0891B2;
-            --accent-hover: #0E7490;
-            --correct: #16A34A;
-            --incorrect: #DC2626;
             --text-primary: #0F172A;
-            --text-secondary: #64748B;
+            --text-secondary: #475569;
+            --text-muted: #64748B;
             --border: #E2E8F0;
-            --card-back: #F0FDFA;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-soft: #F1F5F9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+            
+            --blue-accent: #2563EB;
+            --blue-bg: #EFF6FF;
+            --purple-accent: #7C3AED;
+            --purple-bg: #F5F3FF;
+            --amber-accent: #D97706;
+            --amber-bg: #FFFBEB;
+            
+            --correct: #16A34A;
+            --correct-bg: #F0FDF4;
+            --incorrect: #DC2626;
+            --incorrect-bg: #FEF2F2;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             background-color: var(--bg);
@@ -32,26 +48,27 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         #app-container {
             width: 100%;
-            max-width: 1100px;
-            height: 800px;
+            max-width: 1120px;
+            min-height: 850px;
             background: var(--panel);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
+            border-radius: 40px;
+            box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            padding: 10px;
         }
 
         /* Top Header */
         #header-bar {
-            padding: 24px 32px;
+            padding: 32px 48px;
             display: flex;
             align-items: center;
             position: absolute;
@@ -62,23 +79,30 @@
         }
 
         #exit-mode-btn {
-            background: transparent;
-            border: none;
+            background: #F1F5F9;
+            border: 1px solid var(--border);
             color: var(--text-secondary);
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
+            padding: 10px 20px;
+            border-radius: 9999px;
             cursor: pointer;
             display: none;
             align-items: center;
             gap: 10px;
             text-transform: uppercase;
-            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-sm);
         }
 
         #exit-mode-btn:hover {
-            color: var(--accent);
-            transform: translateX(-4px);
+            color: var(--text-primary);
+            background: #E2E8F0;
+            border-color: #CBD5E1;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .screen {
@@ -87,40 +111,91 @@
             align-items: center;
             width: 100%;
             height: 100%;
-            padding: 100px 60px 40px 60px;
-            animation: fadeIn 0.4s ease-out;
+            min-height: 800px;
+            padding: 110px 48px 48px 48px;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow-y: auto;
         }
 
-        .screen.active { display: flex; }
+        .screen.active {
+            display: flex;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Screen Header Badges */
+        .badge-interactive {
+            display: inline-block;
+            background-color: var(--blue-bg);
+            color: var(--blue-accent);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border: 1px solid rgba(37, 99, 235, 0.12);
         }
 
         /* Welcome Screen Styling */
         .welcome-content {
             width: 100%;
-            max-width: 900px;
+            max-width: 960px;
             text-align: center;
             margin: auto;
+            padding: 20px 10px;
         }
 
         .welcome-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 48px;
             font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 16px;
-            color: var(--text-primary);
+            line-height: 1.15;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #0F172A 0%, #2563EB 50%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.03em;
         }
 
-        .intro-text {
-            color: var(--text-secondary);
-            font-size: 18px;
-            max-width: 650px;
+        .welcome-subtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+        }
+
+        /* Intro Box Container */
+        .intro-box {
+            background-color: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 40px;
+            max-width: 820px;
             margin: 0 auto 48px auto;
+            text-align: left;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .intro-box-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .intro-box-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
             line-height: 1.6;
         }
 
@@ -129,71 +204,107 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .mode-card {
             background: #FFFFFF;
             border: 1px solid var(--border);
-            padding: 40px 24px;
-            border-radius: 24px;
+            padding: 36px 28px;
+            border-radius: 32px;
             cursor: pointer;
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
         .mode-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: #CBD5E1;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px -8px rgba(15, 23, 42, 0.08);
         }
 
+        /* Mode-specific colors on hover */
+        .mode-card.flashcard-card:hover { border-color: var(--blue-accent); }
+        .mode-card.match-card:hover { border-color: var(--purple-accent); }
+        .mode-card.challenge-card:hover { border-color: var(--amber-accent); }
+
         .mode-icon-circle {
-            width: 72px;
-            height: 72px;
-            background: #F1F5F9;
-            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 24px;
-            color: var(--accent);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
-        .mode-card:hover .mode-icon-circle {
-            background: var(--accent);
-            color: #FFFFFF;
-        }
+        .flashcard-card .mode-icon-circle { background-color: var(--blue-bg); color: var(--blue-accent); }
+        .match-card .mode-icon-circle { background-color: var(--purple-bg); color: var(--purple-accent); }
+        .challenge-card .mode-icon-circle { background-color: var(--amber-bg); color: var(--amber-accent); }
 
         .mode-card h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
         }
 
         .mode-card p {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.5;
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
 
-        /* Flashcard Mode Styling */
+        /* Mode Action Tags */
+        .mode-tag {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .mode-tag-blue { background-color: var(--blue-bg); color: var(--blue-accent); }
+        .mode-tag-purple { background-color: var(--purple-bg); color: var(--purple-accent); }
+        .mode-tag-amber { background-color: var(--amber-bg); color: var(--amber-accent); }
+
+        /* Score footer label */
+        .mode-score {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        /* Flashcard Screen Mode */
         .card-view {
             display: flex;
             align-items: center;
-            gap: 40px;
+            gap: 48px;
             margin: auto;
         }
 
         .card-container {
-            width: 500px;
-            height: 350px;
+            width: 520px;
+            height: 360px;
             perspective: 2000px;
             cursor: pointer;
         }
@@ -202,7 +313,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             transform-style: preserve-3d;
         }
 
@@ -222,60 +333,145 @@
             text-align: center;
             border: 1px solid var(--border);
             background: #FFFFFF;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
         }
 
-        .card-front { border-top: 8px solid var(--accent); }
-        .card-back { background: var(--card-back); border: 2px solid var(--accent); transform: rotateY(180deg); }
+        .card-front {
+            border-top: 10px solid var(--blue-accent);
+        }
 
-        .topic-icon { width: 80px; height: 80px; margin-bottom: 24px; color: var(--accent); }
-        .card-term { font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 700; margin-bottom: 8px; }
-        .card-def { font-size: 20px; line-height: 1.5; color: var(--text-primary); font-weight: 500; margin-bottom: 20px; }
-        .card-example { font-size: 15px; font-style: italic; color: var(--text-secondary); }
+        .card-back {
+            background: #FAFCFF;
+            border: 2px solid var(--blue-accent);
+            transform: rotateY(180deg);
+        }
+
+        .topic-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            color: var(--blue-accent);
+        }
+
+        .card-term {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .card-def {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .card-example {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            background: #F1F5F9;
+            padding: 12px 24px;
+            border-radius: 16px;
+            border-left: 4px solid var(--blue-accent);
+        }
 
         .nav-btn-circle {
             background: #FFFFFF;
             border: 1px solid var(--border);
-            color: var(--text-primary);
-            width: 64px;
-            height: 64px;
+            color: var(--text-secondary);
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-sm);
         }
 
-        .nav-btn-circle:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.1); }
+        .nav-btn-circle:hover {
+            border-color: var(--blue-accent);
+            color: var(--blue-accent);
+            background: var(--blue-bg);
+            transform: scale(1.1) translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.15);
+        }
+
+        .flip-hint {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: absolute;
+            bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .card-container:hover .flip-hint {
+            opacity: 1;
+            transform: scale(1.03);
+        }
 
         .self-rate-container {
             display: none;
             gap: 16px;
-            margin-top: 32px;
+            margin-top: 36px;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
         }
 
         .self-rate-container.visible { display: flex; }
 
         .btn-rate {
-            padding: 16px 32px;
-            border-radius: 14px;
+            padding: 16px 36px;
+            border-radius: 16px;
             border: none;
             cursor: pointer;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 0.05em;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
 
-        .btn-mastered { background: var(--correct); color: #FFF; }
-        .btn-mastered:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.3); }
-        .btn-repeat { background: #F1F5F9; color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-mastered {
+            background: var(--correct);
+            color: #FFFFFF;
+        }
 
-        /* Match Mode Styling */
+        .btn-mastered:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);
+        }
+
+        .btn-repeat {
+            background: #F1F5F9;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-repeat:hover {
+            background: #E2E8F0;
+            transform: translateY(-1px);
+        }
+
+        /* Match Screen Styling */
         .match-layout {
             width: 100%;
             max-width: 900px;
@@ -285,42 +481,61 @@
         .match-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
         }
 
-        .chip-stack { display: flex; flex-direction: column; gap: 12px; }
+        .chip-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
         .match-chip {
             background: #FFFFFF;
             border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 16px;
+            padding: 20px 24px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            min-height: 80px;
+            min-height: 84px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--shadow-sm);
+            color: var(--text-primary);
         }
 
         .match-chip:hover:not(.correct):not(.incorrect) {
-            border-color: var(--accent);
-            transform: translateX(5px);
-            background: #FAFAFA;
+            border-color: var(--purple-accent);
+            transform: translateX(6px);
+            background: #FAF9FF;
+            box-shadow: var(--shadow-md);
         }
 
         .match-chip.selected {
-            border-color: var(--accent);
-            background: rgba(8, 145, 178, 0.05);
-            box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.1);
+            border-color: var(--purple-accent);
+            background: rgba(124, 58, 237, 0.04);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
         }
 
-        .match-chip.correct { border-color: var(--correct); background: rgba(22, 163, 74, 0.05); color: var(--correct); pointer-events: none; opacity: 0.7; }
-        .match-chip.incorrect { border-color: var(--incorrect); background: rgba(220, 38, 38, 0.05); color: var(--incorrect); animation: shake 0.4s; }
+        .match-chip.correct {
+            border-color: var(--correct);
+            background-color: var(--correct-bg);
+            color: var(--correct);
+            pointer-events: none;
+            opacity: 0.8;
+            box-shadow: none;
+        }
+
+        .match-chip.incorrect {
+            border-color: var(--incorrect);
+            background-color: var(--incorrect-bg);
+            color: var(--incorrect);
+            animation: shake 0.4s;
+        }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -331,17 +546,32 @@
         /* Challenge Mode Styling */
         .challenge-box {
             width: 100%;
-            max-width: 700px;
+            max-width: 760px;
             background: #FFFFFF;
             padding: 48px;
             border-radius: 32px;
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
             margin: auto;
         }
 
-        .q-meta { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-        .q-text { font-size: 24px; font-weight: 600; line-height: 1.4; margin-bottom: 40px; }
+        .q-meta {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--blue-accent);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .q-text {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.45;
+            margin-bottom: 36px;
+            color: var(--text-primary);
+        }
 
         .answer-grid {
             display: grid;
@@ -352,48 +582,82 @@
         .answer-tile {
             background: #FFFFFF;
             border: 1px solid var(--border);
-            padding: 24px;
+            padding: 22px 24px;
             border-radius: 18px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
+            font-size: 14px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            box-shadow: var(--shadow-sm);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
         }
 
-        .answer-tile:hover:not(.disabled) { border-color: var(--accent); background: #F8FAFC; transform: translateY(-2px); }
-        .answer-tile.correct { background: var(--correct); color: #FFF; border-color: var(--correct); box-shadow: 0 8px 15px rgba(22, 163, 74, 0.3); }
-        .answer-tile.incorrect { background: var(--incorrect); color: #FFF; border-color: var(--incorrect); }
-        .answer-tile.disabled { pointer-events: none; }
+        .answer-tile:hover:not(.disabled) {
+            border-color: var(--blue-accent);
+            background: #F8FAFC;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .answer-tile.correct {
+            background: var(--correct);
+            color: #FFFFFF;
+            border-color: var(--correct);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25);
+        }
+
+        .answer-tile.incorrect {
+            background: var(--incorrect);
+            color: #FFFFFF;
+            border-color: var(--incorrect);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.15);
+        }
+
+        .answer-tile.disabled {
+            pointer-events: none;
+        }
 
         .explanation-panel {
             background: #F8FAFC;
-            border-left: 5px solid var(--accent);
-            padding: 20px;
+            border-left: 4px solid var(--blue-accent);
+            padding: 20px 24px;
             border-radius: 12px;
             margin: 24px 0;
             display: none;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.6;
             color: var(--text-secondary);
         }
 
         .btn-next {
             width: 100%;
-            background: var(--accent);
-            color: #FFF;
+            background: var(--blue-accent);
+            color: #FFFFFF;
             border: none;
             padding: 18px;
-            border-radius: 14px;
+            border-radius: 16px;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             cursor: pointer;
             display: none;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-size: 13px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Summary Styling */
+        .btn-next:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Summary Panel Styling */
         .summary-view {
             text-align: center;
             margin: auto;
@@ -405,57 +669,82 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
-            margin: 40px 0;
+            margin: 36px 0;
         }
 
         .stat-card {
             background: #F8FAFC;
             border: 1px solid var(--border);
-            padding: 32px;
+            padding: 28px;
             border-radius: 24px;
+            box-shadow: var(--shadow-sm);
         }
 
-        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 8px; }
-        .stat-label { font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .readiness-bar-container {
-            margin-bottom: 40px;
-            text-align: left;
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--blue-accent);
+            line-height: 1;
+            margin-bottom: 8px;
         }
 
-        .bar-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); }
-        .bar-bg { height: 16px; background: #E2E8F0; border-radius: 8px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0; background: var(--accent); transition: width 1s ease-out; }
+        .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
 
         .final-rating {
-            background: var(--card-back);
-            border: 1px solid var(--accent);
-            padding: 32px;
+            background: var(--blue-bg);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            padding: 28px;
             border-radius: 24px;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
 
-        .rating-name { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
-        .rating-text { font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+        .rating-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--blue-accent);
+            margin-bottom: 8px;
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
 
         .btn-reset {
-            background: var(--accent);
-            color: #FFF;
+            background: var(--blue-accent);
+            color: #FFFFFF;
             border: none;
-            padding: 20px 40px;
+            padding: 18px 40px;
             border-radius: 16px;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
         }
 
         @media (max-width: 1000px) {
-            #app-container { height: 100vh; border-radius: 0; }
+            #app-container { min-height: 100vh; border-radius: 0; padding: 12px; }
+            .screen { padding: 90px 20px 32px 20px; }
             .mode-selection { grid-template-columns: 1fr; }
-            .card-view { flex-direction: column; }
-            .card-container { width: 90vw; height: 300px; }
+            .card-view { flex-direction: column; gap: 24px; }
+            .card-container { width: 90vw; height: 320px; }
             .answer-grid { grid-template-columns: 1fr; }
             .match-grid { grid-template-columns: 1fr; }
         }
@@ -474,30 +763,44 @@
     <!-- S1: Welcome -->
     <div id="screen-S1" class="screen active">
         <div class="welcome-content">
-            <h1 class="welcome-title">ETHICS VOCABULARY<br>COMMAND CENTER</h1>
-            <p class="intro-text">Analyze parameters. Operationalize definitions. Master the 18 core ethical terms required for high-level computer science reasoning.</p>
+            <span class="badge-interactive">Interactive Learning</span>
+            <h1 class="welcome-title">Ethics Vocabulary Studio</h1>
+            <div class="welcome-subtitle">RING Ethics Fundamentals — 17 Essential Terms for Lesson 1</div>
+
+            <div class="intro-box">
+                <p class="intro-box-title">Success in computer ethics starts with owning its language.</p>
+                <p class="intro-box-desc">
+                    Whether you are evaluating privacy protocols, professional codes of conduct, or analyzing digital rights management, possessing a razor-sharp lexicon is non-negotiable. This custom studio is designed to build fluid retrieval and application of 17 pivotal concepts. Choose a study mode below to explore cards, race against definitions, or test your reasoning in simulated scenarios.
+                </p>
+            </div>
 
             <div class="mode-selection">
-                <div class="mode-card" onclick="startMode('flashcard')">
+                <div class="mode-card flashcard-card" onclick="startMode('flashcard')">
                     <div class="mode-icon-circle">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
-                    <h3>Flashcard Mode</h3>
-                    <p>Review definitions and operational examples with visual aids.</p>
+                    <h3>Flashcard</h3>
+                    <p>Active recall study with term, definition, and practical real-world examples.</p>
+                    <div class="mode-tag mode-tag-blue">17 Terms • Study Mode</div>
+                    <div class="mode-score" id="score-flashcards">0/17 Mastered</div>
                 </div>
-                <div class="mode-card" onclick="startMode('match')">
+                <div class="mode-card match-card" onclick="startMode('match')">
                     <div class="mode-icon-circle">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                     </div>
-                    <h3>Match Mode</h3>
-                    <p>Rapid recall association. Pair terms to definitions across 3 rounds.</p>
+                    <h3>Match</h3>
+                    <p>Connect terms to their definitions across 3 rapid pairing rounds.</p>
+                    <div class="mode-tag mode-tag-purple">17 Pairs • Rapid Match</div>
+                    <div class="mode-score" id="score-match">Best Score: Not Played</div>
                 </div>
-                <div class="mode-card" onclick="startMode('challenge')">
+                <div class="mode-card challenge-card" onclick="startMode('challenge')">
                     <div class="mode-icon-circle">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                     </div>
-                    <h3>Challenge Mode</h3>
-                    <p>High-stakes assessment. Test your mastery in 10 complex scenarios.</p>
+                    <h3>Challenge</h3>
+                    <p>Apply your knowledge to complex, scenario-based system design questions.</p>
+                    <div class="mode-tag mode-tag-amber">10 Scenarios • Scored Mode</div>
+                    <div class="mode-score" id="score-challenge">Best Score: Not Scored</div>
                 </div>
             </div>
         </div>
@@ -511,16 +814,24 @@
             </button>
             
             <div style="text-align: center;">
-                <p class="q-meta" id="card-counter">1 / 18</p>
+                <p class="q-meta" id="card-counter">1 / 17</p>
                 <div class="card-container" onclick="flipCard()">
                     <div class="flashcard" id="active-card">
                         <div class="card-face card-front">
                             <div id="fc-icon-container"></div>
                             <h2 class="card-term" id="fc-term">Ethics</h2>
+                            <div class="flip-hint">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                Click Card to Reveal
+                            </div>
                         </div>
                         <div class="card-face card-back">
                             <p class="card-def" id="fc-def">Definition</p>
                             <p class="card-example" id="fc-example">"Example sentence."</p>
+                            <div class="flip-hint">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 22v-6h6M2.66 8.43a10 10 0 1 1 .57 8.38l-5.67 5.67"/></svg>
+                                Click to Return
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -540,7 +851,10 @@
     <div id="screen-match" class="screen">
         <div class="match-layout">
             <p class="q-meta" style="text-align: center; margin-bottom: 8px;">Correlation Protocol</p>
-            <h2 class="welcome-title" id="match-round-title" style="font-size: 32px; margin-bottom: 32px;">Round 1 / 3</h2>
+            <h2 class="welcome-title" id="match-round-title" style="font-size: 32px; margin-bottom: 8px;">Round 1 / 3</h2>
+            <p style="text-align: center; color: var(--text-secondary); max-width: 650px; margin: 0 auto 32px auto; font-size: 14px; line-height: 1.6;">
+                <strong>Instructions:</strong> Click a term in the left column, then click its matching definition in the right column (or vice versa) to pair them. You can click any active selection again to unselect it.
+            </p>
             <div class="match-grid">
                 <div class="chip-stack" id="match-terms"></div>
                 <div class="chip-stack" id="match-defs"></div>
@@ -566,18 +880,13 @@
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <p class="stat-value" id="res-match">0/18</p>
-                    <p class="stat-label">Efficiency</p>
+                    <p class="stat-value" id="res-match">0/17</p>
+                    <p class="stat-label">Number Correct</p>
                 </div>
                 <div class="stat-card">
                     <p class="stat-value" id="res-challenge">0/10</p>
-                    <p class="stat-label">Accuracy</p>
+                    <p class="stat-label">Challenge Score</p>
                 </div>
-            </div>
-
-            <div class="readiness-bar-container">
-                <div class="bar-label"><span>Operational Readiness</span><span id="overall-bar-val">0%</span></div>
-                <div class="bar-bg"><div class="bar-fill" id="overall-bar"></div></div>
             </div>
 
             <div class="final-rating">
@@ -588,34 +897,69 @@
             <button class="btn-reset" onclick="location.reload()">Reset Command Center</button>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" style="
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translate(-50%, 50px);
+        background: #0F172A;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        border-radius: 9999px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    "></div>
 </div>
 
 <script>
+    const THEME_COLORS = {
+        blue: { primary: '#2563EB', bg: '#EFF6FF', text: '#1E40AF' },
+        emerald: { primary: '#10B981', bg: '#ECFDF5', text: '#065F46' },
+        rose: { primary: '#EF4444', bg: '#FEF2F2', text: '#991B1B' },
+        cyan: { primary: '#06B6D4', bg: '#ECFEFF', text: '#155E75' },
+        crimson: { primary: '#E11D48', bg: '#FFF1F2', text: '#9F1239' },
+        indigo: { primary: '#6366F1', bg: '#EEF2FF', text: '#3730A3' },
+        pink: { primary: '#EC4899', bg: '#FDF2F8', text: '#831843' },
+        amber: { primary: '#F59E0B', bg: '#FFFBEB', text: '#92400E' },
+        violet: { primary: '#8B5CF6', bg: '#F5F3FF', text: '#5B21B6' },
+        teal: { primary: '#0D9488', bg: '#F0FDFA', text: '#115E59' },
+        bronze: { primary: '#B45309', bg: '#FFFBEB', text: '#78350F' },
+        orange: { primary: '#EA580C', bg: '#FFF7ED', text: '#9A3412' },
+        red: { primary: '#EF4444', bg: '#FEF2F2', text: '#991B1B' },
+        slate: { primary: '#475569', bg: '#F8FAFC', text: '#334155' }
+    };
+
     const ICONS = {
-        ethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h9c1.1 0 2 .9 2 2v11z"/><path d="M21 16V5c0-1.1-.9-2-2-2h-3v11l2.5 2 2.5-2z"/></svg>`,
-        integrity: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-        plagiarism: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m15 11-6 6"/><path d="m9 11 6 6"/></svg>`,
-        transparency: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8a3 3 0 0 0 0 6"/></svg>`,
-        piracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 16-4-4 4-4"/><path d="m8 8 4 4-4 4"/></svg>`,
-        trustworthiness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-        privacy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-        bias: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6 12 21 5 6"/><circle cx="12" cy="21" r="1"/></svg>`,
-        accountability: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>`,
-        beneficence: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
-        fairness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M5 16h14"/><path d="M5 8h14"/></svg>`,
-        cookies: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 8.5a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/><path d="M11 14a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/><path d="M14 10a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/><path d="M15.5 15a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/></svg>`,
-        clickbait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"/></svg>`,
-        ragebait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 14.5 7 0"/><path d="M12 2c1 2 2 3.5 2 5.5s-1 3-2 3.5c-1-.5-2-1.5-2-3.5S11 4 12 2z"/><path d="M20 12.5c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8 8 3.6 8 8z"/></svg>`,
-        drm: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><path d="M12 15v3"/><path d="M10 16h4"/></svg>`,
-        medialiteracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M12 6v4"/><path d="M12 14h.01"/></svg>`,
-        codeofethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
-        nonmaleficence: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`
+        ethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-ethics" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2563EB"/><stop offset="100%" stop-color="#60A5FA"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-ethics)" opacity="0.12"/><path d="M12 3v15M19 14c0 2.2-3.1 4-7 4s-7-1.8-7-4" stroke="url(#grad-ethics)" stroke-width="2" stroke-linecap="round"/><path d="M6 9l6-3 6 3" stroke="url(#grad-ethics)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 9a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm12 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" stroke="url(#grad-ethics)" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+        moralintegrity: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-moral" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#34D399"/></linearGradient></defs><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#grad-moral)" opacity="0.12"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="url(#grad-moral)" stroke-width="2" stroke-linejoin="round"/><path d="M12 8l1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L12 8z" fill="url(#grad-moral)"/></svg>`,
+        plagiarism: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-plag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#F87171"/></linearGradient></defs><rect x="3" y="3" width="13" height="15" rx="3" fill="url(#grad-plag)" opacity="0.12" stroke="url(#grad-plag)" stroke-width="1.5" stroke-dasharray="3 2"/><rect x="8" y="7" width="13" height="15" rx="3" fill="#FFFFFF" stroke="url(#grad-plag)" stroke-width="2"/><path d="M11 11h7M11 15h4" stroke="url(#grad-plag)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="18" r="3.5" fill="url(#grad-plag)"/><path d="M17 18h2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+        transparency: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-transp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs><circle cx="9" cy="12" r="6" fill="url(#grad-transp)" opacity="0.15" stroke="url(#grad-transp)" stroke-width="2"/><circle cx="15" cy="12" r="6" fill="url(#grad-transp)" opacity="0.4" stroke="url(#grad-transp)" stroke-width="2"/><path d="M12 9l3 3-3 3" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        piracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-piracy" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E11D48"/><stop offset="100%" stop-color="#FB7185"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-piracy)" opacity="0.12"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" stroke="url(#grad-piracy)" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="url(#grad-piracy)" stroke-width="2" stroke-linecap="round"/><path d="M10 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill="url(#grad-piracy)"/><path d="M10 14.5s1 1 2 1 2-1 2-1" stroke="url(#grad-piracy)" stroke-width="1.8" stroke-linecap="round"/><path d="M4 4l16 16M20 4L4 20" stroke="url(#grad-piracy)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>`,
+        trustworthiness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-trust" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#818CF8"/></linearGradient></defs><path d="M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" fill="url(#grad-trust)" opacity="0.12"/><path d="M12 2L9 5H5v4L2 12l3 3v4h4l3 3 3-3h4v-4l3-3-3-3V5h-4L12 2z" stroke="url(#grad-trust)" stroke-width="2" stroke-linejoin="round"/><polyline points="9 11.5 11 13.5 15 9.5" stroke="url(#grad-trust)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        privacy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-priv" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EC4899"/><stop offset="100%" stop-color="#F472B6"/></linearGradient></defs><rect x="4" y="11" width="16" height="10" rx="3" fill="url(#grad-priv)" opacity="0.12"/><rect x="4" y="11" width="16" height="10" rx="3" stroke="url(#grad-priv)" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="url(#grad-priv)" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="1.5" fill="url(#grad-priv)"/><path d="M12 16.5v2" stroke="url(#grad-priv)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+        bias: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-bias" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" fill="url(#grad-bias)" opacity="0.1"/><path d="M12 3v15M12 18h4m-8 0h4" stroke="url(#grad-bias)" stroke-width="2" stroke-linecap="round"/><path d="M5 8l14 4" stroke="url(#grad-bias)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 8l-2 6h4l-2-6zm14 4l-2 6h4l-2-6z" stroke="url(#grad-bias)" stroke-width="1.8" stroke-linejoin="round"/></svg>`,
+        accountability: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-acc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-acc)" opacity="0.12"/><circle cx="12" cy="12" r="10" stroke="url(#grad-acc)" stroke-width="2"/><path d="M8 12.5l2.5 2.5 5.5-5.5" stroke="url(#grad-acc)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="7" stroke="url(#grad-acc)" stroke-width="1" stroke-dasharray="2 2" fill="none"/></svg>`,
+        beneficence: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-bene" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#6EE7B7"/></linearGradient></defs><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" fill="url(#grad-bene)" opacity="0.12"/><path d="M12 6a3 3 0 0 0-3 3c0 3 3 6 3 6s3-3 3-6a3 3 0 0 0-3-3z" fill="url(#grad-bene)" opacity="0.8"/><path d="M3 14c4 0 5-3 9-3s5 3 9 3" stroke="url(#grad-bene)" stroke-width="2" stroke-linecap="round"/><path d="M12 11v6" stroke="url(#grad-bene)" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+        fairness: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-fair" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0D9488"/><stop offset="100%" stop-color="#2DD4BF"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-fair)" opacity="0.12"/><path d="M12 3v16M4 11h16M4 15h16" stroke="url(#grad-fair)" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+        cookies: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-cook" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#B45309"/><stop offset="100%" stop-color="#F59E0B"/></linearGradient></defs><path d="M12 22a10 10 0 1 0-5.74-2c1.72-.1 3.23-1.12 3.86-2.73s.1-.3.1-.38v-.13c.43-.88.63-1.85.59-2.82l-.01-.35c-.09-2.3 1.15-4.45 3.2-5.55l.28-.15c.67-.36.93-1.16.63-1.86A9.97 9.97 0 0 0 12 2z" fill="url(#grad-cook)" opacity="0.15"/><circle cx="12" cy="12" r="9" stroke="url(#grad-cook)" stroke-width="2" stroke-dasharray="24 3 3 3"/><circle cx="8" cy="9" r="1.5" fill="url(#grad-cook)"/><circle cx="15.5" cy="10.5" r="1" fill="url(#grad-cook)"/><circle cx="10" cy="15" r="1.5" fill="url(#grad-cook)"/><circle cx="14.5" cy="15.5" r="1" fill="url(#grad-cook)"/></svg>`,
+        clickbait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-click" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EA580C"/><stop offset="100%" stop-color="#FB923C"/></linearGradient></defs><path d="M18 3c0 6-5 9-5 11a3 3 0 1 0 6 0" stroke="url(#grad-click)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8l4-4 4 4M12 4v12" stroke="url(#grad-click)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/><path d="M6 13a4 4 0 1 0 8 0v-5H6v5z" fill="url(#grad-click)" opacity="0.12"/><path d="M12 11h.01M10 14h.01M14 14h.01" stroke="url(#grad-click)" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+        ragebait: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-rage" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#FB7185"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-rage)" opacity="0.12"/><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 8.58" stroke="url(#grad-rage)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 11l-4 6h5l-3 5" stroke="url(#grad-rage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="url(#grad-rage)"/></svg>`,
+        drm: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-drm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#475569"/><stop offset="100%" stop-color="#64748B"/></linearGradient></defs><circle cx="12" cy="12" r="10" fill="url(#grad-drm)" opacity="0.12" stroke="url(#grad-drm)" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="url(#grad-drm)" stroke-width="1.8"/><path d="M12 7V2M12 22v-5M2 12h5M17 12h5" stroke="url(#grad-drm)" stroke-width="1.5" stroke-linecap="round"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#FFFFFF" stroke="url(#grad-drm)" stroke-width="1.8"/></svg>`,
+        medialiteracy: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-lit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4F46E5"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><path d="M12 20h9M3 20h9M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H12v18H6.5A2.5 2.5 0 0 0 4 19.5z" fill="url(#grad-lit)" opacity="0.12" stroke="url(#grad-lit)" stroke-width="1.8"/><path d="M12 2v18h5.5a2.5 2.5 0 0 0 2.5-2.5v-15H12z" stroke="url(#grad-lit)" stroke-width="1.8"/><circle cx="14" cy="10" r="3" fill="#FFFFFF" stroke="url(#grad-lit)" stroke-width="1.8"/><path d="M16 12l3.5 3.5" stroke="url(#grad-lit)" stroke-width="2" stroke-linecap="round"/></svg>`,
+        codeofethics: `<svg class="topic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="grad-code" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#EC4899"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="url(#grad-code)" opacity="0.12" stroke="url(#grad-code)" stroke-width="2"/><path d="M14 2v6h6M8 12h6M8 16h4" stroke="url(#grad-code)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
     };
 
     const DATA = {
         terms: [
             { id: 1, term: "Ethics", icon: ICONS.ethics, def: "The discipline dealing with what is good and bad and with moral duty and obligation", ex: "Deciding whether to share a friend's private message involves ethics." },
-            { id: 2, term: "Integrity", icon: ICONS.integrity, def: "The act of adhering to an ethical or moral code of conduct", ex: "A programmer with integrity reports a bug even when it might delay a launch." },
+            { id: 2, term: "Moral Integrity", icon: ICONS.moralintegrity, def: "The act of adhering to an ethical or moral code of conduct", ex: "A programmer with moral integrity reports a bug even when it might delay a launch." },
             { id: 3, term: "Plagiarism", icon: ICONS.plagiarism, def: "The act of using someone else's work and claiming it as your own", ex: "Submitting a paper written by an AI without disclosure is plagiarism." },
             { id: 4, term: "Transparency", icon: ICONS.transparency, def: "The act of being honest about information, particularly as it relates to interests or business practices", ex: "An advertiser shows transparency by disclosing when a post is paid content." },
             { id: 5, term: "Piracy", icon: ICONS.piracy, def: "The act of taking or using someone else's work without paying for it", ex: "Downloading a movie without purchase is digital piracy." },
@@ -630,20 +974,19 @@
             { id: 14, term: "Rage Bait", icon: ICONS.ragebait, def: "Content deliberately engineered to provoke emotional outrage because angry users engage more", ex: "A post misrepresenting a policy to maximize anger is rage bait." },
             { id: 15, term: "DRM", icon: ICONS.drm, def: "Technological tools used to restrict copying, sharing, or modifying digital content", ex: "DRM prevents a purchased e-book from being copied and shared freely." },
             { id: 16, term: "Media Literacy", icon: ICONS.medialiteracy, def: "The ability to access, analyze, evaluate, and create media in all forms", ex: "Media literacy helps you identify when a statistic has been taken out of context." },
-            { id: 17, term: "Code of Ethics", icon: ICONS.codeofethics, def: "A set of principles that guide professional behavior and decision-making in a field", ex: "The ACM Code of Ethics requires computing professionals to avoid harm." },
-            { id: 18, term: "Non-Maleficence", icon: ICONS.nonmaleficence, def: "The principle of doing no harm — ensuring actions do not cause unnecessary damage", ex: "Releasing software with known security vulnerabilities violates non-maleficence." }
+            { id: 17, term: "Code of Ethics", icon: ICONS.codeofethics, def: "A set of principles that guide professional behavior and decision-making in a field", ex: "The ACM Code of Ethics requires computing professionals to avoid harm." }
         ],
         questions: [
-            { q: "A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which principle is violated?", options: ["Privacy", "Transparency", "Fairness", "Non-Maleficence"], correct: 1, exp: "Transparency requires honest disclosure of interests. Concealing payment for reviews is a direct violation." },
-            { q: "A news headline reads 'Local Teacher DESTROYS Student's Dreams With One Decision' to describe a standard grade appeal. This is:", options: ["Privacy violation", "Piracy", "Clickbait", "Misinformation"], correct: 2, exp: "Extreme language used solely to generate clicks is Clickbait." },
-            { q: "A company releases software with a known security flaw that could expose user data, planning to fix it later. This violates:", options: ["Transparency", "DRM", "Integrity", "Non-Maleficence"], correct: 3, exp: "Non-maleficence is the principle of doing no harm; knowingly exposing users to risk violates this." },
-            { q: "An AI hiring system trained on historical data screens out female candidates because it learned patterns from past biased hiring. This is:", options: ["Plagiarism", "Bias", "Piracy", "Non-Maleficence"], correct: 1, exp: "Bias occurs when systems reflect unfair preferences learned from data." },
-            { q: "A programmer discovers their app secretly records user conversations. Professional ethics codes mandate that they should:", options: ["Follow instructions", "Delete feature secretly", "Report the issue appropriately", "Fix code to be stealthier"], correct: 2, exp: "Ethics codes (ACM/IEEE) prioritize public welfare and reporting violations over employer instructions." },
-            { q: "These files are stored on devices by websites to track behavior and remember preferences:", options: ["DRM files", "Cache files", "Cookies", "Metadata tags"], correct: 2, exp: "Cookies allow for features like saved carts but also enable behavior tracking." },
-            { q: "A school administrator tracks student locations and texts via an app without their knowledge. This violates:", options: ["Piracy", "Privacy", "Clickbait", "Accountability"], correct: 1, exp: "Privacy is freedom from unauthorized intrusion into personal information." },
-            { q: "A mobile game is designed to emotionally manipulate children into making in-app purchases. This violates:", options: ["Transparency", "Piracy", "Privacy", "Trustworthiness"], correct: 3, exp: "Trustworthiness requires systems to behave honestly and in the genuine interest of the user." },
-            { q: "Critically analyzing a viral article for misleading statistics or omitted context is known as:", options: ["Digital Literacy", "Accountability", "Code of Ethics", "Media Literacy"], correct: 3, exp: "Media literacy is the specific skill of evaluating media content critically." },
-            { q: "Publicly disclosing a security flaw (Transparency) and taking responsibility for the patch (Accountability) demonstrates:", options: ["Profit focus", "Non-Maleficence", "Piracy", "Clickbaiting"], correct: 1, exp: "By patching and disclosing, the developer ensures no harm comes to users (Non-Maleficence)." }
+            { q: "A social media influencer is paid by a company to post positive reviews but does not disclose the payment. Which principle is violated?", options: ["Privacy", "Transparency", "Fairness", "Moral Integrity"], correct: 1, exp: "Transparency requires honest disclosure of interests or business relations, which a paid review violates if not disclosed." },
+            { q: "A news headline reads 'You Won't Believe What This Famous CEO Just Did to Their Employees!' designed solely to attract clicks regardless of quality. This content is:", options: ["Clickbait", "Piracy", "Rage Bait", "Cookies"], correct: 0, exp: "Exaggerated or misleading headlines meant to generate maximum traffic are known as clickbait." },
+            { q: "An online post exaggerates a minor software policy using hostile, loaded language to deliberately provoke outrage and maximize comment activity. This is:", options: ["Rage Bait", "Plagiarism", "Bias", "Transparency"], correct: 0, exp: "Content engineered specifically to incite anger and outrage for social engagement is rage bait." },
+            { q: "An artificial intelligence recruitment system consistently favors male applicants due to historical demographics in its training dataset. This shows:", options: ["Plagiarism", "Bias", "Piracy", "Fairness"], correct: 1, exp: "A biased system shows systematic, unfair preferences learned from its training data." },
+            { q: "A software engineer uncovers that their application is secretly tracking voice data in the background. Professional standards guide them to follow a professional:", options: ["Code of Ethics", "Moral Integrity", "Accountability", "DRM"], correct: 0, exp: "A professional Code of Ethics (such as ACM or IEEE guidelines) dictates that computing professionals must prioritize public welfare and prevent harm." },
+            { q: "Small files stored on user devices that websites utilize to trace browsing activity and retain session preferences are known as:", options: ["Cookies", "DRM", "Privacy", "Ethics"], correct: 0, exp: "Cookies store regional, authentication, and session details but can also be used to track user behavior across different sites." },
+            { q: "A security tool secretly tracks a user's geographical location and monitors personal notes without explicit request or consent. This violates:", options: ["Piracy", "Privacy", "Trustworthiness", "Accountability"], correct: 1, exp: "Privacy is defined as the freedom from unauthorized intrusion into personal information." },
+            { q: "A developer takes an open source repository, strips the creator's metadata, and publishes it under their own name as original work. This is:", options: ["Plagiarism", "Piracy", "DRM", "Moral Integrity"], correct: 0, exp: "Plagiarism is using someone else's work and presenting it as one's own original output." },
+            { q: "Critically evaluating a viral news article for misleading claims, omissions, and context before sharing it is an example of:", options: ["Moral Integrity", "Accountability", "Media Literacy", "Trustworthiness"], correct: 2, exp: "Media literacy is the specific baseline ability to critically access, analyze, and evaluate digital media content." },
+            { q: "A gaming portal utilizes encoded license systems to stop users from copying, sharing, or playing games on unverified devices. This is:", options: ["DRM", "Piracy", "Privacy", "Cookies"], correct: 0, exp: "DRM (Digital Rights Management) encompasses tools used to control, verify, and limit the copying and alteration of digital materials." }
         ]
     };
 
@@ -653,6 +996,62 @@
         challenge: { currentIdx: 0, score: 0 },
         screen: "S1"
     };
+
+    // Load persisted data
+    try {
+        const storedMastered = localStorage.getItem('ethics_mastered_ids');
+        if (storedMastered) {
+            const arr = JSON.parse(storedMastered);
+            STATE.flashcard.mastered = new Set(arr);
+        }
+    } catch(e) {
+        console.error("Error loading persisted mastered set", e);
+    }
+
+    function initHomepageScores() {
+        // Flashcard progress
+        const masteredCount = STATE.flashcard.mastered.size;
+        const fcScoreEl = document.getElementById('score-flashcards');
+        if (fcScoreEl) {
+            fcScoreEl.innerText = `${masteredCount}/17 Mastered`;
+        }
+
+        // Match High Score
+        const matchScoreEl = document.getElementById('score-match');
+        if (matchScoreEl) {
+            const storedMatch = localStorage.getItem('ethics_match_best');
+            if (storedMatch !== null) {
+                matchScoreEl.innerText = `Best Score: ${storedMatch}/17 Correct`;
+            } else {
+                matchScoreEl.innerText = `Best Score: Not Played`;
+            }
+        }
+
+        // Challenge High Score
+        const challengeScoreEl = document.getElementById('score-challenge');
+        if (challengeScoreEl) {
+            const storedChallenge = localStorage.getItem('ethics_challenge_best');
+            if (storedChallenge !== null) {
+                challengeScoreEl.innerText = `Best Score: ${storedChallenge}/10 Correct`;
+            } else {
+                challengeScoreEl.innerText = `Best Score: Not Scored`;
+            }
+        }
+    }
+
+    let toastTimeout = null;
+    function showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        toast.innerText = message;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translate(-50%, 0)';
+        
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, 50px)';
+        }, 2200);
+    }
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -664,6 +1063,11 @@
             exitBtn.style.display = 'none';
         } else {
             exitBtn.style.display = 'flex';
+        }
+
+        // Always sync homepage scores whenever returning to welcome screen
+        if (id === 'S1') {
+            initHomepageScores();
         }
     }
 
@@ -690,6 +1094,31 @@
         document.getElementById('fc-rate-group').classList.toggle('visible', card.classList.contains('flipped'));
     }
 
+    function getTermTheme(termName) {
+        const mapping = {
+            "ethics": "blue",
+            "moral integrity": "emerald",
+            "plagiarism": "rose",
+            "transparency": "cyan",
+            "piracy": "crimson",
+            "trustworthiness": "indigo",
+            "privacy": "pink",
+            "bias": "amber",
+            "accountability": "violet",
+            "beneficence": "teal",
+            "fairness": "emerald",
+            "cookies": "bronze",
+            "clickbait": "orange",
+            "rage bait": "red",
+            "drm": "slate",
+            "media literacy": "indigo",
+            "code of ethics": "violet"
+        };
+        const key = termName.toLowerCase().trim();
+        const themeKey = mapping[key] || "blue";
+        return THEME_COLORS[themeKey] || THEME_COLORS.blue;
+    }
+
     function updateFlashcardUI() {
         const card = STATE.flashcard.filtered[STATE.flashcard.currentIdx];
         const ui = document.getElementById('active-card');
@@ -703,15 +1132,60 @@
         document.getElementById('fc-def').innerText = card.def;
         document.getElementById('fc-example').innerText = card.ex;
         document.getElementById('card-counter').innerText = `${STATE.flashcard.currentIdx + 1} / ${STATE.flashcard.filtered.length}`;
+
+        // Add styling indicator if already mastered
+        const isMastered = STATE.flashcard.mastered.has(card.id);
+        const frontFace = ui.querySelector('.card-front');
+        const backFace = ui.querySelector('.card-back');
+        const theme = getTermTheme(card.term);
+
+        if (frontFace) {
+            frontFace.style.background = `linear-gradient(135deg, #FFFFFF 0%, ${theme.bg} 100%)`;
+            if (isMastered) {
+                frontFace.style.borderColor = "var(--correct)";
+                frontFace.style.boxShadow = "0 8px 30px rgba(22, 163, 74, 0.08)";
+            } else {
+                frontFace.style.borderColor = theme.primary;
+                frontFace.style.boxShadow = `0 8px 30px rgba(37, 99, 235, 0.03)`;
+            }
+        }
+        if (backFace) {
+            backFace.style.background = `linear-gradient(135deg, ${theme.bg} 0%, #FFFFFF 100%)`;
+            backFace.style.borderColor = theme.primary;
+        }
     }
 
     function navCard(dir) {
-        STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
-        updateFlashcardUI();
+        const cardEl = document.getElementById('active-card');
+        if (cardEl.classList.contains('flipped')) {
+            cardEl.classList.remove('flipped');
+            document.getElementById('fc-rate-group').classList.remove('visible');
+            setTimeout(() => {
+                STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
+                updateFlashcardUI();
+            }, 300);
+        } else {
+            STATE.flashcard.currentIdx = (STATE.flashcard.currentIdx + dir + STATE.flashcard.filtered.length) % STATE.flashcard.filtered.length;
+            updateFlashcardUI();
+        }
     }
 
     function rateCard(gotIt) {
-        if (gotIt) STATE.flashcard.mastered.add(STATE.flashcard.filtered[STATE.flashcard.currentIdx].id);
+        const currentTerm = STATE.flashcard.filtered[STATE.flashcard.currentIdx];
+        if (gotIt) {
+            STATE.flashcard.mastered.add(currentTerm.id);
+            showToast(`"${currentTerm.term}" marked as Mastered!`);
+        } else {
+            STATE.flashcard.mastered.delete(currentTerm.id);
+            showToast(`"${currentTerm.term}" kept in study list.`);
+        }
+
+        // Persist change
+        try {
+            localStorage.setItem('ethics_mastered_ids', JSON.stringify([...STATE.flashcard.mastered]));
+        } catch(e) {}
+
+        initHomepageScores();
         navCard(1);
     }
 
@@ -732,7 +1206,8 @@
 
         document.getElementById('match-round-title').innerText = `Round ${STATE.match.round} / 3`;
         
-        const roundIndices = [[1,3,5,9,12,17], [2,4,6,10,13,18], [7,8,11,14,15,16]];
+        // Distribute 17 items across 3 rounds cleanly
+        const roundIndices = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17]];
         const currentSetIds = roundIndices[STATE.match.round - 1];
         const currentSet = DATA.terms.filter(t => currentSetIds.includes(t.id));
         
@@ -762,16 +1237,24 @@
     }
 
     function selectMatchItem(id, type, el) {
+        if (el.classList.contains('correct')) return;
+
         const col = (type === 'term') ? 'selectedTerm' : 'selectedDef';
+
+        // Toggle logic: If clicking the already selected item, unselect it
+        if (STATE.match[col] && STATE.match[col].id === id) {
+            el.classList.remove('selected');
+            STATE.match[col] = null;
+            return;
+        }
+
+        // Remove selected styling from siblings
         const siblings = el.parentElement.querySelectorAll('.match-chip');
         siblings.forEach(s => s.classList.remove('selected'));
 
-        if (STATE.match[col] && STATE.match[col].id === id) {
-            STATE.match[col] = null;
-        } else {
-            el.classList.add('selected');
-            STATE.match[col] = { id, el };
-        }
+        el.classList.add('selected');
+        STATE.match[col] = { id, el };
+
         checkMatch();
     }
 
@@ -853,25 +1336,34 @@
 
     function showSummary() {
         showScreen('summary');
-        document.getElementById('res-match').innerText = `${STATE.match.firstTryCount}/18`;
+        document.getElementById('res-match').innerText = `${STATE.match.firstTryCount}/17`;
         document.getElementById('res-challenge').innerText = `${STATE.challenge.score}/10`;
 
-        const totalMastered = STATE.flashcard.mastered.size;
-        const pct = Math.round((totalMastered / 18) * 100);
-        document.getElementById(`overall-bar`).style.width = pct + '%';
-        document.getElementById(`overall-bar-val`).innerText = pct + '%';
+        // Save Match Best Score
+        const currentBestMatch = localStorage.getItem('ethics_match_best');
+        if (currentBestMatch === null || STATE.match.firstTryCount > parseInt(currentBestMatch)) {
+            localStorage.setItem('ethics_match_best', STATE.match.firstTryCount);
+        }
+        
+        // Save Challenge Best Score
+        const currentBestChallenge = localStorage.getItem('ethics_challenge_best');
+        if (currentBestChallenge === null || STATE.challenge.score > parseInt(currentBestChallenge)) {
+            localStorage.setItem('ethics_challenge_best', STATE.challenge.score);
+        }
+
+        initHomepageScores();
 
         const totalPoints = STATE.match.firstTryCount + STATE.challenge.score; 
         let title = "Building Foundation";
         let desc = "Continue reviewing the vocabulary to strengthen your command.";
 
-        if (totalPoints >= 26) {
+        if (totalPoints >= 24) {
             title = "Command Level Mastery";
-            desc = "Operational readiness confirmed. Superior command of computer ethics vocabulary.";
-        } else if (totalPoints >= 20) {
+            desc = "Excellent! You have demonstrated a superior command of lesson vocabulary.";
+        } else if (totalPoints >= 18) {
             title = "Proficient";
-            desc = "Strong vocabulary command. You are ready for higher-level ethical analysis.";
-        } else if (totalPoints >= 12) {
+            desc = "Strong vocabulary command. You are ready for practical application of these principles.";
+        } else if (totalPoints >= 10) {
             title = "Developing Fluency";
             desc = "Knowledge is stabilizing. A few more sessions will solidify your mastery.";
         }
@@ -879,6 +1371,11 @@
         document.getElementById('res-rating-title').innerText = title;
         document.getElementById('res-rating-desc').innerText = desc;
     }
+
+    // Call interactive scores initially on boot
+    window.addEventListener('DOMContentLoaded', () => {
+        initHomepageScores();
+    });
 </script>
 </body>
 </html>
