@@ -375,7 +375,7 @@
                 <!-- Scenario Display Board -->
                 <div class="bg-indigo-900/5 border border-indigo-150 rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden shadow-xs">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="p-2.5 bg-white text-indigo-600 rounded-xl shadow-xs border border-slate-100 flex items-center justify-center">
+                        <div id="q-category-icon-container" class="p-2.5 bg-white text-indigo-600 rounded-xl shadow-xs border border-slate-100 flex items-center justify-center">
                             <i id="q-category-icon" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -564,6 +564,75 @@
          STUDIO DATA INTERFACES & BACKBONE SCRIPTS
          =================================================== -->
     <script type="text/javascript">
+        // Premium High-Fidelity Vector SVGs Mapping
+        const SVG_ICONS = {
+            'book-open': `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="currentColor" opacity="0.08" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="currentColor" opacity="0.08" /><path d="M6 8h3M6 11h3M15 8h3M15 11h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />`,
+            'link': `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="8" y1="16" x2="16" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.3" stroke-dasharray="2 2" />`,
+            'zap': `<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" /><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" opacity="0.15" /><path d="M13 2L3 14" stroke="currentColor" stroke-width="3" opacity="0.3" stroke-linecap="round" />`,
+            'award': `<circle cx="12" cy="8" r="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="8" r="7" fill="currentColor" opacity="0.1" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polygon points="12 5 13.2 7.4 15.8 7.8 13.9 9.6 14.4 12.2 12 11 9.6 12.2 10.1 9.6 8.2 7.8 10.8 7.4" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" />`,
+            'arrow-left': `<line x1="19" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polyline points="12 19 5 12 12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'arrow-right': `<line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polyline points="12 5 19 12 12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'check-circle': `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.1" /><polyline points="22 4 12 14 9 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'rotate-ccw': `<path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'shuffle': `<polyline points="16 3 21 3 21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="4" y1="20" x2="21" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polyline points="21 16 21 21 16 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'layers': `<polygon points="12 2 2 7 12 12 22 7 12 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polygon points="12 2 2 7 12 12 22 7 12 2" fill="currentColor" opacity="0.15" /><path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M12 12v5" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" opacity="0.4" />`,
+            'clock': `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.08" /><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="2.5" opacity="0.15" stroke-linecap="round" />`,
+            'cpu': `<rect x="4" y="4" width="16" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><rect x="9" y="9" width="6" height="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" opacity="0.15" /><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><circle cx="12" cy="12" r="1" fill="currentColor" />`,
+            'bulb': `<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.1.7.7 1.3 1.5 1.5 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.1.7.7 1.3 1.5 1.5 2.5" fill="currentColor" opacity="0.1" /><path d="M9 18h6M10 22h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M12 2v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />`,
+            'play': `<polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" /><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" opacity="0.15" />`,
+            'lightbulb': `<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.1.7.7 1.3 1.5 1.5 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.1.7.7 1.3 1.5 1.5 2.5" fill="currentColor" opacity="0.1" /><path d="M9 18h6M10 22h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="8" r="2" fill="currentColor" opacity="0.5" />`,
+            'x-circle': `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'home': `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'alert-circle': `<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />`,
+            'sparkles': `<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.3-6.3l-.7.7M6.7 17.3l-.7.7m12.6 0l-.7-.7M6.7 6.7l-.7-.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4z" fill="currentColor" stroke="currentColor" stroke-width="1.5" opacity="0.3" />`,
+            'refresh-cw': `<polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><polyline points="1 20 1 14 7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" opacity="0.3" fill="none" />`,
+        };
+
+        function getCustomIconSvg(iconName, extraClasses = '') {
+            const customSvg = SVG_ICONS[iconName] || SVG_ICONS['layers'];
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${iconName} ${extraClasses}">${customSvg}</svg>`;
+        }
+
+        // Setup original Lucide reference (if loaded from CDN in head)
+        const parentLucide = window.lucide;
+
+        // Inject high-fidelity SVG icon renderer to replace/override lucide.createIcons
+        window.lucide = {
+            createIcons: function() {
+                // Run original Lucide renderer first so standard SVGs get generated correctly
+                if (parentLucide && typeof parentLucide.createIcons === 'function') {
+                    parentLucide.createIcons();
+                }
+
+                // Upgrade all matching elements with our high-fidelity premium paths
+                const elements = document.querySelectorAll('[data-lucide]');
+                elements.forEach(el => {
+                    const iconName = el.getAttribute('data-lucide');
+                    const premiumPath = SVG_ICONS[iconName];
+                    if (premiumPath) {
+                        // If standard Lucide has already replaced it with an <svg>, upgrade its inner HTML
+                        if (el.tagName.toLowerCase() === 'svg') {
+                            el.innerHTML = premiumPath;
+                        } else {
+                            // If it's still an <i> or other tag, replace it cleanly with the full SVG markup
+                            const tempDiv = document.createElement('div');
+                            let attrsStr = '';
+                            Array.from(el.attributes).forEach(attr => {
+                                if (attr.name !== 'viewBox' && attr.name !== 'fill' && attr.name !== 'stroke') {
+                                    attrsStr += ` ${attr.name}="${attr.value}"`;
+                                }
+                            });
+                            tempDiv.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${attrsStr}>${premiumPath}</svg>`;
+                            const newSvg = tempDiv.firstElementChild;
+                            if (el.parentNode) {
+                                el.parentNode.replaceChild(newSvg, el);
+                            }
+                        }
+                    }
+                });
+            }
+        };
+
         // Footer timestamp initialization
         const footerYear = document.getElementById('footer-year');
         if (footerYear) {
@@ -928,9 +997,7 @@
             const iconBox = document.getElementById('fc-front-icon-container');
             iconBox.style.backgroundColor = `${term.color}15`;
             iconBox.style.color = term.color;
-
-            const iconEl = document.getElementById('fc-front-large-icon');
-            iconEl.setAttribute('data-lucide', iconKey);
+            iconBox.innerHTML = getCustomIconSvg(iconKey, "w-12 h-12");
 
             // Re-render icons mapping
             lucide.createIcons();
@@ -1142,7 +1209,7 @@
                 
                 chip.innerHTML = `
                     <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style="color: ${t.color}; background-color: ${t.color}15">
-                        <i data-lucide="${CATEGORY_ICONS[t.group] || 'layers'}" class="w-4.5 h-4.5"></i>
+                        ${getCustomIconSvg(CATEGORY_ICONS[t.group] || 'layers', 'w-4.5 h-4.5')}
                     </div>
                     <div class="min-w-0 pr-1">
                         <span class="font-bold font-display text-[13px] sm:text-[14px] text-slate-800 leading-tight block truncate">${t.term}</span>
@@ -1329,11 +1396,9 @@
             const groupTerm = VOCABULARY_TERMS.find(t => t.group === q.group);
             const relativeColor = groupTerm ? groupTerm.color : '#4f46e5';
 
-            const iconBox = document.getElementById('q-category-icon').parentElement;
+            const iconBox = document.getElementById('q-category-icon-container');
             iconBox.style.color = relativeColor;
-            
-            const vectorIcon = document.getElementById('q-category-icon');
-            vectorIcon.setAttribute('data-lucide', CATEGORY_ICONS[q.group] || 'layers');
+            iconBox.innerHTML = getCustomIconSvg(CATEGORY_ICONS[q.group] || 'layers', "w-5 h-5");
 
             // Render Option blocks
             const grid = document.getElementById('challenge-options-grid');
