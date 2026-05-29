@@ -6,7 +6,7 @@
     <title>VectorVerse: The Shape of Data</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -18,12 +18,12 @@
                     },
                     colors: {
                         brand: {
-                            dark: '#0f172a',
-                            panel: '#1e293b',
-                            accent: '#38bdf8',
-                            secondary: '#818cf8',
-                            success: '#34d399',
-                            danger: '#f472b6'
+                            dark: '#f8fafc',
+                            panel: '#ffffff',
+                            accent: '#0284c7', /* Sky 600 */
+                            secondary: '#4f46e5', /* Indigo 600 */
+                            success: '#059669', /* Emerald 600 */
+                            danger: '#e11d48' /* Rose 600 */
                         }
                     },
                     animation: {
@@ -37,31 +37,31 @@
 
     <style>
         body {
-            background-color: #0f172a;
+            background-color: #f1f5f9;
             background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            color: #f8fafc;
+                radial-gradient(at 0% 0%, hsla(253, 16%, 95%, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225, 39%, 92%, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339, 49%, 95%, 1) 0, transparent 50%);
+            color: #1e293b;
             overflow-x: hidden;
         }
 
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             border-radius: 1rem;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
         }
 
         .nav-dot {
             transition: all 0.3s ease;
         }
         .nav-dot.active {
-            background-color: #38bdf8;
-            transform: scale(1.5);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            background-color: #0284c7;
+            transform: scale(1.4);
+            box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
         }
 
         /* Grid Robot Animation */
@@ -80,18 +80,29 @@
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: #38bdf8;
+            background: #0284c7;
             cursor: pointer;
             margin-top: -8px; 
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-            border: 2px solid #1e293b;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.3);
+            border: 2px solid #ffffff;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]:focus::-webkit-slider-thumb {
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
             cursor: pointer;
-            background: #475569;
+            background: #cbd5e1;
             border-radius: 2px;
+        }
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #94a3b8;
         }
 
         .step-content {
@@ -109,365 +120,356 @@
             width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(241, 245, 249, 0.5);
             border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #475569;
+            background: #cbd5e1;
             border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+            background: #94a3b8;
+        }
+
+        /* ADA Accessibility: Respect Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-200">
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6 text-slate-800">
 
-    <!-- Compact Header -->
-    <header class="px-6 py-3 border-b border-white/10 flex justify-between items-center bg-brand-dark/90 sticky top-0 z-50 backdrop-blur-md shadow-lg">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded bg-gradient-to-br from-brand-accent to-brand-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                <i class="fa-solid fa-vector-square"></i>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold tracking-tight text-white leading-tight">VectorVerse</h1>
-                <p class="text-[10px] text-brand-accent font-mono uppercase tracking-wider">Lab 01: Data & Space</p>
-            </div>
-        </div>
+    <!-- Refined, Modern Centered Widget Container -->
+    <div class="w-full max-w-5xl bg-white border border-slate-200 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden max-h-[92vh] ring-1 ring-slate-900/5">
         
-        <!-- Navigation -->
-        <div class="flex gap-3 bg-slate-800/50 p-2 rounded-full border border-white/5">
-            <button onclick="goToStep(1)" id="dot-1" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-colors" title="Intro"></button>
-            <button onclick="goToStep(2)" id="dot-2" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-colors" title="Robot"></button>
-            <button onclick="goToStep(3)" id="dot-3" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-colors" title="Images"></button>
-            <button onclick="goToStep(4)" id="dot-4" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-colors" title="Recommender"></button>
-            <button onclick="goToStep(5)" id="dot-5" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-600 hover:bg-slate-400 transition-colors" title="Exit Ticket"></button>
-        </div>
-    </header>
-
-    <!-- Main Dashboard Area -->
-    <main class="flex-grow p-4 md:p-6 w-full max-w-7xl mx-auto">
-
-        <!-- Step 1: Introduction (Centered Hero) -->
-        <div id="step-1" class="step-content active">
-            <div class="glass-panel p-8 md:p-12 text-center max-w-3xl mx-auto mt-4">
-                <div class="inline-flex w-20 h-20 bg-brand-panel rounded-full items-center justify-center mb-6 border border-brand-accent/30 shadow-[0_0_30px_rgba(56,189,248,0.2)]">
-                    <i class="fa-solid fa-layer-group text-3xl text-brand-accent"></i>
-                </div>
-                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">
-                    What is a <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-secondary">Vector?</span>
-                </h2>
-                <p class="text-slate-300 text-lg leading-relaxed mb-8">
-                    In computer science and machine learning, a vector isn't just an arrow in physics class.
-                    It's an <strong class="text-white">ordered list of numbers</strong>. 
-                    <br><br>
-                    These numbers can represent a <span class="text-brand-accent">position</span> on a map, 
-                    the <span class="text-brand-success">pixels</span> in an image, 
-                    or even your <span class="text-brand-danger">movie preferences</span>.
-                </p>
-                <button onclick="goToStep(2)" class="px-8 py-3 bg-brand-accent hover:bg-sky-400 text-brand-dark font-bold rounded-full transition-all transform hover:scale-105 flex items-center gap-2 mx-auto shadow-lg shadow-sky-900/50">
-                    Start Experiment <i class="fa-solid fa-arrow-right"></i>
-                </button>
+        <!-- Navigation Bar -->
+        <nav class="px-6 py-4 border-b border-slate-100 flex justify-center items-center bg-white/90 sticky top-0 z-50 backdrop-blur-md" aria-label="Lab Navigation">
+            <div class="flex gap-4 bg-slate-50 p-1.5 rounded-full border border-slate-200 shadow-inner">
+                <button onclick="goToStep(1)" id="dot-1" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2" aria-label="Step 1: Introduction"></button>
+                <button onclick="goToStep(2)" id="dot-2" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2" aria-label="Step 2: Vectors as Position"></button>
+                <button onclick="goToStep(3)" id="dot-3" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2" aria-label="Step 3: Vectors as Images"></button>
+                <button onclick="goToStep(4)" id="dot-4" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2" aria-label="Step 4: Vectors as Taste"></button>
+                <button onclick="goToStep(5)" id="dot-5" class="nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2" aria-label="Step 5: Analysis and Discussion"></button>
             </div>
-        </div>
+        </nav>
 
-        <!-- Step 2: Robot (Split Layout) -->
-        <div id="step-2" class="step-content">
-            <div class="grid md:grid-cols-12 gap-6 h-full">
-                <!-- Left Column: Context & Controls -->
-                <div class="md:col-span-5 space-y-4">
-                    <!-- AI Context Card -->
-                    <div class="glass-panel p-5 border-l-4 border-l-brand-secondary">
-                        <h3 class="text-brand-secondary font-bold text-sm uppercase tracking-wider mb-2">
-                            <i class="fa-solid fa-microchip mr-2"></i>AI Context: Navigation
-                        </h3>
-                        <p class="text-sm text-slate-300 leading-relaxed">
-                            Self-driving cars and drones don't see "streets"—they see <strong>vectors</strong>. 
-                            A vector like <code class="text-brand-accent font-mono">[x, y, z]</code> tells a drone exactly where to hover relative to its starting point. 
-                            Robots use vectors to calculate the precise angle and distance to move their mechanical arms.
-                        </p>
-                    </div>
+        <!-- Main Dashboard Area (Scrollable if needed) -->
+        <main class="flex-grow p-5 md:p-8 w-full overflow-y-auto custom-scrollbar" id="main-content" tabindex="-1">
 
-                    <!-- Controls Card -->
-                    <div class="glass-panel p-6">
-                        <h3 class="text-xl font-bold text-white mb-2">Vectors as Position</h3>
-                        <p class="text-slate-400 text-sm mb-6">
-                            Input a vector to move the robot. <br>
-                            <code class="text-brand-secondary font-mono">[2, 1]</code> means 2 right, 1 up.
-                        </p>
-                        
-                        <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-700">
-                            <label class="block text-[10px] uppercase tracking-wide text-slate-500 mb-3 font-bold">Vector Input</label>
-                            <div class="flex gap-3 items-end mb-4">
-                                <div>
-                                    <span class="block text-xs text-center mb-1 text-slate-500">X</span>
-                                    <input type="number" id="vec-x" value="1" class="w-16 bg-slate-800 border border-slate-600 rounded-lg p-3 text-center text-white focus:border-brand-accent outline-none font-mono text-lg font-bold">
-                                </div>
-                                <div>
-                                    <span class="block text-xs text-center mb-1 text-slate-500">Y</span>
-                                    <input type="number" id="vec-y" value="1" class="w-16 bg-slate-800 border border-slate-600 rounded-lg p-3 text-center text-white focus:border-brand-accent outline-none font-mono text-lg font-bold">
-                                </div>
-                                <button onclick="moveRobot()" class="flex-grow bg-brand-secondary hover:bg-indigo-500 text-white p-3 rounded-lg font-bold transition-colors shadow-lg">
-                                    Move <i class="fa-solid fa-paper-plane ml-2"></i>
-                                </button>
-                            </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-slate-800">
-                                <span class="text-slate-400 text-sm">Current Pos: <span id="robot-pos" class="font-mono text-brand-accent">[0, 0]</span></span>
-                                <button onclick="resetRobot()" class="text-slate-500 hover:text-white text-xs hover:underline">Reset</button>
-                            </div>
-                        </div>
+            <!-- Step 1: Introduction (Centered Hero) -->
+            <div id="step-1" class="step-content active">
+                <div class="glass-panel p-8 md:p-12 text-center max-w-2xl mx-auto mt-4">
+                    <div class="inline-flex w-16 h-16 bg-blue-50 rounded-full items-center justify-center mb-5 border border-brand-accent/20 shadow-sm text-brand-accent" aria-hidden="true">
+                        <i class="fa-solid fa-layer-group text-2xl"></i>
                     </div>
-                    
-                    <button onclick="goToStep(3)" class="w-full py-3 text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 rounded-xl transition-all flex justify-between px-4 items-center group">
-                        <span>Next: Vectors as Images</span>
-                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-slate-900 tracking-tight">
+                        What is a <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-secondary">Vector?</span>
+                    </h2>
+                    <p class="text-slate-600 text-base md:text-lg leading-relaxed mb-8">
+                        In computer science and machine learning, a vector isn't just an arrow in physics class.
+                        It's an <strong class="text-slate-900 font-semibold">ordered list of numbers</strong>. 
+                        <br><br>
+                        These numbers can represent a <span class="text-brand-accent font-semibold">position</span> in space, 
+                        the <span class="text-brand-success font-semibold">pixels</span> comprising an image, 
+                        or even a profile of your <span class="text-brand-danger font-semibold">entertainment preferences</span>.
+                    </p>
+                    <button onclick="goToStep(2)" class="px-8 py-3 bg-brand-accent hover:bg-sky-600 focus:outline-none focus:ring-4 focus:ring-sky-300 text-white font-semibold rounded-full transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto shadow-md">
+                        Initialize Lab <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                     </button>
                 </div>
+            </div>
 
-                <!-- Right Column: Visualization -->
-                <div class="md:col-span-7">
-                    <div class="glass-panel p-8 h-full min-h-[400px] flex flex-col items-center justify-center bg-slate-800/30 relative overflow-hidden">
-                        
-                        <!-- Visualization Container -->
-                        <div class="relative w-full max-w-[360px] aspect-square border-2 border-slate-700 bg-slate-900/80 shadow-2xl rounded-lg backdrop-blur-sm overflow-hidden" id="robot-grid-container">
+            <!-- Step 2: Robot (Split Layout) -->
+            <div id="step-2" class="step-content">
+                <div class="grid md:grid-cols-12 gap-6 h-full">
+                    <!-- Left Column: Context & Controls -->
+                    <div class="md:col-span-5 space-y-5">
+                        <div class="glass-panel p-5 border-l-4 border-l-brand-secondary bg-white">
+                            <h3 class="text-brand-secondary font-bold text-xs uppercase tracking-wider mb-2 flex items-center">
+                                <i class="fa-solid fa-microchip mr-2" aria-hidden="true"></i>AI Context: Navigation
+                            </h3>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Autonomous systems (like delivery drones) don't see "streets"—they rely on <strong>vectors</strong>. A spatial vector like <code class="text-brand-secondary font-mono font-semibold bg-slate-100 px-1 rounded">[x, y]</code> commands a drone to navigate exactly <span class="italic">x</span> units horizontally and <span class="italic">y</span> units vertically from its origin.
+                            </p>
+                        </div>
+
+                        <div class="glass-panel p-6">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1">Vectors as Spatial Coordinates</h3>
+                            <p class="text-slate-600 text-sm mb-5">
+                                Input a vector to pilot the robot across the grid. <br>
+                                <span class="inline-block mt-1"><code class="text-slate-800 font-mono font-semibold bg-slate-100 px-1 rounded border border-slate-200">[2, 1]</code> translates to: 2 units right, 1 unit up.</span>
+                            </p>
                             
-                            <!-- Precise Grid Background -->
-                            <div class="absolute inset-0" style="background-image: linear-gradient(#334155 1px, transparent 1px), linear-gradient(90deg, #334155 1px, transparent 1px); background-size: 20% 20%; opacity: 0.5;"></div>
+                            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                                <span class="block text-xs uppercase tracking-wide text-slate-600 mb-3 font-bold" aria-hidden="true">Vector Input Constraint [0-4]</span>
+                                <div class="flex gap-3 items-end mb-4">
+                                    <div class="flex flex-col items-center">
+                                        <label for="vec-x" class="text-xs font-semibold mb-1 text-slate-600">X-Axis</label>
+                                        <input type="number" id="vec-x" value="1" min="0" max="4" class="w-16 bg-white border border-slate-300 rounded-lg p-2 text-center text-slate-900 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent outline-none font-mono text-base font-bold shadow-sm">
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <label for="vec-y" class="text-xs font-semibold mb-1 text-slate-600">Y-Axis</label>
+                                        <input type="number" id="vec-y" value="1" min="0" max="4" class="w-16 bg-white border border-slate-300 rounded-lg p-2 text-center text-slate-900 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent outline-none font-mono text-base font-bold shadow-sm">
+                                    </div>
+                                    <button onclick="moveRobot()" class="flex-grow bg-brand-secondary hover:bg-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-300 text-white p-2.5 rounded-lg font-semibold transition-all shadow-md active:scale-95 text-sm">
+                                        Execute <i class="fa-solid fa-paper-plane ml-1" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                                    <span class="text-slate-600 text-xs font-medium">Current Pos: <span id="robot-pos" class="font-mono text-brand-secondary font-bold text-sm bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-sm ml-1">[0, 0]</span></span>
+                                    <button onclick="resetRobot()" class="text-slate-500 hover:text-slate-800 focus:outline-none focus:underline text-xs font-medium px-2 py-1 rounded hover:bg-slate-200 transition-colors">Reset Origin</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="goToStep(3)" class="w-full py-3 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all flex justify-between px-5 items-center group shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                            <span>Proceed to: Vectors as Images</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform text-brand-accent" aria-hidden="true"></i>
+                        </button>
+                    </div>
 
-                            <!-- Robot Icon -->
-                            <!-- Width/Height is 20% because 5x5 grid = 100%/5 = 20% -->
-                            <div id="robot-icon" class="absolute w-[20%] h-[20%] flex items-center justify-center text-4xl text-brand-accent robot filter drop-shadow-[0_0_10px_rgba(56,189,248,0.5)] transition-all duration-500 ease-in-out" style="bottom: 0; left: 0;">
-                                <i class="fa-solid fa-robot"></i>
+                    <!-- Right Column: Visualization -->
+                    <div class="md:col-span-7">
+                        <div class="glass-panel p-6 h-full min-h-[300px] flex flex-col items-center justify-center bg-slate-50 relative overflow-hidden" aria-hidden="true">
+                            <div class="relative w-full max-w-[320px] aspect-square border border-slate-300 bg-white shadow-xl rounded-lg overflow-hidden" id="robot-grid-container">
+                                <div class="absolute inset-0" style="background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 20% 20%;"></div>
+                                <div id="robot-icon" class="absolute w-[20%] h-[20%] flex items-center justify-center text-3xl text-brand-accent robot filter drop-shadow-md transition-all duration-500 ease-out" style="bottom: 0; left: 0;">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <div class="absolute bottom-1 left-1 text-xs text-slate-500 font-mono font-medium bg-white/80 px-1 rounded">0,0</div>
+                                <div class="absolute top-1 right-1 text-xs text-slate-500 font-mono font-medium bg-white/80 px-1 rounded">4,4</div>
+                            </div>
+                            <div class="absolute bottom-4 right-6 text-slate-600 font-mono text-xs bg-white px-2 py-1 rounded border border-slate-200 shadow-sm font-medium">X-Axis &rarr;</div>
+                            <div class="absolute top-6 left-4 text-slate-600 font-mono text-xs bg-white px-2 py-1 rounded border border-slate-200 shadow-sm font-medium">Y-Axis &uarr;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Images (Split Layout) -->
+            <div id="step-3" class="step-content">
+                <div class="grid md:grid-cols-12 gap-6 h-full">
+                    <!-- Left: Context & Interaction -->
+                    <div class="md:col-span-5 space-y-5">
+                         <div class="glass-panel p-5 border-l-4 border-l-brand-success bg-white">
+                            <h3 class="text-brand-success font-bold text-xs uppercase tracking-wider mb-2 flex items-center">
+                                <i class="fa-solid fa-eye mr-2" aria-hidden="true"></i>AI Context: Computer Vision
+                            </h3>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Facial recognition and medical imaging models analyze massive grids of numerical data. By transforming an image into a vector (a list of pixel intensities), algorithms can mathematically compute the similarity between shapes and detect specific patterns.
+                            </p>
+                        </div>
+
+                        <div class="glass-panel p-6">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1">Vectors as Pixel Data</h3>
+                            <p class="text-slate-600 text-sm mb-5">
+                                Toggle the grid to paint. Notice how the computer interprets the image strictly as a sequence of brightness levels (0=Black, 5=Grey, 9=White).
+                            </p>
+                            
+                            <div class="flex justify-center mb-5">
+                                <div class="grid grid-cols-3 gap-2 bg-slate-100 p-3 rounded-xl border border-slate-200 shadow-inner" id="pixel-grid" role="group" aria-label="Interactive drawing grid">
+                                    <!-- Buttons injected via JS for accessibility -->
+                                </div>
+                            </div>
+
+                             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 font-mono text-sm shadow-sm" aria-live="polite">
+                                <div class="text-slate-600 mb-2 uppercase text-xs font-bold tracking-wide">Resulting Image Vector:</div>
+                                <span class="text-brand-success font-bold text-lg">[</span>
+                                <span id="vector-output" class="text-slate-800 break-all font-semibold leading-relaxed">0, 0, 0...</span>
+                                <span class="text-brand-success font-bold text-lg">]</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="goToStep(4)" class="w-full py-3 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all flex justify-between px-5 items-center group shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-success">
+                            <span>Proceed to: Vectors as Preferences</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform text-brand-success" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right: Goal & Result -->
+                    <div class="md:col-span-7">
+                        <div class="glass-panel p-8 h-full flex flex-col items-center justify-center bg-slate-50">
+                            <h4 class="text-lg font-bold text-slate-900 mb-6 border-b-2 border-brand-success pb-1">Target Pattern Protocol</h4>
+                            
+                            <div class="flex gap-6 items-center mb-8" aria-hidden="true">
+                                <div class="grid grid-cols-3 gap-1 p-2 bg-slate-200 rounded-xl border border-slate-300 scale-125 shadow-md">
+                                    <div class="w-8 h-8 bg-white rounded-md border border-slate-300"></div>
+                                    <div class="w-8 h-8 bg-slate-900 rounded-md border border-slate-800"></div>
+                                    <div class="w-8 h-8 bg-white rounded-md border border-slate-300"></div>
+                                    
+                                    <div class="w-8 h-8 bg-slate-900 rounded-md border border-slate-800"></div>
+                                    <div class="w-8 h-8 bg-white rounded-md border border-slate-300"></div>
+                                    <div class="w-8 h-8 bg-slate-900 rounded-md border border-slate-800"></div>
+                                    
+                                    <div class="w-8 h-8 bg-white rounded-md border border-slate-300"></div>
+                                    <div class="w-8 h-8 bg-slate-900 rounded-md border border-slate-800"></div>
+                                    <div class="w-8 h-8 bg-white rounded-md border border-slate-300"></div>
+                                </div>
                             </div>
                             
-                            <!-- Coordinate Labels (Inside Grid) -->
-                            <div class="absolute bottom-1 left-1 text-[10px] text-slate-600 font-mono">0,0</div>
-                            <div class="absolute top-1 right-1 text-[10px] text-slate-600 font-mono">4,4</div>
-                        </div>
-                        
-                        <!-- External Axis Labels -->
-                        <div class="absolute bottom-4 right-8 text-slate-500 font-mono text-xs bg-slate-900 px-2 py-1 rounded border border-slate-700">X-Axis &rarr;</div>
-                        <div class="absolute top-8 left-4 text-slate-500 font-mono text-xs bg-slate-900 px-2 py-1 rounded border border-slate-700">Y-Axis &uarr;</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 3: Images (Split Layout) -->
-        <div id="step-3" class="step-content">
-            <div class="grid md:grid-cols-12 gap-6 h-full">
-                <!-- Left: Context & Interaction -->
-                <div class="md:col-span-5 space-y-4">
-                     <div class="glass-panel p-5 border-l-4 border-l-brand-success">
-                        <h3 class="text-brand-success font-bold text-sm uppercase tracking-wider mb-2">
-                            <i class="fa-solid fa-eye mr-2"></i>AI Context: Vision
-                        </h3>
-                        <p class="text-sm text-slate-300">
-                            This is how FaceID and medical scanners work. An AI doesn't see a "face" or an "X-ray"—it analyzes a massive grid of pixel values. By comparing these number lists (vectors), it detects patterns like edges, shapes, and tumors.
-                        </p>
-                    </div>
-
-                    <div class="glass-panel p-6">
-                        <h3 class="text-xl font-bold text-white mb-2">Vectors as Images</h3>
-                        <p class="text-slate-400 text-sm mb-6">
-                            Click the grid to paint. The computer sees a list of brightness numbers. (0=Black, 9=White).
-                        </p>
-                        
-                        <div class="flex justify-center mb-6">
-                            <div class="grid grid-cols-3 gap-2 bg-slate-900 p-3 rounded-xl border border-slate-700 shadow-inner" id="pixel-grid">
-                                <!-- Pixels injected via JS -->
+                            <div class="text-center space-y-2 mb-8">
+                                <div class="text-slate-600 text-sm font-semibold uppercase tracking-wide">Target Vector Required:</div>
+                                <code class="font-mono text-slate-800 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm inline-block mt-1">[9, 0, 9, 0, 9, 0, 9, 0, 9]</code>
                             </div>
-                        </div>
 
-                         <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs">
-                            <div class="text-slate-500 mb-1 uppercase text-[10px] font-bold">Computer View (Vector):</div>
-                            <span class="text-brand-success">[</span>
-                            <span id="vector-output" class="text-white break-all">0, 0, 0...</span>
-                            <span class="text-brand-success">]</span>
-                        </div>
-                    </div>
-                    
-                    <button onclick="goToStep(4)" class="w-full py-3 text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 rounded-xl transition-all flex justify-between px-4 items-center group">
-                        <span>Next: Vectors as Taste</span>
-                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    </button>
-                </div>
-
-                <!-- Right: Goal & Result -->
-                <div class="md:col-span-7">
-                    <div class="glass-panel p-8 h-full flex flex-col items-center justify-center bg-slate-800/30">
-                        <h4 class="text-lg font-bold text-white mb-6">Target Pattern</h4>
-                        
-                        <div class="flex gap-8 items-center mb-8">
-                             <!-- Target Grid (Static) -->
-                             <!-- Pattern: X O X / O X O / X O X -->
-                            <div class="grid grid-cols-3 gap-1 p-2 bg-slate-900 rounded border border-slate-700 opacity-90 scale-125">
-                                <div class="w-8 h-8 bg-white rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-black rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-white rounded-sm border border-slate-600"></div>
-                                
-                                <div class="w-8 h-8 bg-black rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-white rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-black rounded-sm border border-slate-600"></div>
-                                
-                                <div class="w-8 h-8 bg-white rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-black rounded-sm border border-slate-600"></div>
-                                <div class="w-8 h-8 bg-white rounded-sm border border-slate-600"></div>
+                            <div class="w-full max-w-sm bg-white rounded-2xl p-5 text-center border border-slate-200 shadow-lg">
+                                <div class="text-xs text-slate-500 mb-1 uppercase font-bold tracking-wider">Similarity Score</div>
+                                <div id="match-status" class="text-4xl font-black text-slate-400 transition-all duration-300 font-mono" aria-live="polite">
+                                    0% Match
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="text-center space-y-2">
-                            <div class="text-slate-400 text-sm">Target Vector:</div>
-                            <code class="font-mono text-slate-300 text-xs bg-slate-900 px-2 py-1 rounded border border-slate-700">[9, 0, 9, 0, 9, 0, 9, 0, 9]</code>
-                        </div>
-
-                        <div class="mt-8 w-full max-w-sm bg-slate-900 rounded-2xl p-4 text-center border border-slate-700 shadow-xl">
-                             <div id="match-status" class="text-3xl font-bold text-slate-500 transition-all duration-300">
-                                0% Match
-                            </div>
-                            <div class="text-xs text-slate-500 mt-1">Similarity Score</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Step 4: Recommender (Split Layout) -->
-        <div id="step-4" class="step-content">
-             <div class="grid md:grid-cols-12 gap-6 h-full">
-                <!-- Left: Controls -->
-                <div class="md:col-span-5 space-y-4">
-                     <div class="glass-panel p-5 border-l-4 border-l-brand-danger">
-                        <h3 class="text-brand-danger font-bold text-sm uppercase tracking-wider mb-2">
-                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>AI Context: Recommendations
-                        </h3>
-                        <p class="text-sm text-slate-300">
-                            TikTok, Spotify, and Netflix rely on this math. They turn you into a <strong>"User Vector"</strong> based on what you click. They then search a massive high-dimensional space to find content vectors pointing in the same direction as you.
-                        </p>
-                    </div>
+            <!-- Step 4: Recommender (Split Layout) -->
+            <div id="step-4" class="step-content">
+                 <div class="grid md:grid-cols-12 gap-6 h-full">
+                    <!-- Left: Controls -->
+                    <div class="md:col-span-5 space-y-5">
+                         <div class="glass-panel p-5 border-l-4 border-l-brand-danger bg-white">
+                            <h3 class="text-brand-danger font-bold text-xs uppercase tracking-wider mb-2 flex items-center">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-2" aria-hidden="true"></i>AI Context: Recommendation
+                            </h3>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Content platforms quantify your behavior into a <strong>User Vector</strong>. The algorithm computes the mathematical distance between your vector and others in a high-dimensional space to recommend data neighbors with similar profiles.
+                            </p>
+                        </div>
 
-                    <div class="glass-panel p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-white">Your Taste Profile</h3>
-                            <span class="text-xs bg-brand-danger/20 text-brand-danger px-2 py-1 rounded border border-brand-danger/30 font-bold">User Vector</span>
+                        <div class="glass-panel p-6">
+                            <div class="flex justify-between items-center mb-5">
+                                <h3 class="text-lg font-bold text-slate-900">Define Taste Profile</h3>
+                            </div>
+                            
+                            <div class="space-y-5">
+                                <div class="genre-slider">
+                                    <label for="val-0-slider" class="flex justify-between text-xs font-bold text-slate-600 uppercase mb-2">
+                                        <span>Action</span> <span id="val-0" class="text-brand-danger bg-brand-danger/10 px-2 py-0.5 rounded">5</span>
+                                    </label>
+                                    <input type="range" id="val-0-slider" min="0" max="10" value="5" class="w-full focus:outline-none" oninput="updatePreferences(0, this.value)">
+                                </div>
+                                <div class="genre-slider">
+                                    <label for="val-1-slider" class="flex justify-between text-xs font-bold text-slate-600 uppercase mb-2">
+                                        <span>Romance</span> <span id="val-1" class="text-brand-danger bg-brand-danger/10 px-2 py-0.5 rounded">5</span>
+                                    </label>
+                                    <input type="range" id="val-1-slider" min="0" max="10" value="5" class="w-full focus:outline-none" oninput="updatePreferences(1, this.value)">
+                                </div>
+                                <div class="genre-slider">
+                                    <label for="val-2-slider" class="flex justify-between text-xs font-bold text-slate-600 uppercase mb-2">
+                                        <span>Comedy</span> <span id="val-2" class="text-brand-danger bg-brand-danger/10 px-2 py-0.5 rounded">5</span>
+                                    </label>
+                                    <input type="range" id="val-2-slider" min="0" max="10" value="5" class="w-full focus:outline-none" oninput="updatePreferences(2, this.value)">
+                                </div>
+                                <div class="genre-slider">
+                                    <label for="val-3-slider" class="flex justify-between text-xs font-bold text-slate-600 uppercase mb-2">
+                                        <span>Documentary</span> <span id="val-3" class="text-brand-danger bg-brand-danger/10 px-2 py-0.5 rounded">5</span>
+                                    </label>
+                                    <input type="range" id="val-3-slider" min="0" max="10" value="5" class="w-full focus:outline-none" oninput="updatePreferences(3, this.value)">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 pt-4 border-t border-slate-200 text-center bg-slate-50 rounded-b-xl -mx-6 -mb-6 pb-4" aria-live="polite">
+                                <span class="block text-xs uppercase tracking-wide text-slate-500 font-bold mb-1">Generated User Vector</span>
+                                <code id="user-pref-vector" class="text-brand-danger font-mono font-bold text-lg bg-white px-3 py-1 rounded shadow-sm border border-brand-danger/20 inline-block">[5, 5, 5, 5]</code>
+                            </div>
                         </div>
                         
-                        <div class="space-y-6">
-                            <div class="genre-slider">
-                                <div class="flex justify-between text-xs font-bold text-slate-400 uppercase mb-2">
-                                    <span>Action</span> <span id="val-0" class="text-brand-danger">5</span>
-                                </div>
-                                <input type="range" min="0" max="10" value="5" class="w-full" oninput="updatePreferences(0, this.value)">
-                            </div>
-                            <div class="genre-slider">
-                                <div class="flex justify-between text-xs font-bold text-slate-400 uppercase mb-2">
-                                    <span>Romance</span> <span id="val-1" class="text-brand-danger">5</span>
-                                </div>
-                                <input type="range" min="0" max="10" value="5" class="w-full" oninput="updatePreferences(1, this.value)">
-                            </div>
-                            <div class="genre-slider">
-                                <div class="flex justify-between text-xs font-bold text-slate-400 uppercase mb-2">
-                                    <span>Comedy</span> <span id="val-2" class="text-brand-danger">5</span>
-                                </div>
-                                <input type="range" min="0" max="10" value="5" class="w-full" oninput="updatePreferences(2, this.value)">
-                            </div>
-                            <div class="genre-slider">
-                                <div class="flex justify-between text-xs font-bold text-slate-400 uppercase mb-2">
-                                    <span>Documentary</span> <span id="val-3" class="text-brand-danger">5</span>
-                                </div>
-                                <input type="range" min="0" max="10" value="5" class="w-full" oninput="updatePreferences(3, this.value)">
-                            </div>
-                        </div>
-                        
-                        <div class="mt-6 pt-4 border-t border-white/5 text-center">
-                            <code id="user-pref-vector" class="text-brand-danger font-mono font-bold">[5, 5, 5, 5]</code>
-                        </div>
+                        <button onclick="goToStep(5)" class="w-full py-3 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all flex justify-between px-5 items-center group shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-danger">
+                            <span>Proceed to: Analysis Module</span>
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform text-brand-danger" aria-hidden="true"></i>
+                        </button>
                     </div>
-                    
-                    <button onclick="goToStep(5)" class="w-full py-3 text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 rounded-xl transition-all flex justify-between px-4 items-center group">
-                        <span>Next: Discussion</span>
-                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    </button>
-                </div>
 
-                <!-- Right: Results -->
-                <div class="md:col-span-7">
-                    <div class="glass-panel p-6 h-full flex flex-col bg-slate-800/30">
-                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-users-viewfinder text-brand-secondary"></i> Nearest Neighbors (Similar Vectors)
-                        </h4>
-                        <div class="flex-grow overflow-y-auto pr-2 space-y-3 custom-scrollbar" id="persona-list">
-                            <!-- Cards injected by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 5: Discussion (Updated for Multi-Challenge) -->
-        <div id="step-5" class="step-content">
-             <div class="grid md:grid-cols-12 gap-6 h-full">
-                <!-- Left: The Question -->
-                <div class="md:col-span-5">
-                    <div class="glass-panel p-8 h-full flex flex-col justify-center">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold text-white">Class Discussion</h2>
-                            <span id="challenge-counter" class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 font-mono">1/3</span>
-                        </div>
-                        
-                        <h3 id="challenge-title" class="text-brand-accent font-bold text-lg mb-2">Challenge 1</h3>
-                        <p id="challenge-desc" class="text-slate-400 mb-8">Analyze distance.</p>
-                        
-                        <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-700 mb-6">
-                            <p id="target-label" class="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wide">Target Vector</p>
-                            <div id="target-val" class="font-mono text-3xl text-white">[10, 10, 10]</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: The Options -->
-                <div class="md:col-span-7">
-                    <div class="glass-panel p-8 h-full flex flex-col justify-center">
-                        <!-- Options Grid -->
-                        <div class="grid grid-cols-2 gap-4 mb-6" id="options-container">
-                            <!-- Buttons injected via JS -->
-                        </div>
-
-                        <div id="feedback-area" class="hidden animate-float mb-4 min-h-[100px]">
-                            <!-- Feedback injected via JS -->
-                        </div>
-
-                        <div class="mt-auto pt-4 flex gap-4 justify-center items-center border-t border-slate-700/50">
-                            <button onclick="revealAnswer()" class="px-4 py-2 text-sm text-slate-300 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors">Reveal Answer</button>
-                            <button id="next-btn" onclick="nextChallenge()" class="px-4 py-2 text-sm bg-brand-secondary text-white rounded-lg hover:bg-indigo-500 transition-colors hidden font-bold">Next Challenge &rarr;</button>
-                            <button id="restart-btn" onclick="location.reload()" class="px-4 py-2 text-sm bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors hidden"><i class="fa-solid fa-rotate-right mr-2"></i> Restart Lab</button>
+                    <!-- Right: Results -->
+                    <div class="md:col-span-7">
+                        <div class="glass-panel p-6 h-full flex flex-col bg-slate-50 min-h-[350px]">
+                            <h4 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2 border-b-2 border-brand-danger pb-2 inline-block self-start">
+                                <i class="fa-solid fa-users-viewfinder text-brand-danger" aria-hidden="true"></i> Nearest Data Neighbors
+                            </h4>
+                            <p class="text-xs text-slate-500 mb-3 font-medium">Sorted by mathematical proximity (distance) to your User Vector.</p>
+                            <div class="flex-grow overflow-y-auto pr-2 space-y-3 custom-scrollbar" id="persona-list" aria-live="polite">
+                                <!-- Cards injected by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </main>
+            <!-- Step 5: Discussion (Multi-Challenge) -->
+            <div id="step-5" class="step-content">
+                 <div class="grid md:grid-cols-12 gap-6 h-full">
+                    <!-- Left: The Question -->
+                    <div class="md:col-span-5">
+                        <div class="glass-panel p-8 h-full flex flex-col justify-center bg-white">
+                            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                                <h2 class="text-xl font-bold text-slate-900">Analysis & Discussion</h2>
+                                <span id="challenge-counter" class="text-xs bg-slate-100 px-2.5 py-1 rounded-md text-slate-700 font-mono font-bold border border-slate-200 shadow-sm" aria-live="polite">1/3</span>
+                            </div>
+                            
+                            <h3 id="challenge-title" class="text-brand-accent font-bold text-lg mb-2">Challenge 1</h3>
+                            <p id="challenge-desc" class="text-slate-600 mb-8 text-sm leading-relaxed">Analyze distance.</p>
+                            
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-inner text-center">
+                                <p id="target-label" class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Target Vector</p>
+                                <div id="target-val" class="font-mono text-3xl text-slate-900 font-black tracking-tight bg-white inline-block px-4 py-2 rounded-lg shadow-sm border border-slate-200">[10, 10, 10]</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: The Options -->
+                    <div class="md:col-span-7">
+                        <div class="glass-panel p-8 h-full flex flex-col justify-center bg-slate-50">
+                            <fieldset>
+                                <legend class="sr-only">Select the closest vector option</legend>
+                                <div class="grid grid-cols-2 gap-4 mb-6" id="options-container">
+                                    <!-- Buttons injected via JS -->
+                                </div>
+                            </fieldset>
+
+                            <div id="feedback-area" class="hidden animate-float mb-4 min-h-[90px]" aria-live="assertive">
+                                <!-- Feedback injected via JS -->
+                            </div>
+
+                            <div class="mt-auto pt-5 flex gap-3 justify-center items-center border-t border-slate-200">
+                                <button onclick="restartInteractive()" class="px-5 py-2 text-sm text-slate-600 font-semibold border border-slate-300 bg-white rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-colors shadow-sm">Restart</button>
+                                <button onclick="revealAnswer()" class="px-5 py-2 text-sm text-white font-semibold border border-transparent bg-slate-800 rounded-lg hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-colors shadow-md">Reveal Answer</button>
+                                <button id="next-btn" onclick="nextChallenge()" class="px-5 py-2 text-sm bg-brand-accent text-white rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-brand-accent transition-colors hidden font-bold shadow-md">Next Challenge &rarr;</button>
+                                <button id="restart-btn" onclick="location.reload()" class="px-5 py-2 text-sm bg-brand-success text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-brand-success transition-colors hidden font-bold shadow-md"><i class="fa-solid fa-rotate-right mr-2" aria-hidden="true"></i> Complete Lab</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
 
     <!-- Application Logic -->
     <script>
         // --- Navigation Logic ---
         function goToStep(stepNum) {
-            // Update Content
             document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`step-${stepNum}`).classList.add('active');
             
-            // Update Dots
             document.querySelectorAll('.nav-dot').forEach(el => {
                 el.classList.remove('active', 'bg-brand-accent');
-                el.classList.add('bg-slate-600');
+                el.classList.add('bg-slate-300');
+                el.setAttribute('aria-current', 'false');
             });
             const activeDot = document.getElementById(`dot-${stepNum}`);
             activeDot.classList.add('active');
-            activeDot.classList.remove('bg-slate-600');
+            activeDot.classList.remove('bg-slate-300');
+            activeDot.setAttribute('aria-current', 'step');
             
-            // Scroll top
-            window.scrollTo(0,0);
+            // Manage focus for accessibility
+            const mainContent = document.getElementById('main-content');
+            mainContent.scrollTop = 0;
         }
 
         // --- Step 2: Robot Logic ---
@@ -494,10 +496,7 @@
             let newY = robotY + dy;
 
             if (newX < 0 || newX > GRID_SIZE || newY < 0 || newY > GRID_SIZE) {
-                const btn = document.querySelector('#step-2 button');
-                btn.classList.add('animate-pulse');
-                setTimeout(() => btn.classList.remove('animate-pulse'), 500);
-                alert("Out of bounds! Keep coordinates between 0 and 4.");
+                alert("Out of bounds constraint! Keep resultant coordinates between 0 and 4.");
                 return;
             }
 
@@ -520,18 +519,18 @@
             const grid = document.getElementById('pixel-grid');
             grid.innerHTML = '';
             pixelValues.forEach((val, index) => {
-                const div = document.createElement('div');
-                div.className = 'w-16 h-16 rounded-lg cursor-pointer transition-all duration-200 border-2 border-slate-700 hover:border-brand-success hover:scale-105 shadow-lg';
-                div.onclick = () => togglePixel(index);
-                div.id = `pixel-${index}`;
-                updatePixelColor(div, val);
-                grid.appendChild(div);
+                // Accessibility: Use buttons instead of divs
+                const btn = document.createElement('button');
+                btn.setAttribute('aria-label', `Toggle intensity for pixel ${index + 1}`);
+                btn.className = 'w-14 h-14 md:w-16 md:h-16 rounded-lg cursor-pointer transition-all duration-200 border-2 border-slate-300 hover:border-brand-success hover:scale-105 focus:outline-none focus:ring-4 focus:ring-brand-success shadow-sm';
+                btn.onclick = () => togglePixel(index);
+                btn.id = `pixel-${index}`;
+                updatePixelColor(btn, val);
+                grid.appendChild(btn);
             });
         }
 
         function updatePixelColor(element, value) {
-            // 0=Black (low lightness), 9=White (high lightness)
-            // But visually, 0 is black, 9 is white.
             const lightness = (value / 9) * 100;
             element.style.backgroundColor = `hsl(0, 0%, ${lightness}%)`;
         }
@@ -566,22 +565,22 @@
             statusEl.innerText = `${similarity}% Match`;
             
             if(similarity === 100) {
-                statusEl.className = "text-3xl font-bold text-brand-success animate-bounce";
+                statusEl.className = "text-3xl font-black text-brand-success animate-bounce font-mono";
                 statusEl.innerText = "100% PERFECT!";
             } else if (similarity > 80) {
-                statusEl.className = "text-3xl font-bold text-brand-accent";
+                statusEl.className = "text-4xl font-black text-brand-accent font-mono";
             } else {
-                statusEl.className = "text-3xl font-bold text-slate-500";
+                statusEl.className = "text-4xl font-black text-slate-400 font-mono";
             }
         }
 
         // --- Step 4: Recommender Logic ---
         const personas = [
-            { name: "Action Andy", prefs: [10, 2, 1, 1], desc: "Loves explosions, hates talking." },
-            { name: "Romance Rosie", prefs: [1, 10, 2, 1], desc: "Loves love stories." },
-            { name: "Comedy Chris", prefs: [1, 3, 10, 1], desc: "Just here for the laughs." },
-            { name: "Docu Dan", prefs: [1, 1, 1, 10], desc: "Only watches facts." },
-            { name: "Balanced Bella", prefs: [5, 5, 5, 5], desc: "Likes a bit of everything." }
+            { name: "Action Andy", prefs: [10, 2, 1, 1], desc: "Prioritizes high-energy sequences." },
+            { name: "Romance Rosie", prefs: [1, 10, 2, 1], desc: "Strong preference for relationship arcs." },
+            { name: "Comedy Chris", prefs: [1, 3, 10, 1], desc: "Exclusively favors humor/satire." },
+            { name: "Docu Dan", prefs: [1, 1, 1, 10], desc: "Highly prefers factual non-fiction." },
+            { name: "Balanced Bella", prefs: [5, 5, 5, 5], desc: "Uniformly distributed preferences." }
         ];
 
         let userPrefs = [5, 5, 5, 5]; 
@@ -611,18 +610,19 @@
 
             results.forEach((p, idx) => {
                 const isTop = idx === 0;
-                const borderClass = isTop ? 'border-brand-success bg-brand-success/10' : 'border-slate-700 bg-slate-800/50';
-                const textClass = isTop ? 'text-brand-success' : 'text-slate-400';
+                const borderClass = isTop ? 'border-brand-danger ring-1 ring-brand-danger bg-rose-50' : 'border-slate-200 bg-white shadow-sm';
+                const textClass = isTop ? 'text-brand-danger' : 'text-slate-900';
+                const labelHTML = isTop ? '<span class="ml-2 text-[10px] bg-brand-danger text-white px-2 py-0.5 rounded font-bold uppercase">Closest Match</span>' : '';
                 
                 const html = `
-                    <div class="flex items-center justify-between p-4 rounded-lg border ${borderClass} transition-all duration-300 hover:bg-slate-700/50">
+                    <div class="flex items-center justify-between p-4 rounded-xl border ${borderClass} transition-all duration-300">
                         <div>
-                            <div class="font-bold ${isTop ? 'text-white' : 'text-slate-300'}">${p.name}</div>
-                            <div class="text-[10px] uppercase tracking-wide text-slate-500">${p.desc}</div>
+                            <div class="font-bold text-sm ${isTop ? 'text-slate-900' : 'text-slate-700'}">${p.name} ${labelHTML}</div>
+                            <div class="text-[11px] font-medium text-slate-500 mt-1">${p.desc}</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-xl font-mono font-bold ${textClass}">${p.score}%</div>
-                            <div class="text-[10px] text-slate-600">Dist: ${p.distance.toFixed(1)}</div>
+                            <div class="text-xl font-mono font-black ${textClass}">${p.score}%</div>
+                            <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Dist: ${p.distance.toFixed(1)}</div>
                         </div>
                     </div>
                 `;
@@ -633,8 +633,8 @@
         // --- Step 5: Multi-Challenge Logic ---
         const challenges = [
             {
-                title: "Challenge 1: 3D Space",
-                desc: "Which vector is spatially closest to the target?",
+                title: "Scenario 1: 3D Coordinate Space",
+                desc: "Identify the vector that is spatially closest to the target coordinate.",
                 targetLabel: "Target Position",
                 targetVal: "[10, 10, 10]",
                 options: [
@@ -643,25 +643,25 @@
                     { id: 'C', val: "[6, 5, 5]", isCorrect: false },
                     { id: 'D', val: "[10, 1, 10]", isCorrect: false }
                 ],
-                explanation: "<strong>Option A</strong> is closest. <br>The difference is only (1, 1, 2). <br>All other options have large gaps in at least one dimension."
+                explanation: "<strong>Option A</strong> is mathematically closest. <br>The difference in each dimension is only (1, 1, 2). All other options have significant numerical divergence in at least one dimension."
             },
             {
-                title: "Challenge 2: Pixel Patterns",
-                desc: "Which vector represents the most similar image (similar brightness)?",
-                targetLabel: "Target Pixels",
-                targetVal: "[0, 9, 0]", // Black, White, Black
+                title: "Scenario 2: Vision System Patterns",
+                desc: "Which numerical array represents the most statistically similar image?",
+                targetLabel: "Target Pixels (Intensity)",
+                targetVal: "[0, 9, 0]",
                 options: [
-                    { id: 'A', val: "[9, 0, 9]", isCorrect: false }, // Inverse
-                    { id: 'B', val: "[0, 8, 1]", isCorrect: true },  // Very close
-                    { id: 'C', val: "[0, 0, 0]", isCorrect: false }, // All black
-                    { id: 'D', val: "[5, 5, 5]", isCorrect: false }  // Grey
+                    { id: 'A', val: "[9, 0, 9]", isCorrect: false },
+                    { id: 'B', val: "[0, 8, 1]", isCorrect: true }, 
+                    { id: 'C', val: "[0, 0, 0]", isCorrect: false },
+                    { id: 'D', val: "[5, 5, 5]", isCorrect: false }
                 ],
-                explanation: "<strong>Option B</strong> is closest. <br>[0, 8, 1] is mathematically almost identical to [0, 9, 0]. <br>Option A is the exact opposite (Inverse)."
+                explanation: "<strong>Option B</strong> is the closest match. <br>[0, 8, 1] is mathematically almost identical to [0, 9, 0], meaning the image will look practically the same. Option A represents an inverted, negative image."
             },
             {
-                title: "Challenge 3: Taste Match",
-                desc: "Target user loves Romance (2nd value). Which user matches best?",
-                targetLabel: "Target User",
+                title: "Scenario 3: Predictive Algorithms",
+                desc: "The target user strongly prefers Romance (value index 1). Which existing user profile matches best?",
+                targetLabel: "Target User Vector",
                 targetVal: "[1, 10, 2]", 
                 options: [
                     { id: 'A', val: "[10, 0, 1]", isCorrect: false },
@@ -669,7 +669,7 @@
                     { id: 'C', val: "[2, 9, 1]", isCorrect: true },
                     { id: 'D', val: "[0, 0, 10]", isCorrect: false }
                 ],
-                explanation: "<strong>Option C</strong> is the match. <br>Both users rate the middle genre (Romance) highly (10 vs 9) and dislike others."
+                explanation: "<strong>Option C</strong> provides the optimal recommendation match. <br>Both vectors rate the central genre (Romance) highly (10 vs 9) while demonstrating low affinity for the surrounding genres."
             }
         ];
 
@@ -690,47 +690,43 @@
             c.options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.id = `btn-opt-${opt.id}`;
-                btn.className = "p-4 border border-slate-600 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all text-left group relative overflow-hidden";
+                btn.className = "p-4 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-brand-accent/50 transition-all text-left group relative overflow-hidden shadow-sm";
                 btn.onclick = () => selectOption(opt.id);
                 btn.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-slate-500 uppercase font-bold">Option ${opt.id}</span>
-                        <i class="fa-regular fa-circle text-slate-600 group-hover:text-brand-accent check-icon transition-colors"></i>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs text-slate-500 uppercase font-bold tracking-wide">Option ${opt.id}</span>
+                        <i class="fa-regular fa-circle text-slate-400 group-hover:text-brand-accent check-icon transition-colors text-lg" aria-hidden="true"></i>
                     </div>
-                    <span class="font-mono text-xl font-bold text-white group-hover:text-brand-accent transition-colors">${opt.val}</span>
+                    <span class="font-mono text-xl font-bold text-slate-900 group-hover:text-brand-accent transition-colors">${opt.val}</span>
                 `;
                 container.appendChild(btn);
             });
 
-            // Reset UI states
             document.getElementById('feedback-area').classList.add('hidden');
             document.getElementById('feedback-area').innerHTML = '';
             selectedOption = null;
 
-            // Button States
             document.getElementById('next-btn').classList.add('hidden');
             document.getElementById('restart-btn').classList.add('hidden');
         }
 
         function selectOption(id) {
             selectedOption = id;
-            // Clear styles
             challenges[currentChallengeIdx].options.forEach(opt => {
                 const btn = document.getElementById(`btn-opt-${opt.id}`);
-                btn.classList.remove('ring-2', 'ring-brand-accent', 'bg-slate-700');
+                btn.classList.remove('ring-2', 'ring-brand-accent', 'bg-sky-50', 'border-brand-accent');
                 const icon = btn.querySelector('.check-icon');
-                icon.className = 'fa-regular fa-circle text-slate-600 group-hover:text-brand-accent check-icon transition-colors';
+                icon.className = 'fa-regular fa-circle text-slate-400 group-hover:text-brand-accent check-icon transition-colors text-lg';
             });
             
-            // Set active
             const activeBtn = document.getElementById(`btn-opt-${id}`);
-            activeBtn.classList.add('ring-2', 'ring-brand-accent', 'bg-slate-700');
+            activeBtn.classList.add('ring-2', 'ring-brand-accent', 'bg-sky-50', 'border-brand-accent');
             const activeIcon = activeBtn.querySelector('.check-icon');
-            activeIcon.className = 'fa-solid fa-circle-check text-brand-accent check-icon';
+            activeIcon.className = 'fa-solid fa-circle-check text-brand-accent check-icon text-lg';
         }
 
         function revealAnswer() {
-            if(!selectedOption) return; // Simple guard
+            if(!selectedOption) return;
 
             const c = challenges[currentChallengeIdx];
             const feedback = document.getElementById('feedback-area');
@@ -738,23 +734,50 @@
 
             const isCorrect = c.options.find(o => o.id === selectedOption).isCorrect;
             
-            let colorClass = isCorrect ? "bg-brand-success/10 border-brand-success/30 text-brand-success" : "bg-brand-danger/10 border-brand-danger/30 text-brand-danger";
-            let icon = isCorrect ? "fa-check" : "fa-xmark";
-            let title = isCorrect ? "Correct Analysis!" : "Not quite.";
+            let colorClass = isCorrect ? "bg-emerald-50 border-brand-success text-brand-success" : "bg-rose-50 border-brand-danger text-brand-danger";
+            let icon = isCorrect ? "fa-check-circle" : "fa-circle-xmark";
+            let title = isCorrect ? "Correct Analysis" : "Incorrect Hypothesis";
 
             feedback.innerHTML = `
-                <div class="${colorClass} border rounded-xl p-4">
-                    <strong class="block mb-1"><i class="fa-solid ${icon} mr-2"></i>${title}</strong>
-                    <p class="text-slate-300 text-sm leading-relaxed">${c.explanation}</p>
+                <div class="${colorClass} border-l-4 rounded-r-xl p-4 shadow-sm border-y border-r border-y-slate-200 border-r-slate-200">
+                    <strong class="block mb-2 text-sm uppercase tracking-wide font-bold"><i class="fa-solid ${icon} mr-2" aria-hidden="true"></i>${title}</strong>
+                    <p class="text-slate-800 text-sm leading-relaxed">${c.explanation}</p>
                 </div>
             `;
 
-            // Show Navigation Buttons
             if (currentChallengeIdx < challenges.length - 1) {
                 document.getElementById('next-btn').classList.remove('hidden');
+                document.getElementById('next-btn').focus();
             } else {
                 document.getElementById('restart-btn').classList.remove('hidden');
+                document.getElementById('restart-btn').focus();
             }
+        }
+
+        function restartInteractive() {
+            // Reset Challenge State
+            currentChallengeIdx = 0;
+            loadChallenge(0);
+            
+            // Reset Step 2: Robot
+            document.getElementById('vec-x').value = 1;
+            document.getElementById('vec-y').value = 1;
+            resetRobot();
+            
+            // Reset Step 3: Image
+            pixelValues = [0,0,0, 0,0,0, 0,0,0];
+            initPixels();
+            document.getElementById('vector-output').innerText = pixelValues.join(', ');
+            checkImageMatch();
+            
+            // Reset Step 4: Taste
+            for(let i=0; i<4; i++) {
+                document.getElementById(`val-${i}-slider`).value = 5;
+                updatePreferences(i, 5);
+            }
+            
+            // Navigate to start
+            goToStep(1);
         }
 
         function nextChallenge() {
@@ -762,12 +785,10 @@
             loadChallenge(currentChallengeIdx);
         }
 
-        // --- Initialization ---
         window.onload = () => {
             initPixels();
             calculateSimilarities();
             loadChallenge(0);
-            // Trigger first dot active state manually to match style
             goToStep(1);
         };
 
