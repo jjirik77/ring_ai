@@ -10,7 +10,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e2e8f0; /* Darker slate background to make the blue app window pop */
+            background-color: #e2e8f0; 
         }
 
         .tooltip {
@@ -34,13 +34,11 @@
             accent-color: #3b82f6;
         }
 
-        /* Custom radio button styles for quiz */
         .quiz-option input[type="radio"]:checked + div {
             border-color: #3b82f6;
             background-color: #eff6ff;
         }
 
-        /* Hide scrollbar for grid container to keep it ultra-clean */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -49,7 +47,6 @@
             scrollbar-width: none;
         }
 
-        /* Custom utility for the 5x10 dynamic grid */
         .grid-rows-10 {
             grid-template-rows: repeat(10, minmax(0, 1fr));
         }
@@ -71,19 +68,19 @@
                     <div class="w-2 h-2 rounded-full bg-slate-200"></div>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="closeTour()" class="text-slate-400 hover:text-slate-600 text-sm font-semibold px-2 focus:outline-none">Skip</button>
-                    <button onclick="nextTourStep()" id="btn-tour-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors focus:outline-none">Next</button>
+                    <button onclick="closeTour()" class="text-slate-500 hover:text-slate-800 text-sm font-semibold px-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-300 rounded">Skip</button>
+                    <button onclick="nextTourStep()" id="btn-tour-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Next</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP WINDOW (Smaller vertically, Blue Border, Centered) -->
+    <!-- MAIN APP WINDOW -->
     <div class="w-full max-w-[1280px] h-[95vh] max-h-[820px] min-h-[550px] bg-[#f8fafc] border-[6px] border-blue-500 rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(59,130,246,0.4)] flex flex-col relative overflow-hidden">
         
         <!-- Stepper Top Bar -->
         <div class="bg-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl shadow-sm border border-slate-200 shrink-0 flex items-center justify-between z-10 mx-3 mt-3 md:mx-4 md:mt-4">
-            <button onclick="openTour()" class="hidden md:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 items-center gap-1 focus:outline-none">
+            <button onclick="openTour()" class="hidden md:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 items-center gap-1 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-300">
                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Tour
             </button>
@@ -92,7 +89,7 @@
                 <ol role="list" class="flex items-center justify-between">
                     <li class="relative flex-1">
                         <div class="absolute inset-0 flex items-center w-full" aria-hidden="true"><div class="h-0.5 w-full bg-slate-200" id="nav-line-1"></div></div>
-                        <button onclick="goToPage(1)" id="nav-step-1" class="relative flex items-center group bg-white pr-2 focus:outline-none">
+                        <button onclick="goToPage(1)" id="nav-step-1" class="relative flex items-center group bg-white pr-2 focus:outline-none rounded-full">
                             <span class="h-6 w-6 md:h-7 md:w-7 rounded-full bg-blue-600 flex items-center justify-center ring-4 ring-white">
                                 <span class="text-white font-bold text-xs">1</span>
                             </span>
@@ -101,7 +98,7 @@
                     </li>
                     <li class="relative flex-1">
                         <div class="absolute inset-0 flex items-center w-full" aria-hidden="true"><div class="h-0.5 w-full bg-slate-200" id="nav-line-2"></div></div>
-                        <button onclick="goToPage(2)" id="nav-step-2" class="relative flex items-center group bg-white px-2 focus:outline-none">
+                        <button onclick="goToPage(2)" id="nav-step-2" class="relative flex items-center group bg-white px-2 focus:outline-none rounded-full">
                             <span class="h-6 w-6 md:h-7 md:w-7 rounded-full bg-slate-100 border-2 border-slate-300 flex items-center justify-center">
                                 <span class="text-slate-500 font-bold text-xs">2</span>
                             </span>
@@ -110,7 +107,7 @@
                     </li>
                     <li class="relative flex-1">
                         <div class="absolute inset-0 flex items-center w-full" aria-hidden="true"><div class="h-0.5 w-full bg-slate-200" id="nav-line-3"></div></div>
-                        <button onclick="goToPage(3)" id="nav-step-3" class="relative flex items-center group bg-white px-2 focus:outline-none">
+                        <button onclick="goToPage(3)" id="nav-step-3" class="relative flex items-center group bg-white px-2 focus:outline-none rounded-full">
                             <span class="h-6 w-6 md:h-7 md:w-7 rounded-full bg-slate-100 border-2 border-slate-300 flex items-center justify-center">
                                 <span class="text-slate-500 font-bold text-xs">3</span>
                             </span>
@@ -118,7 +115,7 @@
                         </button>
                     </li>
                     <li class="relative">
-                        <button onclick="goToPage(4)" id="nav-step-4" class="relative flex items-center group bg-white pl-2 focus:outline-none">
+                        <button onclick="goToPage(4)" id="nav-step-4" class="relative flex items-center group bg-white pl-2 focus:outline-none rounded-full">
                             <span class="h-6 w-6 md:h-7 md:w-7 rounded-full bg-slate-100 border-2 border-slate-300 flex items-center justify-center">
                                 <span class="text-slate-500 font-bold text-xs">4</span>
                             </span>
@@ -145,172 +142,172 @@
                         <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2 text-sm">
                             <span class="w-2 h-2 rounded-full bg-blue-600"></span> The Threshold
                         </h3>
-                        <p class="text-[11px] md:text-xs text-slate-500 leading-relaxed">You will set the <b>Decision Threshold</b>. Any item scoring above your line is flagged. Set it too low, you get false alarms. Set it too high, you miss targets.</p>
+                        <p class="text-xs text-slate-500 leading-relaxed">You will set the <b>Decision Threshold</b>. Any item scoring above your line is flagged. Set it too low, you get false alarms. Set it too high, you miss targets.</p>
                     </div>
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                         <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2 text-sm">
                             <span class="w-2 h-2 rounded-full bg-amber-400"></span> The Overlap
                         </h3>
-                        <p class="text-[11px] md:text-xs text-slate-500 leading-relaxed">Models aren't perfect. Safe items sometimes look suspicious, and dangerous items sometimes look safe. This mathematical overlap guarantees mistakes.</p>
+                        <p class="text-xs text-slate-500 leading-relaxed">Models aren't perfect. Safe items sometimes look suspicious, and dangerous items sometimes look safe. This mathematical overlap guarantees mistakes.</p>
                     </div>
                 </div>
 
-                <button onclick="goToPage(2)" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-transform hover:scale-105 focus:outline-none">
+                <button onclick="goToPage(2)" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Start Lab: Scenario 1
                 </button>
             </div>
         </div>
 
         <!-- ================= PAGE 2 & 3: BENTO LAB ================= -->
-        <div id="page-lab" class="hidden flex-1 w-full h-full flex-col md:flex-row gap-3 min-h-0 p-3 md:p-4 overflow-hidden">
+        <div id="page-lab" class="hidden flex-1 w-full h-full flex-col gap-3 min-h-0 p-3 md:p-4 overflow-hidden">
             
-            <!-- ================= LEFT COLUMN: Controls & Matrix (30%) ================= -->
-            <div class="w-full md:w-[280px] lg:w-[320px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
-                <!-- Variables Card -->
-                <div class="bg-white p-3 lg:p-4 rounded-2xl shadow-sm border border-slate-200 shrink-0">
-                    <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center justify-between">
-                        Variables <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-500">Inputs</span>
-                    </h2>
-                    <div class="space-y-3">
-                        <!-- Base Rate -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-[11px] font-bold text-slate-700" id="label-baserate">Prevalence</label>
-                                <span id="val-baserate" class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-bold">10%</span>
+            <!-- TOP ROW: Controls, Histogram, Grid -->
+            <div class="flex-1 flex flex-col md:flex-row gap-3 min-h-0">
+                
+                <!-- LEFT COLUMN: Controls & Matrix -->
+                <div class="w-full md:w-[260px] lg:w-[300px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
+                    <!-- Variables Card -->
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 shrink-0">
+                        <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center justify-between">
+                            Variables <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-500">Inputs</span>
+                        </h2>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-[11px] font-bold text-slate-700" id="label-baserate">Prevalence</label>
+                                    <span id="val-baserate" class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-bold">10%</span>
+                                </div>
+                                <input type="range" id="input-baserate" min="1" max="50" value="10" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Prevalence Base Rate">
                             </div>
-                            <input type="range" id="input-baserate" min="1" max="50" value="10" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="text-[11px] font-bold text-slate-700">Decision Threshold</label>
+                                    <span id="val-threshold" class="text-[10px] font-mono bg-blue-100 px-1.5 py-0.5 rounded text-blue-700 font-bold">0.50</span>
+                                </div>
+                                <input type="range" id="input-threshold" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Decision Threshold">
+                            </div>
                         </div>
-                        <!-- Threshold -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-[11px] font-bold text-slate-700">Decision Threshold ($\tau$)</label>
-                                <span id="val-threshold" class="text-[10px] font-mono bg-blue-100 px-1.5 py-0.5 rounded text-blue-700 font-bold">0.50</span>
+                    </div>
+
+                    <!-- Performance Matrix Card (Compact) -->
+                    <div class="bg-slate-900 text-white p-3 lg:p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-0">
+                        <div class="flex justify-between items-center mb-2 shrink-0">
+                            <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-500">Confusion Matrix</h2>
+                            <div class="text-[8px] text-slate-400 font-mono bg-slate-800 px-1.5 py-0.5 rounded">N=50</div>
+                        </div>
+                        <!-- 2x2 Grid -->
+                        <div class="grid grid-cols-2 gap-1.5 mb-2 shrink-0">
+                            <div class="bg-slate-800 py-1.5 rounded-xl border border-slate-700/50 flex flex-col justify-center items-center">
+                                <div class="text-lg lg:text-xl font-bold text-emerald-400 leading-none mb-0.5" id="mat-tn">0</div>
+                                <div class="text-[7px] lg:text-[8px] uppercase text-slate-400 tracking-wider">True Neg (TN)</div>
                             </div>
-                            <input type="range" id="input-threshold" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="bg-slate-800 py-1.5 rounded-xl border border-red-900/30 flex flex-col justify-center items-center">
+                                <div class="text-lg lg:text-xl font-bold text-red-400 leading-none mb-0.5" id="mat-fp">0</div>
+                                <div class="text-[7px] lg:text-[8px] uppercase text-red-300 tracking-wider font-bold">False Pos (FP)</div>
+                            </div>
+                            <div class="bg-slate-800 py-1.5 rounded-xl border border-amber-900/30 flex flex-col justify-center items-center">
+                                <div class="text-lg lg:text-xl font-bold text-amber-500 leading-none mb-0.5" id="mat-fn">0</div>
+                                <div class="text-[7px] lg:text-[8px] uppercase text-amber-300 tracking-wider">False Neg (FN)</div>
+                            </div>
+                            <div class="bg-slate-800 py-1.5 rounded-xl border border-blue-900/30 flex flex-col justify-center items-center">
+                                <div class="text-lg lg:text-xl font-bold text-blue-400 leading-none mb-0.5" id="mat-tp">0</div>
+                                <div class="text-[7px] lg:text-[8px] uppercase text-blue-300 tracking-wider font-bold">True Pos (TP)</div>
+                            </div>
+                        </div>
+
+                        <!-- Derived Metrics -->
+                        <div class="flex-1 flex flex-col justify-end space-y-1.5 border-t border-slate-800 pt-1.5 min-h-0">
+                            <div class="flex justify-between items-center group relative cursor-help" tabindex="0">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-blue-300">Precision</div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                </div>
+                                <div id="metric-precision" class="font-mono text-[10px] lg:text-[11px] text-blue-300">0.000</div>
+                                <div id="tooltip-precision" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center group relative cursor-help" tabindex="0">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-amber-300">Recall</div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                </div>
+                                <div id="metric-recall" class="font-mono text-[10px] lg:text-[11px] text-amber-300">0.000</div>
+                                <div id="tooltip-recall" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-1 border-t border-slate-800 mt-1 group relative cursor-help" tabindex="0">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-emerald-400">Cost Score</div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                </div>
+                                <div id="metric-cost" class="font-mono text-xs lg:text-sm font-bold text-emerald-400">0</div>
+                                <div id="tooltip-cost" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Performance Matrix Card -->
-                <div class="bg-slate-900 text-white p-3 lg:p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-0">
-                    <div class="flex justify-between items-center mb-2 shrink-0">
-                        <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-500">Confusion Matrix</h2>
-                        <div class="text-[8px] text-slate-400 font-mono bg-slate-800 px-1.5 py-0.5 rounded">N=50</div>
-                    </div>
-                    <!-- 2x2 Grid -->
-                    <div class="grid grid-cols-2 gap-1.5 mb-3 shrink-0">
-                        <div class="bg-slate-800 py-2 rounded-xl border border-slate-700/50 flex flex-col justify-center items-center">
-                            <div class="text-xl lg:text-2xl font-bold text-emerald-400 leading-none mb-0.5" id="mat-tn">0</div>
-                            <div class="text-[7px] uppercase text-slate-400 tracking-wider">True Neg (TN)</div>
-                        </div>
-                        <div class="bg-slate-800 py-2 rounded-xl border border-red-900/30 flex flex-col justify-center items-center">
-                            <div class="text-xl lg:text-2xl font-bold text-red-400 leading-none mb-0.5" id="mat-fp">0</div>
-                            <div class="text-[7px] uppercase text-red-300 tracking-wider font-bold">False Pos (FP)</div>
-                        </div>
-                        <div class="bg-slate-800 py-2 rounded-xl border border-amber-900/30 flex flex-col justify-center items-center">
-                            <div class="text-xl lg:text-2xl font-bold text-amber-500 leading-none mb-0.5" id="mat-fn">0</div>
-                            <div class="text-[7px] uppercase text-amber-300 tracking-wider">False Neg (FN)</div>
-                        </div>
-                        <div class="bg-slate-800 py-2 rounded-xl border border-blue-900/30 flex flex-col justify-center items-center">
-                            <div class="text-xl lg:text-2xl font-bold text-blue-400 leading-none mb-0.5" id="mat-tp">0</div>
-                            <div class="text-[7px] uppercase text-blue-300 tracking-wider font-bold">True Pos (TP)</div>
-                        </div>
-                    </div>
-
-                    <!-- Derived Metrics -->
-                    <div class="flex-1 flex flex-col justify-end space-y-2 border-t border-slate-800 pt-2 min-h-0">
-                        <div class="flex justify-between items-center group relative cursor-help">
-                            <div class="flex items-center gap-1.5">
-                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-blue-300">Precision</div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                <!-- CENTER COLUMN: Histogram -->
+                <div class="flex-1 flex flex-col gap-3 min-h-0 h-full">
+                    <div class="bg-white p-3 lg:p-5 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+                        <div class="flex justify-between items-start mb-2 shrink-0">
+                            <div>
+                                <span id="lab-scenario-badge" class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[8px] font-bold uppercase tracking-wider mb-1 inline-block">Scenario</span>
+                                <h2 class="text-lg lg:text-xl font-extrabold text-slate-900 leading-none" id="lab-title">Analysis</h2>
                             </div>
-                            <div id="metric-precision" class="font-mono text-[11px] text-blue-300">0.000</div>
-                            <div id="tooltip-precision" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[9px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
                         </div>
                         
-                        <div class="flex justify-between items-center group relative cursor-help">
-                            <div class="flex items-center gap-1.5">
-                                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-amber-300">Recall</div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
-                            </div>
-                            <div id="metric-recall" class="font-mono text-[11px] text-amber-300">0.000</div>
-                            <div id="tooltip-recall" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[9px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3 shrink-0 flex items-start gap-2">
+                            <div class="text-sm leading-none mt-0.5">💡</div>
+                            <p id="insight-text" class="text-xs text-slate-600 leading-snug"></p>
                         </div>
 
-                        <div class="flex justify-between items-center pt-1.5 border-t border-slate-800 mt-1.5 group relative cursor-help">
-                            <div class="flex items-center gap-1.5">
-                                <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-emerald-400">Cost Score</div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                        <!-- Mirrored Histogram -->
+                        <div class="flex-1 relative min-h-[100px]" id="histogram-container">
+                            <div class="absolute top-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Positives</div>
+                            <div class="absolute bottom-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Negatives</div>
+                            <div class="h-full w-full relative" id="histogram">
+                                 <div id="threshold-line" class="absolute h-full w-0.5 bg-blue-600 z-10 transition-all shadow-[0_0_10px_rgba(37,99,235,0.5)]" style="left: 50%;"></div>
                             </div>
-                            <div id="metric-cost" class="font-mono text-sm font-bold text-emerald-400">0</div>
-                            <div id="tooltip-cost" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[9px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                        </div>
+                        <div class="flex justify-between text-[8px] text-slate-400 border-t pt-1 uppercase tracking-tighter font-bold shrink-0 mt-1.5">
+                            <span>Score 0.0</span>
+                            <span>Score 1.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Data Grid (Condensed) -->
+                <div class="w-full md:w-[220px] lg:w-[260px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
+                        <div class="flex justify-between items-center mb-2 flex-none">
+                            <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400">Data Sample</h2>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5 text-[7px] lg:text-[8px] font-bold uppercase tracking-widest items-center mb-2 flex-none bg-slate-50 p-1.5 rounded-lg border border-slate-100">
+                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-slate-100 border border-slate-200"></span> Neg</div>
+                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-amber-300 border border-amber-400"></span> Pos</div>
+                            <div class="flex items-center gap-1 ml-auto"><span class="w-1.5 h-1.5 rounded-full border border-blue-600 bg-white"></span> Flagged</div>
+                        </div>
+
+                        <div class="flex-1 w-full flex items-start justify-center min-h-0">
+                            <div id="grid-container" class="grid grid-cols-5 grid-rows-10 gap-1 w-full h-full max-h-full" aria-live="polite">
+                                <!-- Items generated by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ================= CENTER COLUMN: Histogram & Insight (40%) ================= -->
-            <div class="flex-1 flex flex-col gap-3 min-h-0 h-full">
-                <!-- Visualizer Card -->
-                <div class="bg-white p-3 lg:p-5 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
-                    <div class="flex justify-between items-start mb-2 shrink-0">
-                        <div>
-                            <span id="lab-scenario-badge" class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[8px] font-bold uppercase tracking-wider mb-1 inline-block">Scenario</span>
-                            <h2 class="text-lg lg:text-xl font-extrabold text-slate-900 leading-none" id="lab-title">Analysis</h2>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3 shrink-0 flex items-start gap-2">
-                        <div class="text-sm leading-none mt-0.5">💡</div>
-                        <p id="insight-text" class="text-[11px] text-slate-600 leading-snug"></p>
-                    </div>
-
-                    <!-- Mirrored Histogram -->
-                    <div class="flex-1 relative min-h-[100px]" id="histogram-container">
-                        <div class="absolute top-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Positives</div>
-                        <div class="absolute bottom-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Negatives</div>
-                        <div class="h-full w-full relative" id="histogram">
-                             <div id="threshold-line" class="absolute h-full w-0.5 bg-blue-600 z-10 transition-all shadow-[0_0_10px_rgba(37,99,235,0.5)]" style="left: 50%;"></div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-[8px] text-slate-400 border-t pt-1 uppercase tracking-tighter font-bold shrink-0 mt-1.5">
-                        <span>Score 0.0</span>
-                        <span>Score 1.0</span>
-                    </div>
-                </div>
-
-                <!-- Dynamic Educational Dock (3 mini cards) -->
-                <div id="educational-footer" class="shrink-0 grid grid-cols-3 gap-2">
+            <!-- BOTTOM ROW: Expanded Educational Footer & Next Button -->
+            <div class="shrink-0 flex flex-col md:flex-row gap-3">
+                <div id="educational-footer" class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <!-- Content swapped via JS -->
                 </div>
-            </div>
-
-            <!-- ================= RIGHT COLUMN: Data Grid (30%) ================= -->
-            <div class="w-full md:w-[240px] lg:w-[280px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
-                <div class="bg-white p-3 lg:p-4 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
-                    <div class="flex justify-between items-center mb-2 flex-none">
-                        <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400">Data Sample</h2>
-                    </div>
-
-                    <!-- Clean Legend -->
-                    <div class="flex flex-wrap gap-1.5 text-[7px] lg:text-[8px] font-bold uppercase tracking-widest items-center mb-2 flex-none bg-slate-50 p-1.5 rounded-lg border border-slate-100">
-                        <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-slate-100 border border-slate-200"></span> Neg</div>
-                        <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-amber-300 border border-amber-400"></span> Pos</div>
-                        <div class="flex items-center gap-1 ml-auto"><span class="w-1.5 h-1.5 rounded-full border border-blue-600 bg-white"></span> Flagged</div>
-                    </div>
-
-                    <!-- 5x10 Grid Container (Using min-h-0 and strict grid rows to fit space exactly without scroll) -->
-                    <div class="flex-1 w-full flex items-start justify-center min-h-0">
-                        <div id="grid-container" class="grid grid-cols-5 grid-rows-10 gap-1 lg:gap-1.5 w-full h-full max-h-full">
-                            <!-- Items generated by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Next Button inside the column to maintain pure vertical height -->
-                <button onclick="goToNextLabPage()" id="btn-lab-next" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2.5 rounded-xl text-xs font-bold shadow-md transition-colors flex items-center justify-center gap-1.5 shrink-0 focus:outline-none">
+                
+                <button onclick="goToNextLabPage()" id="btn-lab-next" class="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-[220px] lg:w-[260px] py-3 rounded-2xl text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Next Scenario
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
 
@@ -319,8 +316,7 @@
         <!-- ================= PAGE 4: KNOWLEDGE CHECK ================= -->
         <div id="page-4" class="hidden flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full h-full overflow-y-auto px-4 py-8">
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 w-full relative">
-                <!-- Added a subtle restart icon in the top right -->
-                <button onclick="goToPage(1)" class="absolute top-5 right-5 text-slate-400 hover:text-blue-600 focus:outline-none flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors">
+                <button onclick="goToPage(1)" class="absolute top-5 right-5 text-slate-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-slate-200 rounded px-2 py-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     Restart
                 </button>
@@ -332,50 +328,53 @@
 
                 <div class="space-y-4">
                     <div class="quiz-question" id="q1">
-                        <p class="font-bold text-slate-800 text-xs mb-2">1. In the Medical Scenario, you are looking for a rare disease. Why did we recommend a LOW threshold?</p>
+                        <p class="font-bold text-slate-800 text-sm mb-2">1. In the Medical Scenario, you are looking for a rare disease. Why did we recommend a LOW threshold?</p>
                         <div class="space-y-1.5">
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="wrong1" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold improves the mathematical precision of the AI.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold improves the mathematical precision of the AI.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="correct" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold maximizes Recall. Missing a sick patient is worse than a false alarm.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold maximizes Recall. Missing a sick patient is worse than a false alarm.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="wrong2" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold eliminates False Positives completely.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold eliminates False Positives completely.</div>
                             </label>
                         </div>
-                        <div class="feedback mt-1.5 text-[10px] hidden px-1"></div>
+                        <div class="feedback mt-1.5 text-xs hidden px-1"></div>
                     </div>
 
                     <div class="quiz-question" id="q2">
-                        <p class="font-bold text-slate-800 text-xs mb-2">2. If an event is extremely rare (like a Base Rate of 1%), what is the most likely error the model will make?</p>
+                        <p class="font-bold text-slate-800 text-sm mb-2">2. If an event is extremely rare (like a Base Rate of 1%), what is the most likely error the model will make?</p>
                         <div class="space-y-1.5">
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="wrong1" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">It will classify everything as Positive.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">It will classify everything as Positive.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="wrong2" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">False Negatives (Missing the rare events).</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">False Negatives (Missing the rare events).</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="correct" class="hidden">
-                                <div class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">False Positives (Flagging safe items by accident simply because there are so many of them).</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">False Positives (Flagging safe items by accident simply because there are so many of them).</div>
                             </label>
                         </div>
-                        <div class="feedback mt-1.5 text-[10px] hidden px-1"></div>
+                        <div class="feedback mt-1.5 text-xs hidden px-1"></div>
                     </div>
 
-                    <button onclick="checkQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-xs font-bold shadow-md transition-colors mt-4 focus:outline-none">
+                    <button onclick="checkQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-bold shadow-md transition-colors mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Check Answers
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Live Region for Screen Readers -->
+    <div aria-live="polite" class="sr-only" id="sr-announcer"></div>
 
     <script>
         // --- PAGE NAVIGATION LOGIC ---
@@ -509,19 +508,19 @@
                 recDesc: "Out of ALL the true SPAM in the inbox, what percentage did we catch?",
                 costDesc: "<b>Penalty Scale:</b><br/>True Positive = +1<br/>False Positive (Blocked Safe) = -10<br/>False Negative (Missed Spam) = -1",
                 costCalc: (tp, fp, tn, fn) => (tp * 1) + (fp * -10) + (fn * -1),
-                icon: '<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 1-2.22 0L3 8z"></path><rect width="18" height="14" x="3" y="5" rx="2"></rect></svg>',
+                icon: '<svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 0 1-2.22 0L3 8z"></path><rect width="18" height="14" x="3" y="5" rx="2"></rect></svg>',
                 footer: `
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Goal: Avoid Annoyance</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">In email, a False Positive is a "disaster" for trust. We use a <b>high</b> threshold so only obvious spam is blocked.</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Goal: Avoid Annoyance</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">In email, a False Positive is a "disaster" for trust. We use a <b>high</b> threshold so only obvious spam is blocked.</p>
                     </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Watch the Cost</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">Notice how blocking a real email incurs a massive -10 pt penalty. Move the slider to keep the score green.</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Watch the Cost</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">Notice how blocking a real email incurs a massive -10 pt penalty. Move the slider to keep the score green.</p>
                     </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Spam Base Rates</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">Notice what happens to False Positives when spam is extremely rare (e.g., 2% Prevalence).</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Spam Base Rates</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">Notice what happens to False Positives when spam is extremely rare (e.g., 2% Prevalence).</p>
                     </div>
                 `
             },
@@ -540,19 +539,19 @@
                 recDesc: "Out of ALL the truly SICK patients, what percentage did we catch?",
                 costDesc: "<b>Penalty Scale:</b><br/>True Positive = +10<br/>False Positive (Stress/Test) = -2<br/>False Negative (Missed Disease) = -50",
                 costCalc: (tp, fp, tn, fn) => (tp * 10) + (fp * -2) + (fn * -50),
-                icon: '<svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M19 11h6m-3-3v6"></path></svg>',
+                icon: '<svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><path d="M19 11h6m-3-3v6"></path></svg>',
                 footer: `
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Goal: Save Lives</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">Missing a cancer diagnosis (False Negative) is much worse than a false alarm. We set a <b>low</b> threshold.</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Goal: Save Lives</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">Missing a diagnosis (False Negative) is much worse than a false alarm. We set a <b>low</b> threshold.</p>
                     </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Screening Step</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">Screening tests catch everyone who *might* be sick. We accept error to ensure we don't miss anyone.</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Screening Step</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">Screening tests catch everyone who *might* be sick. We accept error to ensure we don't miss anyone.</p>
                     </div>
-                    <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                        <h4 class="font-bold text-slate-800 text-[9px] mb-0.5 leading-tight">Base Rate Fallacy</h4>
-                        <p class="text-[8px] text-slate-500 leading-snug">Because diseases are rare, an accurate test will still produce many False Positives. Look at the matrix!</p>
+                    <div class="bg-white p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center h-full">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm mb-1 leading-tight">Base Rate Fallacy</h4>
+                        <p class="text-[10px] md:text-xs text-slate-600 leading-snug">Because diseases are rare, an accurate test will still produce many False Positives. Look at the matrix!</p>
                     </div>
                 `
             }
@@ -567,6 +566,7 @@
         const elInsight = document.getElementById('insight-text');
         const elThreshLine = document.getElementById('threshold-line');
         const elEduFooter = document.getElementById('educational-footer');
+        const elAnnouncer = document.getElementById('sr-announcer');
 
         const matrix = {
             tn: document.getElementById('mat-tn'),
@@ -581,7 +581,6 @@
         function setScenario(type) {
             currentScenario = type;
             
-            document.getElementById('lab-scenario-badge').innerText = `Scenario ${type === 'spam' ? '1' : '2'}`;
             document.getElementById('lab-title').innerText = CONFIG[type].title;
             document.getElementById('label-baserate').innerText = CONFIG[type].baseRateLabel;
             
@@ -594,8 +593,8 @@
             document.getElementById('tooltip-cost').innerHTML = CONFIG[type].costDesc;
             
             document.getElementById('btn-lab-next').innerHTML = type === 'spam' 
-                ? 'Next: Medical Test <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'
-                : 'Knowledge Check <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+                ? 'Next: Medical Test <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'
+                : 'Knowledge Check <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
 
             generateData();
         }
@@ -610,10 +609,10 @@
                 prob = Math.max(0.00, Math.min(1.00, prob));
                 data.push({ id: i + 1, isPositive, prob });
             }
-            updateUI();
+            updateUI(true);
         }
 
-        function updateUI() {
+        function updateUI(isNewData = false) {
             const threshold = parseInt(elThreshold.value) / 100;
             elValBaserate.innerText = `${elBaserate.value}%`;
             elValThreshold.innerText = threshold.toFixed(2);
@@ -629,15 +628,15 @@
                 else if (!predicted && !item.isPositive) stats.tn++;
                 else if (!predicted && item.isPositive) stats.fn++;
 
-                // Container uses h-full instead of aspect-square to perfectly stretch into grid-rows-10
                 const card = document.createElement('div');
-                card.className = `has-tooltip relative w-full h-full rounded border border-slate-200/50 flex items-center justify-center cursor-default transition-all duration-200
+                card.className = `has-tooltip relative w-full h-full rounded border border-slate-200/50 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200
                     ${item.isPositive ? 'bg-amber-300' : 'bg-slate-100'}
                     ${predicted ? 'ring-2 ring-blue-600 ring-offset-1 z-10' : ''}
                 `;
+                card.tabIndex = 0;
 
                 const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip bg-slate-900 text-white text-[9px] py-1 px-2 rounded shadow-xl whitespace-nowrap z-50';
+                tooltip.className = 'tooltip bg-slate-900 text-white text-[10px] py-1.5 px-2.5 rounded shadow-xl whitespace-nowrap z-50';
                 tooltip.innerHTML = `
                     <div class="font-bold border-b border-slate-700 pb-1 mb-1">ID #${item.id}</div>
                     Truth: ${item.isPositive ? CONFIG[currentScenario].posTerm : CONFIG[currentScenario].negTerm}<br>
@@ -651,7 +650,6 @@
                 if (predicted) {
                    iconWrapper.innerHTML = `<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${item.isPositive ? 'bg-blue-900' : 'bg-blue-500'} shadow-sm"></div>`;
                 } else {
-                    // Add the base icon back for un-flagged items
                     iconWrapper.innerHTML = CONFIG[currentScenario].icon;
                     if (item.isPositive) {
                         iconWrapper.classList.add('text-amber-700', 'opacity-60');
@@ -662,6 +660,13 @@
                 
                 card.appendChild(iconWrapper);
                 card.appendChild(tooltip);
+                
+                // Accessibility support for tooltips on focus
+                card.addEventListener('focus', () => tooltip.style.visibility = 'visible');
+                card.addEventListener('focus', () => tooltip.style.opacity = '1');
+                card.addEventListener('blur', () => tooltip.style.visibility = 'hidden');
+                card.addEventListener('blur', () => tooltip.style.opacity = '0');
+
                 elGrid.appendChild(card);
             });
 
@@ -669,17 +674,20 @@
             matrix.fp.innerText = stats.fp;
             matrix.fn.innerText = stats.fn;
             matrix.tp.innerText = stats.tp;
-            matrix.precision.innerText = (stats.tp / (stats.tp + stats.fp) || 0).toFixed(3);
-            matrix.recall.innerText = (stats.tp / (stats.tp + stats.fn) || 0).toFixed(3);
+            
+            const precisionVal = (stats.tp / (stats.tp + stats.fp) || 0).toFixed(3);
+            const recallVal = (stats.tp / (stats.tp + stats.fn) || 0).toFixed(3);
+            matrix.precision.innerText = precisionVal;
+            matrix.recall.innerText = recallVal;
 
             const totalCost = CONFIG[currentScenario].costCalc(stats.tp, stats.fp, stats.tn, stats.fn);
             matrix.cost.innerText = totalCost;
             if (totalCost < 0) {
-                matrix.cost.className = "font-mono text-sm font-bold text-red-500";
+                matrix.cost.className = "font-mono text-sm lg:text-base font-bold text-red-500";
             } else if (totalCost > 0) {
-                matrix.cost.className = "font-mono text-sm font-bold text-emerald-500";
+                matrix.cost.className = "font-mono text-sm lg:text-base font-bold text-emerald-500";
             } else {
-                matrix.cost.className = "font-mono text-sm font-bold text-slate-500";
+                matrix.cost.className = "font-mono text-sm lg:text-base font-bold text-slate-500";
             }
 
             renderHistogram(threshold);
@@ -688,6 +696,11 @@
             if (stats.fp > stats.tp && stats.fp > 0) insight = CONFIG[currentScenario].insightFP;
             else if (stats.fn > stats.tp && stats.fn > 0) insight = CONFIG[currentScenario].insightFN;
             elInsight.innerHTML = insight;
+
+            // Announce to screen readers if just sliding (throttle somewhat natively via user interaction speed)
+            if(!isNewData) {
+                elAnnouncer.innerText = `Threshold set to ${threshold.toFixed(2)}. Cost score is ${totalCost}. False positives: ${stats.fp}, False negatives: ${stats.fn}.`;
+            }
         }
 
         function renderHistogram(threshold) {
@@ -764,16 +777,16 @@
                 feedbackDiv.classList.remove('hidden');
                 if (!qObj) {
                     feedbackDiv.innerText = "Please select an answer.";
-                    feedbackDiv.className = "feedback mt-1.5 text-[10px] font-bold text-amber-600 px-1";
+                    feedbackDiv.className = "feedback mt-1.5 text-xs font-bold text-amber-600 px-1";
                     return;
                 }
                 
                 if (qObj.value === 'correct') {
                     feedbackDiv.innerText = "✅ Correct! Excellent understanding.";
-                    feedbackDiv.className = "feedback mt-1.5 text-[10px] font-bold text-emerald-600 px-1";
+                    feedbackDiv.className = "feedback mt-1.5 text-xs font-bold text-emerald-600 px-1";
                 } else {
                     feedbackDiv.innerText = "❌ Not quite. Review the scenario explanations again.";
-                    feedbackDiv.className = "feedback mt-1.5 text-[10px] font-bold text-red-500 px-1";
+                    feedbackDiv.className = "feedback mt-1.5 text-xs font-bold text-red-500 px-1";
                 }
             };
 
@@ -781,8 +794,16 @@
             processQuestion(q2, 'q2');
         }
 
-        elBaserate.addEventListener('input', generateData);
-        elThreshold.addEventListener('input', updateUI);
+        // Throttle generation when dragging base rate to avoid layout thrashing
+        let debounceTimer;
+        elBaserate.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            // Update UI for the value number immediately
+            elValBaserate.innerText = `${elBaserate.value}%`;
+            debounceTimer = setTimeout(() => generateData(), 150);
+        });
+        
+        elThreshold.addEventListener('input', () => updateUI(false));
         
         // Init
         window.onload = () => {
