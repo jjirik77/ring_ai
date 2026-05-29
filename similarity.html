@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosine Similarity Quick Judge</title>
+<style>
+    :root {
+        /* Light Theme Palette */
+        --bg-main: #f8fafc; /* slate-50 */
+        --bg-panel: #ffffff; /* white */
+        --bg-card: #e2e8f0; /* slate-200 */
+        --text-main: #0f172a; /* slate-900 */
+        --text-muted: #475569; /* slate-600 */
+        --accent: #2563eb; /* blue-600 */
+        --accent-hover: #1d4ed8; /* blue-700 */
+        --correct: #059669; /* emerald-600 */
+        --incorrect: #dc2626; /* red-600 */
+        --focus-ring: #93c5fd; /* blue-300 */
+        --border-radius: 12px;
+        --transition: 0.3s ease;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        line-height: 1.6;
+        padding-bottom: 2rem;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--bg-card);
+        padding: 1rem 0;
+        z-index: 100;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .progress-stats {
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .progress-stats span {
+        color: var(--text-muted);
+    }
+
+    .progress-stats strong {
+        color: var(--text-main);
+    }
+
+    .progress-track {
+        flex-grow: 1;
+        height: 8px;
+        background-color: var(--bg-card);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background-color: var(--accent);
+        width: 0%;
+        transition: width 0.4s ease;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #2563eb, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--bg-card);
+        color: var(--text-main);
+    }
+
+    h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-main);
+    }
+
+    p {
+        margin-bottom: 1rem;
+        font-size: 1.05rem;
+        color: var(--text-muted);
+    }
+
+    .subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }
+
+    .card {
+        background-color: var(--bg-panel);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--bg-card);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    button:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 2px;
+    }
+
+    .btn-primary {
+        background-color: var(--accent);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+        background-color: var(--bg-card);
+        color: var(--text-main);
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+        background-color: #cbd5e1;
+    }
+
+    /* Options Grid */
+    .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .opt-btn {
+        background-color: #f1f5f9;
+        color: var(--text-main);
+        padding: 1rem;
+        text-align: left;
+        border: 2px solid transparent;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+        background-color: #e2e8f0;
+    }
+
+    .opt-btn:disabled {
+        cursor: default;
+    }
+
+    .opt-btn.correct-ans {
+        background-color: rgba(5, 150, 105, 0.1);
+        border-color: var(--correct);
+        color: var(--correct);
+    }
+
+    .opt-btn.incorrect-ans {
+        background-color: rgba(220, 38, 38, 0.1);
+        border-color: var(--incorrect);
+        color: var(--incorrect);
+    }
+
+    .opt-btn.faded {
+        opacity: 0.5;
+    }
+
+    .feedback {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        display: none;
+        font-size: 1rem;
+    }
+
+    .feedback.correct-feedback {
+        display: block;
+        background-color: rgba(5, 150, 105, 0.1);
+        border-left: 4px solid var(--correct);
+        color: #065f46;
+    }
+
+    .feedback.incorrect-feedback {
+        display: block;
+        background-color: rgba(220, 38, 38, 0.1);
+        border-left: 4px solid var(--incorrect);
+        color: #991b1b;
+    }
+
+    .svg-container {
+        width: 100%;
+        max-width: 300px;
+        margin: 1.5rem auto;
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid var(--bg-card);
+        display: flex;
+        justify-content: center;
+    }
+
+    svg {
+        width: 100%;
+        height: auto;
+    }
+
+    textarea {
+        width: 100%;
+        background-color: #f8fafc;
+        border: 1px solid var(--bg-card);
+        color: var(--text-main);
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: inherit;
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 120px;
+        margin-bottom: 1rem;
+    }
+
+    textarea:focus-visible {
+        outline: 3px solid var(--focus-ring);
+        outline-offset: 1px;
+    }
+
+    .model-answer {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: rgba(37, 99, 235, 0.1);
+        border-left: 4px solid var(--accent);
+        border-radius: 0 8px 8px 0;
+        color: #1e3a8a;
+    }
+
+    .page {
+        display: none;
+        flex-grow: 1;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .page.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--bg-card);
+    }
+    
+    .nav-controls.hidden {
+        display: none;
+    }
+
+    .page-indicator {
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    #summary-section {
+        display: none;
+        text-align: center;
+        background: linear-gradient(145deg, #ffffff, #f1f5f9);
+        border: 2px solid var(--accent);
+        margin-top: 2rem;
+    }
+
+    #summary-section h2 {
+        border-bottom: none;
+        color: var(--accent);
+    }
+
+    .summary-list {
+        text-align: left;
+        margin: 1.5rem auto;
+        max-width: 500px;
+        color: var(--text-muted);
+    }
+
+    .summary-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+        h1 { font-size: 2rem; }
+        .progress-stats { flex-direction: column; gap: 0.25rem; font-size: 0.8rem; }
+        .nav-controls { flex-direction: column-reverse; gap: 1rem; }
+        .btn-secondary, .btn-primary { width: 100%; justify-content: center; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="progress-container">
+        <div class="progress-stats">
+            <span>Answered: <strong id="ui-answered">0/7</strong></span>
+            <span>Correct: <strong id="ui-correct">0</strong></span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="ui-bar"></div>
+        </div>
+        <button id="btn-reset" class="btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.75rem; border-radius: 6px;">Reset</button>
+    </div>
+</header>
+
+<main>
+    <div class="page active" id="page-1">
+        <section id="intro">
+            <h1>Cosine Similarity Quick Judge</h1>
+            <div class="subtitle">Understanding direction and meaning in Machine Learning</div>
+            
+            <div class="card">
+                <p><strong>Trigonometry</strong> is the mathematical study of triangles, angles, and sides. While it might bring up memories of calculating the height of a building, it has a massive role in modern Artificial Intelligence.</p>
+                
+                <p>In Machine Learning, data (like words, images, or user preferences) is turned into <strong>vectors</strong>—mathematical arrows pointing in specific directions. <strong>Cosine similarity</strong> is a tool from trigonometry that measures the angle between two vectors.</p>
+                
+                <p>Why do we care about the angle? Because in AI, <em>direction is meaning</em>. Cosine similarity allows a computer to see if two concepts point in the same direction, completely ignoring how "long" the vectors are (their magnitude). If they point the same way, they mean the same thing!</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn-primary" id="btn-start" style="font-size: 1.1rem; padding: 1rem 2rem;">Start Activity &rarr;</button>
+            </div>
+        </section>
+    </div>
+
+    <div class="page" id="page-2">
+        <h2>Scenario 1: Parallel Vectors</h2>
+        <p>Let's look at three vector scenarios to build intuition. Based on the angle between the two arrows, judge their similarity. Remember: same direction = same meaning.</p>
+
+        <div class="card" id="q1-container">
+            <div class="svg-container">
+                <svg viewBox="0 0 200 100" aria-label="Two arrows pointing completely in the same direction to the right">
+                    <defs>
+                        <marker id="head-1" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="var(--accent)" />
+                        </marker>
+                        <marker id="head-2" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="#7c3aed" />
+                        </marker>
+                    </defs>
+                    <line x1="20" y1="35" x2="160" y2="35" stroke="var(--accent)" stroke-width="4" marker-end="url(#head-1)" />
+                    <line x1="20" y1="65" x2="100" y2="65" stroke="#7c3aed" stroke-width="4" marker-end="url(#head-2)" />
+                </svg>
+            </div>
+            <p>Notice the angle between them is 0°. Even though one is shorter, how similar are their directions?</p>
+            <div class="options-grid" data-q="q1">
+                <button class="opt-btn" data-correct="true" data-exp="Correct! An angle of 0° means a cosine similarity of 1. They point exactly the same way, so they have high similarity.">High similarity</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. Look at the direction. They point exactly the same way!">No similarity</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. Opposite meaning would require them pointing away from each other.">Opposite meaning</button>
+            </div>
+            <div class="feedback" id="q1-feedback"></div>
+        </div>
+    </div>
+
+    <div class="page" id="page-3">
+        <h2>Scenario 2: Perpendicular Vectors</h2>
+        <div class="card" id="q2-container">
+            <div class="svg-container">
+                <svg viewBox="0 0 200 160" aria-label="Two arrows starting from the same point, one pointing right, one pointing up, creating a 90 degree angle">
+                    <defs>
+                        <marker id="head-3" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="var(--accent)" />
+                        </marker>
+                        <marker id="head-4" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="#7c3aed" />
+                        </marker>
+                    </defs>
+                    <line x1="40" y1="120" x2="160" y2="120" stroke="var(--accent)" stroke-width="4" marker-end="url(#head-3)" />
+                    <line x1="40" y1="120" x2="40" y2="20" stroke="#7c3aed" stroke-width="4" marker-end="url(#head-4)" />
+                    <rect x="40" y="100" width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" />
+                </svg>
+            </div>
+            <p>The angle here is exactly 90°. They share absolutely no direction.</p>
+            <div class="options-grid" data-q="q2">
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. They don't point in the same direction at all.">High similarity</button>
+                <button class="opt-btn" data-correct="true" data-exp="Correct! A 90° angle means a cosine similarity of 0. They are completely unrelated (orthogonal).">No similarity</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. Opposite meaning would be a 180° angle.">Opposite meaning</button>
+            </div>
+            <div class="feedback" id="q2-feedback"></div>
+        </div>
+    </div>
+
+    <div class="page" id="page-4">
+        <h2>Scenario 3: Opposing Vectors</h2>
+        <div class="card" id="q3-container">
+            <div class="svg-container">
+                <svg viewBox="0 0 200 100" aria-label="Two arrows starting from the center, one pointing perfectly left, one pointing perfectly right">
+                    <defs>
+                        <marker id="head-5" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="var(--accent)" />
+                        </marker>
+                        <marker id="head-6" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                            <path d="M0,0 V6 L6,3 Z" fill="#7c3aed" />
+                        </marker>
+                    </defs>
+                    <line x1="100" y1="50" x2="180" y2="50" stroke="var(--accent)" stroke-width="4" marker-end="url(#head-5)" />
+                    <line x1="100" y1="50" x2="20" y2="50" stroke="#7c3aed" stroke-width="4" marker-end="url(#head-6)" />
+                    <path d="M 80 50 A 20 20 0 0 1 120 50" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4,4" />
+                </svg>
+            </div>
+            <p>The angle is 180°. They are completely turning their backs on each other.</p>
+            <div class="options-grid" data-q="q3">
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. They are pointing in totally conflicting directions.">High similarity</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. While they aren't similar, 'no similarity' usually means 90°. These actively oppose each other.">No similarity</button>
+                <button class="opt-btn" data-correct="true" data-exp="Correct! A 180° angle means a cosine similarity of -1. They represent complete opposites.">Opposite meaning</button>
+            </div>
+            <div class="feedback" id="q3-feedback"></div>
+        </div>
+    </div>
+
+    <div class="page" id="page-5">
+        <h2>Part B: Text Similarity in AI</h2>
+        <p>Large Language Models turn sentences into vectors. Let's see how cosine similarity handles meaning.</p>
+
+        <div class="card" id="q4-container">
+            <h3>Question 4</h3>
+            <p>Which pair of phrases would an AI assign a <strong>higher</strong> cosine similarity score?</p>
+            <div class="options-grid" data-q="q4">
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. While they are both greetings, they use entirely different words. Their vectors will be somewhat similar, but not the highest.">"Good morning!" and "Hello world!"</button>
+                <button class="opt-btn" data-correct="true" data-exp="Correct! These share the exact same root meaning and words. Their vectors will point in nearly the exact same direction (close to 0° angle).">"Good morning!" and "Good morning!!"</button>
+            </div>
+            <div class="feedback" id="q4-feedback"></div>
+        </div>
+
+        <div class="card" id="q5-container">
+            <h3>Question 5</h3>
+            <p>Consider the phrases <em>"Bank of a river"</em> and <em>"Bank account balance"</em>. They share the word "Bank". In a smart modern AI, what should their cosine similarity be?</p>
+            <div class="options-grid" data-q="q5">
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. An old, dumb system might think they are identical because of the word 'Bank', but a smart AI looks at meaning.">High (near 1)</button>
+                <button class="opt-btn" data-correct="true" data-exp="Correct! Even though they share a word, their context and meaning are entirely different. They point in different conceptual directions.">Low (near 0)</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. They aren't exact opposites (like hot and cold), they are just unrelated.">Opposite (near -1)</button>
+            </div>
+            <div class="feedback" id="q5-feedback"></div>
+        </div>
+    </div>
+
+    <div class="page" id="page-6">
+        <h2>Part C: Concept Check</h2>
+        <p>Let's lock in the mathematical facts behind what we've just seen.</p>
+
+        <div class="card" id="q6-container">
+            <h3>Question 6</h3>
+            <p>What property of a vector does cosine similarity primarily <strong>ignore</strong>?</p>
+            <div class="options-grid" data-q="q6">
+                <button class="opt-btn" data-correct="true" data-exp="Correct! It ignores magnitude (length). Whether a document says 'Happy' once or 100 times, the direction of the emotion is the same.">Magnitude (length)</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. Angle is exactly what cosine similarity measures!">Angle</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. Direction is essentially what the angle represents.">Direction</button>
+            </div>
+            <div class="feedback" id="q6-feedback"></div>
+        </div>
+
+        <div class="card" id="q7-container">
+            <h3>Question 7</h3>
+            <p>If you calculate the cosine similarity between two word vectors and the result is <strong>0</strong>, what does this tell you about their angles and meaning?</p>
+            <div class="options-grid" data-q="q7">
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. A value near 1 indicates strong similarity (0° angle).">They mean the same thing.</button>
+                <button class="opt-btn" data-correct="true" data-exp="Correct! A value of 0 means the angle is 90°. They are completely unrelated conceptually.">They have little to no similarity.</button>
+                <button class="opt-btn" data-correct="false" data-exp="Incorrect. A value near -1 indicates opposite meaning (180° angle).">They have opposite meanings.</button>
+            </div>
+            <div class="feedback" id="q7-feedback"></div>
+        </div>
+    </div>
+
+    <div class="page" id="page-7">
+        <h2>Part D: Reflection</h2>
+        <div class="card">
+            <label for="reflection-text"><h3>In your own words, why is cosine similarity useful for machine learning?</h3></label>
+            <p>Think about what we learned regarding direction versus magnitude.</p>
+            <textarea id="reflection-text" placeholder="Type your thoughts here..."></textarea>
+            <button class="btn-primary" id="btn-reveal">Show model answer</button>
+            
+            <div class="model-answer" id="model-answer">
+                <strong>Model Answer:</strong><br>
+                Cosine similarity is useful because it focuses on the <em>direction</em> (meaning) of vectors rather than their <em>magnitude</em> (size/length). This means an AI can recognize that a short text and a massive book are discussing the exact same topic, as long as their core meanings point in the same conceptual direction. It is perfect for matching search queries, clustering related ideas, and comparing text.
+            </div>
+        </div>
+
+        <section id="summary-section" class="card">
+            <h2>Activity Complete!</h2>
+            <p id="summary-msg" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;"></p>
+            
+            <h3>Key Takeaways:</h3>
+            <ul class="summary-list">
+                <li><strong>Cosine Similarity</strong> uses the angle between vectors to measure similarity.</li>
+                <li>It ignores <strong>magnitude</strong> (how long the vector is).</li>
+                <li>Values near <strong>1</strong> (0° angle) = Strong similarity / Same meaning.</li>
+                <li>Values near <strong>0</strong> (90° angle) = No similarity / Unrelated.</li>
+                <li>Values near <strong>-1</strong> (180° angle) = Opposite direction / Conflicting meaning.</li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="nav-controls hidden" id="global-nav">
+        <button class="btn-secondary" id="btn-prev">&larr; Previous</button>
+        <span class="page-indicator" id="page-indicator">Page 1 of 7</span>
+        <button class="btn-primary" id="btn-next">Next &rarr;</button>
+    </div>
+
+</main>
+
+<script>
+    const TOTAL_QUESTIONS = 7;
+    const TOTAL_PAGES = 7;
+    
+    let answeredQuestions = 0;
+    let correctQuestions = 0;
+    let currentPage = 1;
+
+    // UI Elements
+    const uiAnswered = document.getElementById('ui-answered');
+    const uiCorrect = document.getElementById('ui-correct');
+    const uiBar = document.getElementById('ui-bar');
+    const summarySection = document.getElementById('summary-section');
+    const summaryMsg = document.getElementById('summary-msg');
+    
+    // Navigation Elements
+    const globalNav = document.getElementById('global-nav');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const pageIndicator = document.getElementById('page-indicator');
+    const btnStart = document.getElementById('btn-start');
+    const btnReset = document.getElementById('btn-reset');
+
+    function updateNavigationUI() {
+        // Hide all pages, show current
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(`page-${currentPage}`).classList.add('active');
+
+        // Manage Global Nav visibility
+        if (currentPage === 1) {
+            globalNav.classList.add('hidden');
+        } else {
+            globalNav.classList.remove('hidden');
+            pageIndicator.innerText = `Page ${currentPage} of ${TOTAL_PAGES}`;
+            
+            // Toggle Prev Button
+            btnPrev.style.visibility = currentPage > 2 ? 'visible' : 'hidden'; // Don't show prev on page 2 to go back to start
+            if (currentPage === 2) {
+                // optional: allow going back to intro, but usually better flow to keep them forward
+                btnPrev.style.visibility = 'visible'; 
+            }
+            
+            // Toggle Next Button
+            btnNext.style.visibility = currentPage < TOTAL_PAGES ? 'visible' : 'hidden';
+        }
+
+        // Scroll to top of the app container
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    btnPrev.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            updateNavigationUI();
+        }
+    });
+
+    btnNext.addEventListener('click', () => {
+        if (currentPage < TOTAL_PAGES) {
+            currentPage++;
+            updateNavigationUI();
+        }
+    });
+
+    btnStart.addEventListener('click', () => {
+        currentPage = 2;
+        updateNavigationUI();
+    });
+
+    // Model Answer Reveal
+    document.getElementById('btn-reveal').addEventListener('click', function() {
+        document.getElementById('model-answer').style.display = 'block';
+        this.disabled = true;
+        triggerCompletion();
+    });
+
+    // Question Logic
+    const optionGroups = document.querySelectorAll('.options-grid');
+
+    optionGroups.forEach(group => {
+        const buttons = group.querySelectorAll('.opt-btn');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (group.dataset.answered === 'true') return;
+                group.dataset.answered = 'true';
+
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                const explanationText = this.getAttribute('data-exp');
+                const feedbackDiv = group.nextElementSibling;
+
+                // Disable all buttons in this group & style them
+                buttons.forEach(b => {
+                    b.disabled = true;
+                    if (b.getAttribute('data-correct') === 'true') {
+                        b.classList.add('correct-ans');
+                    } else {
+                        b.classList.add('faded');
+                    }
+                });
+
+                // Style the clicked button and feedback
+                if (isCorrect) {
+                    correctQuestions++;
+                    this.classList.remove('faded');
+                    feedbackDiv.innerHTML = `<strong>Correct!</strong> ${explanationText}`;
+                    feedbackDiv.className = 'feedback correct-feedback';
+                } else {
+                    this.classList.remove('faded');
+                    this.classList.add('incorrect-ans');
+                    feedbackDiv.innerHTML = `<strong>Incorrect.</strong> ${explanationText}`;
+                    feedbackDiv.className = 'feedback incorrect-feedback';
+                }
+
+                answeredQuestions++;
+                updateProgress();
+            });
+        });
+    });
+
+    function updateProgress() {
+        // Update Trackers
+        uiAnswered.innerText = `${answeredQuestions}/${TOTAL_QUESTIONS}`;
+        uiCorrect.innerText = correctQuestions;
+        
+        // Update Bar
+        const percentage = (answeredQuestions / TOTAL_QUESTIONS) * 100;
+        uiBar.style.width = percentage + '%';
+    }
+
+    function triggerCompletion() {
+        summarySection.style.display = 'block';
+        
+        if (correctQuestions === TOTAL_QUESTIONS) {
+            summaryMsg.innerText = "Outstanding! You have a perfect grasp of cosine similarity and vector direction.";
+            summaryMsg.style.color = "var(--correct)";
+        } else if (correctQuestions >= 5) {
+            summaryMsg.innerText = "Great job! You understand the core concepts well. Review the ones you missed to solidify your learning.";
+            summaryMsg.style.color = "#059669";
+        } else {
+            summaryMsg.innerText = "Good effort! This is a challenging concept. Be sure to reread the explanations on the questions you missed.";
+            summaryMsg.style.color = "#b45309";
+        }
+        
+        setTimeout(() => {
+            summarySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+
+    // Reset Logic
+    btnReset.addEventListener('click', () => {
+        answeredQuestions = 0;
+        correctQuestions = 0;
+        currentPage = 1;
+        
+        uiAnswered.innerText = `0/${TOTAL_QUESTIONS}`;
+        uiCorrect.innerText = '0';
+        uiBar.style.width = '0%';
+        
+        optionGroups.forEach(group => {
+            group.dataset.answered = 'false';
+            const buttons = group.querySelectorAll('.opt-btn');
+            buttons.forEach(b => {
+                b.disabled = false;
+                b.classList.remove('correct-ans', 'incorrect-ans', 'faded');
+            });
+            const feedbackDiv = group.nextElementSibling;
+            feedbackDiv.style.display = 'none';
+            feedbackDiv.className = 'feedback';
+        });
+        
+        document.getElementById('reflection-text').value = '';
+        document.getElementById('btn-reveal').disabled = false;
+        document.getElementById('model-answer').style.display = 'none';
+        summarySection.style.display = 'none';
+        
+        updateNavigationUI();
+    });
+</script>
+</body>
+</html>
