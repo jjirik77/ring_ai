@@ -9,32 +9,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #3b82f6;
+            --primary: #1d4ed8; /* High-contrast Royal Blue (WCAG 2.1 compliant) */
             --primary-light: #eff6ff;
-            --primary-hover: #2563eb;
-            --accent: #14b8a6;
-            --human-color: #10b981;
-            --human-light: #ecfdf5;
-            --ai-color: #6366f1;
-            --ai-light: #eef2ff;
-            --warn-color: #f59e0b;
-            --error-color: #ef4444;
+            --primary-hover: #1e40af;
+            --accent: #0f766e; /* Accessible Teal */
+            --human-color: #047857; /* Deep emerald green for rich contrast (>4.5:1) */
+            --human-light: #f0fdf4;
+            --ai-color: #4f46e5; /* Deep purple-indigo */
+            --ai-light: #f5f3ff;
+            --warn-color: #b45309; /* Deep amber */
+            --error-color: #b91c1c; /* Deep red for warning contrast */
             --error-light: #fef2f2;
             --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --bg-page: #f8fafc;
+            --text-muted: #475569; /* Extra dark gray for readibility */
+            --bg-page: #f1f5f9;
             --white: #ffffff;
-            --border: #e2e8f0;
+            --border: #cbd5e1; /* Increased contrast for field lines */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        /* High contrast focus outline for ADA compliant keyboard navigation */
+        *:focus-visible {
+            outline: 3px solid var(--primary) !important;
+            outline-offset: 3px !important;
+            border-radius: 6px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-page);
             color: var(--text-dark);
             display: flex;
@@ -57,7 +76,7 @@
             flex-direction: column;
             box-shadow: var(--shadow-lg);
             overflow: hidden; /* Strict no scrolling */
-            border: 1px solid var(--border);
+            border: 6px solid var(--primary); /* Deep royal blue border representing the Turing cage */
         }
 
         header {
@@ -220,6 +239,9 @@
         }
 
         .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             background: var(--white);
             border: 1px solid var(--border);
             padding: 0.65rem 0.85rem;
@@ -387,9 +409,9 @@
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         @keyframes pulseBtn {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(29, 78, 216, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(29, 78, 216, 0); }
         }
         .btn-pulse { animation: pulseBtn 2s infinite; }
 
@@ -401,12 +423,13 @@
         .reveal-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.99);
             z-index: 20;
             display: none;
             flex-direction: column;
             padding: 1.5rem;
             justify-content: center;
+            overflow-y: auto; /* ADA accessibility scroll support */
         }
 
         .reveal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
@@ -480,19 +503,48 @@
         .results-table td { padding: 0.5rem 0.2rem; text-align: left; border-bottom: 1px solid var(--border); }
         .results-table tr:last-child td { border-bottom: none; }
 
+        .ind-icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.25;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <header>
-        <div class="logo-area">
-            <h1>Turing Test Examiner</h1>
+    <header role="banner">
+        <div class="logo-area" style="display: flex; align-items: center; gap: 10px;">
+            <svg style="width: 28px; height: 28px; stroke: var(--primary); fill: none; stroke-width: 2.25;" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <path d="M11 8a3 3 0 0 0-3 3" />
+            </svg>
+            <div style="display: flex; flex-direction: column;">
+                <h1 style="font-size: 1.1rem; line-height: 1.2;">Turing Test Examiner</h1>
+            </div>
         </div>
-        <div class="progress-container">
-            <div class="progress-label" id="progress-text">Intro</div>
-            <div class="progress-dots" id="dots-container"></div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div id="accuracy-display" style="display: none; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; border: 1px solid #bfdbfe;" role="status" aria-live="polite">
+                <svg style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
+                </svg> Accuracy: <span id="accuracy-percentage">0%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label" id="progress-text">Intro</div>
+                <div class="progress-dots" id="dots-container" role="img" aria-label="Simulated test step markers"></div>
+            </div>
         </div>
     </header>
 
@@ -511,14 +563,54 @@
 
 <script>
     const INDICATORS = [
-        { id: "emot", title: "🧠 Emotional Authenticity", desc: "Does the response convey genuine feeling — uncertainty, humor, embarrassment, nostalgia? Or does it describe emotions without seeming to experience them?" },
-        { id: "prec", title: "📐 Unusual Precision", desc: "Is the response suspiciously complete, well-structured, and free of hesitation? Humans usually ramble, trail off, or contradict themselves." },
-        { id: "tang", title: "🎲 Unexpected Tangent", desc: "Did the respondent go off-topic in a natural, personal way — the way humans do when something reminds them of something else?" },
-        { id: "gram", title: "✏️ Grammatical Imperfection", desc: "Humans make typos, use informal grammar, skip capitalization, or write in fragments. Perfect grammar can be a signal." },
-        { id: "uncer", title: "🔄 Hedging and Uncertainty", desc: "Humans say 'I think', 'maybe', 'I dunno', 'it depends'. AI systems often answer with more confidence than the question warrants." },
-        { id: "self", title: "🪞 Self-Reference", desc: "Does the respondent mention their own physical experience, personal history, or something they personally felt or witnessed?" },
-        { id: "know", title: "📚 Knowledge Precision", desc: "Does the respondent produce an unusually detailed, accurate, and comprehensive answer for a casual conversation? Humans often say 'I don't know' or guess." },
-        { id: "tonal", title: "🎭 Tonal Consistency", desc: "Does the tone stay unnaturally consistent throughout — always helpful, always measured? Humans shift tone based on how the conversation makes them feel." }
+        { 
+            id: "emot", 
+            title: "Emotional Authenticity", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>`,
+            desc: "Does the response convey genuine feeling — uncertainty, humor, embarrassment, nostalgia? Or does it describe emotions without seeming to experience them?" 
+        },
+        { 
+            id: "prec", 
+            title: "Unusual Precision", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M21.3 15.3a2.82 2.82 0 0 1 0 4c-1 1-2.5 1-3.5 0L2.3 3.8a2.82 2.82 0 0 1 0-4c1-1 2.5-1 3.5 0Z" /><path d="m5.6 11.1 1.4-1.4" /><path d="m7.2 12.5 2.8-2.8" /><path d="m10 15.3 1.4-1.4" /><path d="m11.6 16.7 2.8-2.8" /><path d="m14.4 19.5 1.4-1.4" /></svg>`,
+            desc: "Is the response suspiciously complete, well-structured, and free of hesitation? Humans usually ramble, trail off, or contradict themselves." 
+        },
+        { 
+            id: "tang", 
+            title: "Unexpected Tangent", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M18 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" /><path d="M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" /><path d="M18 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" /><path d="M18 8h-3a4 4 0 0 0-4 4v2a4 4 0 0 1-4 4H6" /><path d="M11 12h7" /></svg>`,
+            desc: "Did the respondent go off-topic in a natural, personal way — the way humans do when something reminds them of something else?" 
+        },
+        { 
+            id: "gram", 
+            title: "Grammatical Imperfection", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /><path d="m15 5 3 3" /><path d="M3 10a4 4 0 0 1 4-4" /></svg>`,
+            desc: "Humans make typos, use informal grammar, skip capitalization, or write in fragments. Perfect grammar can be a signal." 
+        },
+        { 
+            id: "uncer", 
+            title: "Hedging and Uncertainty", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21" /><line x1="12" y1="12" x2="21" y2="9" /><line x1="12" y1="12" x2="3" y2="15" /><path d="M5 21a2 2 0 0 0-2-2h18a2 2 0 0 0-2 2" /></svg>`,
+            desc: "Humans say 'I think', 'maybe', 'I dunno', 'it depends'. AI systems often answer with more confidence than the question warrants." 
+        },
+        { 
+            id: "self", 
+            title: "Self-Reference", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>`,
+            desc: "Does the respondent mention their own physical experience, personal history, or something they personally felt or witnessed?" 
+        },
+        { 
+            id: "know", 
+            title: "Knowledge Precision", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>`,
+            desc: "Does the respondent produce an unusually detailed, accurate, and comprehensive answer for a casual conversation? Humans often say 'I don't know' or guess." 
+        },
+        { 
+            id: "tonal", 
+            title: "Tonal Consistency", 
+            icon: `<svg class="ind-icon" viewBox="0 0 24 24"><path d="M3 10v4" /><path d="M6 6v12" /><path d="M9 4v16" /><path d="M12 7v10" /><path d="M15 5v14" /><path d="M18 8v8" /><path d="M21 10v4" /></svg>`,
+            desc: "Does the tone stay unnaturally consistent throughout — always helpful, always measured? Humans shift tone based on how the conversation makes them feel." 
+        }
     ];
 
     const FALSE_POSITIVE_FEEDBACK = {
@@ -648,8 +740,14 @@
 
     function toggleTerm(el) {
         const isActive = el.classList.contains('active');
-        document.querySelectorAll('.term-item').forEach(item => item.classList.remove('active'));
-        if (!isActive) el.classList.add('active');
+        document.querySelectorAll('.term-item').forEach(item => {
+            item.classList.remove('active');
+            item.setAttribute('aria-expanded', 'false');
+        });
+        if (!isActive) {
+            el.classList.add('active');
+            el.setAttribute('aria-expanded', 'true');
+        }
     }
 
     function render() {
@@ -671,28 +769,35 @@
             scene.innerHTML = `
                 <div class="content-card">
                     <div class="intro-view">
-                        <div class="icon-circle">
-                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <div class="icon-circle" aria-hidden="true" style="border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; stroke: var(--primary);">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                                <path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                                <line x1="12" y1="2" x2="12" y2="8" />
+                                <line x1="12" y1="16" x2="12" y2="22" />
+                                <line x1="2" y1="12" x2="8" y2="12" />
+                                <line x1="16" y1="12" x2="22" y2="12" />
+                            </svg>
                         </div>
-                        <h2 style="font-size: 1.6rem; color: var(--primary); margin-bottom: 0.5rem;">YOU BE THE JUDGE</h2>
-                        <p style="font-style: italic; color: var(--text-muted); margin-bottom: 1rem; font-size: 0.85rem;">"Can you tell the difference between a human and a machine?"</p>
-                        <div style="text-align: left; font-size: 0.85rem; line-height: 1.5; max-width: 700px;">
-                            <p style="margin-bottom: 0.5rem;">In 1950, mathematician Alan Turing published a paper titled "Computing Machinery and Intelligence." It opened with a deceptively simple question: "Can machines think?"</p>
-                            <p>Turing proposed a test — now called the Turing Test — to answer it. An examiner holds text conversations with two parties: one human, one machine. If the examiner cannot reliably tell which is which, the machine passes.</p>
+                        <h2 style="font-size: 1.6rem; color: var(--primary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 800; letter-spacing: -0.5px;">You Be The Judge</h2>
+                        <p style="font-style: italic; color: var(--text-muted); margin-bottom: 1.25rem; font-size: 0.9rem;">"Can you tell the difference between a human and a machine?"</p>
+                        <div style="text-align: left; font-size: 0.85rem; line-height: 1.6; max-width: 700px; color: var(--text-dark); margin-bottom: 1.5rem;">
+                            <p style="margin-bottom: 0.75rem;">In 1950, mathematician Alan Turing published a paper titled "Computing Machinery and Intelligence." It opened with a deceptively simple question: <strong>"Can machines think?"</strong></p>
+                            <p>Turing proposed a test — now called the <strong>Turing Test</strong> — to answer it. An examiner holds text conversations with two parties: one human, one machine. If the examiner cannot reliably tell which is which, the machine passes.</p>
                         </div>
-                        <div class="term-details">
-                            <div class="term-item" onclick="toggleTerm(this)">
+                        <div class="term-details" role="region" aria-label="Essential Terminology definitions">
+                            <button class="term-item" onclick="toggleTerm(this)" aria-expanded="false" aria-controls="term-desc-1" type="button" style="font-family: inherit;">
                                 <strong>Turing Test</strong>
-                                <p>A human examiner determines whether a conversational partner is a human or a machine, based solely on text responses.</p>
-                            </div>
-                            <div class="term-item" onclick="toggleTerm(this)">
+                                <p id="term-desc-1" style="font-weight: normal;">A human examiner determines whether a conversational partner is a human or a machine, based solely on text responses.</p>
+                            </button>
+                            <button class="term-item" onclick="toggleTerm(this)" aria-expanded="false" aria-controls="term-desc-2" type="button" style="font-family: inherit;">
                                 <strong>ELIZA Effect</strong>
-                                <p>The human tendency to attribute human-like emotions to AI systems — even when no intelligence is present.</p>
-                            </div>
-                            <div class="term-item" onclick="toggleTerm(this)">
+                                <p id="term-desc-2" style="font-weight: normal;">The human tendency to attribute human-like emotions to AI systems — even when no intelligence is present.</p>
+                            </button>
+                            <button class="term-item" onclick="toggleTerm(this)" aria-expanded="false" aria-controls="term-desc-3" type="button" style="font-family: inherit;">
                                 <strong>Moravec's Paradox</strong>
-                                <p>Tasks humans find easy (like walking) are hard for AI, while difficult tasks (like complex logic) are easy for AI.</p>
-                            </div>
+                                <p id="term-desc-3" style="font-weight: normal;">Tasks humans find easy (like walking) are hard for AI, while difficult tasks (like complex logic) are easy for AI.</p>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -703,13 +808,13 @@
                     <div class="briefing-layout">
                         <div class="sidebar-nav">
                             <div class="section-header">
-                                <svg style="width:14px;height:14px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                                 Indicators
                             </div>
-                            ${INDICATORS.map((ind, i) => `<button class="tab-btn ${i===0?'active':''}" onclick="switchTab(this, ${i})">${ind.title}</button>`).join('')}
+                            ${INDICATORS.map((ind, i) => `<button class="tab-btn ${i===0?'active':''}" onclick="switchTab(this, ${i})">${ind.icon}<span>${ind.title}</span></button>`).join('')}
                         </div>
                         <div style="display: flex; flex-direction: column; justify-content: center; padding: 1rem;">
-                            <h2 id="brief-title" style="font-size: 1.4rem; color: var(--primary); margin-bottom: 0.75rem;">${INDICATORS[0].title}</h2>
+                            <h2 id="brief-title" style="font-size: 1.4rem; color: var(--primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">${INDICATORS[0].icon} <span>${INDICATORS[0].title}</span></h2>
                             <p id="brief-desc" style="line-height: 1.6; font-size: 0.9rem; color: var(--text-dark);">${INDICATORS[0].desc}</p>
                             
                             <div style="margin-top: 2rem; background: var(--primary-light); padding: 1rem; border-radius: 8px; font-size: 0.8rem; text-align: center; border: 1px solid #bfdbfe;">
@@ -740,15 +845,22 @@
                                 <strong>Task:</strong> Judge the Respondent. Select a verdict and the indicators that justify it.
                             </div>
                             <div class="section-header">1. Verdict</div>
-                            <div class="verdict-options">
-                                <button class="control-btn" id="v-human" onclick="setVerdict('HUMAN')">🧑 HUMAN</button>
-                                <button class="control-btn" id="v-ai" onclick="setVerdict('AI')">🤖 AI</button>
+                            <div class="verdict-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <button class="control-btn" id="v-human" onclick="setVerdict('HUMAN')" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <svg class="ind-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    HUMAN
+                                </button>
+                                <button class="control-btn" id="v-ai" onclick="setVerdict('AI')" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <svg class="ind-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2" /><circle cx="12" cy="5" r="2" /><path d="M12 7v4" /><line x1="8" y1="16" x2="8" y2="16" /><line x1="16" y1="16" x2="16" y2="16" /></svg>
+                                    AI
+                                </button>
                             </div>
                             <div class="section-header">2. Select Indicators</div>
                             <div class="indicator-checks">
                                 ${INDICATORS.map(ind => `
-                                    <label class="check-pill">
-                                        <input type="checkbox" class="ind-check" value="${ind.id}" onchange="checkSessionReady()">
+                                    <label class="check-pill" style="display: flex; align-items: center; gap: 6px;">
+                                        <input type="checkbox" class="ind-check" value="${ind.id}" onchange="checkSessionReady()" style="margin-top: 0;">
+                                        ${ind.icon}
                                         <span style="flex:1;">${ind.title}</span>
                                     </label>
                                 `).join('')}
@@ -794,7 +906,7 @@
                         <h2 style="margin-bottom: 0.25rem; font-size: 1.4rem; color: var(--text-dark);">PATTERN ANALYSIS</h2>
                         <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.85rem;">Based on all 8 sessions, click to rank the 3 indicators you found most useful for telling human from AI.</p>
                         <div class="rank-container" id="rank-box">
-                            ${INDICATORS.map(ind => `<div class="rank-item" onclick="toggleRank('${ind.id}', this)"><span>${ind.title}</span></div>`).join('')}
+                            ${INDICATORS.map(ind => `<div class="rank-item" onclick="toggleRank('${ind.id}', this)" style="display: flex; align-items: center; gap: 8px; justify-content: flex-start;">${ind.icon}<span style="flex: 1; text-align: left;">${ind.title}</span></div>`).join('')}
                         </div>
                         <div id="rank-reveal" style="display:none; margin-top: 1rem; padding: 1rem; background: var(--bg-page); border: 1px solid var(--border); border-radius: 12px; text-align: left; width: 100%;">
                             <h4 style="font-size: 0.8rem; color: var(--primary); margin-bottom: 0.5rem; text-transform: uppercase;">Actual Reliability Data</h4>
@@ -880,17 +992,66 @@
     }
 
     function switchTab(btn, idx) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
         btn.classList.add('active');
-        document.getElementById('brief-title').innerText = INDICATORS[idx].title;
-        document.getElementById('brief-desc').innerText = INDICATORS[idx].desc;
+        btn.setAttribute('aria-selected', 'true');
+        const ind = INDICATORS[idx];
+        document.getElementById('brief-title').innerHTML = `${ind.icon} <span>${ind.title}</span>`;
+        document.getElementById('brief-desc').innerText = ind.desc;
     }
 
     function setVerdict(v) {
-        document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active', 'human', 'ai'));
-        const btn = document.getElementById(v === 'HUMAN' ? 'v-human' : 'v-ai');
-        btn.classList.add('active', v.toLowerCase());
+        const vHuman = document.getElementById('v-human');
+        const vAi = document.getElementById('v-ai');
+        if (vHuman && vAi) {
+            vHuman.classList.remove('active', 'human');
+            vHuman.setAttribute('aria-checked', 'false');
+            vAi.classList.remove('active', 'ai');
+            vAi.setAttribute('aria-checked', 'false');
+            
+            const clicked = v === 'HUMAN' ? vHuman : vAi;
+            clicked.classList.add('active', v.toLowerCase());
+            clicked.setAttribute('aria-checked', 'true');
+        } else {
+            // Fallback for cases where button IDs might differ
+            document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active', 'human', 'ai'));
+            const btn = document.getElementById(v === 'HUMAN' ? 'v-human' : 'v-ai');
+            if (btn) btn.classList.add('active', v.toLowerCase());
+        }
         checkSessionReady();
+    }
+
+    function showIndicatorHelp(desc) {
+        const tip = document.getElementById('indicator-hover-desc');
+        if (tip) {
+            tip.innerHTML = `<strong>Psychological Trigger:</strong> ${desc}`;
+        }
+    }
+
+    function resetIndicatorHelp() {
+        const tip = document.getElementById('indicator-hover-desc');
+        if (tip) {
+            tip.innerHTML = `<em>Pro-Tip: Hover or focus on any indicator above to decode its psychological trigger.</em>`;
+        }
+    }
+
+    function updateHeaderScore() {
+        const totalCompleted = state.verdicts.filter(v => v !== undefined).length;
+        const correctCount = state.verdicts.filter(v => v && v.isCorrect).length;
+        const accuracyDisplay = document.getElementById('accuracy-display');
+        if (accuracyDisplay) {
+            if (totalCompleted > 0) {
+                const pct = Math.round((correctCount / totalCompleted) * 100);
+                document.getElementById('accuracy-percentage').innerText = `${pct}% (${correctCount}/${totalCompleted})`;
+                accuracyDisplay.style.display = 'flex';
+                accuracyDisplay.style.display = 'inline-flex';
+            } else {
+                accuracyDisplay.style.display = 'none';
+            }
+        }
     }
 
     function checkSessionReady() {
@@ -911,12 +1072,15 @@
         document.getElementById('btn-submit-judgment').classList.remove('btn-pulse');
         
         const activeV = document.querySelector('.control-btn.active');
-        const vText = activeV.innerText.split(' ').pop();
+        const vText = activeV.textContent.trim();
         const session = SESSIONS[idx];
         const isCorrect = vText === session.id;
         
         const studentKeys = Array.from(document.querySelectorAll('.ind-check:checked')).map(cb => cb.value);
         state.verdicts[idx] = { verdict: vText, isCorrect, studentKeys };
+
+        // Update the dynamic scoreboard in header
+        updateHeaderScore();
 
         const expertKeys = session.keys;
         const truePos = studentKeys.filter(k => expertKeys.includes(k));
@@ -925,8 +1089,8 @@
 
         let feedbackHTML = `
             <div class="reveal-header">
-                <div class="stamp ${session.id.toLowerCase()}">IDENTITY: ${session.id}</div>
-                <h3 style="font-size: 1.2rem; color: ${isCorrect ? 'var(--human-color)' : 'var(--error-color)'}; margin-bottom: 0.25rem;">
+                <div class="stamp ${session.id.toLowerCase()}" style="animation: stampSlam 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">IDENTITY: ${session.id}</div>
+                <h3 style="font-size: 1.25rem; color: ${isCorrect ? 'var(--human-color)' : 'var(--error-color)'}; margin-bottom: 0.25rem;">
                     ${isCorrect ? 'Correct Judgment!' : 'You were fooled.'}
                 </h3>
             </div>
@@ -935,22 +1099,22 @@
 
         if (truePos.length > 0) {
             feedbackHTML += truePos.map(k => {
-                const title = INDICATORS.find(i => i.id === k).title;
-                return `<div class="feedback-item success"><strong>✅ Correctly Identified: ${title}</strong><p>${session.keyReasons[k]}</p></div>`;
+                const ind = INDICATORS.find(i => i.id === k);
+                return `<div class="feedback-item success"><strong style="display: flex; align-items: center; gap: 6px;">✅ Correctly Identified: ${ind.icon} <span>${ind.title}</span></strong><p>${session.keyReasons[k]}</p></div>`;
             }).join('');
         }
 
         if (falsePos.length > 0) {
             feedbackHTML += falsePos.map(k => {
-                const title = INDICATORS.find(i => i.id === k).title;
-                return `<div class="feedback-item error"><strong>❌ Incorrectly Flagged: ${title}</strong><p>${FALSE_POSITIVE_FEEDBACK[k]}</p></div>`;
+                const ind = INDICATORS.find(i => i.id === k);
+                return `<div class="feedback-item error"><strong style="display: flex; align-items: center; gap: 6px;">❌ Incorrectly Flagged: ${ind.icon} <span>${ind.title}</span></strong><p>${FALSE_POSITIVE_FEEDBACK[k]}</p></div>`;
             }).join('');
         }
 
         if (falseNeg.length > 0) {
             feedbackHTML += falseNeg.map(k => {
-                const title = INDICATORS.find(i => i.id === k).title;
-                return `<div class="feedback-item missed"><strong>⚠️ Missed Indicator: ${title}</strong><p>${session.keyReasons[k]}</p></div>`;
+                const ind = INDICATORS.find(i => i.id === k);
+                return `<div class="feedback-item missed"><strong style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">${ind.icon} <span style="font-weight:700;">Missed: ${ind.title}</span></strong><p>${session.keyReasons[k]}</p></div>`;
             }).join('');
         }
 
@@ -1022,11 +1186,13 @@
         if (state.ranking.includes(id)) {
             state.ranking = state.ranking.filter(i => i !== id);
             el.classList.remove('selected');
+            el.setAttribute('aria-pressed', 'false');
             const b = el.querySelector('.rank-badge');
             if (b) b.remove();
         } else if (state.ranking.length < 3) {
             state.ranking.push(id);
             el.classList.add('selected');
+            el.setAttribute('aria-pressed', 'true');
             const b = document.createElement('span');
             b.className = 'rank-badge';
             b.innerText = `#${state.ranking.length}`;
@@ -1062,11 +1228,17 @@
         else document.getElementById('btn-next').style.display = 'inline-flex';
 
         document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentStep));
+        
+        const dotsContainer = document.getElementById('dots-container');
+        if (dotsContainer) {
+            dotsContainer.setAttribute('aria-label', `Progress stepper: Step ${currentStep + 1} of ${SCENES.length}`);
+        }
     }
 
     function restart() {
         currentStep = 0;
         state = { verdicts: [], ranking: [], elizaChoice: null };
+        updateHeaderScore();
         render();
     }
 
