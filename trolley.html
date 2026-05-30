@@ -57,22 +57,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        /* Custom focus styles for high-contrast keyboard accessibility (ADA compliance) */
+        button:focus-visible, select:focus-visible, option:focus-visible {
+            outline: 3px solid #2563eb !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.4) !important;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col justify-between font-sans selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden antialiased">
+<body class="bg-[#f1f5f9] text-slate-800 min-h-screen flex flex-col items-center justify-start p-4 sm:p-8 md:p-12 font-sans selection:bg-amber-100 selection:text-amber-900 antialiased">
+
+    <!-- Outermost Rounded Card Frame mimicking the attachment's solid blue border & shadow -->
+    <div id="ethics-app-wrapper" class="w-full max-w-6xl bg-white border-[3px] border-[#2563eb] rounded-[24px] shadow-2xl flex flex-col overflow-hidden min-h-[80vh] transition-all duration-300">
 
     <!-- Header containing centered step dots -->
     <header class="px-6 py-4 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex justify-center items-center z-20 shrink-0 shadow-sm">
-        <!-- Step Indicator Panel -->
-        <div class="flex items-center gap-2">
-            <div class="step-dot w-2 h-2 rounded-full bg-amber-500 scale-125 shadow shadow-amber-500/20 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-            <div class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300"></div>
-        </div>
+        <!-- Step Indicator Panel with Screen Reader Accessibility -->
+        <nav aria-label="Simulation steps progress" class="flex items-center">
+            <ul class="flex items-center gap-2" id="step-indicator-list">
+                <li class="step-dot w-2 h-2 rounded-full bg-blue-600 scale-125 shadow shadow-blue-500/20 transition-all duration-300" aria-current="step" aria-label="Step 1: Introduction"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 2: System Constraints"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 3: Configuration Panel"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 4: Crosswalk Scenario"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 5: School Zone Scenario"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 6: Sensory Certainty Scenario"></li>
+                <li class="step-dot w-2 h-2 rounded-full bg-slate-200 transition-all duration-300" aria-label="Step 7: Board Audit Feedback"></li>
+            </ul>
+        </nav>
     </header>
 
     <!-- Main Dynamic Container -->
@@ -80,14 +91,16 @@
         
         <!-- STEP 0: Introduction Screen -->
         <div id="step-card-0" class="step-view flex flex-col items-center justify-center text-center max-w-4xl mx-auto py-8 transition-all duration-500">
-            <div class="text-amber-600 mb-8 relative inline-flex p-6 bg-white border border-slate-200 rounded-3xl shadow-xl">
-                <svg class="w-14 h-14 stroke-[1.25]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 16 12 12 8 16" />
-                    <path d="m12 12-4-4" />
-                    <path d="m12 12 4-4" />
-                    <path d="M20 12A8 8 0 1 0 4 12a8 8 0 0 0 16 0" />
+            <div class="text-[#2563eb] mb-8 relative inline-flex p-6 bg-white border border-slate-200 rounded-3xl shadow-xl">
+                <!-- High-fidelity custom dynamic moral compass/steering telemetry icon -->
+                <svg class="w-16 h-16 text-[#2563eb] stroke-[1.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="7" stroke-dasharray="2,2" />
+                    <rect x="10" y="10" width="4" height="4" rx="1.2" fill="#2563eb" opacity="0.85" />
+                    <path d="M12 2v20M2 12h20" stroke-width="1.2" />
+                    <path d="m5.8 5.8 12.4 12.4M5.8 18.2 18.2 5.8" stroke-width="0.75" />
                 </svg>
-                <div class="absolute inset-0 bg-amber-500/5 rounded-3xl filter blur-xl animate-pulse"></div>
+                <div class="absolute inset-0 bg-blue-500/5 rounded-3xl filter blur-xl animate-pulse"></div>
             </div>
 
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 font-display mb-6">
@@ -101,9 +114,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3.5xl mb-12 text-left">
                 <!-- Card 1 -->
                 <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex items-center gap-3 text-amber-600 font-semibold mb-3 font-display">
-                        <span class="p-2 bg-amber-50 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10V2z" stroke-width="2"/></svg>
+                    <div class="flex items-center gap-3 text-blue-600 font-semibold mb-3 font-display">
+                        <span class="p-2 bg-blue-50 rounded-lg">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22V8M5 12H19M4 12c0-3 1.5-6 3-6s3 3 3 6M14 12c0-3 1.5-6 3-6s3 3 3 6M2 22h20" />
+                            </svg>
                         </span>
                         <span>Utilitarian Calculus</span>
                     </div>
@@ -116,7 +131,9 @@
                 <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                     <div class="flex items-center gap-3 text-indigo-600 font-semibold mb-3 font-display">
                         <span class="p-2 bg-indigo-50 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" stroke-width="2"/><path d="M12 2v9m-4-6h8" stroke-width="2"/></svg>
+                            <svg class="w-5 h-5 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 11l2 2 4-4" />
+                            </svg>
                         </span>
                         <span>Contractual Duty</span>
                     </div>
@@ -129,7 +146,12 @@
                 <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                     <div class="flex items-center gap-3 text-rose-600 font-semibold mb-3 font-display">
                         <span class="p-2 bg-rose-50 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0-8v6m0-8a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg class="w-5 h-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v20M2 12h20" />
+                                <circle cx="12" cy="12" r="6" />
+                                <circle cx="12" cy="12" r="2" fill="currentColor" />
+                                <path d="m16.2 7.8-8.4 8.4" />
+                            </svg>
                         </span>
                         <span>Real Calibration</span>
                     </div>
@@ -139,7 +161,7 @@
                 </div>
             </div>
 
-            <button onclick="navigate(1)" class="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold tracking-wide rounded-xl shadow-lg shadow-slate-950/25 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <button onclick="navigate(1)" class="px-8 py-4 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold tracking-wide rounded-xl shadow-lg shadow-blue-500/20 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]">
                 Open Engineering Laboratory
             </button>
         </div>
@@ -147,18 +169,18 @@
         <!-- STEP 1: Engineering Constraints Screen -->
         <div id="step-card-1" class="step-view hidden w-full flex flex-col transition-all duration-500">
             <div class="text-center mb-6">
-                <span class="text-xs font-semibold tracking-wider text-amber-600 uppercase font-mono">SYS_INIT // CHASSIS VECTORS</span>
+                <span class="text-xs font-semibold tracking-wider text-[#2563eb] uppercase font-mono">SYS_INIT // CHASSIS VECTORS</span>
                 <h1 class="text-3xl font-bold text-slate-900 font-display mt-1">Autonoma X1 Core System</h1>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1">
                 <!-- Vehicle Outline Render -->
                 <div class="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 flex flex-col justify-center items-center relative overflow-hidden shadow-sm">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full filter blur-2xl pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full filter blur-2xl pointer-events-none"></div>
                     <h2 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-widest mb-6">3D CAD / Sensors & Traction</h2>
                     
                     <div class="relative w-48 h-72 flex items-center justify-center">
-                        <div class="absolute inset-0 bg-amber-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
+                        <div class="absolute inset-0 bg-blue-500/5 rounded-full filter blur-3xl pointer-events-none"></div>
                         
                         <svg viewBox="0 0 100 150" class="w-full h-full max-h-[260px]">
                             <g>
@@ -170,10 +192,10 @@
 
                                 <!-- Main Core Chassis Shell -->
                                 <path d="M50,8 C70,8 80,22 80,42 L80,108 C80,128 70,142 50,142 C30,142 20,128 20,108 L20,42 C20,22 30,8 50,8 Z" fill="none" stroke="#e2e8f0" stroke-width="4" />
-                                <path d="M50,8 C70,8 80,22 80,42 L80,108 C80,128 70,142 50,142 C30,142 20,128 20,108 L20,42 C20,22 30,8 50,8 Z" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="100,6" />
+                                <path d="M50,8 C70,8 80,22 80,42 L80,108 C80,128 70,142 50,142 C30,142 20,128 20,108 L20,42 C20,22 30,8 50,8 Z" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="100,6" />
                                 
                                 <!-- Laser Scanning Ray -->
-                                <path d="M20,42 Q50,35 80,42 L78,66 Q50,59 22,66 Z" fill="rgba(245, 158, 11, 0.08)" stroke="#f59e0b" stroke-width="1" opacity="0.6" class="animate-pulse"></path>
+                                <path d="M20,42 Q50,35 80,42 L78,66 Q50,59 22,66 Z" fill="rgba(37, 99, 235, 0.08)" stroke="#2563eb" stroke-width="1" opacity="0.6" class="animate-pulse"></path>
 
                                 <!-- Cabin Windows -->
                                 <path d="M30,46 Q50,40 70,46 L66,86 Q50,92 34,86 Z" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5" />
@@ -198,8 +220,13 @@
 
                         <div class="space-y-4">
                             <div class="flex gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
-                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-amber-600 h-fit shrink-0">
-                                    <svg class="w-5 h-5 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><path d="M9 9h6v6H9z" stroke-width="2"/></svg>
+                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-[#2563eb] h-fit shrink-0">
+                                    <!-- High-fidelity Core CPU representation -->
+                                    <svg class="w-5 h-5 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                                        <path d="M9 9h6v6H9z" />
+                                        <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
+                                    </svg>
                                 </span>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900">Morality Compiler Core</h4>
@@ -210,8 +237,15 @@
                             </div>
 
                             <div class="flex gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
-                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-amber-600 h-fit shrink-0">
-                                    <svg class="w-5 h-5 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 8v8m-4-4h8" stroke-width="2"/></svg>
+                                <span class="p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-[#2563eb] h-fit shrink-0">
+                                    <!-- High-fidelity Sensory scan representation -->
+                                    <svg class="w-5 h-5 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="9" />
+                                        <circle cx="12" cy="12" r="5" stroke-dasharray="2,2" />
+                                        <circle cx="12" cy="12" r="1" fill="currentColor" />
+                                        <path d="M12 2a10 10 0 1 0 10 10" />
+                                        <path d="M12 6v6l4 4" />
+                                    </svg>
                                 </span>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900">Multimodal Sensory Fusion</h4>
@@ -222,8 +256,8 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 p-4 bg-amber-50/60 border border-amber-200 text-amber-900 rounded-xl flex items-start gap-3">
-                            <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="mt-6 p-4 bg-blue-50/60 border border-blue-200 text-blue-900 rounded-xl flex items-start gap-3">
+                            <svg class="w-5 h-5 text-[#2563eb] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <p class="text-xs leading-relaxed">
                                 <strong>Operator Note:</strong> Your moral calibrations are compiled directly into the vehicle's permanent firmware, defining live priority vectors in unavoidable accidents.
                             </p>
@@ -231,10 +265,10 @@
                     </div>
 
                     <div class="flex justify-between items-center gap-4 mt-8">
-                        <button onclick="navigate(-1)" class="px-6 py-3 border border-slate-200 hover:bg-white text-slate-600 font-semibold rounded-xl cursor-not-allowed cursor-pointer transition-colors text-sm">
+                        <button onclick="navigate(-1)" class="px-6 py-3 border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold rounded-xl cursor-pointer transition-colors text-sm">
                             Back
                         </button>
-                        <button onclick="navigate(1)" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl cursor-pointer transition-colors text-sm shadow hover:scale-[1.01] active:scale-[0.99]">
+                        <button onclick="navigate(1)" class="px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl cursor-pointer transition-colors text-sm shadow hover:scale-[1.01] active:scale-[0.99]">
                             Begin Matrix Calibration
                         </button>
                     </div>
@@ -245,7 +279,7 @@
         <!-- STEP 2: Rule Configuration Panel -->
         <div id="step-card-2" class="step-view hidden w-full flex flex-col transition-all duration-500">
             <div class="mb-5 text-center lg:text-left">
-                <span class="text-xs font-semibold text-amber-600 block font-mono">PHASE 1 // ALGORITHM COEFFICIENTS</span>
+                <span class="text-xs font-semibold text-[#2563eb] block font-mono">PHASE 1 // ALGORITHM COEFFICIENTS</span>
                 <h1 class="text-2xl font-bold text-slate-900 font-display mt-0.5">Parameters Configurator</h1>
                 <p class="text-slate-500 text-xs mt-1">
                     Configure the safety engine profiles to build the core operational software logic.
@@ -287,7 +321,7 @@
                             <button id="next-module-btn" onclick="nextModuleTab()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm flex items-center gap-1.5 cursor-pointer transition-all">
                                 Next Module
                             </button>
-                            <button id="commit-rules-btn" onclick="navigate(1)" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-sm shadow cursor-pointer hidden transition-all hover:scale-[1.01] active:scale-[0.99]">
+                            <button id="commit-rules-btn" onclick="navigate(1)" class="px-6 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl text-sm shadow cursor-pointer hidden transition-all hover:scale-[1.01] active:scale-[0.99]">
                                 Commit & Unlock Sandboxes
                             </button>
                         </div>
@@ -299,7 +333,7 @@
         <!-- STEPS 3, 4, 5: Live Sandboxes for Scenarios 1, 2, 3 -->
         <div id="step-card-scenario" class="step-view hidden w-full flex flex-col transition-all duration-500">
             <div class="mb-4 text-center">
-                <span id="scen-step-marker" class="text-xs font-semibold tracking-widest text-amber-600 uppercase font-mono">
+                <span id="scen-step-marker" class="text-xs font-semibold tracking-widest text-[#2563eb] uppercase font-mono">
                   Sandbox Testing // Scenario 1 of 3
                 </span>
                 <h1 id="scen-main-title" class="text-2xl font-bold text-slate-900 font-display mt-0.5">Scenario</h1>
@@ -346,7 +380,7 @@
                                 Calculations based on configured rules identify target prioritization:
                              </div>
                              <div class="flex gap-2.5 items-center text-xs font-bold text-slate-900 mt-3 p-3 bg-white border border-slate-200/60 rounded-xl shadow-xs">
-                                 <svg class="w-4.5 h-4.5 text-amber-500 fill-amber-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                 <svg class="w-4.5 h-4.5 text-[#2563eb] fill-blue-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                  <span id="scen-calculated-path-txt" class="font-display">PATH A: Maintain trajectory</span>
                              </div>
                         </div>
@@ -355,7 +389,7 @@
                         <div id="simulation-stats-panel" class="space-y-4 hidden pt-2 transition-all duration-500">
                             <!-- Header status -->
                             <div class="p-4 bg-slate-900 border border-slate-950 rounded-2xl text-white shadow-md">
-                                <span class="text-[9px] font-mono font-bold text-amber-400 uppercase tracking-wider block mb-1">
+                                <span class="text-[9px] font-mono font-bold text-cyan-400 uppercase tracking-wider block mb-1">
                                     Simulated Trajectory Outcome
                                 </span>
                                 <p id="scen-success-result-txt" class="text-sm font-extrabold tracking-tight leading-snug font-display">STRIKE PEDESTRIANS</p>
@@ -413,7 +447,7 @@
                                     </div>
                                     <div class="mt-3">
                                         <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                            <div id="scen-perception-bar" class="meter-fill bg-amber-500 h-1.5 rounded-full" style="width: 0%"></div>
+                                            <div id="scen-perception-bar" class="meter-fill bg-[#2563eb] h-1.5 rounded-full" style="width: 0%"></div>
                                         </div>
                                         <p id="scen-perception-desc" class="text-[10.5px] text-slate-500 mt-2 leading-tight">Public perception description here.</p>
                                     </div>
@@ -428,7 +462,7 @@
 
                         <!-- User Reflection Selector -->
                         <div id="reflection-log-panel" class="space-y-3 pt-2 hidden">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-mono">
+                            <label for="scen-reflection-selector" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block font-mono">
                                 Engineering Incident Statement & Authorization:
                             </label>
                             <select id="scen-reflection-selector" onchange="handleReflectionChange()" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-xs focus:ring-2 focus:ring-amber-400 focus:outline-none transition-all cursor-pointer shadow-xs">
@@ -509,7 +543,38 @@
 
     </main>
 
+    </div> <!-- End of royal blue border wrapper -->
 
+    <!-- Reusable Accessible Custom Modal Context -->
+    <div id="custom-accessible-modal" role="dialog" aria-modal="true" aria-labelledby="custom-modal-title" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden transition-all duration-300">
+        <div class="bg-white border-2 border-slate-200 shadow-2xl rounded-3xl max-w-md w-full overflow-hidden p-6 relative">
+            <!-- Modal Header -->
+            <div class="flex items-start gap-4">
+                <div id="custom-modal-icon-container" class="p-3 rounded-2xl bg-blue-50 text-blue-600">
+                    <svg id="custom-modal-icon-alert" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <svg id="custom-modal-icon-confirm" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 id="custom-modal-title" class="text-lg font-bold text-slate-900 font-display">System Notice</h3>
+                    <p id="custom-modal-desc" class="text-xs text-slate-500 leading-relaxed mt-2">Modal description goes here.</p>
+                </div>
+            </div>
+            
+            <!-- Modal Actions -->
+            <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                <button id="custom-modal-btn-cancel" onclick="closeCustomModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors">
+                    Cancel
+                </button>
+                <button id="custom-modal-btn-confirm" class="px-5 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl text-xs shadow-md shadow-blue-500/10 cursor-pointer transition-all">
+                    Acknowledge
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Static Rules, Scenarios & Dynamic Board State Controller -->
     <script>
@@ -797,7 +862,7 @@
             // Step 2 Guard: must configure all rules before advancing
             if (STATE.step === 2 && direction === 1) {
                 if (STATE.selectedRules.includes(null)) {
-                    alert('System Guard: Please configure all 5 Autopilot Modules before deployment.');
+                    showCustomModal('Configuration Guard', 'Please configure all 5 Autopilot Modules before deployment.', false);
                     return;
                 }
             }
@@ -806,11 +871,11 @@
             if (STATE.step >= 3 && STATE.step <= 5 && direction === 1) {
                 const scenarioIdx = STATE.step - 3;
                 if (!STATE.scenarioSimulated[scenarioIdx]) {
-                    alert('System Guard: You must execute the physics simulation scenario first.');
+                    showCustomModal('Simulation Guard', 'You must execute the physics simulation scenario first.', false);
                     return;
                 }
                 if (!STATE.scenarioReflections[scenarioIdx]) {
-                    alert('System Guard: Please log your ethical statement to proceed.');
+                    showCustomModal('Reflection Required', 'Please log your ethical engineer statement to proceed.', false);
                     return;
                 }
             }
@@ -820,15 +885,30 @@
         }
 
         function renderStepUI() {
-            // Update Step Dot Highlights
+            // Update Step Dot Highlights & Accessibility States (ADA compliance)
+            const stepNames = [
+                "Introduction",
+                "System Constraints",
+                "Configuration Panel",
+                "Crosswalk Scenario",
+                "School Zone Scenario",
+                "Sensory Certainty Scenario",
+                "Board Audit Feedback"
+            ];
             document.querySelectorAll('.step-dot').forEach((dot, index) => {
                 dot.className = "step-dot w-2 h-2 rounded-full transition-all duration-300";
                 if (STATE.step > index) {
-                    dot.classList.add('bg-amber-500/35', 'scale-90');
+                    dot.classList.add('bg-[#2563eb]/30', 'scale-90');
+                    dot.setAttribute('aria-current', 'false');
+                    dot.setAttribute('aria-label', `Step ${index + 1}: ${stepNames[index]} (Completed)`);
                 } else if (STATE.step === index) {
-                    dot.classList.add('bg-amber-600', 'scale-125', 'shadow-md', 'shadow-amber-500/25');
+                    dot.classList.add('bg-[#2563eb]', 'scale-125', 'shadow-md', 'shadow-blue-500/25');
+                    dot.setAttribute('aria-current', 'step');
+                    dot.setAttribute('aria-label', `Step ${index + 1}: ${stepNames[index]} (Current Step)`);
                 } else {
                     dot.classList.add('bg-slate-200');
+                    dot.setAttribute('aria-current', 'false');
+                    dot.setAttribute('aria-label', `Step ${index + 1}: ${stepNames[index]} (Upcoming)`);
                 }
             });
 
@@ -872,23 +952,23 @@
                 const btn = document.createElement('button');
                 btn.className = `w-full flex items-center justify-between p-3.5 rounded-xl text-left font-sans transition-all cursor-pointer border ${
                     isActive
-                      ? "bg-slate-900 border-transparent text-white font-semibold shadow-md"
+                      ? "bg-[#2563eb] border-transparent text-white font-semibold shadow-md"
                       : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/80"
                 }`;
                 btn.innerHTML = `
                     <div class="flex flex-col">
-                        <span class="text-[9px] uppercase tracking-wider font-mono ${isActive ? "text-amber-400" : "text-slate-400"}">
+                        <span class="text-[9px] uppercase tracking-wider font-mono ${isActive ? "text-blue-100 font-bold" : "text-slate-400"}">
                             Module 0${idx + 1}
                         </span>
                         <span class="text-xs truncate max-w-[210px] font-bold font-display">${rule.title.split(': ')[1]}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         ${isSelected ? `
-                            <span class="p-1 rounded-full ${isActive ? 'bg-[#fffbeb] text-amber-600' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}">
+                            <span class="p-1 rounded-full ${isActive ? 'bg-white/25 text-white' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                             </span>
                         ` : ''}
-                        <svg class="w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <svg class="w-4 h-4 ${isActive ? 'text-blue-200' : 'text-slate-400'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </div>
                 `;
                 btn.onclick = () => {
@@ -907,7 +987,7 @@
             const detailContainer = document.getElementById('active-module-detail');
             detailContainer.innerHTML = `
                 <div class="mb-5">
-                    <span class="text-xs font-semibold text-amber-600 uppercase font-mono">Module Selection Layer</span>
+                    <span class="text-xs font-semibold text-[#2563eb] uppercase font-mono">Module Selection Layer</span>
                     <h2 class="text-xl font-bold text-slate-900 font-display mt-0.5">${activeRule.title}</h2>
                     <p class="text-slate-500 text-sm mt-1.5 leading-relaxed">${activeRule.desc}</p>
                 </div>
@@ -921,17 +1001,17 @@
                 const opBtn = document.createElement('button');
                 opBtn.className = `w-full p-4 rounded-xl border text-left flex items-start gap-4 cursor-pointer transition-all ${
                     isSelected
-                      ? "bg-amber-500/5 border-amber-300 shadow-xs"
+                      ? "bg-blue-50/50 border-blue-400/80 shadow-xs"
                       : "bg-slate-50/50 border-slate-100 hover:border-slate-300 text-slate-500 hover:text-slate-700"
                 }`;
                 opBtn.innerHTML = `
                     <div class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                         isSelected
-                          ? "border-amber-500 bg-amber-500 text-slate-950"
+                          ? "border-[#2563eb] bg-[#2563eb] text-white"
                           : "border-slate-300 bg-white"
                     }">
                         ${isSelected ? `
-                            <svg class="w-3 h-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                         ` : ''}
                     </div>
                     <div>
@@ -957,7 +1037,7 @@
                 document.getElementById('commit-rules-btn').classList.remove('hidden');
                 if (allCompleted) {
                     document.getElementById('commit-rules-btn').disabled = false;
-                    document.getElementById('commit-rules-btn').className = "px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-sm shadow cursor-pointer";
+                    document.getElementById('commit-rules-btn').className = "px-6 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl text-sm shadow cursor-pointer";
                 } else {
                     document.getElementById('commit-rules-btn').disabled = true;
                     document.getElementById('commit-rules-btn').className = "px-6 py-2.5 bg-slate-100 text-slate-400 border border-slate-200 font-bold rounded-xl text-sm cursor-not-allowed";
@@ -1097,7 +1177,7 @@
                 if (userVal) {
                     selector.value = userVal;
                     nextBtn.disabled = false;
-                    nextBtn.className = "px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
+                    nextBtn.className = "px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
                 } else {
                     selector.value = "";
                     nextBtn.disabled = true;
@@ -1110,7 +1190,7 @@
                 nextBtn.classList.add('hidden');
                 runBtn.disabled = false;
                 runBtn.innerHTML = `
-                    <svg class="w-4 h-4 fill-white animate-pulse" viewBox="0 0 24 24" stroke="currentColor"><path d="m7 4 12 8-12 8V4z" stroke-width="2" stroke-linejoin="round" /></svg>
+                    <svg class="w-4 h-4 fill-white animate-pulse" viewBox="0 0 24 24" stroke="currentColor"><path d="m7 4 12 8-12 8V4z" /></svg>
                     Run Physics Simulation
                 `;
             }
@@ -1358,7 +1438,7 @@
 
             const nextBtn = document.getElementById('advance-scenario-btn');
             nextBtn.disabled = false;
-            nextBtn.className = "px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
+            nextBtn.className = "px-6 py-3 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl flex items-center gap-2 cursor-pointer shadow-md text-sm transition-all";
         }
 
         /* AUDIT BOARD DETAIL UTILS */
@@ -1371,7 +1451,7 @@
                 const tabBtn = document.createElement('button');
                 tabBtn.className = `w-full text-left p-3.5 rounded-xl transition-all cursor-pointer border ${
                     isActive
-                      ? "bg-slate-900 text-white font-semibold shadow border-transparent"
+                      ? "bg-[#2563eb] text-white font-semibold shadow border-transparent"
                       : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/80"
                 }`;
 
@@ -1388,10 +1468,10 @@
 
                 tabBtn.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="${isActive ? "text-amber-400" : "text-amber-600"}">${iconMarkup}</div>
+                        <div class="${isActive ? "text-blue-100" : "text-[#2563eb]"}">${iconMarkup}</div>
                         <div>
                             <h4 class="text-xs font-bold leading-tight">${member.name}</h4>
-                            <p class="text-[9.5px] uppercase tracking-wider block mt-0.5 font-mono ${isActive ? "text-slate-300" : "text-slate-400"}">
+                            <p class="text-[9.5px] uppercase tracking-wider block mt-0.5 font-mono ${isActive ? "text-blue-200" : "text-slate-400"}">
                                 ${member.role}
                             </p>
                         </div>
@@ -1405,7 +1485,7 @@
             const isBadgeActive = STATE.activeBoardTab === 'badge';
             const badgeTab = document.getElementById('final-verdict-tab');
             if (isBadgeActive) {
-                badgeTab.className = "w-full mt-2 p-3.5 rounded-2xl text-left border border-transparent bg-amber-500 text-slate-950 shadow-md cursor-pointer font-bold flex items-center gap-3 transition-all";
+                badgeTab.className = "w-full mt-2 p-3.5 rounded-2xl text-left border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md cursor-pointer font-bold flex items-center gap-3 transition-all";
             } else {
                 badgeTab.className = "w-full mt-2 p-3.5 rounded-2xl text-left border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 cursor-pointer font-bold flex items-center gap-3 transition-all";
             }
@@ -1426,7 +1506,7 @@
 
                 contentPanel.innerHTML = `
                     <div class="flex items-center gap-3 mb-6">
-                        <span class="p-2.5 bg-amber-50 text-amber-600 rounded-xl border border-amber-100">${iconMarkup}</span>
+                        <span class="p-2.5 bg-blue-50 text-[#2563eb] rounded-xl border border-blue-100">${iconMarkup}</span>
                         <div>
                             <h3 class="text-base font-extrabold text-slate-900 font-display">${currentMember.name}</h3>
                             <p class="text-xs text-slate-500 font-medium">${currentMember.role}</p>
@@ -1485,7 +1565,7 @@
                             <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4l-3-3m0 0l3-3m-3 3h-4M6 21v-3a4 4 0 014-4h4a4 4 0 014 4v3" /></svg>
                         </div>
 
-                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest font-mono">
+                        <span class="text-[10px] font-bold text-[#2563eb] uppercase tracking-widest font-mono">
                             Operational Certificate Activated
                         </span>
 
@@ -1520,16 +1600,65 @@
             renderBoardUI();
         }
 
-        function restartSimulation() {
-            if (confirm("Compiler Warning: Proceeding will erase all custom coefficients inside active registers. Reset anyway?")) {
-                STATE.step = 0;
-                STATE.selectedRules = [null, null, null, null, null];
-                STATE.activeConfigTab = 0;
-                STATE.scenarioSimulated = [false, false, false];
-                STATE.scenarioReflections = [null, null, null];
-                STATE.activeBoardTab = '0';
-                renderStepUI();
+        let modalConfirmCallback = null;
+
+        function showCustomModal(title, description, isConfirmation, onConfirm) {
+            document.getElementById('custom-modal-title').textContent = title;
+            document.getElementById('custom-modal-desc').textContent = description;
+            
+            const cancelBtn = document.getElementById('custom-modal-btn-cancel');
+            const confirmBtn = document.getElementById('custom-modal-btn-confirm');
+            const alertIcon = document.getElementById('custom-modal-icon-alert');
+            const confirmIcon = document.getElementById('custom-modal-icon-confirm');
+            const iconContainer = document.getElementById('custom-modal-icon-container');
+
+            if (isConfirmation) {
+                cancelBtn.classList.remove('hidden');
+                confirmBtn.textContent = "Confirm Reset";
+                confirmBtn.className = "px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow-md shadow-rose-500/10 cursor-pointer transition-all";
+                alertIcon.classList.add('hidden');
+                confirmIcon.classList.remove('hidden');
+                iconContainer.className = "p-3 rounded-2xl bg-rose-50 text-rose-600";
+            } else {
+                cancelBtn.classList.add('hidden');
+                confirmBtn.textContent = "Acknowledge";
+                confirmBtn.className = "px-5 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold rounded-xl text-xs shadow-md shadow-blue-500/10 cursor-pointer transition-all";
+                alertIcon.classList.remove('hidden');
+                confirmIcon.classList.add('hidden');
+                iconContainer.className = "p-3 rounded-2xl bg-blue-50 text-blue-600";
             }
+
+            modalConfirmCallback = onConfirm;
+            confirmBtn.onclick = () => {
+                closeCustomModal();
+                if (modalConfirmCallback) modalConfirmCallback();
+            };
+
+            const modal = document.getElementById('custom-accessible-modal');
+            modal.classList.remove('hidden');
+            confirmBtn.focus();
+        }
+
+        function closeCustomModal() {
+            document.getElementById('custom-accessible-modal').classList.add('hidden');
+            modalConfirmCallback = null;
+        }
+
+        function restartSimulation() {
+            showCustomModal(
+                "Reset Parameters", 
+                "Proceeding will erase all custom coefficients inside active registers. Reset anyway?", 
+                true, 
+                () => {
+                    STATE.step = 0;
+                    STATE.selectedRules = [null, null, null, null, null];
+                    STATE.activeConfigTab = 0;
+                    STATE.scenarioSimulated = [false, false, false];
+                    STATE.scenarioReflections = [null, null, null];
+                    STATE.activeBoardTab = '0';
+                    renderStepUI();
+                }
+            );
         }
     </script>
 </body>
