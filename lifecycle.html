@@ -83,13 +83,12 @@
         /* Outer Frame styled perfectly like the screenshot */
         .window-frame {
             width: 100%;
-            max-width: 980px; /* Reduced to remove excessive horizontal space */
-            height: 84vh;     /* Reduced from 92vh to tighten vertical space */
-            min-height: 580px;/* Elegant minimum height safeguarding layout */
+            max-width: 680px; /* Centered compact container */
+            height: 610px;    /* Compact height scaling gracefully to avoid scrolling */
             background: var(--panel);
-            border: 2px solid var(--border-active); /* High intensity blue border */
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg), 0 20px 40px rgba(15, 23, 42, 0.05);
+            border: 4px solid #2563EB; /* Bold blue border */
+            border-radius: 14px;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.15), 0 20px 45px rgba(15, 23, 42, 0.14); /* Clean shadows */
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -106,7 +105,7 @@
         .window-header {
             background: #FFFFFF;
             border-bottom: 2px solid #E2E8F0;
-            padding: 14px 24px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -157,7 +156,7 @@
 
         /* Interior Layout */
         .window-content {
-            padding: 24px; 
+            padding: 14px 20px; 
             flex-grow: 1; 
             overflow: hidden;
             display: flex; 
@@ -191,10 +190,10 @@
             display: flex; 
             width: 100%; 
             max-width: 900px;
-            margin: 0 auto 24px; 
+            margin: 0 auto 12px; 
             justify-content: space-between; 
             flex-shrink: 0;
-            gap: 20px;
+            gap: 12px;
         }
 
         .stage-track {
@@ -204,10 +203,10 @@
         }
 
         .stage-label {
-            font-size: 10px; 
+            font-size: 8.5px; 
             font-weight: 800; 
-            letter-spacing: 1.5px;
-            margin-bottom: 6px; 
+            letter-spacing: 1.2px;
+            margin-bottom: 4px; 
             color: var(--text-sec);
             text-transform: uppercase;
         }
@@ -322,7 +321,7 @@
             background: #FFFFFF; 
             border: 1.5px solid var(--border); 
             border-radius: 14px;
-            padding: 24px; 
+            padding: 16px 20px; 
             box-shadow: var(--shadow);
             animation: cardFadeIn 0.4s ease;
             position: relative;
@@ -346,8 +345,8 @@
         .options-container {
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 16px; 
-            margin-top: 20px;
+            gap: 12px; 
+            margin-top: 14px;
         }
 
         /* Choice options styled highly reactive and pristine */
@@ -355,7 +354,7 @@
             background: #F8FAFC; 
             border: 2px solid #E2E8F0; 
             border-radius: 12px;
-            padding: 18px; 
+            padding: 12px 14px; 
             cursor: pointer; 
             display: flex; 
             flex-direction: column; 
@@ -410,11 +409,11 @@
             background: var(--accent);
             color: white; 
             font-weight: 600;
-            padding: 14px 28px; 
+            padding: 10px 22px; 
             width: auto; 
-            min-width: 220px;
-            font-size: 15px; 
-            margin: 20px auto 0; 
+            min-width: 180px;
+            font-size: 14px; 
+            margin: 14px auto 0; 
             box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
             border-radius: 8px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -663,10 +662,10 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        @media (max-width: 950px) {
+        @media (max-width: 580px) {
             .options-container, .diagnosis-panel { grid-template-columns: 1fr; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .window-frame { height: 100vh; border-radius: 0; }
+            .window-frame { height: 100vh; max-height: 100vh; border-radius: 0; border-width: 2px; }
             .window-content { overflow-y: auto; }
             .step-selector { grid-template-columns: repeat(3, 1fr); gap: 6px; }
         }
@@ -1184,22 +1183,22 @@
                 progress.classList.add('hidden'); 
                 sidebar.classList.add('hidden');
                 container.innerHTML = `
-                    <div style="max-width: 650px; margin: 15px auto; text-align: center; display: flex; flex-direction: column; align-items: center;">
-                        <svg class="icon-lg text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <div style="max-width: 650px; margin: 4px auto; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                        <svg class="text-accent" style="width: 44px; height: 44px; margin-bottom: 8px; filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.15));" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                             <line x1="9" y1="3" x2="9" y2="21"/>
                             <line x1="15" y1="3" x2="15" y2="21"/>
                             <line x1="3" y1="9" x2="21" y2="9"/>
                             <line x1="3" y1="15" x2="21" y2="15"/>
                         </svg>
-                        <h1 class="heading-font" style="font-size: 38px; line-height: 1.1; margin-bottom: 8px; font-weight: 700; background: linear-gradient(90deg, var(--accent) 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI LIFECYCLE CHALLENGE</h1>
-                        <p style="font-size: 16px; color: var(--text-sec); font-weight: 500; letter-spacing: 0.5px;">Product Manager Command Deck</p>
+                        <h1 class="heading-font" style="font-size: 30px; line-height: 1.1; margin-bottom: 4px; font-weight: 700; background: linear-gradient(90deg, var(--accent) 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI LIFECYCLE CHALLENGE</h1>
+                        <p style="font-size: 13px; color: var(--text-sec); font-weight: 500; letter-spacing: 0.5px;">Product Manager Command Deck</p>
                         
-                        <div class="card" style="margin-top: 24px; text-align: left; padding: 22px;">
-                            <p style="font-size: 14px; margin-bottom: 12px; color: var(--text-pri); line-height: 1.6;">
+                        <div class="card" style="margin-top: 12px; text-align: left; padding: 12px 18px;">
+                            <p style="font-size: 12.5px; margin-bottom: 8px; color: var(--text-pri); line-height: 1.5;">
                                 Welcome, Lead Product Manager! Your district is relying on you to engineer and launch <strong>StudyMatch</strong>, an artificial intelligence matchmaking engine built to help 2,400 students assemble balanced, secure peer-study groups.
                             </p>
-                            <p style="font-size: 14px; color: var(--text-sec); line-height: 1.6;">
+                            <p style="font-size: 12.5px; color: var(--text-sec); line-height: 1.5;">
                                 Algorithms are systems of power. Early engineering, privacy, and safety design criteria determine whether your model creates beautiful learning networks... or faceplants in algorithmic bias and regulatory failure.
                             </p>
                         </div>
@@ -1208,66 +1207,64 @@
                 `;
             } else if (STATE.screen === 'S2') {
                 container.innerHTML = `
-                    <div class="card" style="max-width: 650px; margin: 15px auto; padding: 24px;">
-                        <span class="stage-banner bg-design" style="font-size: 10px; margin-bottom: 12px; display: inline-block;">WESTBRIDGE HIGH SCHOOL EXECUTIVE REQUEST</span>
-                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 16px; border-bottom: 1.5px solid var(--border); padding-bottom: 12px;">SYSTEM GOALS & BRIEFING</h2>
+                    <div class="card" style="max-width: 650px; margin: 4px auto; padding: 16px 20px;">
+                        <span class="stage-banner bg-design" style="font-size: 9px; margin-bottom: 8px; display: inline-block;">WESTBRIDGE HIGH SCHOOL EXECUTIVE REQUEST</span>
+                        <h2 class="heading-font" style="font-size: 21px; margin-bottom: 10px; border-bottom: 1.5px solid var(--border); padding-bottom: 6px;">SYSTEM GOALS & BRIEFING</h2>
                         
-                        <div style="font-size: 14px; line-height: 1.6; display: flex; flex-direction: column; gap: 14px; color: var(--text-sec);">
+                        <div style="font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 8px; color: var(--text-sec);">
                             <div>
-                                <p style="color: var(--text-pri); font-weight: 600;">🎯 Primary Goal:</p>
+                                <p style="color: var(--text-pri); font-weight: 600; font-size: 13px; margin-bottom: 2px;">🎯 Primary Goal:</p>
                                 <p>Unite students across grades 9–12 based on synergistic skill sets, course difficulty alignment, and schedules to advance cooperative studying.</p>
                             </div>
                             <div>
-                                <p style="color: var(--text-pri); font-weight: 600;">🔒 Required Parameters:</p>
-                                <p>Strict adherence to student data rights guidelines, transparency of matches, prevent demographic fragmentation, and enable active student control.</p>
+                                <p style="color: var(--text-pri); font-weight: 600; font-size: 13px; margin-bottom: 2px;">🔒 Required Parameters:</p>
+                                <p>Strict student data rights, transparent matches, no demographic fragmentation, and direct human control.</p>
                             </div>
                         </div>
 
-                        <div style="margin-top: 24px; padding: 14px; background: #EFF6FF; border: 1.2px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; font-size: 11px; color: var(--text-sec);">
-                            <strong>⚠️ OPERATIONAL BRIEF:</strong> You will navigate 6 consecutive decision stages throughout Design, Development, and Deployment. Choose wisely. Each fork alters the system's structural alignment.
+                        <div style="margin-top: 12px; padding: 10px; background: #EFF6FF; border: 1.2px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; font-size: 11px; color: var(--text-sec); line-height: 1.4;">
+                            <strong>⚠️ OPERATIONAL BRIEF:</strong> You will navigate 6 consecutive decision stages throughout Design, Development, and Deployment. Choose wisely.
                         </div>
 
-                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
-                            <button onclick="playSynth('click'); goTo('S1')" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                        <div style="display: flex; gap: 10px; margin-top: 14px; width: 100%;">
+                            <button onclick="playSynth('click'); goTo('S1')" style="flex: 1; padding: 10px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
                             </button>
-                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="playSynth('click'); goToDecision(0)">INITIATE DESIGN PHASE →</button>
+                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto; font-size: 13px; padding: 10px 16px;" onclick="playSynth('click'); goToDecision(0)">INITIATE DESIGN PHASE →</button>
                         </div>
                     </div>
                 `;
             } else if (STATE.screen === 'DECISION') {
                 progress.classList.remove('hidden'); 
-                sidebar.classList.add('hidden'); // We will hide sidebar on early decision to keep screen focused on mobile structures, but show on desktop
-                if(window.innerWidth > 950) {
-                    sidebar.style.display = 'flex';
-                }
+                sidebar.classList.add('hidden'); // We will hide sidebar to keep screen beautifully clean and focused within 680px frame
+                sidebar.style.display = 'none';
                 updateProgress();
                 const step = DECISION_CONTENT[STATE.currentStep];
                 const bannerStyle = step.stage === 'DESIGN' ? 'bg-design' : step.stage === 'DEVELOP' ? 'bg-develop' : 'bg-deploy';
                 
                 container.innerHTML = `
                     <div style="animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
-                        <div class="stage-banner ${bannerStyle}" style="margin-bottom: 12px; display: inline-block;">${step.stage} PHASE • STEP ${STATE.currentStep + 1}</div>
-                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 4px; color: var(--text-pri);">${step.subStep}</h2>
-                        <p style="margin-bottom: 18px; color: var(--text-sec); font-size: 14px;">${step.prompt}</p>
+                        <div class="stage-banner ${bannerStyle}" style="margin-bottom: 6px; display: inline-block; font-size: 8.5px;">${step.stage} PHASE • STEP ${STATE.currentStep + 1}</div>
+                        <h2 class="heading-font" style="font-size: 20px; margin-bottom: 2px; color: var(--text-pri);">${step.subStep}</h2>
+                        <p style="margin-bottom: 12px; color: var(--text-sec); font-size: 12.5px;">${step.prompt}</p>
                         
                         <div class="options-container">
                             ${step.options.map(opt => `
                                 <div class="decision-card" id="opt-${opt.id}" onclick="selectOption('${opt.id}')">
                                     <div>
-                                        <span class="badge" style="background: #E2E8F0; color: var(--text-sec); border: 1px solid var(--border); font-size: 8px;">OPTION</span>
-                                        <h3 class="heading-font" style="font-size: 15px; margin-bottom: 8px; color: var(--text-pri);">${opt.title}</h3>
-                                        <p style="color: var(--text-sec); font-size: 12px; line-height: 1.5;">${opt.text}</p>
+                                        <span class="badge" style="background: #E2E8F0; color: var(--text-sec); border: 1px solid var(--border); font-size: 7.5px; padding: 2px 6px; margin-bottom: 6px;">OPTION</span>
+                                        <h3 class="heading-font" style="font-size: 13.5px; margin-bottom: 4px; color: var(--text-pri);">${opt.title}</h3>
+                                        <p style="color: var(--text-sec); font-size: 11px; line-height: 1.4;">${opt.text}</p>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                         
-                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
-                            <button onclick="playSynth('click'); goBackFromDecision()" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                        <div style="display: flex; gap: 10px; margin-top: 14px; width: 100%;">
+                            <button onclick="playSynth('click'); goBackFromDecision()" style="flex: 1; padding: 10px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
                             </button>
-                            <button class="btn-primary hidden" style="flex: 2; margin: 0; width: auto;" id="next-btn" onclick="playSynth('click'); nextSubStep()">COMMIT DESIGN PARAMETER →</button>
+                            <button class="btn-primary hidden" style="flex: 2; margin: 0; width: auto; font-size: 13px; padding: 10px 16px;" id="next-btn" onclick="playSynth('click'); nextSubStep()">COMMIT DESIGN PARAMETER →</button>
                         </div>
                     </div>
                 `;
@@ -1280,15 +1277,15 @@
                 sidebar.classList.add('hidden');
                 sidebar.style.display = 'none';
                 container.innerHTML = `
-                    <div class="card" style="max-width: 650px; margin: 10px auto; padding: 24px;">
-                        <span class="stage-banner bg-deploy" style="margin-bottom: 12px; display: inline-block;">INTEGRITY CHECKPOINT</span>
-                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 12px;">PRE-LAUNCH CODE SIGN-OFF</h2>
-                        <p style="font-size: 13px; color: var(--text-sec); margin-bottom: 16px;">
-                            Review your structural configurations below before compiling. You can go back and alter design routes to optimize outcomes.
+                    <div class="card" style="max-width: 650px; margin: 0 auto; padding: 14px 18px;">
+                        <span class="stage-banner bg-deploy" style="margin-bottom: 6px; display: inline-block; font-size: 9px;">INTEGRITY CHECKPOINT</span>
+                        <h2 class="heading-font" style="font-size: 21px; margin-bottom: 6px;">PRE-LAUNCH CODE SIGN-OFF</h2>
+                        <p style="font-size: 12px; color: var(--text-sec); margin-bottom: 10px;">
+                            Review your structural configurations before compiling study match algorithms.
                         </p>
                         
-                        <div style="max-height: 300px; overflow-y: auto; border: 1.5px solid var(--border); border-radius: 10px; background: #F8FAFC; padding: 12px;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <div style="max-height: 220px; overflow-y: auto; border: 1.5px solid var(--border); border-radius: 10px; background: #F8FAFC; padding: 8px 12px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                                 ${STATE.decisions.map((choice, i) => {
                                     const opt = DECISION_CONTENT[i].options.find(o => o.id === choice);
                                     let qBadge = '';
@@ -1298,22 +1295,22 @@
 
                                     return `
                                     <tr style="border-bottom: 1.1px solid var(--border); transition: hover 0.2s;">
-                                        <td style="padding: 12px 6px; font-weight: 500; color: var(--text-muted); font-size: 11px; text-transform: uppercase;">STEP ${i+1}</td>
-                                        <td style="padding: 12px 6px; color: var(--text-pri); font-weight: 600;">${DECISION_CONTENT[i].subStep}</td>
-                                        <td style="padding: 12px 6px; color: var(--text-sec); font-size: 12px;">${qBadge} ${opt.title}</td>
-                                        <td style="padding: 12px 6px; text-align: right;">
-                                            <button onclick="playSynth('click'); goToDecision(${i})" style="color: var(--accent); font-weight: 700; background: none; font-size: 11px;">Change</button>
+                                        <td style="padding: 8px 4px; font-weight: 500; color: var(--text-muted); font-size: 10px; text-transform: uppercase;">STEP ${i+1}</td>
+                                        <td style="padding: 8px 4px; color: var(--text-pri); font-weight: 600;">${DECISION_CONTENT[i].subStep}</td>
+                                        <td style="padding: 8px 4px; color: var(--text-sec); font-size: 11.5px;">${qBadge} ${opt.title}</td>
+                                        <td style="padding: 8px 4px; text-align: right;">
+                                            <button onclick="playSynth('click'); goToDecision(${i})" style="color: var(--accent); font-weight: 700; background: none; font-size: 10.5px;">Change</button>
                                         </td>
                                     </tr>
                                     `;
                                 }).join('')}
                             </table>
                         </div>
-                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
-                            <button onclick="playSynth('click'); goToDecision(5)" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                        <div style="display: flex; gap: 10px; margin-top: 14px; width: 100%;">
+                            <button onclick="playSynth('click'); goToDecision(5)" style="flex: 1; padding: 10px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
                             </button>
-                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="initiateLaunch()">COMBI-COMPILE & RUN →</button>
+                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto; font-size: 13px; padding: 10px 16px;" onclick="initiateLaunch()">COMBI-COMPILE & RUN →</button>
                         </div>
                     </div>
                 `;
@@ -1469,45 +1466,45 @@
                 if(opt.qualityTag === 'mistake') qualityLabelClass = 'badge-mistake';
 
                 container.innerHTML = `
-                    <div class="card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 14px 18px;">
                         <div>
-                            <span class="stage-banner bg-develop" style="font-size: 9px; margin-bottom: 8px; display: inline-block;">PRODUCT STRATEGY DEBRIEF</span>
-                            <h2 class="heading-font" style="font-size: 26px; border-bottom: 1.5px solid var(--border); padding-bottom: 10px; color: var(--text-pri);">LIFECYCLE IMPACT ANALYSIS</h2>
-                            <p style="font-size: 13px; color: var(--text-sec); margin-top: 8px;">Explore each milestone below to examine your architectural logic.</p>
+                            <span class="stage-banner bg-develop" style="font-size: 8.5px; margin-bottom: 4px; display: inline-block;">PRODUCT STRATEGY DEBRIEF</span>
+                            <h2 class="heading-font" style="font-size: 18px; border-bottom: 1.5px solid var(--border); padding-bottom: 6px; color: var(--text-pri); margin-bottom: 4px;">LIFECYCLE IMPACT ANALYSIS</h2>
+                            <p style="font-size: 11.5px; color: var(--text-sec); margin-top: 2px; margin-bottom: 8px;">Explore each milestone below to examine your architectural logic.</p>
                             
-                            <div class="step-selector">
+                            <div class="step-selector" style="margin-bottom: 8px;">
                                 ${DECISION_CONTENT.map((step, idx) => `
-                                    <div class="step-tab ${i === idx ? 'active' : ''}" onclick="selectFeedbackStep(${idx})">
+                                    <div class="step-tab ${i === idx ? 'active' : ''}" onclick="selectFeedbackStep(${idx})" style="padding: 4px 6px; font-size: 10.5px;">
                                         STEP ${idx + 1}
                                     </div>
                                 `).join('')}
                             </div>
 
-                            <div class="detail-display">
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                                    <span class="stage-banner bg-design" style="font-size: 9px; margin-bottom: 0;">STAGE ${i+1}: ${DECISION_CONTENT[i].subStep.toUpperCase()}</span>
-                                    <span class="badge ${qualityLabelClass}" style="margin-bottom: 0;">${opt.quality}</span>
+                            <div class="detail-display" style="padding: 10px 14px; max-height: 200px; overflow-y: auto;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">
+                                    <span class="stage-banner bg-design" style="font-size: 8.5px; margin-bottom: 0;">STAGE ${i+1}: ${DECISION_CONTENT[i].subStep.toUpperCase()}</span>
+                                    <span class="badge ${qualityLabelClass}" style="margin-bottom: 0; font-size: 8px; padding: 2px 6px;">${opt.quality}</span>
                                 </div>
                                 
                                 <div>
-                                    <h3 class="heading-font" style="font-size: 18px; margin-bottom: 6px; color: var(--text-pri);">Your Design Commitment: "${opt.title}"</h3>
-                                    <p style="font-size: 13.5px; margin-top: 8px; line-height: 1.6; color: var(--text-sec);">${opt.reason}</p>
+                                    <h3 class="heading-font" style="font-size: 14px; margin-bottom: 4px; color: var(--text-pri); line-height: 1.3;">Your Design Commitment: "${opt.title}"</h3>
+                                    <p style="font-size: 12px; margin-top: 4px; line-height: 1.4; color: var(--text-sec);">${opt.reason}</p>
                                 </div>
 
                                 ${isWrong ? `
-                                    <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.04); border-left: 4px solid var(--success); border-radius: 8px; border-top: 1px solid rgba(16,185,129,0.1); border-right: 1px solid rgba(16,185,129,0.1); border-bottom: 1px solid rgba(16,185,129,0.1);">
-                                        <h4 class="heading-font" style="font-size: 11px; color:#34D399; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Optimal Industry Standards: "${bestOpt.title}"</h4>
-                                        <p style="font-size: 12.5px; color: var(--text-sec); line-height: 1.5;">${bestOpt.reason}</p>
+                                    <div style="margin-top: 10px; padding: 8px 12px; background: rgba(16, 185, 129, 0.04); border-left: 3px solid var(--success); border-radius: 6px; border-top: 1px solid rgba(16,185,129,0.08); border-right: 1px solid rgba(16,185,129,0.08); border-bottom: 1px solid rgba(16,185,129,0.08);">
+                                        <h4 class="heading-font" style="font-size: 10px; color:#34D399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Optimal Industry Standards: "${bestOpt.title}"</h4>
+                                        <p style="font-size: 11.5px; color: var(--text-sec); line-height: 1.4;">${bestOpt.reason}</p>
                                     </div>
                                 ` : ''}
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
-                            <button onclick="playSynth('click'); goTo('DASHBOARD')" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK TO MONITOR
+                        <div style="display: flex; gap: 10px; margin-top: 10px; width: 100%;">
+                            <button onclick="playSynth('click'); goTo('DASHBOARD')" style="flex: 1; padding: 10px; font-weight: 600; font-size: 12.5px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK TO MONITOR
                             </button>
-                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="playSynth('click'); goTo('REPORT')">PERFORMANCE EVALUATION →</button>
+                            <button class="btn-primary" style="flex: 1.5; margin: 0; width: auto; font-size: 13px; padding: 10px 16px;" onclick="playSynth('click'); goTo('REPORT')">PERFORMANCE EVALUATION →</button>
                         </div>
                     </div>
                 `;
@@ -1534,41 +1531,41 @@
                 }
 
                 container.innerHTML = `
-                    <div class="card text-center" style="max-width: 650px; margin: 12px auto; padding: 28px; display: flex; flex-direction: column; align-items: center;">
-                        <span class="stage-banner bg-deploy" style="margin-bottom: 12px; display: inline-block; width: fit-content;">FINAL REGULATORY SUBMISSION</span>
-                        <h2 class="heading-font" style="color: var(--text-pri); font-size: 32px; margin-bottom: 4px;">PM ACCOUNTABILITY EVALUATION</h2>
-                        <p style="color: var(--text-sec); font-size: 13px; max-width: 480px; margin-bottom: 24px;">Westbridge School Board AI Ethics and Operational Safety Compliance Summary.</p>
+                    <div class="card text-center" style="max-width: 650px; margin: 0 auto; padding: 16px 20px; display: flex; flex-direction: column; align-items: center;">
+                        <span class="stage-banner bg-deploy" style="margin-bottom: 6px; display: inline-block; width: fit-content; font-size: 8.5px;">FINAL REGULATORY SUBMISSION</span>
+                        <h2 class="heading-font" style="color: var(--text-pri); font-size: 20px; margin-bottom: 2px;">PM ACCOUNTABILITY EVALUATION</h2>
+                        <p style="color: var(--text-sec); font-size: 11.5px; max-width: 480px; margin-bottom: 10px; line-height: 1.3;">Westbridge School Board AI Ethics and Safety Compliance Summary.</p>
                         
-                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 16px; margin-bottom: 24px;">
-                            <div class="metric-score-widget">
-                                <div style="font-size: 36px; font-weight: 800; color: var(--accent);" class="heading-font">${bestDecisions}/6</div>
-                                <div style="font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">Lifecycle Best Practices</div>
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 10px; margin-bottom: 10px;">
+                            <div class="metric-score-widget" style="padding: 6px 10px;">
+                                <div style="font-size: 24px; font-weight: 800; color: var(--accent);" class="heading-font">${bestDecisions}/6</div>
+                                <div style="font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-sec); line-height: 1;">Best Practices</div>
                             </div>
                             <!-- Central Glow Medal showing Grade -->
-                            <div class="metric-score-widget" style="background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%); border-color: var(--accent);">
-                                <div style="font-size: 54px; font-weight: 800; color: var(--accent); line-height: 1;" class="heading-font">${gradeChar}</div>
-                                <div style="font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">COMPLIANCE GRADE</div>
+                            <div class="metric-score-widget" style="background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%); border-color: var(--accent); padding: 8px 14px;">
+                                <div style="font-size: 40px; font-weight: 800; color: var(--accent); line-height: 1;" class="heading-font">${gradeChar}</div>
+                                <div style="font-size: 8.5px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-sec); line-height: 1.2;">COMPLIANCE GRADE</div>
                             </div>
-                            <div class="metric-score-widget">
-                                <div style="font-size: 36px; font-weight: 800; color: ${totalFailures > 0 ? 'var(--error)' : 'var(--success)'};" class="heading-font">${totalFailures}</div>
-                                <div style="font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">System Alerts Out of Review</div>
-                            </div>
-                        </div>
-
-                        <div style="background: #F8FAFC; border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 24px; width:100%;">
-                            <h4 class="heading-font" style="color: var(--text-pri); font-size: 14px; margin-bottom: 4px;">Advisory Board Analysis:</h4>
-                            <p style="font-size: 12.5px; color: var(--text-sec); line-height: 1.6;">${gradeMsg}</p>
-                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;" class="code-font">
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${totalFailures === 0 || correctDiagnoses === totalFailures ? 'var(--success)' : 'var(--warning)'}"></div>
-                                Diagnostic Troubleshooting accuracy: ${totalFailures > 0 ? Math.round((correctDiagnoses/totalFailures)*100) : 100}% (${correctDiagnoses}/${totalFailures} glitches resolved)
+                            <div class="metric-score-widget" style="padding: 6px 10px;">
+                                <div style="font-size: 24px; font-weight: 800; color: ${totalFailures > 0 ? 'var(--error)' : 'var(--success)'};" class="heading-font">${totalFailures}</div>
+                                <div style="font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-sec); line-height: 1;">System Alerts</div>
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 14px; width: 100%;">
-                            <button onclick="playSynth('click'); location.reload()" style="flex: 1; padding: 12px 20px; font-weight: 700; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--elevated); color: var(--text-pri);">
+                        <div style="background: #F8FAFC; border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; text-align: left; margin-bottom: 10px; width: 100%;">
+                            <h4 class="heading-font" style="color: var(--text-pri); font-size: 12.5px; margin-bottom: 2px;">Advisory Board Analysis:</h4>
+                            <p style="font-size: 11.5px; color: var(--text-sec); line-height: 1.4; margin-bottom: 4px;">${gradeMsg}</p>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 10.5px;" class="code-font">
+                                <div style="width: 6px; height: 6px; border-radius: 50%; background: ${totalFailures === 0 || correctDiagnoses === totalFailures ? 'var(--success)' : 'var(--warning)'}"></div>
+                                Troubleshooting accuracy: ${totalFailures > 0 ? Math.round((correctDiagnoses/totalFailures)*100) : 100}% (${correctDiagnoses}/${totalFailures} glitches resolved)
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button onclick="playSynth('click'); location.reload()" style="flex: 1; padding: 10px 14px; font-weight: 700; font-size: 12.5px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--elevated); color: var(--text-pri); cursor: pointer;">
                                 REPLAY SIMULATION
                             </button>
-                            <button onclick="playSynth('correct'); goTo('FEEDBACK')" class="btn-primary" style="flex: 1; width: auto; margin:0;">
+                            <button onclick="playSynth('correct'); goTo('FEEDBACK')" class="btn-primary" style="flex: 1.2; width: auto; margin: 0; font-size: 12.5px; padding: 10px 14px;">
                                 DETAILED DEBRIEF PANEL
                             </button>
                         </div>
