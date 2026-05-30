@@ -80,32 +80,23 @@
     }
   </style>
 </head>
-<body class="h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white pb-12 print:pb-0 bg-[#f8fafc]">
+<body class="h-screen overflow-hidden flex items-center justify-center p-4 md:p-6 bg-[#EAEFF6] selection:bg-indigo-500 selection:text-white print:p-0 print:bg-white print:h-auto print:overflow-visible">
 
-  <!-- Interactive Auditing Workstation UI -->
-  <div class="flex-grow flex flex-col">
+  <!-- Centered Compact Container (Ethics Vocabulary Studio inspired style) -->
+  <div class="w-full max-w-[980px] h-[86vh] min-h-[560px] max-h-[820px] bg-white border-[3px] border-[#2563EB] rounded-2xl shadow-[0_10px_25px_rgba(15,23,42,0.08),_0_20px_40px_rgba(15,23,42,0.05)] flex flex-col overflow-hidden relative fade-in print:border-none print:shadow-none print:h-auto print:max-h-none print:overflow-visible">
     
     <!-- Top Monospaced Header Component -->
-    <header class="relative bg-white border-b border-slate-100 text-slate-800 px-6 md:px-10 py-6 overflow-hidden select-none print:hidden shadow-sm">
+    <header class="relative bg-white border-b border-slate-100 text-slate-800 px-6 md:px-8 py-4 overflow-hidden select-none print:hidden shadow-sm shrink-0">
       <div class="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full mix-blend-multiply filter blur-2xl opacity-60 transform translate-x-12 -translate-y-12"></div>
       
       <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
         <div>
-          <div class="flex items-center gap-2 mb-1.5">
-            <i data-lucide="shield-alert" class="w-5 h-5 text-indigo-600 animate-pulse"></i>
-            <span class="text-xs font-bold tracking-widest text-[#4f46e5] uppercase font-mono">
-              Forensic Audit Laboratory
-            </span>
-          </div>
           <h1 class="text-2xl md:text-3.5xl font-extrabold tracking-tight text-slate-900 uppercase font-display leading-none">
             Ethical Autopsy
           </h1>
-          <p class="text-[10px] text-slate-500 font-bold tracking-wider mt-1.5 uppercase font-mono">
-            Diagnose violations • Remediate failures • Secure the ecosystem
-          </p>
         </div>
 
-        <div id="header-scoreboard" class="hidden flex items-center self-start sm:self-center gap-3 bg-indigo-50 text-indigo-950 font-black px-5 py-2.5 rounded-full shadow-md border border-indigo-100 transition-all duration-300 transform select-none">
+        <div id="header-scoreboard" class="hidden flex items-center self-start sm:self-center gap-3 bg-indigo-50 text-indigo-950 font-black px-5 py-2 rounded-full shadow-md border border-indigo-100 transition-all duration-300 transform select-none">
           <span class="text-[10px] tracking-wider uppercase font-extrabold text-indigo-700 font-mono">LAB INTEGRITY SCORE:</span>
           <span class="text-lg font-black tracking-widest text-indigo-900" id="live-score-val">0</span>
           <span class="text-[10px] font-bold text-indigo-600">pts</span>
@@ -113,19 +104,14 @@
       </div>
     </header>
 
-    <!-- Main Container App Body -->
-    <main class="flex-grow max-w-5xl w-full mx-auto px-4 md:px-8 py-8 md:py-12 flex flex-col justify-start">
-      <div id="app-container" class="bg-white border border-slate-150 rounded-3xl shadow-xl shadow-slate-100/40 w-full p-6 md:p-10 text-slate-700 fade-in min-h-[450px]">
+    <!-- Main Container App Body (Scrollable internal viewport) -->
+    <main class="flex-grow w-full overflow-y-auto px-4 md:px-8 py-6 flex flex-col justify-start bg-slate-50/30">
+      <div id="app-container" class="bg-white border border-slate-150 rounded-3xl shadow-lg shadow-slate-150/25 w-full p-6 md:p-8 text-slate-700 fade-in min-h-[420px]">
         <!-- Dynamic views will content-mount here -->
       </div>
     </main>
 
   </div>
-
-  <!-- Humble Plain Branding Footer -->
-  <footer class="text-center text-slate-400 text-[11px] font-mono tracking-wide py-4 border-t border-slate-100 print:hidden select-none">
-    Forensic System Code: 0x98A • Authorized Investigator Access Only
-  </footer>
 
   <!-- CORE ENGINE SCRIPT -->
   <script>
@@ -918,15 +904,6 @@
       if (state.screen === 'welcome') {
         html = `
           <div class="space-y-8 fade-in">
-            <div class="text-center md:text-left">
-              <span class="inline-flex bg-indigo-50 text-indigo-700 text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider mb-3">
-                Interactive Learning Tool
-              </span>
-              <h2 class="text-3xl md:text-4.5xl font-extrabold text-slate-900 tracking-tight font-display">
-                Pre-Launch Forensic Log
-              </h2>
-            </div>
-
             <!-- Introductory visual banner block matching mockup design aesthetics -->
             <div class="p-6 md:p-8 bg-slate-50 border border-slate-100 rounded-3xl space-y-3">
               <h3 class="font-bold text-slate-900 text-base md:text-lg leading-tight">
@@ -945,16 +922,9 @@
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${CASE_STUDIES.map((study, idx) => {
-                  const isSelected = state.selectedCaseIdx === idx;
                   return `
-                    <button
-                      type="button"
-                      onclick="selectCase(${idx})"
-                      class="relative text-left p-6 md:p-8 border rounded-3xl transition-all duration-200 cursor-pointer flex flex-col justify-between h-full group ${
-                        isSelected
-                          ? 'border-indigo-500 bg-indigo-50/10 shadow-lg ring-1 ring-indigo-500/20'
-                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-md'
-                      }"
+                    <div
+                      class="relative text-left p-6 md:p-8 border rounded-3xl transition-all duration-200 flex flex-col justify-between h-full border-slate-200 bg-white hover:border-indigo-300 hover:shadow-lg group"
                     >
                       <div class="absolute top-0 right-0 bg-slate-100 border-l border-b border-slate-200 text-slate-600 text-[9px] font-mono px-3 py-1 rounded-bl-xl rounded-tr-3xl font-bold">
                         REF ${study.id}
@@ -978,34 +948,20 @@
                         </p>
                       </div>
 
-                      <div class="mt-5 pt-4 border-t border-slate-100 flex justify-end">
-                        ${isSelected ? `
-                          <span class="text-[10px] uppercase font-bold text-indigo-700 tracking-wider font-mono flex items-center gap-1.5">
-                            <i data-lucide="check" class="w-4 h-4 text-indigo-600 stroke-[3px]"></i> Selected for Autopsy
-                          </span>
-                        ` : `
-                          <span class="text-[10px] uppercase font-bold text-slate-400 group-hover:text-indigo-600 tracking-wider font-mono flex items-center gap-1">
-                            Analyze Dossier <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                          </span>
-                        `}
+                      <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+                        <button
+                          type="button"
+                          onclick="selectCase(${idx}); beginAudit();"
+                          class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl uppercase tracking-wider text-[11px] transition duration-150 shadow-md hover:scale-[1.02] transform"
+                        >
+                          Begin Investigation
+                          <i data-lucide="arrow-right" class="w-3.5 h-3.5 stroke-[3px]"></i>
+                        </button>
                       </div>
-                    </button>
+                    </div>
                   `;
                 }).join('')}
               </div>
-            </div>
-
-            <!-- Begin Audits trigger action -->
-            <div class="pt-6 border-t border-slate-100 flex justify-center md:justify-start">
-              <button
-                type="button"
-                onclick="beginAudit()"
-                ${state.selectedCaseIdx === null ? 'disabled' : ''}
-                class="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl uppercase tracking-wider text-xs transition duration-150 btn-active disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed shadow-md"
-              >
-                Begin Audit Investigation
-                <i data-lucide="arrow-right" class="w-4 h-4 stroke-[3px]"></i>
-              </button>
             </div>
           </div>
         `;
