@@ -6,66 +6,106 @@
     <title>AI Lifecycle Challenge</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #F8FAFC;
-            --panel: #FFFFFF;
-            --elevated: #F1F5F9;
-            --accent: #2563EB;
-            --design: #7C3AED;
-            --develop: #3B82F6;
-            --deploy: #10B981;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --error: #EF4444;
-            --text-pri: #0F172A;
-            --text-sec: #475569;
-            --border: #E2E8F0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            /* Light/Professional Blue Palette (mimicking educational quick judge) */
+            --bg: #EAEFF6;               /* Light slate-blue backdrop */
+            --panel: #FFFFFF;            /* Pure white main layout board */
+            --elevated: #F8FAFC;         /* Soft grey-white for tiles */
+            --elevated-hover: #F1F5F9;   /* Sleek card hover shading */
+            --border: #CBD5E1;           /* Fine separation border */
+            --border-active: #2563EB;    /* Prominent Blue Border on focus */
+            
+            --accent: #2563EB;           /* Vivid Royal Blue (screenshot core) */
+            --accent-glow: rgba(37, 99, 235, 0.15);
+            
+            --design: #8B5CF6;           /* Indigo-purple for design stage */
+            --design-glow: rgba(139, 92, 246, 0.2);
+            
+            --develop: #0284C7;          /* Classic Teal-blue for development */
+            --develop-glow: rgba(2, 132, 199, 0.25);
+            
+            --deploy: #059669;           /* Forest Green for staging */
+            --deploy-glow: rgba(5, 150, 105, 0.2);
+            
+            --success: #059669;
+            --warning: #D97706;
+            --error: #DC2626;
+            
+            --text-pri: #0F172A;         /* Slate deep blue-black for readable text */
+            --text-sec: #334155;         /* Medium slate grey for paragraphs */
+            --text-muted: #64748B;       /* Low-contrast details */
+            
+            --shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.08);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
 
         body {
             background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 40%);
             color: var(--text-pri);
             font-family: 'Inter', sans-serif;
-            line-height: 1.4;
+            line-height: 1.5;
             overflow: hidden;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
 
-        /* Outer Window Wrapper */
+        /* Outer Frame styled perfectly like the screenshot */
         .window-frame {
             width: 100%;
-            max-width: 1100px;
-            height: 90vh;
+            max-width: 1200px;
+            height: 92vh;
             background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--border-active); /* High intensity blue border */
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg), 0 20px 40px rgba(15, 23, 42, 0.05);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            animation: fadeIn 0.5s ease-out;
+            animation: frameEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes frameEnter {
+            from { opacity: 0; transform: scale(0.97) translateY(15px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Window Header/Title Bar */
+        /* Top Title Bar */
         .window-header {
-            background: #F1F5F9;
-            border-bottom: 1px solid var(--border);
-            padding: 10px 20px;
+            background: #FFFFFF;
+            border-bottom: 2px solid #E2E8F0;
+            padding: 14px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -77,7 +117,7 @@
         }
 
         .window-dot {
-            width: 12px; height: 12px; border-radius: 50%; background: var(--border);
+            width: 12px; height: 12px; border-radius: 50%;
         }
         .window-dot.red { background: #FF5F56; }
         .window-dot.yellow { background: #FFBD2E; }
@@ -85,213 +125,547 @@
 
         .window-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px; font-weight: 700; color: var(--text-sec);
-            text-transform: uppercase; letter-spacing: 1px;
+            font-size: 13px; font-weight: 700; color: var(--text-sec);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        /* Interior Content Area */
+        .window-title svg {
+            color: var(--accent);
+            animation: pulse-slow 2s infinite ease-in-out;
+        }
+
+        .audio-toggle {
+            background: #F1F5F9;
+            border: 1px solid #CBD5E1;
+            padding: 6px 14px;
+            border-radius: 8px;
+            color: var(--text-sec);
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .audio-toggle:hover {
+            color: var(--text-pri);
+            border-color: var(--accent);
+            background: #E2E8F0;
+        }
+
+        /* Interior Layout */
         .window-content {
-            padding: 24px; flex-grow: 1; overflow-y: hidden;
-            display: flex; flex-direction: column; position: relative;
+            padding: 24px; 
+            flex-grow: 1; 
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+            background-color: #FFFFFF;
+            background-image: radial-gradient(#E2E8F0 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+            background-position: center;
         }
 
-        h1, h2, h3, .heading-font {
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+        h1, h2, h3, h4, .heading-font {
+            font-family: 'Space Grotesk', sans-serif; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         button {
-            cursor: pointer; border: none; border-radius: 8px;
-            font-family: inherit; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; 
+            border: none; 
+            border-radius: 8px;
+            font-family: inherit; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        /* Progress Rail */
+        /* Glowing System Progress Rail */
         .progress-rail {
-            display: flex; width: 100%; max-width: 800px;
-            margin: 0 auto 20px; justify-content: space-between; flex-shrink: 0;
+            display: flex; 
+            width: 100%; 
+            max-width: 900px;
+            margin: 0 auto 24px; 
+            justify-content: space-between; 
+            flex-shrink: 0;
+            gap: 20px;
         }
 
         .stage-track {
-            flex: 1; text-align: center; position: relative;
+            flex: 1; 
+            text-align: center; 
+            position: relative;
         }
 
         .stage-label {
-            font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
-            margin-bottom: 4px; color: var(--text-sec);
+            font-size: 10px; 
+            font-weight: 800; 
+            letter-spacing: 1.5px;
+            margin-bottom: 6px; 
+            color: var(--text-sec);
+            text-transform: uppercase;
         }
 
         .stage-bar {
-            height: 4px; background: var(--border); margin: 0 4px;
-            border-radius: 10px; position: relative;
+            height: 6px; 
+            background: #E2E8F0; 
+            margin: 0;
+            border-radius: 10px; 
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
         }
 
-        .stage-bar.active { background: var(--accent); }
-        .stage-bar.design.complete { background: var(--design); }
-        .stage-bar.develop.complete { background: var(--develop); }
-        .stage-bar.deploy.complete { background: var(--deploy); }
+        .stage-bar.active { 
+            background: var(--accent); 
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .stage-bar.design.complete { 
+            background: var(--design); 
+            box-shadow: 0 0 12px var(--design-glow);
+        }
+        .stage-bar.develop.complete { 
+            background: var(--develop); 
+            box-shadow: 0 0 12px var(--develop-glow);
+        }
+        .stage-bar.deploy.complete { 
+            background: var(--deploy); 
+            box-shadow: 0 0 12px var(--deploy-glow);
+        }
 
         .sub-dots {
-            display: flex; justify-content: center; gap: 8px; margin-top: 4px;
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-top: 8px;
         }
 
         .dot {
-            width: 6px; height: 6px; border-radius: 50%; background: var(--border);
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background: #E2E8F0;
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
         }
 
-        .dot.active { background: var(--accent); transform: scale(1.2); }
-        .dot.filled { background: var(--text-sec); }
+        .dot.active { 
+            background: var(--accent); 
+            transform: scale(1.4); 
+            box-shadow: 0 0 10px var(--accent-glow);
+            border-color: #93C5FD;
+        }
+        .dot.filled { 
+            background: var(--text-sec); 
+            border-color: var(--text-sec);
+        }
 
-        /* Main Container */
+        /* Layout Columns */
         .app-container {
-            width: 100%; display: flex; gap: 24px; flex-grow: 1; min-height: 0;
+            width: 100%; 
+            display: flex; 
+            gap: 24px; 
+            flex-grow: 1; 
+            min-height: 0;
         }
 
         .main-content {
-            flex: 1; display: flex; flex-direction: column; min-height: 0;
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 0;
+            justify-content: space-between;
         }
 
+        /* Sidebar: System Specs / Architectural Log */
         .sidebar {
-            width: 260px; background: var(--panel); border: 1px solid var(--border);
-            border-radius: 12px; padding: 16px; height: 100%; box-shadow: var(--shadow);
-            display: none; overflow-y: auto;
+            width: 280px; 
+            background: #F8FAFC; 
+            border: 1.5px solid var(--border);
+            border-radius: 12px; 
+            padding: 18px; 
+            height: 100%; 
+            box-shadow: var(--shadow);
+            display: none; 
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+            animation: slideInRight 0.4s ease;
         }
 
-        /* Cards and Elements */
+        @keyframes slideInRight {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .decision-log-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Elegant Gameplay Cards */
         .card {
-            background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-            padding: 24px; margin-bottom: 0; box-shadow: var(--shadow);
+            background: #FFFFFF; 
+            border: 1.5px solid var(--border); 
+            border-radius: 14px;
+            padding: 24px; 
+            box-shadow: var(--shadow);
+            animation: cardFadeIn 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0.8;
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .options-container {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 12px;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 16px; 
+            margin-top: 20px;
         }
 
+        /* Choice options styled highly reactive and pristine */
         .decision-card {
-            background: var(--panel); border: 2px solid var(--border); border-radius: 12px;
-            padding: 16px; cursor: pointer; transition: all 0.2s ease;
-            display: flex; flex-direction: column; height: 100%;
+            background: #F8FAFC; 
+            border: 2px solid #E2E8F0; 
+            border-radius: 12px;
+            padding: 18px; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .decision-card:hover {
-            transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow);
+            transform: translateY(-4px); 
+            border-color: var(--accent); 
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+            background: #FFFFFF;
         }
 
         .decision-card.selected {
-            border-color: var(--accent); background: rgba(37, 99, 235, 0.03);
+            border-color: var(--accent); 
+            background: #EFF6FF;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.12);
+        }
+
+        .decision-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px; right: 12px;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .badge {
-            display: inline-block; padding: 2px 8px; border-radius: 4px;
-            font-size: 9px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;
+            display: inline-flex; 
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px; 
+            border-radius: 6px;
+            font-size: 9px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 12px;
+            align-self: flex-start;
         }
 
-        .badge-best { background: var(--success); color: white; }
-        .badge-shortcut { background: var(--warning); color: white; }
-        .badge-mistake { background: var(--error); color: white; }
+        .badge-best { background: #ECFDF5; color: #047857; border: 1.2px solid #A7F3D0; }
+        .badge-shortcut { background: #FFFBEB; color: #B45309; border: 1.2px solid #FDE68A; }
+        .badge-mistake { background: #FEF2F2; color: #B91C1C; border: 1.2px solid #FCA5A5; }
 
+        /* Buttons & microinteractions matching screenshot blue */
         .btn-primary {
-            background: var(--accent); color: white; font-weight: 700;
-            padding: 12px 24px; width: auto; min-width: 200px;
-            font-size: 14px; margin: 16px auto 0; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+            background: var(--accent);
+            color: white; 
+            font-weight: 600;
+            padding: 14px 28px; 
+            width: auto; 
+            min-width: 220px;
+            font-size: 15px; 
+            margin: 20px auto 0; 
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
         }
 
         .btn-primary:hover { 
-            transform: translateY(-2px); filter: brightness(1.1);
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            background: #1D4ED8;
         }
 
-        /* Launch Sequence Overlay */
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        /* Countdown Visual Overlay */
         #launch-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); display: none; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 1000; text-align: center;
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background: rgba(241, 245, 249, 0.98); 
+            display: none; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        /* Dashboard Styles */
+        /* Mission Control dashboard panels */
         .dashboard-grid {
-            display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; flex-grow: 1; min-height: 0;
+            display: grid; 
+            grid-template-columns: 1.2fr 1.8fr; 
+            gap: 24px; 
+            flex-grow: 1; 
+            min-height: 0;
         }
 
         .metrics-panel, .alerts-panel {
-            overflow-y: auto; padding-right: 4px;
+            overflow-y: auto; 
+            padding-right: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .metric-card {
-            background: var(--panel); padding: 12px; border-radius: 8px;
-            border-left: 4px solid var(--success); margin-bottom: 8px;
-            box-shadow: var(--shadow); font-size: 13px; display: flex; align-items: center; gap: 10px;
+            background: #F8FAFC; 
+            padding: 16px; 
+            border-radius: 10px;
+            border-left: 4px solid var(--success); 
+            box-shadow: var(--shadow); 
+            font-size: 13px; 
+            color: var(--text-sec);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            border-top: 1px solid #E2E8F0;
+            border-right: 1px solid #E2E8F0;
+            border-bottom: 1px solid #E2E8F0;
         }
 
         .alert-card {
-            background: #FFF1F2; border: 1px solid #FECDD3; border-radius: 10px;
-            padding: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease;
+            background: #FEF2F2; 
+            border: 1.5px solid #FCA5A5; 
+            border-radius: 12px;
+            padding: 16px; 
+            cursor: pointer; 
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.02);
         }
 
-        .alert-card:hover { transform: scale(1.01); }
+        .alert-card:hover { 
+            transform: scale(1.015) translateY(-2px);
+            border-color: var(--error);
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.08);
+            background: #FEE2E2;
+        }
+
+        .alert-icon-ring {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #FCA5A5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #B91C1C;
+            flex-shrink: 0;
+            animation: pulse-danger 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-danger {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        .diagnosis-pane {
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            animation: slideUp 0.3s ease;
+        }
 
         .diagnosis-panel {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 12px; 
+            margin-top: 14px;
         }
 
-        /* Stage Banners */
+        /* Stage Headers */
         .stage-banner {
-            display: inline-block; padding: 2px 10px; border-radius: 100px;
-            font-size: 10px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px;
+            display: inline-flex; 
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px; 
+            border-radius: 100px;
+            font-size: 10px; 
+            font-weight: 800; 
+            letter-spacing: 0.8px; 
+            margin-bottom: 12px;
         }
-        .bg-design { background: #F5F3FF; color: var(--design); }
-        .bg-develop { background: #EFF6FF; color: var(--develop); }
-        .bg-deploy { background: #ECFDF5; color: var(--deploy); }
+        .bg-design { background: #F5F3FF; color: #6D28D9; border: 1px solid #DDD6FE; }
+        .bg-develop { background: #F0F9FF; color: #0369A1; border: 1px solid #BAE6FD; }
+        .bg-deploy { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
 
-        .icon-lg { width: 64px; height: 64px; margin-bottom: 16px; }
+        .icon-lg { 
+            width: 72px; 
+            height: 72px; 
+            margin-bottom: 20px; 
+            filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.15));
+        }
 
-        .hidden { display: none !important; }
-        .text-cyan { color: var(--accent); }
-        .text-center { text-align: center; }
+        /* Inline Static Visualizations */
+        .telemetry-graph-container {
+            background: #F8FAFC;
+            border-radius: 10px;
+            border: 1.5px solid #E2E8F0;
+            padding: 14px;
+            margin-bottom: 12px;
+            height: 145px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-        /* Step Selector Tabs for Feedback */
+        .telemetry-chart-legend {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: var(--text-sec);
+        }
+
+        .telemetry-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .telemetry-dot-legend {
+            width: 6px; height: 6px; border-radius: 50%;
+        }
+
+        /* Tabs for Debrief Feedback */
         .step-selector {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            margin: 10px 0;
+            gap: 8px;
+            margin: 16px 0;
             flex-shrink: 0;
         }
 
         .step-tab {
             padding: 10px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: var(--panel);
+            border: 1.5px solid #E2E8F0;
+            border-radius: 8px;
+            background: #F8FAFC;
             cursor: pointer;
             text-align: center;
-            transition: all 0.2s ease;
-            font-size: 10px;
+            transition: all 0.25s ease;
+            font-size: 11px;
             font-weight: 700;
             color: var(--text-sec);
         }
 
         .step-tab:hover {
             border-color: var(--accent);
+            color: var(--accent);
         }
 
         .step-tab.active {
             border-color: var(--accent);
-            background: rgba(37, 99, 235, 0.05);
+            background: #EFF6FF;
             color: var(--accent);
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.1);
         }
 
         .detail-display {
             flex-grow: 1;
-            background: var(--elevated);
-            border: 1px solid var(--border);
+            background: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
             border-radius: 12px;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             min-height: 0;
         }
 
-        @media (max-width: 900px) {
-            .options-container, .diagnosis-panel, .step-selector { grid-template-columns: 1fr; }
+        /* Utilities */
+        .hidden { display: none !important; }
+        .text-accent { color: var(--accent); }
+        .text-center { text-align: center; }
+        
+        .code-font {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+        }
+
+        /* Score Display layout */
+        .metric-score-widget {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            flex: 1;
+        }
+
+        /* Animation Keyframes */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 950px) {
+            .options-container, .diagnosis-panel { grid-template-columns: 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr; }
             .window-frame { height: 100vh; border-radius: 0; }
             .window-content { overflow-y: auto; }
+            .step-selector { grid-template-columns: repeat(3, 1fr); gap: 6px; }
         }
     </style>
 </head>
@@ -304,14 +678,14 @@
                 <div class="window-dot yellow"></div>
                 <div class="window-dot green"></div>
             </div>
-            <div class="window-title">AI Lifecycle Challenge</div>
-            <div style="width: 52px;"></div>
+            <div class="window-title"></div>
         </div>
 
         <div class="window-content">
+            <!-- Neon Stage Tracker Rail -->
             <div id="progress-container" class="progress-rail hidden">
                 <div class="stage-track">
-                    <div class="stage-label">DESIGN</div>
+                    <div class="stage-label">DESIGN PHASE</div>
                     <div class="stage-bar design" id="bar-0"></div>
                     <div class="sub-dots">
                         <div class="dot" id="dot-0"></div>
@@ -319,7 +693,7 @@
                     </div>
                 </div>
                 <div class="stage-track">
-                    <div class="stage-label">DEVELOP</div>
+                    <div class="stage-label">DEVELOPMENT PHASE</div>
                     <div class="stage-bar develop" id="bar-1"></div>
                     <div class="sub-dots">
                         <div class="dot" id="dot-2"></div>
@@ -327,7 +701,7 @@
                     </div>
                 </div>
                 <div class="stage-track">
-                    <div class="stage-label">DEPLOY</div>
+                    <div class="stage-label">DEPLOYMENT PHASE</div>
                     <div class="stage-bar deploy" id="bar-2"></div>
                     <div class="sub-dots">
                         <div class="dot" id="dot-4"></div>
@@ -336,202 +710,750 @@
                 </div>
             </div>
 
+            <!-- Main Flex Content Box -->
             <div class="app-container">
                 <main class="main-content" id="screen-container">
-                    <!-- Content injected here -->
+                    <!-- Screen HTML will be injected dynamically -->
                 </main>
+                
+                <!-- Release Specs / Decision Log Registry Sidebar -->
                 <aside class="sidebar" id="sidebar">
-                    <h3 class="heading-font" style="font-size: 12px; margin-bottom: 12px; color: var(--text-sec); letter-spacing: 1px;">DECISION LOG</h3>
-                    <div id="decision-log"></div>
+                    <h3 class="heading-font" style="font-size: 11px; color: var(--text-sec); letter-spacing: 1.5px; border-bottom: 1.5px solid var(--border); padding-bottom: 8px;">SYSTEM ARCHITECTURE</h3>
+                    <div class="decision-log-container" id="decision-log"></div>
+                    <div class="code-font" style="color: var(--text-muted); font-size: 10px; border-top: 1px solid var(--border); padding-top: 8px;">
+                        STUDYMATCH STATUS: IDLE<br>
+                        INTEGRITY CODE: SM-9192
+                    </div>
                 </aside>
             </div>
 
+            <!-- Interstitial Fullscreen Rocket Launch Sequence -->
             <div id="launch-overlay">
-                <h1 id="countdown" class="heading-font" style="font-size: 100px; color: var(--accent);">3</h1>
-                <div id="launch-text" class="hidden">
-                    <h1 class="heading-font" style="font-size: 48px; color: var(--text-pri);">STUDYMATCH IS LIVE</h1>
-                    <p style="color: var(--text-sec); font-size: 16px; margin-top: 8px;">2,400 students receiving AI recommendations...</p>
+                <h1 id="countdown" class="heading-font" style="font-size: 120px; color: var(--accent); filter: drop-shadow(0 0 25px rgba(99,102,241,0.5));">3</h1>
+                <div id="launch-text" class="hidden" style="animation: slideUp 0.5s ease;">
+                    <div class="stage-banner bg-deploy" style="margin-bottom: 16px;">DEPLOYMENT COMPLETE</div>
+                    <h1 class="heading-font" style="font-size: 42px; color: var(--text-pri); text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);">S-CORE ENGAGED</h1>
+                    <p style="color: var(--text-sec); font-size: 15px; margin-top: 8px;">2,400 students active. Recalibrating matching matrices...</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- Web Audio Synthesizer Engine ---
+        let audioMuted = true;
+        let audioCtx = null;
+
+        function initSynth() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            } catch (err) {
+                console.warn('Audio Context initialization blocked by browser/iframe policy', err);
+            }
+        }
+
+        function playSynth(type, duration = 0.1) {
+            if (audioMuted) return;
+            initSynth();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'select') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime); 
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + duration);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                } else if (type === 'countdown') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(330, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                } else if (type === 'launch') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + duration);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                } else if (type === 'correct') {
+                    osc.type = 'sine';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.45);
+                    duration = 0.5;
+                } else if (type === 'alarm') {
+                    osc.type = 'sawtooth';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.15);
+                    osc.frequency.linearRampToValueAtTime(220, now + 0.3);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+                    duration = 0.3;
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    const now = audioCtx.currentTime;
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.setValueAtTime(130, now + 0.1);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+                    duration = 0.35;
+                }
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (err) {
+                console.warn('Audio synth blocked', err);
+            }
+        }
+
+        function toggleMute() {
+            audioMuted = !audioMuted;
+            const soundOnIcon = document.getElementById('soundOnIcon');
+            const soundOffIcon = document.getElementById('soundOffIcon');
+            const soundText = document.getElementById('soundText');
+            if (audioMuted) {
+                if (soundOnIcon) soundOnIcon.classList.add('hidden');
+                if (soundOffIcon) soundOffIcon.classList.remove('hidden');
+                if (soundText) soundText.innerText = "SFX OFF";
+            } else {
+                initSynth();
+                if (soundOnIcon) soundOnIcon.classList.remove('hidden');
+                if (soundOffIcon) soundOffIcon.classList.add('hidden');
+                if (soundText) soundText.innerText = "SFX ON";
+                playSynth('correct');
+            }
+        }
+
+        // --- Educational Multi-Phase System Curriculum Data ---
         const DECISION_CONTENT = [
             {
                 stage: "DESIGN",
-                subStep: "Problem Definition",
-                prompt: "Before building the AI, define what a 'good' recommendation looks like.",
+                subStep: "Problem Framing",
+                prompt: "Before building the matching AI, choose how the model should prioritize student academic utility against social equity.",
                 options: [
-                    { id: "shortcut", title: "GPA Matching", text: "Match students with the highest combined GPA. It's simple and the data is available.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Clusters high achievers and leaves others isolated, defeating the mission." },
-                    { id: "best", title: "Multi-Factor Rubric", text: "Use shared courses, schedules, and complementary strengths. Weights are tested on historical data.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Reduces bias and captures real compatibility better than single factors." },
-                    { id: "mistake", title: "Implicit Patterns", text: "Let the AI find patterns in current library study groups to decide who belongs together.", quality: "MISTAKE", qualityTag: "mistake", reason: "Reproduces existing social divides and group inequities instead of creating new ones." }
+                    { 
+                        id: "shortcut", 
+                        title: "GPA Clustering", 
+                        text: "Form groups prioritizing high, matched GPA. It is simple, runs immediately, and appeals to highly competitive students.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "Creates closed bubbles of high performers. Isolates students with lower GPAs and denies them peer support benefits." 
+                    },
+                    { 
+                        id: "best", 
+                        title: "Balanced Rubric Matrix", 
+                        text: "Optimize for course schedules, complementary academic strengths, and diversity of skills. Tested thoroughly on historical pilot lists.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Reduces algorithmic bias, facilitates genuine peer teaching, and ensures all students get fair study opportunities." 
+                    },
+                    { 
+                        id: "mistake", 
+                        title: "Unsupervised Popularity Match", 
+                        text: "Train the AI exclusively on library reservation logs so students group automatically with people who hang out together.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "Replicates and amplifies existing high school cliques and social hierarchies, entirely failing students who need group study most." 
+                    }
                 ]
             },
             {
                 stage: "DESIGN",
-                subStep: "Data Preparation",
-                prompt: "Choose your approach to preparing training data.",
+                subStep: "Data Preparation & Consent",
+                prompt: "Specify which datasets you will pull to feed the recommendation system.",
                 options: [
-                    { id: "mistake", title: "Social Media Scrape", text: "Scrape social media to find friend connections. Use this to find 'natural' study partners.", quality: "MISTAKE", qualityTag: "mistake", reason: "Violates FERPA and basic ethics. Social divides are not academic compatibility." },
-                    { id: "shortcut", title: "System-Only Data", text: "Use only existing grades and course lists. No new surveys needed; covers students immediately.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Skips critical signals like learning style and doesn't check for demographic gaps." },
-                    { id: "best", title: "Balanced & Private", text: "Use course data, opt-in surveys, and identify under-represented groups. Apply privacy controls.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Gap analysis prevents poor group-specific results. Privacy is legally required." }
+                    { 
+                        id: "mistake", 
+                        title: "Peer Social Network Scrape", 
+                        text: "Scrape public social media channels, chat platforms, and DM counts to map 'intuitive, natural' social affinities.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "Severely violates consumer privacy rights and student privacy laws (FERPA) while codifying high-school social cliques into school software." 
+                    },
+                    { 
+                        id: "shortcut", 
+                        title: "System-Only Grade Rosters", 
+                        text: "Rely 100% on class rosters and direct mid-term reports. Requires zero student surveys or opt-ins, and scales to all grades immediately.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "Saves setup time but ignores student schedules, learning styles, or demographic disparities, leading to high real-world friction." 
+                    },
+                    { 
+                        id: "best", 
+                        title: "Anonymized, Consent-Driven Surveys", 
+                        text: "Request opt-in surveys regarding study habits, scheduling, and preferred styles. Filter through strict data retention and differential privacy.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Builds user buy-in through clear consent. Safe, reliable profiles respect privacy regulations and reflect actual learning needs." 
+                    }
                 ]
             },
             {
                 stage: "DEVELOP",
-                subStep: "Model Creation",
-                prompt: "Choose the approach for building the recommendation model.",
+                subStep: "Model Training & Selection",
+                prompt: "Select the architectural approach for your recommendation engine.",
                 options: [
-                    { id: "best", title: "Transparent Filtering", text: "Build a collaborative model. Test on a 20% validation set and check groups separately.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Per-group checks catch bias before deployment—not after users find it." },
-                    { id: "mistake", title: "Black-Box Model", text: "Use deep learning for max accuracy. Don't test by group—overall performance is the priority.", quality: "MISTAKE", qualityTag: "mistake", reason: "High overall accuracy hides failure for specific groups like students with disabilities." },
-                    { id: "shortcut", title: "Rule-Based System", text: "Use simple rules: overlap in schedules and high GPA. Transparent and quick to build.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Rules are interpretable but GPA-centric rules reproduce systemic inequities." }
+                    { 
+                        id: "best", 
+                        title: "Explainable Collaborative Filter", 
+                        text: "Deploy transparent matrix filters. Validate using a 20% distinct validation set and analyze impact on every demographic group separately.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Provides full transparency. Analyzing subgroups uncovers hidden bias and allows adjustment before deploying to students." 
+                    },
+                    { 
+                        id: "mistake", 
+                        title: "Deep Black-Box Neural Net", 
+                        text: "Deploy a deep learning net trained for max overall accuracy on study data. Subgroup evaluation is skipped to maximize shipping speed.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "High overall accuracy masks complete failure rates for crucial subgroups (like special education or ESL students)." 
+                    },
+                    { 
+                        id: "shortcut", 
+                        title: "Hard Rule-Based Shuffler", 
+                        text: "Create a simple list of fixed conditional rules: overlapping free periods & high grade mismatch. Transparent, simple to program.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "Extremely secure, but static rules do not scale over time and struggle to accommodate hundreds of shifting student requests." 
+                    }
                 ]
             },
             {
                 stage: "DEVELOP",
-                subStep: "Model Evaluation",
-                prompt: "How will you evaluate if StudyMatch is ready to deploy?",
+                subStep: "Model Validation & Auditing",
+                prompt: "Your system has finished compiling. How do you validate it before launching to 2,400 students?",
                 options: [
-                    { id: "shortcut", title: "Teacher Review", text: "Ask 20 teachers if pairings seem 'reasonable' based on their knowledge of the students.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Teacher judgment is limited by their own biases and lack of data on all interactions." },
-                    { id: "best", title: "Multi-Group Pilot", text: "Run a 200-student pilot. Collect feedback on actual connections and track outcome equity.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Pilots reveal real-world friction that test datasets simply cannot predict." },
-                    { id: "mistake", title: "Dataset-Only Review", text: "Skip human pilot. The model performed well on the test data and the deadline is fast.", quality: "MISTAKE", qualityTag: "mistake", reason: "Test performance does not guarantee real success. #1 cause of AI failure." }
+                    { 
+                        id: "shortcut", 
+                        title: "Subgroup Counselor Audit", 
+                        text: "Present sample matches to 20 guidance counselors to review pairings based on their qualitative familiarity with those students.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "Improves local alignment, but qualitative reviews alone are prone to individual cognitive biases and cannot catch structural dataset drift." 
+                    },
+                    { 
+                        id: "best", 
+                        title: "Phased Multi-Group Pilot", 
+                        text: "Launch a strict, 150-student opt-in pilot across diverse grades. Evaluate actual connection quality, student feedback, and fairness stats.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Uncovers behavioral flaws and real-world friction that mock datasets and isolated training loops physically cannot predict." 
+                    },
+                    { 
+                        id: "mistake", 
+                        title: "Dataset-Only Sign-off", 
+                        text: "Skip manual pilot phases. The neural model hit a 92% validation accuracy score, and the school board's deadline is in two days.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "Leading cause of software failure. Excellent test accuracy is meaningless if students reject matching parameters in practice." 
+                    }
                 ]
             },
             {
                 stage: "DEPLOY",
-                subStep: "Move to Production",
-                prompt: "How will you roll out StudyMatch to the student body?",
+                subStep: "Release & Governance",
+                prompt: "Determine the distribution mechanism of StudyMatch across Westbridge High school.",
                 options: [
-                    { id: "mistake", title: "Silent Release", text: "Launch with no explanation. AI recommendations should speak for themselves.", quality: "MISTAKE", qualityTag: "mistake", reason: "Unexplained AI generates mistrust. Users assume the system is broken when surprised." },
-                    { id: "best", title: "Phased Rollout", text: "Launch to Grade 9 only for 4 weeks. Brief teachers and provide a 're-match' option.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Limits exposure to bugs. Transparency and autonomy increase system trust." },
-                    { id: "shortcut", title: "Full Launch", text: "Launch to all 2,400 students at once. The pilot went well—no reason to wait.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Scales edge cases instantly. Problems are harder to fix when they hit everyone." }
+                    { 
+                        id: "mistake", 
+                        title: "Silent Mandatory Push", 
+                        text: "Push StudyMatch directly to school tablets overnight. Auto-assign groups with zero explanation—let the results speak for themselves.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "Forced, unexplained AI breeds suspicion. Distrust causes instant user rejection, dropouts, and heavy backlash." 
+                    },
+                    { 
+                        id: "best", 
+                        title: "Explainable Phased Rollout", 
+                        text: "Deploy to Grade 10 first. Distribute detailed 'Why am I matched?' cards, clear opt-out toggles, and simple match appeal routes.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Limits damage of early bugs. Promotes agency by keeping students in control, building trust and system legitimacy." 
+                    },
+                    { 
+                        id: "shortcut", 
+                        title: "Immediate Global Push", 
+                        text: "Publish on all systems to all students simultaneously. The board approved the budget, and a fast rollout makes great publicity.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "High initial adoption, but scales edge-case errors across all grades simultaneously, overwhelming support channels." 
+                    }
                 ]
             },
             {
                 stage: "DEPLOY",
-                subStep: "Monitor Performance",
-                prompt: "StudyMatch is live. Choose your monitoring approach.",
+                subStep: "Sustained Audit & Monitoring",
+                prompt: "With StudyMatch fully live on student tablets, establishing safety monitors is vital. What telemetry is tracked?",
                 options: [
-                    { id: "best", title: "Holistic Monitoring", text: "Track acceptance rates and demographic equity metrics. Schedule a 60-day review.", quality: "BEST PRACTICE", qualityTag: "best", reason: "Equity monitoring is the only way to detect disparate impact before it causes harm." },
-                    { id: "mistake", title: "Set and Forget", text: "No monitoring needed—the system is automated. Move to the next product.", quality: "MISTAKE", qualityTag: "mistake", reason: "AI fails silently as data drifts. Without monitoring, failures accumulate undetected." },
-                    { id: "shortcut", title: "Engagement Focus", text: "Monitor Daily Active Users. If students keep opening the app, it's working.", quality: "SHORTCUT", qualityTag: "shortcut", reason: "Usage is not effectiveness. Students might use it but find it unhelpful." }
+                    { 
+                        id: "best", 
+                        title: "Demographic Auditing Loop", 
+                        text: "Log ongoing match acceptance rates, survey outcomes, and group longevity broken down by demographics. Schedule an audit every 60 days.", 
+                        quality: "BEST PRACTICE", 
+                        qualityTag: "best", 
+                        reason: "Only way to catch silent demographic drift and algorithmic feedback loops before structural damage occurs." 
+                    },
+                    { 
+                        id: "mistake", 
+                        title: "Set-And-Forget Pipeline", 
+                        text: "Shut down active evaluation channels and redeploy resources. The system is autonomous and will adapt itself.", 
+                        quality: "MISTAKE", 
+                        qualityTag: "mistake", 
+                        reason: "AI models decay over time as student schedules change and drift occur, leading to systemic silent crashes within semesters." 
+                    },
+                    { 
+                        id: "shortcut", 
+                        title: "Usage & Engagement Tracking", 
+                        text: "Monitor standard app parameters: Screen Time, Click Rates, and Logins. If pupils keep opening the app, it works.", 
+                        quality: "SHORTCUT", 
+                        qualityTag: "shortcut", 
+                        reason: "A deceptive metric. Screen-time can indicate high confusion or matching difficulty rather than productive study." 
+                    }
                 ]
             }
         ];
 
+        // System alerts generated based on bad decisions
         const FAILURE_ALERTS = [
-            { id: "F1", trigger: (d) => d[0] !== "best", title: "🔴 Equity Alert", desc: "Lower GPA students are clustered together, creating bubbles. High achievers form exclusive groups.", cause: 0 },
-            { id: "F2", trigger: (d) => d[1] === "mistake", title: "🔴 Privacy Complaint", desc: "District halted the app due to unauthorized social media usage. Legal review underway.", cause: 1 },
-            { id: "F3", trigger: (d) => d[2] === "mistake", title: "🔴 Demographic Disparity", desc: "Students with IEPs have significantly lower acceptance rates. Model fails this group.", cause: 2 },
-            { id: "F4", trigger: (d) => d[3] === "mistake", title: "🔴 High Rejection Rate", desc: "43% of students reject matches. Extracurricular schedules weren't factored in.", cause: 3 },
-            { id: "F5", trigger: (d) => d[4] === "mistake", title: "🔴 Teacher Mistrust", desc: "Counselors report confusion. Teachers are advising students to ignore matches.", cause: 4 },
-            { id: "F6", trigger: (d) => d[5] !== "best", title: "🔴 Silent Data Failure", desc: "Schedule changes affected 380 students. App provided outdated matches for 5 weeks.", cause: 5 }
+            { 
+                id: "F1", 
+                trigger: (d) => d[0] !== "best", 
+                title: "🔴 GPA Segmentation Alarm", 
+                desc: "High-GPA study clusters formed instantly, completely locking lower-GPA students out of study partnerships.", 
+                cause: 0,
+                impactMetric: "Equitability: 35% (CRITICAL FAILURE)",
+                grafLabel: "GPA Isolation Profile"
+            },
+            { 
+                id: "F2", 
+                trigger: (d) => d[1] === "mistake", 
+                title: "🔴 Legal Cease & Desist", 
+                desc: "School Board halts the app. Scraped personal and social data breaches student privacy laws.", 
+                cause: 1,
+                impactMetric: "Compliance Score: 0/100 (LEGAL INJUNCTION)",
+                grafLabel: "Unauthorized Profiles Hooked"
+            },
+            { 
+                id: "F3", 
+                trigger: (d) => d[2] === "mistake", 
+                title: "🔴 Algorithmic Gender Bias Alert", 
+                desc: "Severe drop in peer matching survival for Special Education and English Learner cohorts (ESL). Black-box masked the error.", 
+                cause: 2,
+                impactMetric: "Subgroup Performance: -55% Deviation",
+                grafLabel: "ESL Match Acceptance Decline"
+            },
+            { 
+                id: "F4", 
+                trigger: (d) => d[3] === "mistake", 
+                title: "🔴 Massive Pilot Bounce Rate", 
+                desc: "Over 48% of recommended pilot groups fall apart within 48 hours. Factors ignore athletic schedule conflicts.", 
+                cause: 3,
+                impactMetric: "Group Lifespan: < 1.2 Days",
+                grafLabel: "Group Engagement Fall-off"
+            },
+            { 
+                id: "F5", 
+                trigger: (d) => d[4] === "mistake", 
+                title: "🔴 School-Wide Opt-out Backlash", 
+                desc: "Confused and angry students boycott the mandatory app, flooding technical staff with app deletions and manual changes.", 
+                cause: 4,
+                impactMetric: "Active Opt-outs: 1,120 active/day",
+                grafLabel: "Uninstall Velocity Index"
+            },
+            { 
+                id: "F6", 
+                trigger: (d) => d[5] !== "best", 
+                title: "🔴 Silent Outdates Degradation Tracker", 
+                desc: "Mid-semester scheduling changes occur across 400 classrooms. StudyMatch continues matches on stale roster lists.", 
+                cause: 5,
+                impactMetric: "Stale Recommendation Index: 78%",
+                grafLabel: "Dataset Drift Disalignment"
+            }
         ];
 
+        // Simulation Local State
         let STATE = { 
             decisions: [null, null, null, null, null, null], 
             activeFailures: [], 
             diagnosisResults: [], 
             currentStep: 0, 
-            screen: 'S1',
+            screen: 'S1', // S1, S2, DECISION, REVIEW, DASHBOARD, FEEDBACK, REPORT
             activeFeedbackStep: 0
         };
 
+        // Screen router
+        function goTo(screen) { 
+            STATE.screen = screen; 
+            render(); 
+        }
+
+        function goToDecision(stepIndex) { 
+            STATE.currentStep = stepIndex; 
+            STATE.screen = 'DECISION'; 
+            render(); 
+        }
+
+        function goBackFromDecision() {
+            if (STATE.currentStep === 0) {
+                goTo('S2');
+            } else {
+                goToDecision(STATE.currentStep - 1);
+            }
+        }
+
+        function selectFeedbackStep(idx) {
+            STATE.activeFeedbackStep = idx;
+            playSynth('click');
+            render();
+        }
+
+        function updateProgress() {
+            const step = STATE.currentStep;
+            
+            // Update stage bars (active and complete classes)
+            const bar0 = document.getElementById('bar-0');
+            const bar1 = document.getElementById('bar-1');
+            const bar2 = document.getElementById('bar-2');
+            
+            if (bar0 && bar1 && bar2) {
+                // clear classes first
+                bar0.className = 'stage-bar design';
+                bar1.className = 'stage-bar develop';
+                bar2.className = 'stage-bar deploy';
+                
+                if (step === 0 || step === 1) {
+                    bar0.classList.add('active');
+                } else if (step > 1) {
+                    bar0.classList.add('complete');
+                }
+                
+                if (step === 2 || step === 3) {
+                    bar1.classList.add('active');
+                } else if (step > 3) {
+                    bar1.classList.add('complete');
+                }
+                
+                if (step === 4 || step === 5) {
+                    bar2.classList.add('active');
+                }
+            }
+            
+            // Update sub-dots (active or filled classes)
+            for (let idx = 0; idx < 6; idx++) {
+                const dot = document.getElementById(`dot-${idx}`);
+                if (dot) {
+                    dot.classList.remove('active', 'filled');
+                    if (idx === step) {
+                        dot.classList.add('active');
+                    } else if (idx < step) {
+                        dot.classList.add('filled');
+                    }
+                }
+            }
+        }
+
+        // Main Renderer
         function render() {
             const container = document.getElementById('screen-container');
             const progress = document.getElementById('progress-container');
             const sidebar = document.getElementById('sidebar');
 
             if (STATE.screen === 'S1') {
-                progress.classList.add('hidden'); sidebar.classList.add('hidden');
+                progress.classList.add('hidden'); 
+                sidebar.classList.add('hidden');
                 container.innerHTML = `
-                    <div class="text-center" style="max-width: 600px; margin: 0 auto;">
-                        <svg class="icon-lg text-cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        <h1 class="heading-font" style="font-size: 36px; line-height: 1.1; margin-bottom: 8px;">AI LIFECYCLE CHALLENGE</h1>
-                        <p style="font-size: 16px; color: var(--text-sec); font-weight: 500;">Ship It or Fix It?</p>
-                        <div class="card" style="margin-top: 20px; text-align: left; padding: 20px;">
-                            <p style="font-size: 14px;">Building AI requires a structured <strong>AI Lifecycle</strong> to succeed. Early decisions define the ceiling of your success.</p>
-                            <p style="margin-top: 10px; font-size: 14px;">As Product Manager for <strong>StudyMatch</strong>, your mission is to help 2,400 students find study partners while ensuring fairness and privacy.</p>
+                    <div style="max-width: 650px; margin: 40px auto; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                        <svg class="icon-lg text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="3" x2="9" y2="21"/>
+                            <line x1="15" y1="3" x2="15" y2="21"/>
+                            <line x1="3" y1="9" x2="21" y2="9"/>
+                            <line x1="3" y1="15" x2="21" y2="15"/>
+                        </svg>
+                        <h1 class="heading-font" style="font-size: 38px; line-height: 1.1; margin-bottom: 8px; font-weight: 700; background: linear-gradient(90deg, var(--accent) 0%, #1E3A8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI LIFECYCLE CHALLENGE</h1>
+                        <p style="font-size: 16px; color: var(--text-sec); font-weight: 500; letter-spacing: 0.5px;">Product Manager Command Deck</p>
+                        
+                        <div class="card" style="margin-top: 24px; text-align: left; padding: 22px;">
+                            <p style="font-size: 14px; margin-bottom: 12px; color: var(--text-pri); line-height: 1.6;">
+                                Welcome, Lead Product Manager! Your district is relying on you to engineer and launch <strong>StudyMatch</strong>, an artificial intelligence matchmaking engine built to help 2,400 students assemble balanced, secure peer-study groups.
+                            </p>
+                            <p style="font-size: 14px; color: var(--text-sec); line-height: 1.6;">
+                                Algorithms are systems of power. Early engineering, privacy, and safety design criteria determine whether your model creates beautiful learning networks... or faceplants in algorithmic bias and regulatory failure.
+                            </p>
                         </div>
-                        <button class="btn-primary" onclick="goTo('S2')">READ THE BRIEF →</button>
+                        <button class="btn-primary" onclick="playSynth('click'); goTo('S2')">ENTER THE COMMAND BRIEFING →</button>
                     </div>
                 `;
             } else if (STATE.screen === 'S2') {
                 container.innerHTML = `
-                    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <h2 class="heading-font" style="font-size: 24px; text-align: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">PRODUCT BRIEF</h2>
-                        <div style="font-size: 14px; line-height: 1.5;">
-                            <p><strong>Goal:</strong> Increase collaborative studying in grades 9–12.</p>
-                            <p style="margin-top: 8px;"><strong>Requirements:</strong> Fair recommendations, privacy compliance, and student utility.</p>
+                    <div class="card" style="max-width: 650px; margin: 30px auto; padding: 24px;">
+                        <span class="stage-banner bg-design" style="font-size: 10px; margin-bottom: 12px; display: inline-block;">WESTBRIDGE HIGH SCHOOL EXECUTIVE REQUEST</span>
+                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 16px; border-bottom: 1.5px solid var(--border); padding-bottom: 12px;">SYSTEM GOALS & BRIEFING</h2>
+                        
+                        <div style="font-size: 14px; line-height: 1.6; display: flex; flex-direction: column; gap: 14px; color: var(--text-sec);">
+                            <div>
+                                <p style="color: var(--text-pri); font-weight: 600;">🎯 Primary Goal:</p>
+                                <p>Unite students across grades 9–12 based on synergistic skill sets, course difficulty alignment, and schedules to advance cooperative studying.</p>
+                            </div>
+                            <div>
+                                <p style="color: var(--text-pri); font-weight: 600;">🔒 Required Parameters:</p>
+                                <p>Strict adherence to student data rights guidelines, transparency of matches, prevent demographic fragmentation, and enable active student control.</p>
+                            </div>
                         </div>
-                        <button class="btn-primary" style="margin-top: 24px;" onclick="goToDecision(0)">BEGIN DESIGN STAGE →</button>
+
+                        <div style="margin-top: 24px; padding: 14px; background: #EFF6FF; border: 1.2px solid var(--border); border-left: 4px solid var(--accent); border-radius: 8px; font-size: 11px; color: var(--text-sec);">
+                            <strong>⚠️ OPERATIONAL BRIEF:</strong> You will navigate 6 consecutive decision stages throughout Design, Development, and Deployment. Choose wisely. Each fork alters the system's structural alignment.
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
+                            <button onclick="playSynth('click'); goTo('S1')" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                            </button>
+                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="playSynth('click'); goToDecision(0)">INITIATE DESIGN PHASE →</button>
+                        </div>
                     </div>
                 `;
             } else if (STATE.screen === 'DECISION') {
-                progress.classList.remove('hidden'); sidebar.classList.remove('hidden');
+                progress.classList.remove('hidden'); 
+                sidebar.classList.add('hidden'); // We will hide sidebar on early decision to keep screen focused on mobile structures, but show on desktop
+                if(window.innerWidth > 950) {
+                    sidebar.style.display = 'flex';
+                }
                 updateProgress();
                 const step = DECISION_CONTENT[STATE.currentStep];
-                const bannerClass = step.stage === 'DESIGN' ? 'bg-design' : step.stage === 'DEVELOP' ? 'bg-develop' : 'bg-deploy';
+                const bannerStyle = step.stage === 'DESIGN' ? 'bg-design' : step.stage === 'DEVELOP' ? 'bg-develop' : 'bg-deploy';
+                
                 container.innerHTML = `
-                    <div class="stage-banner ${bannerClass}">${step.stage} STAGE • STEP ${STATE.currentStep + 1}</div>
-                    <h2 class="heading-font" style="font-size: 24px; margin-bottom: 4px;">${step.subStep}</h2>
-                    <p style="margin-bottom: 12px; color: var(--text-sec); font-size: 14px;">${step.prompt}</p>
-                    <div class="options-container">
-                        ${step.options.map(opt => `
-                            <div class="decision-card" id="opt-${opt.id}" onclick="selectOption('${opt.id}')">
-                                <h3 class="heading-font" style="font-size: 14px;">${opt.title}</h3>
-                                <p style="color: var(--text-sec); font-size: 12px; margin-top: 6px;">${opt.text}</p>
-                            </div>
-                        `).join('')}
+                    <div style="animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                        <div class="stage-banner ${bannerStyle}" style="margin-bottom: 12px; display: inline-block;">${step.stage} PHASE • STEP ${STATE.currentStep + 1}</div>
+                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 4px; color: var(--text-pri);">${step.subStep}</h2>
+                        <p style="margin-bottom: 18px; color: var(--text-sec); font-size: 14px;">${step.prompt}</p>
+                        
+                        <div class="options-container">
+                            ${step.options.map(opt => `
+                                <div class="decision-card" id="opt-${opt.id}" onclick="selectOption('${opt.id}')">
+                                    <div>
+                                        <span class="badge" style="background: #E2E8F0; color: var(--text-sec); border: 1px solid var(--border); font-size: 8px;">OPTION</span>
+                                        <h3 class="heading-font" style="font-size: 15px; margin-bottom: 8px; color: var(--text-pri);">${opt.title}</h3>
+                                        <p style="color: var(--text-sec); font-size: 12px; line-height: 1.5;">${opt.text}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
+                            <button onclick="playSynth('click'); goBackFromDecision()" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                            </button>
+                            <button class="btn-primary hidden" style="flex: 2; margin: 0; width: auto;" id="next-btn" onclick="playSynth('click'); nextSubStep()">COMMIT DESIGN PARAMETER →</button>
+                        </div>
                     </div>
-                    <button class="btn-primary hidden" id="next-btn" onclick="nextSubStep()">CONTINUE →</button>
                 `;
+                
+                // Keep the selection active if user returns to this step
+                if (STATE.decisions[STATE.currentStep]) {
+                    selectOption(STATE.decisions[STATE.currentStep], true);
+                }
             } else if (STATE.screen === 'REVIEW') {
                 sidebar.classList.add('hidden');
+                sidebar.style.display = 'none';
                 container.innerHTML = `
-                    <div class="card" style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <h2 class="heading-font" style="font-size: 24px; margin-bottom: 16px;">PRE-LAUNCH REVIEW</h2>
-                        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+                    <div class="card" style="max-width: 650px; margin: 10px auto; padding: 24px;">
+                        <span class="stage-banner bg-deploy" style="margin-bottom: 12px; display: inline-block;">INTEGRITY CHECKPOINT</span>
+                        <h2 class="heading-font" style="font-size: 26px; margin-bottom: 12px;">PRE-LAUNCH CODE SIGN-OFF</h2>
+                        <p style="font-size: 13px; color: var(--text-sec); margin-bottom: 16px;">
+                            Review your structural configurations below before compiling. You can go back and alter design routes to optimize outcomes.
+                        </p>
+                        
+                        <div style="max-height: 300px; overflow-y: auto; border: 1.5px solid var(--border); border-radius: 10px; background: #F8FAFC; padding: 12px;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                                ${STATE.decisions.map((choice, i) => `
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 10px 0;">${DECISION_CONTENT[i].subStep}</td>
-                                        <td style="padding: 10px 0; font-weight: 600;">${DECISION_CONTENT[i].options.find(o => o.id === choice).title}</td>
-                                        <td style="padding: 10px 0; text-align: right;"><button onclick="goToDecision(${i})" style="color: var(--accent); font-weight: 700;">Change</button></td>
+                                ${STATE.decisions.map((choice, i) => {
+                                    const opt = DECISION_CONTENT[i].options.find(o => o.id === choice);
+                                    let qBadge = '';
+                                    if(opt.qualityTag === 'best') qBadge = '🟢';
+                                    else if(opt.qualityTag === 'shortcut') qBadge = '🟡';
+                                    else qBadge = '🔴';
+
+                                    return `
+                                    <tr style="border-bottom: 1.1px solid var(--border); transition: hover 0.2s;">
+                                        <td style="padding: 12px 6px; font-weight: 500; color: var(--text-muted); font-size: 11px; text-transform: uppercase;">STEP ${i+1}</td>
+                                        <td style="padding: 12px 6px; color: var(--text-pri); font-weight: 600;">${DECISION_CONTENT[i].subStep}</td>
+                                        <td style="padding: 12px 6px; color: var(--text-sec); font-size: 12px;">${qBadge} ${opt.title}</td>
+                                        <td style="padding: 12px 6px; text-align: right;">
+                                            <button onclick="playSynth('click'); goToDecision(${i})" style="color: var(--accent); font-weight: 700; background: none; font-size: 11px;">Change</button>
+                                        </td>
                                     </tr>
-                                `).join('')}
+                                    `;
+                                }).join('')}
                             </table>
                         </div>
-                        <button class="btn-primary" style="margin-top: 20px;" onclick="initiateLaunch()">LAUNCH SYSTEM →</button>
+                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
+                            <button onclick="playSynth('click'); goToDecision(5)" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK
+                            </button>
+                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="initiateLaunch()">COMBI-COMPILE & RUN →</button>
+                        </div>
                     </div>
                 `;
             } else if (STATE.screen === 'DASHBOARD') {
                 progress.classList.add('hidden');
+                sidebar.classList.add('hidden');
+                sidebar.style.display = 'none';
+                
                 const failures = FAILURE_ALERTS.filter(f => f.trigger(STATE.decisions));
                 STATE.activeFailures = failures.map(f => f.id);
+                
+                if (failures.length > 0) {
+                    setTimeout(() => playSynth('alarm'), 300);
+                } else {
+                    setTimeout(() => playSynth('correct'), 300);
+                }
+
                 container.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h2 class="heading-font" style="font-size: 28px;">DASHBOARD</h2>
-                        <div class="badge" style="background: ${failures.length > 0 ? 'var(--error)' : 'var(--success)'};">STATUS: ${failures.length > 0 ? 'ALERTS' : 'NOMINAL'}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1.5px solid var(--border); padding-bottom: 12px; flex-shrink: 0;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                <span class="code-font" style="color: var(--text-muted); font-size: 10px; text-transform: uppercase;">SYSTEM LIVE MONITOR</span>
+                            </div>
+                            <h2 class="heading-font" style="font-size: 28px; line-height: 1;">STUDYMATCH DECK</h2>
+                        </div>
+                        <div class="badge" style="background: ${failures.length > 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)'}; color: ${failures.length > 0 ? 'var(--error)' : 'var(--success)'}; border: 1px solid ${failures.length > 0 ? 'var(--error)' : 'var(--success)'}; letter-spacing: 1px;">
+                            DEEP-ANALYSIS: ${failures.length > 0 ? 'INCIDENTS REPORTED' : 'NOMINAL EXECUTION'}
+                        </div>
                     </div>
+                    
                     <div class="dashboard-grid">
                         <div class="metrics-panel">
-                            <h3 class="heading-font" style="font-size: 12px; color: var(--text-sec); margin-bottom: 8px;">LIVE METRICS</h3>
-                            <div class="metric-card">⚡ Uptime: 100%</div><div class="metric-card">📱 Latency: 42ms</div><div class="metric-card">📈 Served: 14.4k</div>
+                            <h3 class="heading-font" style="font-size: 11px; color: var(--text-sec); letter-spacing: 1px; text-transform: uppercase;">TELEMETRY AUDIT</h3>
+                            
+                            <!-- Visualization panel -->
+                            <div class="telemetry-graph-container">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="code-font" style="font-size: 9px; color: var(--text-sec);">MATCH STABILITY VECTOR</span>
+                                    <span class="code-font" style="font-size: 9px; color: ${failures.length > 0 ? 'var(--warning)' : 'var(--success)'};">${failures.length > 0 ? 'ANOMALIES PRESENT' : 'FLUIDITY STABLE'}</span>
+                                </div>
+                                <div style="flex-grow: 1; display: flex; align-items: flex-end; gap: 8px; padding-top: 14px; position: relative;">
+                                    <!-- Embedded dynamic comparative bar charts drawn dynamically in CSS/SVG to look professional -->
+                                    <svg style="width: 100%; height: 60px; overflow: visible;">
+                                        <path d="M 0,35 Q 30,${failures.length > 3 ? '10' : '45'} 60,${failures.length > 2 ? '50' : '15'} T 120,40 T 180,${failures.length > 0 ? '55' : '10'} T 240,${failures.length > 0 ? '58' : '20'}" fill="none" stroke="url(#cyanGrad)" stroke-width="2.5" />
+                                        <path d="M 0,55 Q 40,${failures.length > 1 ? '58' : '20'} 80,45 T 160,${failures.length > 4 ? '58' : '15'} T 240,55" fill="none" stroke="rgba(139, 92, 246, 0.5)" stroke-dasharray="3,3" stroke-width="1.5" />
+                                        <defs>
+                                            <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#3B82F6" />
+                                                <stop offset="100%" stop-color="#1D4ED8" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="telemetry-chart-legend">
+                                    <div class="telemetry-legend-item"><div class="telemetry-dot-legend" style="background: var(--develop);"></div>A-Metric Vector</div>
+                                    <div class="telemetry-legend-item"><div class="telemetry-dot-legend" style="background: var(--design); opacity: 0.5;"></div>Inter-Group Variance</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-card" style="border-left-color: var(--accent);">
+                                <span>🚀 Model Execution Status</span>
+                                <span class="code-font" style="font-weight: 700; color: var(--text-pri);">STANDBY ACTIVE</span>
+                            </div>
+                            <div class="metric-card" style="border-left-color: var(--deploy);">
+                                <span>📱 Algorithmic Roster Fluidity</span>
+                                <span class="code-font" style="font-weight: 700; color: var(--success);">${failures.length > 0 ? '71.2%' : '98.4%'} Optimal</span>
+                            </div>
+                            <div class="metric-card" style="border-left-color: #A855F7;">
+                                <span>🔒 Demographic Parity Delta</span>
+                                <span class="code-font" style="font-weight: 700; color: ${failures.length > 0 ? 'var(--warning)' : 'var(--success)'};">${failures.length > 0 ? '0.38 (HIGH VAR)' : '0.04 (STABLE)'}</span>
+                            </div>
+
+                            <!-- Interactive Telemetry Student Explainer -->
+                            <div style="margin-top: 16px; border: 1.5px solid var(--border); border-radius: 10px; background: #FFFFFF; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="const el = document.getElementById('telemetry-guide'); el.classList.toggle('hidden'); const arrow = document.getElementById('guide-arrow'); arrow.style.transform = el.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)'; playSynth('click');">
+                                    <span style="font-size: 12px; font-weight: 700; color: var(--text-pri); display: inline-flex; align-items: center; gap: 6px;">
+                                        📘 Student Audit Dictionary
+                                    </span>
+                                    <span id="guide-arrow" style="transition: transform 0.2s; font-size: 11px; color: var(--text-muted); display: inline-block;">▼</span>
+                                </div>
+                                <div id="telemetry-guide" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 11px; line-height: 1.45; color: var(--text-sec);">
+                                    <div>
+                                        <strong style="color: var(--accent);">📈 Match Stability Vector & Inter-Group Variance</strong>
+                                        <p style="margin-top: 2px;">Measures how much peer groups shift with tiny classroom roster tweaks. Low stability means students get spun into entirely new cohorts from single absences.</p>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--deploy);">⚡ Model Execution Status</strong>
+                                        <p style="margin-top: 2px;">Monitors whether the match neural engine's active pipeline is compiling the latest database entries or on hot standby.</p>
+                                    </div>
+                                    <div>
+                                        <strong style="color: var(--success);">📱 Algorithmic Roster Fluidity</strong>
+                                        <p style="margin-top: 2px;">The percentage of matched students free of scheduling blockages. Higher fluidity indicates higher daily study group harmony.</p>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #A855F7;">🔒 Demographic Parity Delta</strong>
+                                        <p style="margin-top: 2px;">Checks fairness across student subgroups. A delta near 0.0 means demographic equality; scores above 0.1 reveal potential group segregation.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="alerts-panel">
-                            <h3 class="heading-font" style="font-size: 12px; color: var(--text-sec); margin-bottom: 4px;">INCIDENTS (${failures.length})</h3>
-                            <p style="font-size: 11px; color: var(--accent); margin-bottom: 8px; font-weight: 700;">Instruction: Click on 'incidents' below to select the root cause and begin your analysis.</p>
-                            ${failures.length === 0 ? '<p style="font-size: 13px; color: var(--success);">All systems operational.</p>' : failures.map(f => `
+                            <h3 class="heading-font" style="font-size: 11px; color: var(--text-sec); letter-spacing: 1px; text-transform: uppercase;">ACTIVE COMPLIANCE LOGS (${failures.length})</h3>
+                            <p style="font-size: 12px; color: #818CF8; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                                💡 <strong>Lifecycle Diagnostic Mode:</strong> Review the live school failures below. Select an incidence audit line, diagnose which phase of the lifecycle caused this bug, and solve the glitch.
+                            </p>
+                            
+                            ${failures.length === 0 ? `
+                                <div style="text-align: center; padding: 40px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                                    <svg class="text-cyan" style="width: 48px; height: 48px; margin-bottom: 12px; color: var(--success);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                                    <h4 class="heading-font" style="color: var(--text-pri); font-size: 16px;">COMPLIANCE PERFECT!</h4>
+                                    <p style="font-size: 12px; color: var(--text-sec); margin-top: 6px; max-width: 320px;">StudyMatch matched 2,400 students across rosters with 0 alerts or socio-demographic fragmentation!</p>
+                                    <div style="display: flex; gap: 12px; margin-top: 20px; width: 100%; max-width: 440px;">
+                                        <button onclick="playSynth('click'); goTo('REVIEW')" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK TO REVIEW
+                                        </button>
+                                        <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="goTo('FEEDBACK')">PROCEED TO REPORT DEBRIEF →</button>
+                                    </div>
+                                </div>
+                            ` : failures.map(f => `
                                 <div class="alert-card" id="alert-${f.id}" onclick="diagnoseFailure('${f.id}')">
-                                    <h4 style="font-size: 13px; color: var(--error);">${f.title}</h4>
-                                    <p style="font-size: 11px;">${f.desc}</p>
+                                    <div class="alert-icon-ring">!</div>
+                                    <div style="flex-grow: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                            <h4 style="font-size: 13px; color: var(--text-pri); font-weight: 700;">${f.title}</h4>
+                                            <span style="font-size: 10px; color: var(--error); font-weight: 700;" class="code-font">${f.impactMetric}</span>
+                                        </div>
+                                        <p style="font-size: 11.5px; color: var(--text-sec); line-height: 1.4;">${f.desc}</p>
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
+                    
                     <div id="diagnosis-area"></div>
+
+                    ${failures.length > 0 ? `
+                        <div style="display: flex; justify-content: center; width: 100%; margin-top: 24px; padding-top: 16px; border-top: 1.5px solid var(--border);">
+                            <button onclick="playSynth('click'); goTo('REVIEW')" style="padding: 12px 24px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK TO REVIEW CONTROL
+                            </button>
+                        </div>
+                    ` : ''}
                 `;
             } else if (STATE.screen === 'FEEDBACK') {
                 const i = STATE.activeFeedbackStep;
@@ -539,146 +1461,269 @@
                 const bestOpt = DECISION_CONTENT[i].options.find(o => o.id === 'best');
                 const isWrong = STATE.decisions[i] !== 'best';
 
-                container.innerHTML = `
-                    <div class="card" style="height: 100%; display: flex; flex-direction: column;">
-                        <h2 class="heading-font" style="font-size: 24px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">DETAILED FEEDBACK</h2>
-                        <p style="font-size: 12px; color: var(--text-sec); margin-top: 8px;">Click a step to see the impact of your decision.</p>
-                        
-                        <div class="step-selector">
-                            ${DECISION_CONTENT.map((step, idx) => `
-                                <div class="step-tab ${i === idx ? 'active' : ''}" onclick="selectFeedbackStep(${idx})">
-                                    STEP ${idx + 1}
-                                </div>
-                            `).join('')}
-                        </div>
+                let qualityLabelClass = 'badge-best';
+                if(opt.qualityTag === 'shortcut') qualityLabelClass = 'badge-shortcut';
+                if(opt.qualityTag === 'mistake') qualityLabelClass = 'badge-mistake';
 
-                        <div class="detail-display">
-                            <div class="stage-banner bg-design" style="font-size: 9px; margin-bottom: 12px;">${DECISION_CONTENT[i].subStep.toUpperCase()}</div>
-                            <div>
-                                <h3 class="heading-font" style="font-size: 16px; margin-bottom: 4px;">Your Choice: ${opt.title}</h3>
-                                <span class="badge badge-${opt.qualityTag}">${opt.quality}</span>
-                                <p style="font-size: 13px; margin-top: 8px; line-height: 1.5;">${opt.reason}</p>
+                container.innerHTML = `
+                    <div class="card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <span class="stage-banner bg-develop" style="font-size: 9px; margin-bottom: 8px; display: inline-block;">PRODUCT STRATEGY DEBRIEF</span>
+                            <h2 class="heading-font" style="font-size: 26px; border-bottom: 1.5px solid var(--border); padding-bottom: 10px; color: var(--text-pri);">LIFECYCLE IMPACT ANALYSIS</h2>
+                            <p style="font-size: 13px; color: var(--text-sec); margin-top: 8px;">Explore each milestone below to examine your architectural logic.</p>
+                            
+                            <div class="step-selector">
+                                ${DECISION_CONTENT.map((step, idx) => `
+                                    <div class="step-tab ${i === idx ? 'active' : ''}" onclick="selectFeedbackStep(${idx})">
+                                        STEP ${idx + 1}
+                                    </div>
+                                `).join('')}
                             </div>
 
-                            ${isWrong ? `
-                                <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--success); border-radius: 8px;">
-                                    <h4 class="heading-font" style="font-size: 12px; color: var(--success); text-transform: uppercase;">The Best Practice Way: ${bestOpt.title}</h4>
-                                    <p style="font-size: 12px; color: var(--text-pri); margin-top: 6px; line-height: 1.5;">${bestOpt.reason}</p>
+                            <div class="detail-display">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                    <span class="stage-banner bg-design" style="font-size: 9px; margin-bottom: 0;">STAGE ${i+1}: ${DECISION_CONTENT[i].subStep.toUpperCase()}</span>
+                                    <span class="badge ${qualityLabelClass}" style="margin-bottom: 0;">${opt.quality}</span>
                                 </div>
-                            ` : ''}
+                                
+                                <div>
+                                    <h3 class="heading-font" style="font-size: 18px; margin-bottom: 6px; color: var(--text-pri);">Your Design Commitment: "${opt.title}"</h3>
+                                    <p style="font-size: 13.5px; margin-top: 8px; line-height: 1.6; color: var(--text-sec);">${opt.reason}</p>
+                                </div>
+
+                                ${isWrong ? `
+                                    <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.04); border-left: 4px solid var(--success); border-radius: 8px; border-top: 1px solid rgba(16,185,129,0.1); border-right: 1px solid rgba(16,185,129,0.1); border-bottom: 1px solid rgba(16,185,129,0.1);">
+                                        <h4 class="heading-font" style="font-size: 11px; color:#34D399; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Optimal Industry Standards: "${bestOpt.title}"</h4>
+                                        <p style="font-size: 12.5px; color: var(--text-sec); line-height: 1.5;">${bestOpt.reason}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
 
-                        <button class="btn-primary" onclick="goTo('REPORT')">VIEW PERFORMANCE SCORE →</button>
+                        <div style="display: flex; gap: 12px; margin-top: 24px; width: 100%;">
+                            <button onclick="playSynth('click'); goTo('DASHBOARD')" style="flex: 1; padding: 12px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text-sec); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> BACK TO MONITOR
+                            </button>
+                            <button class="btn-primary" style="flex: 2; margin: 0; width: auto;" onclick="playSynth('click'); goTo('REPORT')">PERFORMANCE EVALUATION →</button>
+                        </div>
                     </div>
                 `;
             } else if (STATE.screen === 'REPORT') {
-                const correct = STATE.diagnosisResults.filter(r => r.correct).length;
-                const best = STATE.decisions.filter(d => d === 'best').length;
+                const correctDiagnoses = STATE.diagnosisResults.filter(r => r.correct).length;
+                const totalFailures = STATE.activeFailures.length;
+                const bestDecisions = STATE.decisions.filter(d => d === 'best').length;
+                
+                // Educational letter grade mapping
+                let gradeChar = 'A';
+                let gradeMsg = 'Stellar performance! You crafted an ethical, high-quality, perfectly compliant system.';
+                if(bestDecisions === 5) {
+                    gradeChar = 'A-';
+                    gradeMsg = 'Great compliance framework, minimal structural drift identified.';
+                } else if(bestDecisions === 4) {
+                    gradeChar = 'B';
+                    gradeMsg = 'Solid architecture, but standard shortcuts introduced minor socio-demographic division.';
+                } else if(bestDecisions === 3) {
+                    gradeChar = 'C';
+                    gradeMsg = 'Passed baseline criteria, but significant systematic blindspots surfaced.';
+                } else if(bestDecisions <= 2) {
+                    gradeChar = 'F';
+                    gradeMsg = 'Immediate rework requested. Blindspots and shortcuts triggered major compliance breakdowns.';
+                }
+
                 container.innerHTML = `
-                    <div class="card text-center" style="max-width: 600px; margin: 0 auto; padding: 24px;">
-                        <h2 class="heading-font" style="color: var(--accent); font-size: 32px;">PM REPORT</h2>
-                        <div style="display: flex; justify-content: space-around; margin: 24px 0;">
-                            <div><div style="font-size: 24px; font-weight: 800;">${best}/6</div><div style="font-size: 9px;">BEST PRACTICE</div></div>
-                            <div><div style="font-size: 24px; font-weight: 800; color: var(--error);">${STATE.activeFailures.length}</div><div style="font-size: 9px;">ALERTS</div></div>
-                            <div><div style="font-size: 24px; font-weight: 800;">${correct}/${STATE.activeFailures.length || 0}</div><div style="font-size: 9px;">DIAGNOSES</div></div>
+                    <div class="card text-center" style="max-width: 650px; margin: 12px auto; padding: 28px; display: flex; flex-direction: column; align-items: center;">
+                        <span class="stage-banner bg-deploy" style="margin-bottom: 12px; display: inline-block; width: fit-content;">FINAL REGULATORY SUBMISSION</span>
+                        <h2 class="heading-font" style="color: var(--text-pri); font-size: 32px; margin-bottom: 4px;">PM ACCOUNTABILITY EVALUATION</h2>
+                        <p style="color: var(--text-sec); font-size: 13px; max-width: 480px; margin-bottom: 24px;">Westbridge School Board AI Ethics and Operational Safety Compliance Summary.</p>
+                        
+                        <div style="display: flex; justify-content: center; align-items: center; width: 100%; gap: 16px; margin-bottom: 24px;">
+                            <div class="metric-score-widget">
+                                <div style="font-size: 36px; font-weight: 800; color: var(--accent);" class="heading-font">${bestDecisions}/6</div>
+                                <div style="font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">Lifecycle Best Practices</div>
+                            </div>
+                            <!-- Central Glow Medal showing Grade -->
+                            <div class="metric-score-widget" style="background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%); border-color: var(--accent);">
+                                <div style="font-size: 54px; font-weight: 800; color: var(--accent); line-height: 1;" class="heading-font">${gradeChar}</div>
+                                <div style="font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">COMPLIANCE GRADE</div>
+                            </div>
+                            <div class="metric-score-widget">
+                                <div style="font-size: 36px; font-weight: 800; color: ${totalFailures > 0 ? 'var(--error)' : 'var(--success)'};" class="heading-font">${totalFailures}</div>
+                                <div style="font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-sec);">System Alerts Out of Review</div>
+                            </div>
                         </div>
-                        <button class="btn-primary" onclick="location.reload()">RESTART CHALLENGE</button>
+
+                        <div style="background: #F8FAFC; border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; text-align: left; margin-bottom: 24px; width:100%;">
+                            <h4 class="heading-font" style="color: var(--text-pri); font-size: 14px; margin-bottom: 4px;">Advisory Board Analysis:</h4>
+                            <p style="font-size: 12.5px; color: var(--text-sec); line-height: 1.6;">${gradeMsg}</p>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;" class="code-font">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${totalFailures === 0 || correctDiagnoses === totalFailures ? 'var(--success)' : 'var(--warning)'}"></div>
+                                Diagnostic Troubleshooting accuracy: ${totalFailures > 0 ? Math.round((correctDiagnoses/totalFailures)*100) : 100}% (${correctDiagnoses}/${totalFailures} glitches resolved)
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 14px; width: 100%;">
+                            <button onclick="playSynth('click'); location.reload()" style="flex: 1; padding: 12px 20px; font-weight: 700; font-size: 13px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--elevated); color: var(--text-pri);">
+                                REPLAY SIMULATION
+                            </button>
+                            <button onclick="playSynth('correct'); goTo('FEEDBACK')" class="btn-primary" style="flex: 1; width: auto; margin:0;">
+                                DETAILED DEBRIEF PANEL
+                            </button>
+                        </div>
                     </div>
                 `;
             }
         }
 
-        function goTo(screen) { STATE.screen = screen; render(); }
-        function goToDecision(stepIndex) { STATE.currentStep = stepIndex; STATE.screen = 'DECISION'; render(); }
-
-        function selectFeedbackStep(idx) {
-            STATE.activeFeedbackStep = idx;
-            render();
-        }
-
-        function updateProgress() {
-            for(let i=0; i<3; i++) {
-                const bar = document.getElementById(`bar-${i}`);
-                const stage = Math.floor(STATE.currentStep / 2);
-                bar.className = `stage-bar ${i < stage ? 'complete' : i === stage ? 'active' : ''}`;
-            }
-            for(let i=0; i<6; i++) {
-                const dot = document.getElementById(`dot-${i}`);
-                dot.className = `dot ${i < STATE.currentStep ? 'filled' : i === STATE.currentStep ? 'active' : ''}`;
-            }
-        }
-
-        function selectOption(id) {
+        // Action handles selector commit
+        function selectOption(id, bypassSound = false) {
             STATE.decisions[STATE.currentStep] = id;
+            if(!bypassSound) {
+                playSynth('select');
+            }
             document.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
-            document.getElementById(`opt-${id}`).classList.add('selected');
-            document.getElementById('next-btn').classList.remove('hidden');
+            const selectedCard = document.getElementById(`opt-${id}`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            const nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.classList.remove('hidden');
+            }
             updateDecisionLog();
         }
 
         function updateDecisionLog() {
             const log = document.getElementById('decision-log');
-            log.innerHTML = STATE.decisions.map((d, i) => d ? `<div style="font-size: 11px; margin-bottom: 8px; padding-left: 8px; border-left: 2px solid var(--accent);">
-                <div style="font-weight: 800; color: var(--text-sec); font-size: 8px;">${DECISION_CONTENT[i].subStep.toUpperCase()}</div>
-                <div>${DECISION_CONTENT[i].options.find(o => o.id === d).title}</div>
-            </div>` : '').join('');
+            log.innerHTML = STATE.decisions.map((d, i) => d ? `
+                <div style="font-size: 11px; margin-bottom: 2px; padding: 8px 10px; border-left: 2px solid var(--accent); background: #EFF6FF; border-radius: 0 6px 6px 0;">
+                    <div style="font-weight: 800; color: var(--text-muted); font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase;">STEP ${i+1}: ${DECISION_CONTENT[i].subStep}</div>
+                    <div style="font-weight: 600; color: var(--text-pri); margin-top: 2px;">${DECISION_CONTENT[i].options.find(o => o.id === d).title}</div>
+                </div>
+            ` : '').join('');
         }
 
-        function nextSubStep() { if (STATE.currentStep < 5) { STATE.currentStep++; render(); } else { goTo('REVIEW'); } }
+        function nextSubStep() { 
+            if (STATE.currentStep < 5) { 
+                STATE.currentStep++; 
+                render(); 
+            } else { 
+                goTo('REVIEW'); 
+            } 
+        }
 
         function initiateLaunch() {
             const overlay = document.getElementById('launch-overlay');
-            const countdown = document.getElementById('countdown');
+            const countdown2 = document.getElementById('countdown');
             overlay.style.display = 'flex';
             let count = 3;
+            
+            // Start of countdown sounds
+            playSynth('countdown');
             const timer = setInterval(() => {
                 count--;
-                if (count > 0) countdown.innerText = count;
-                else if (count === 0) countdown.innerText = "LAUNCH";
-                else {
+                if (count > 0) {
+                    countdown2.innerText = count;
+                    playSynth('countdown');
+                } else if (count === 0) {
+                    countdown2.innerText = "DEPLOYING";
+                    playSynth('launch', 1.5);
+                } else {
                     clearInterval(timer);
                     document.getElementById('launch-text').classList.remove('hidden');
-                    countdown.classList.add('hidden');
-                    setTimeout(() => { overlay.style.display = 'none'; goTo('DASHBOARD'); }, 2000);
+                    countdown2.classList.add('hidden');
+                    setTimeout(() => { 
+                        overlay.style.display = 'none'; 
+                        goTo('DASHBOARD'); 
+                    }, 2400);
                 }
             }, 1000);
         }
 
+        // Click diagnostic trigger for failures
         function diagnoseFailure(failId) {
+            playSynth('click');
             const area = document.getElementById('diagnosis-area');
+            const alertCards = document.querySelectorAll('.alert-card');
+            alertCards.forEach(c => c.style.borderColor = 'rgba(239, 68, 68, 0.3)');
+            
+            const activeAlert = document.getElementById(`alert-${failId}`);
+            if(activeAlert) {
+                activeAlert.style.borderColor = 'var(--error)';
+            }
+
             area.innerHTML = `
-                <div class="card" style="margin-top: 16px; padding: 16px;">
-                    <h3 style="font-size: 14px;">ROOT CAUSE ANALYSIS</h3>
+                <div class="diagnosis-pane">
+                    <span class="code-font" style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">ALGORITHM DEFECT DETECTIVE</span>
+                    <h3 style="font-size: 15px; color: var(--text-pri); margin-bottom: 4px;">TRACE CRITICAL DEFECT RE-CONSTRUCTION</h3>
+                    <p style="font-size: 12.5px; color: var(--text-sec); margin-bottom: 12px;">Where in the Lifecycle was this specific vulnerability introduced?</p>
                     <div class="diagnosis-panel">
-                        ${DECISION_CONTENT.map((step, i) => `<button class="decision-card" style="padding: 10px; font-size: 11px;" onclick="submitDiagnosis('${failId}', ${i})">${step.subStep}</button>`).join('')}
+                        ${DECISION_CONTENT.map((step, i) => `
+                            <button class="decision-card" style="padding: 12px; font-size: 12px; align-items: center; border-radius:8px; text-transform: capitalize;" onclick="submitDiagnosis('${failId}', ${i})">
+                                ${step.subStep}
+                            </button>
+                        `).join('')}
                     </div>
                 </div>
             `;
+            area.scrollIntoView({ behavior: 'smooth' });
         }
 
         function submitDiagnosis(failId, idx) {
             const fail = FAILURE_ALERTS.find(f => f.id === failId);
             const isCorrect = fail.cause === idx;
-            STATE.diagnosisResults.push({ failId, correct: isCorrect });
+            
+            // Check if we already answered this issue to prevent duplicate registry
+            if (!STATE.diagnosisResults.some(r => r.failId === failId)) {
+                STATE.diagnosisResults.push({ failId, correct: isCorrect });
+            }
+            
+            if (isCorrect) {
+                playSynth('correct');
+            } else {
+                playSynth('wrong');
+            }
+
             const area = document.getElementById('diagnosis-area');
             const step = DECISION_CONTENT[fail.cause];
             area.innerHTML = `
-                <div class="card" style="margin-top: 16px; border: 2px solid ${isCorrect ? 'var(--success)' : 'var(--error)'};">
-                    <h4 style="color: ${isCorrect ? 'var(--success)' : 'var(--error)'}">${isCorrect ? '✓ CORRECT DIAGNOSIS' : '✗ INCORRECT DIAGNOSIS'}</h4>
-                    <p style="font-size: 12px; margin-top: 4px;">Lifecycle Root: <strong>${step.subStep}</strong></p>
-                    <button class="btn-primary" style="margin-top: 12px; font-size: 11px; min-width: 100px;" onclick="finishDiagnosis('${failId}')">CONTINUE</button>
+                <div class="card" style="margin-top: 16px; border: 2.2px solid ${isCorrect ? 'var(--success)' : 'var(--error)'}; background: #FFFFFF; animation: slideUp 0.25s ease;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">${isCorrect ? '✓' : '✗'}</span>
+                        <h4 style="color: ${isCorrect ? 'var(--success)' : 'var(--error)'}; font-size: 16px;">${isCorrect ? 'CORRECT RE-INTEGRATIVE ROOT LOCATED' : 'TRACE DIAGNOSIS UNALIGNED'}</h4>
+                    </div>
+                    <p style="font-size: 13px; margin-top: 6px; color: var(--text-sec); line-height: 1.5;">
+                        ${isCorrect ? 
+                            `Correct! This systematic flaw originated during the <strong>${step.subStep}</strong> of your AI system. Neglecting these standards causes real-world biases that accumulate silently.` : 
+                            `Incorrect diagnostic vector. This precise flaw is a direct consequence of decisions taken in the <strong>${step.subStep}</strong> stage of the lifecycle.`
+                        }
+                    </p>
+                    <button class="btn-primary" style="margin-top: 14px; font-size: 12px; min-width: 140px; padding: 10px 20px;" onclick="finishDiagnosis('${failId}')">EXECUTE RESOLUTION CONSOLE</button>
                 </div>
             `;
         }
 
         function finishDiagnosis(failId) {
+            playSynth('click');
             const alert = document.getElementById(`alert-${failId}`);
-            if (alert) { alert.style.opacity = '0.4'; alert.style.pointerEvents = 'none'; }
+            if (alert) { 
+                alert.style.opacity = '0.4'; 
+                alert.style.pointerEvents = 'none'; 
+                alert.style.borderColor = 'var(--border)';
+            }
             document.getElementById('diagnosis-area').innerHTML = '';
+            
             if (STATE.diagnosisResults.length === STATE.activeFailures.length) {
-                document.getElementById('diagnosis-area').innerHTML = `<button class="btn-primary" onclick="goTo('FEEDBACK')">GO TO FULL REVIEW →</button>`;
+                document.getElementById('diagnosis-area').innerHTML = `
+                    <div style="display:flex; justify-content:center; width:100%; margin-top: 16px;">
+                        <button class="btn-primary" onclick="playSynth('correct'); goTo('FEEDBACK')" style="width: 100%;">
+                            DIAGNOSTICS COMPLETE: PROCEED TO DEBRIEF →
+                        </button>
+                    </div>
+                `;
             }
         }
+        
+        // Boot first screen
         render();
     </script>
 </body>
