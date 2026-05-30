@@ -4,946 +4,1741 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Vocabulary Studio</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Space Grotesk', 'Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            /* Light Palette Design Tokens */
-            --bg-outer: #f1f5f9;
-            --bg-primary: #ffffff;
-            --bg-card: #ffffff;
-            --bg-card-hover: #f8fafc;
-            --border-default: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --accent-primary: #0ea5e9; 
-            
-            /* Thematic Colors */
-            --theme-foundations: #2563eb; 
-            --theme-history: #d97706;  
-            --theme-modern: #7c3aed;  
-            --theme-big-ideas: #059669;   
-            --theme-lifecycle: #ea580c;   
-            
-            --success: #10b981;
-            --error: #ef4444;
-            --shadow-frame: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: var(--bg-outer);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px 20px;
-            min-height: 100vh;
-            line-height: 1.5;
-        }
-
-        h1, h2, h3, .heading-font { font-family: 'Space Grotesk', sans-serif; }
-
-        .hidden { display: none !important; }
-
-        /* Application Frame */
-        .app-frame {
-            background-color: var(--bg-primary);
-            width: 100%;
-            max-width: 1000px;
-            min-height: 800px;
-            border: 2px solid var(--accent-primary);
-            border-radius: 16px;
-            box-shadow: 0 15px 35px -5px rgba(14, 165, 233, 0.15), 0 0 15px rgba(14, 165, 233, 0.05);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .app-container {
-            padding: 3rem 4rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* S1 - Mode Select */
-        .intro-container {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .title-main { font-size: 36px; font-weight: 700; margin-bottom: 0.75rem; color: #000; letter-spacing: -0.02em; }
-        .subtitle { color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 16px; font-weight: 500; }
-        .intro-text { 
-            color: var(--text-secondary); 
-            line-height: 1.7; 
-            margin-bottom: 3.5rem; 
-            text-align: left; 
-            padding: 2rem; 
-            background: #fafafa; 
-            border: 1px solid var(--border-default); 
-            border-radius: 8px; 
-            font-size: 15px; 
-        }
-
-        .mode-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .mode-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-default);
-            border-radius: 10px;
-            padding: 2.5rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .mode-card:hover {
-            border-color: #000;
-            transform: translateY(-3px);
-            background: var(--bg-card-hover);
-        }
-
-        .mode-icon { font-size: 32px; margin-bottom: 1.25rem; display: block; }
-        .mode-title { font-weight: 700; font-size: 16px; margin-bottom: 0.75rem; letter-spacing: 0.05em; color: #000; }
-        .mode-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem; min-height: 3rem; }
-        .mode-stats { font-size: 11px; font-weight: 700; color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        /* Global UI Elements */
-        .mode-top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .back-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 12px;
-            font-family: 'Space Grotesk';
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .back-link:hover { color: #000; }
-        .mode-display-title { font-weight: 700; font-family: 'Space Grotesk'; font-size: 18px; color: #000; }
-
-        /* Icons */
-        .concept-icon {
-            margin-bottom: 1.5rem;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .concept-icon svg { width: 100%; height: 100%; stroke-width: 2; fill: none; stroke: currentColor; }
-
-        /* Flashcard S2 */
-        .flashcard-container {
+        /* 3D Flip Card Utilities */
+        .perspective-1200 {
             perspective: 1200px;
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            margin: 2rem auto 3rem;
-            cursor: pointer;
         }
-
-        .flashcard {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        .transform-style-3d {
             transform-style: preserve-3d;
         }
-
-        .flashcard.flipped { transform: rotateY(180deg); }
-
-        .flashcard-front, .flashcard-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .backface-hidden {
             backface-visibility: hidden;
-            background: var(--bg-card);
-            border: 1px solid var(--border-default);
-            border-radius: 12px;
-            padding: 3.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
         }
 
-        .flashcard-back { transform: rotateY(180deg); text-align: left; align-items: flex-start; overflow-y: auto; }
-
-        .term-display { font-size: 38px; font-weight: 700; font-family: 'Space Grotesk'; margin-bottom: 1rem; color: #000; line-height: 1.1; }
-        .flip-hint { position: absolute; bottom: 1.5rem; width: 100%; text-align: center; color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .def-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
-        .def-text { font-size: 18px; line-height: 1.6; margin-bottom: 2rem; color: var(--text-primary); font-weight: 500; }
-        .example-box { padding: 1.25rem; background: #f8fafc; border-radius: 6px; width: 100%; border: 1px solid var(--border-default); }
-        .example-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; }
-        .example-text { font-size: 15px; color: var(--text-secondary); font-style: italic; line-height: 1.5; }
-
-        .rating-buttons { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-        .rating-buttons.visible { opacity: 1; pointer-events: auto; }
-
-        .btn {
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Space Grotesk';
-            transition: all 0.2s;
-            border: 1px solid var(--border-default);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-outline { background: white; color: var(--text-primary); }
-        .btn-outline:hover { background: #f8fafc; border-color: #000; }
-        .btn-black { background: #000; color: white; border-color: #000; }
-        .btn-black:hover { opacity: 0.9; }
-
-        .nav-row { display: flex; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
-
-        /* S3 - Match */
-        .match-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            position: relative;
-        }
-
-        #match-svg {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .match-col { display: flex; flex-direction: column; gap: 0.75rem; }
-        .match-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-default);
-            border-radius: 6px;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .match-item:hover:not(.matched) { border-color: #000; background: #fafafa; }
-        .match-item.selected { border-color: var(--accent-primary); background: #f0f9ff; border-width: 2px; }
-        .match-item.matched { cursor: default; opacity: 0.5; border-style: dashed; }
-
-        .match-item .concept-icon { width: 24px; height: 24px; margin-bottom: 0; flex-shrink: 0; }
-
-        .match-term { font-weight: 700; font-family: 'Space Grotesk'; font-size: 15px; color: #000; }
-        .match-def { font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
-
-        .round-banner {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 2px solid #000;
-            padding: 4rem;
-            border-radius: 8px;
-            text-align: center;
-            z-index: 1000;
-            width: 80%;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* S4 - Challenge */
-        .question-card {
-            background: #fafafa;
-            border: 1px solid var(--border-default);
-            padding: 3rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 2rem;
-        }
-        .q-text-content { flex: 1; }
-
-        .q-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
-        .q-num { font-family: 'Space Grotesk'; font-weight: 700; color: var(--text-secondary); font-size: 13px; letter-spacing: 0.05em; }
-        .scenario-text { font-size: 20px; line-height: 1.6; color: var(--text-primary); font-weight: 600; }
-
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .option-tile {
-            background: white;
-            border: 1px solid var(--border-default);
-            padding: 1.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-family: 'Space Grotesk';
-            transition: all 0.2s;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .option-tile:hover:not(.locked) { border-color: #000; background: #fafafa; }
-        .option-tile.correct { background: #ecfdf5; border-color: var(--success); color: var(--success); border-width: 2px; }
-        .option-tile.incorrect { background: #fef2f2; border-color: var(--error); color: var(--error); border-width: 2px; }
-
-        .feedback-panel {
-            background: white;
-            margin-top: 2rem;
-            padding: 2.5rem;
-            border-radius: 8px;
-            display: none;
-            border: 1px solid var(--border-default);
-        }
-
-        .feedback-title { font-family: 'Space Grotesk'; font-weight: 700; margin-bottom: 0.75rem; font-size: 14px; }
-        .feedback-text { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 2rem; }
-
-        /* S5 - Mastery Report */
-        .total-mastery-score { font-size: 56px; font-weight: 700; text-align: center; color: #000; margin-bottom: 2.5rem; font-family: 'Space Grotesk'; }
-        .summary-stats { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem; }
-        .stat-bar-group { width: 100%; }
-        .stat-header { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-family: 'Space Grotesk'; font-size: 13px; font-weight: 700; text-transform: uppercase; }
-        .mastery-track { height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
-        .mastery-fill { height: 100%; transition: width 1s ease; }
-
-        .rank-badge-container {
-            text-align: center;
-            margin: 3.5rem 0;
-            padding: 2.5rem;
-            border: 1px solid var(--border-default);
-            border-radius: 8px;
-            background: #fafafa;
-        }
-
-        .rank-title { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; color: #000; }
-        .rank-desc { color: var(--text-secondary); max-width: 450px; margin: 0 auto; line-height: 1.6; font-size: 14px; }
-
-        /* Animations */
+        /* Shake animation for incorrect matched cards */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-6px); }
-            40% { transform: translateX(6px); }
-            60% { transform: translateX(-4px); }
-            80% { transform: translateX(4px); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
         }
-        .shake { animation: shake 0.4s ease; }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
 
-        @media (max-width: 900px) {
-            .app-frame { border-radius: 0; min-height: 100vh; }
-            .app-container { padding: 2rem 1.5rem; }
-            .mode-cards { grid-template-columns: 1fr; }
-            .options-grid { grid-template-columns: 1fr; }
-            .match-grid { gap: 1.5rem; grid-template-columns: 1fr; }
-            #match-svg { display: none; }
-            .flashcard-container { height: 450px; }
-            .question-card { flex-direction: column; padding: 2rem; }
+        /* Screen transitions */
+        .fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ambient rotating spinner animation */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin 3.5s linear infinite;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased">
 
-    <div class="app-frame">
-        <div class="app-container">
-            <!-- S1: Mode Select -->
-            <section id="s1-intro">
-                <div class="intro-container">
-                    <h1 class="title-main">AI Vocabulary Studio</h1>
-                    <p class="subtitle">RING AI Fundamentals — 35 Essential Terms for Unit 1</p>
+    <!-- Wrapper centered to mimic preview frames -->
+    <div class="min-h-screen flex items-center justify-center p-3 sm:p-6 select-none">
+        
+        <!-- Standard core interface container with requested 3px Solid Blue Border -->
+        <main id="app-root-frame" class="w-full max-w-5xl min-h-[660px] bg-white border-[3px] border-blue-600 rounded-3xl shadow-xl overflow-hidden flex flex-col justify-between relative">
+            
+            <!-- Dynamic view host -->
+            <div id="view-host" class="flex-grow flex flex-col justify-center">
+                <!-- Views will be dynamically loaded here by vanilla js -->
+            </div>
 
-                    <div class="intro-text">
-                        Success in AI starts with precise vocabulary. Whether analyzing voice assistants, debating deepfakes, or designing your own neural networks, you need to own this language. Choose a mode below to build and test your mastery across all core concepts.
+        </main>
+    </div>
+
+    <!-- Core Applet Controller Script -->
+    <script>
+        // --- MASTER SYSTEM DATA AND LEXICON --
+        const CATEGORY_COLORS = {
+            'Foundations': '#2563eb', // Blue
+            'History of AI': '#d97706', // Amber
+            'Modern AI': '#7c3aed', // Purple
+            'Five Big Ideas': '#059669', // Green
+            'AI Lifecycle': '#ea580c' // Orange
+        };
+
+        const VOCABULARY_TERMS = [
+            {
+                id: 0,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Artificial Intelligence",
+                def: "The theory and development of a computer system's ability to perform tasks that normally require human intelligence",
+                ex: "AI powers voice assistants, recommendation systems, and self-driving vehicles."
+            },
+            {
+                id: 1,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Algorithm",
+                def: "A set of steps or rules for accomplishing a task or solving a problem",
+                ex: "An algorithm tells a navigation app which roads to take to avoid traffic."
+            },
+            {
+                id: 2,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Data",
+                def: "The sets of information that provide the foundation for AI systems",
+                ex: "AI learns to recognize cats by studying millions of labeled cat photos — that's data."
+            },
+            {
+                id: 3,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "AI Model",
+                def: "A program that has been trained on a set of data to recognize certain patterns or make certain decisions",
+                ex: "A spam filter is an AI model trained on millions of spam and non-spam emails."
+            },
+            {
+                id: 4,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Weak AI / Narrow AI",
+                def: "AI systems designed to perform a single specific task or narrow range of tasks",
+                ex: "A chess-playing AI is weak AI — it beats grandmasters at chess but cannot do anything else."
+            },
+            {
+                id: 5,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Strong AI / Artificial General Intelligence (AGI)",
+                def: "A theoretical type of artificial intelligence that can perform tasks that a human can do with human-like cognitive abilities",
+                ex: "No true Strong AI exists yet — it remains a goal of AI research."
+            },
+            {
+                id: 6,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Artificial Superintelligence (ASI)",
+                def: "A theoretical type of AI that would surpass human intelligence and capabilities",
+                ex: "ASI is hypothetical — if it existed, it could outperform any human at every task."
+            },
+            {
+                id: 7,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Machine Learning (ML)",
+                def: "A branch of artificial intelligence that focuses on using data and algorithms to enable AI to imitate the way that humans learn, gradually improving its accuracy",
+                ex: "A music app learns your taste by studying which songs you play and skip."
+            },
+            {
+                id: 8,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Deep Learning (DL)",
+                def: "A subset of ML that uses deep neural networks to analyze data and determine their underlying patterns, information, and connections",
+                ex: "Deep learning powers face recognition by detecting patterns across many layers of pixel data."
+            },
+            {
+                id: 9,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Neural Network",
+                def: "An ML model inspired by the human brain, consisting of interconnected layers of nodes that process and learn from data to make predictions or decisions",
+                ex: "A neural network for weather prediction connects input nodes (temperature, humidity) to output nodes (rain/no rain)."
+            },
+            {
+                id: 10,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Natural Language",
+                def: "A language that has evolved naturally as a means of communication among people",
+                ex: "English, Spanish, and Mandarin are natural languages — they were never designed by engineers."
+            },
+            {
+                id: 11,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Natural Language Processing (NLP)",
+                def: "The subset of AI that uses machine learning to enable computers to understand and communicate with human language",
+                ex: "NLP lets chatbots understand 'What is the weather like tomorrow?' as a question about the forecast."
+            },
+            {
+                id: 12,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "AI Robotics",
+                def: "A subset of artificial intelligence that deals with the study of creating intelligent and efficient robots",
+                ex: "AI robotics powers warehouse robots that navigate shelves and pick products without human direction."
+            },
+            {
+                id: 13,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Computer Vision",
+                def: "The subset of AI enabling computers to process, analyze, and interpret visual inputs such as images and videos",
+                ex: "Computer vision helps self-driving cars identify pedestrians and traffic signals."
+            },
+            {
+                id: 14,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Expert System",
+                def: "An advanced information system that answers complex questions and solves problems in a specific domain of expertise using rule-based systems",
+                ex: "An expert system used in medicine can recommend diagnoses based on a patient's symptom data."
+            },
+            {
+                id: 15,
+                group: "Foundations",
+                color: CATEGORY_COLORS["Foundations"],
+                term: "Generative AI",
+                def: "A category of AI systems that produce new content, such as text, images, music, or videos, by learning patterns from existing data",
+                ex: "ChatGPT and DALL-E are generative AI tools that create original text and images."
+            },
+            {
+                id: 16,
+                group: "History of AI",
+                color: CATEGORY_COLORS["History of AI"],
+                term: "Perceptron",
+                def: "A model similar to a brain cell in a brain's neural network that takes multiple inputs, processes them, and produces a single output",
+                ex: "The first perceptron, built in 1957, could learn to classify simple patterns."
+            },
+            {
+                id: 17,
+                group: "History of AI",
+                color: CATEGORY_COLORS["History of AI"],
+                term: "ELIZA Effect",
+                def: "A person's tendency to falsely attribute human thought processes and emotions to an AI system, thus believing that the system is more intelligent than it actually is",
+                ex: "Users of the 1966 ELIZA chatbot often believed it genuinely understood them, though it only matched text patterns."
+            },
+            {
+                id: 18,
+                group: "History of AI",
+                color: CATEGORY_COLORS["History of AI"],
+                term: "Moravec's Paradox",
+                def: "The observation that it is easy to train computers to do things that humans find hard, but it is hard to train them to do things humans find easy",
+                ex: "AI beats chess grandmasters (hard for humans) but struggles to fold laundry (easy for humans)."
+            },
+            {
+                id: 19,
+                group: "Modern AI",
+                color: CATEGORY_COLORS["Modern AI"],
+                term: "Transformer",
+                def: "A type of AI model that processes and generates human language by determining the meaning of words given the context of the entire sentence",
+                ex: "GPT-4 is built on a transformer that reads your full prompt before responding."
+            },
+            {
+                id: 20,
+                group: "Modern AI",
+                color: CATEGORY_COLORS["Modern AI"],
+                term: "Large Language Model (LLM)",
+                def: "An AI system trained on vast amounts of information to understand, manipulate, and generate human language by predicting the likelihood of word sequences",
+                ex: "ChatGPT is a large language model trained on billions of web pages and books."
+            },
+            {
+                id: 21,
+                group: "Modern AI",
+                color: CATEGORY_COLORS["Modern AI"],
+                term: "Multimodal AI",
+                def: "Machine learning models capable of processing information from multiple modalities or types of data",
+                ex: "A multimodal AI can look at a photo and answer a spoken question about it in the same session."
+            },
+            {
+                id: 22,
+                group: "Modern AI",
+                color: CATEGORY_COLORS["Modern AI"],
+                term: "AI Data Center",
+                def: "A facility that houses the specific IT infrastructure needed to train, deploy, and deliver AI applications and services",
+                ex: "Training a large AI model requires thousands of high-powered GPUs running in an AI data center."
+            },
+            {
+                id: 23,
+                group: "Modern AI",
+                color: CATEGORY_COLORS["Modern AI"],
+                term: "Quantum Computing",
+                def: "Computing that uses quantum mechanics to solve problems beyond the ability of the most powerful classical computers",
+                ex: "Quantum computers may one day solve optimization problems that would take classical computers thousands of years."
+            },
+            {
+                id: 24,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "Sensor",
+                def: "A device that detects events or changes in its environment and sends the information to other electronics",
+                ex: "A robot vacuum uses infrared sensors to detect furniture and avoid collisions."
+            },
+            {
+                id: 25,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "Perception",
+                def: "The process of extracting information from sensory signals",
+                ex: "When a self-driving car processes camera images to identify a stop sign, it is using perception."
+            },
+            {
+                id: 26,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "Knowledge Representation",
+                def: "The process of structuring information in a form that a computer can understand",
+                ex: "A medical AI stores symptoms and diagnoses in a structured database it can query when analyzing new patients."
+            },
+            {
+                id: 27,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "Reasoning",
+                def: "The process of drawing conclusions, making inferences, and solving problems based on information",
+                ex: "An AI uses reasoning to decide the fastest route by comparing traffic, distance, and speed limit data."
+            },
+            {
+                id: 28,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "Training Data",
+                def: "The data used to teach or train AI systems",
+                ex: "A facial recognition system is trained using thousands of labeled photos — those photos are its training data."
+            },
+            {
+                id: 29,
+                group: "Five Big Ideas",
+                color: CATEGORY_COLORS["Five Big Ideas"],
+                term: "AI Transparency",
+                def: "The practice of providing clarity and openness about how artificial intelligence systems are developed, how they make decisions, and how they process data",
+                ex: "A loan AI that explains which factors lowered a person's score demonstrates AI transparency."
+            },
+            {
+                id: 30,
+                group: "AI Lifecycle",
+                color: CATEGORY_COLORS["AI Lifecycle"],
+                term: "AI Lifecycle",
+                def: "The process of moving from a problem to an AI solution",
+                ex: "Building a medical diagnosis AI follows the lifecycle from problem definition through deployment and monitoring."
+            },
+            {
+                id: 31,
+                group: "AI Lifecycle",
+                color: CATEGORY_COLORS["AI Lifecycle"],
+                term: "Iterative Process",
+                def: "An approach to problem-solving and development that involves repeating a series of steps cyclically",
+                ex: "Engineers train a model, test it, discover flaws, retrain with better data, and test again — an iterative process."
+            },
+            {
+                id: 32,
+                group: "AI Lifecycle",
+                color: CATEGORY_COLORS["AI Lifecycle"],
+                term: "Design Stage",
+                def: "The part of the AI lifecycle that defines the problem to solve and prepares the data needed to create the AI",
+                ex: "Collecting and cleaning 500,000 labeled images before training is part of the Design Stage."
+            },
+            {
+                id: 33,
+                group: "AI Lifecycle",
+                color: CATEGORY_COLORS["AI Lifecycle"],
+                term: "Develop Stage",
+                def: "The part of the AI lifecycle that involves creating and evaluating the AI itself",
+                ex: "Training the model and testing whether it reaches 95% accuracy happens in the Develop Stage."
+            },
+            {
+                id: 34,
+                group: "AI Lifecycle",
+                color: CATEGORY_COLORS["AI Lifecycle"],
+                term: "Deploy Stage",
+                def: "The part of the AI lifecycle in which the AI model is made available for use and its performance is monitored",
+                ex: "Releasing the AI to real users and watching for accuracy drops is the Deploy Stage."
+            }
+        ];
+
+        const CHALLENGE_QUESTIONS = [
+            {
+                q: "A chess-playing program beats grandmasters but cannot write a poem, drive a car, or hold a conversation. What type of AI is this?",
+                group: "Foundations",
+                options: ["Weak AI / Narrow AI", "Strong AI / Artificial General Intelligence (AGI)", "Artificial Superintelligence (ASI)", "Generative AI"],
+                correct: 0,
+                feedback: "Weak AI is designed for a single task or narrow range of tasks. A chess AI is exceptionally good at chess — and nothing else."
+            },
+            {
+                q: "You ask Siri 'What is the weather like tomorrow?' and it understands your question and reads you the forecast. Which AI subset makes this possible?",
+                group: "Foundations",
+                options: ["AI Robotics", "Natural Language Processing (NLP)", "Computer Vision", "Expert System"],
+                correct: 1,
+                feedback: "NLP enables computers to understand and communicate in human language. Siri interprets your spoken words using NLP."
+            },
+            {
+                q: "A self-driving car identifies pedestrians, traffic cones, and stop signs from its cameras in real time. Which AI subset is doing this work?",
+                group: "Foundations",
+                options: ["Machine Learning", "Natural Language Processing (NLP)", "Computer Vision", "AI Robotics"],
+                correct: 2,
+                feedback: "Computer Vision enables AI to process and interpret visual data from cameras."
+            },
+            {
+                q: "ChatGPT writes essays, DALL-E creates images from descriptions, and Suno composes music from lyrics. What do all three have in common?",
+                group: "Foundations",
+                options: ["Machine Learning", "Expert Systems", "Generative AI", "Computer Vision"],
+                correct: 2,
+                feedback: "Generative AI creates new content — text, images, music, video — by learning patterns from existing data."
+            },
+            {
+                q: "A doctor uses a diagnostic software tool that asks about symptoms and applies a set of medical rules to recommend possible diagnoses. The tool does not learn. What is this?",
+                group: "Foundations",
+                options: ["Machine Learning", "Expert System", "Neural Network", "Deep Learning"],
+                correct: 1,
+                feedback: "Expert systems use pre-programmed rules in a specific domain to answer complex questions."
+            },
+            {
+                q: "Users of an early 1960s chatbot began sharing personal problems with it and felt it truly understood them — even though it was just matching text patterns. What is this?",
+                group: "History of AI",
+                options: ["Moravec's Paradox", "ELIZA Effect", "Turing Test", "Perceptron Bias"],
+                correct: 1,
+                feedback: "The ELIZA Effect describes humans falsely attributing understanding and emotion to AI systems."
+            },
+            {
+                q: "AI easily defeats grandmasters at chess — a task humans find hard. But the same AI fails to fold a shirt — a task any toddler can do. Why?",
+                group: "History of AI",
+                options: ["Weak AI Limitation", "ELIZA Effect", "Moravec's Paradox", "AI Winter"],
+                correct: 2,
+                feedback: "Moravec's Paradox observes that high-level reasoning is often easy for AI, while low-level sensory-motor skills are very difficult."
+            },
+            {
+                q: "Unlike older AI models that processed words one by one, ChatGPT reads your entire message at once before generating a response. This is because it uses which architecture?",
+                group: "Modern AI",
+                options: ["Perceptron", "Expert System", "Transformer", "Decision Tree"],
+                correct: 2,
+                feedback: "The Transformer architecture processes the full context of a sentence simultaneously."
+            },
+            {
+                q: "An AI assistant can hear you describe a photo, look at the photo itself, and then answer your spoken question about it — all in one session. What type of AI is this?",
+                group: "Modern AI",
+                options: ["Large Language Model (LLM)", "Multimodal AI", "Computer Vision", "AI Robotics"],
+                correct: 1,
+                feedback: "Multimodal AI processes multiple types of data — speech (audio) and image (visual) — simultaneously."
+            },
+            {
+                q: "A robot vacuum detects that it is close to a wall using infrared beams, then turns to avoid a collision. The infrared beam system is the robot's what?",
+                group: "Five Big Ideas",
+                options: ["Perception", "Reasoning", "Sensor", "Training Data"],
+                correct: 2,
+                feedback: "Sensors detect changes in the environment and send that information to the system."
+            },
+            {
+                q: "A medical AI lists the three symptoms that most influenced its diagnosis so that the doctor can verify the reasoning. This is an example of:",
+                group: "Five Big Ideas",
+                options: ["Training Data", "Knowledge Representation", "AI Transparency", "Perception"],
+                correct: 2,
+                feedback: "AI Transparency means providing clarity about how an AI makes decisions."
+            },
+            {
+                q: "An AI stores all medical facts — symptoms, diseases, drug interactions — in a structured database it can search while analyzing a patient. This process is:",
+                group: "Five Big Ideas",
+                options: ["Reasoning", "Perception", "Training Data", "Knowledge Representation"],
+                correct: 3,
+                feedback: "Knowledge Representation structures information so a computer can access and use it efficiently."
+            },
+            {
+                q: "An AI model has been tested and approved. Engineers now deploy it to hospital systems where real doctors use it daily. What stage is this?",
+                group: "AI Lifecycle",
+                options: ["Design Stage", "Develop Stage", "Deploy Stage", "Iterative Process"],
+                correct: 2,
+                feedback: "The Deploy Stage is when the AI is made available for real use and its performance is monitored."
+            },
+            {
+                q: "After testing, engineers find their model only reaches 78% accuracy. They return to collect more training data, retrain the model, and test again. This is a/an:",
+                group: "AI Lifecycle",
+                options: ["AI Lifecycle", "Deploy Stage", "Iterative Process", "Design Stage"],
+                correct: 2,
+                feedback: "An iterative process repeatedly cycles through steps like training and testing to improve outcomes."
+            },
+            {
+                q: "Before building their model, a team spends four weeks gathering 200,000 images, labeling each one, and removing duplicates. Which part of the lifecycle is this?",
+                group: "AI Lifecycle",
+                options: ["Develop Stage", "Deploy Stage", "Design Stage", "Iterative Process"],
+                correct: 2,
+                feedback: "The Design Stage defines the problem and prepares the data before the model is built."
+            }
+        ];
+
+        // --- GLOBAL STATE ---
+        let mastered = new Set();
+        let reviewAgain = new Set();
+        let matchFirstTryScore = 0;
+        let challengeScore = 0;
+
+        // Current application mode: 'intro', 'flashcard', 'match', 'challenge', 'mastery'
+        let currentMode = 'intro';
+
+        // Flashcard State
+        let fcDeck = [];
+        let fcCurrentIndex = 0;
+        let fcFlipped = false;
+
+        // Match State
+        let matchRound = 0;
+        let matchAttempts = {}; // termId -> count
+        let matchSelectedTermId = null;
+        let matchMatchedIds = new Set();
+        let matchShuffledDefs = [];
+        let matchRoundCompleted = false;
+        let matchLines = [];
+
+        // Challenge State
+        let challengeIndex = 0;
+        let challengeSelectedIdx = null;
+        let challengeIsLocked = false;
+        let challengeAnsweredLog = []; // { qIndex, correct, selectedIndex }
+        let currentChallengeScore = 0;
+
+        // SVG Vectors Helper
+        function getCategoryIconSvg(category, sizeClass = "w-5 h-5") {
+            if (category === "Foundations") {
+                return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>`;
+            } else if (category === "History of AI") {
+                return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else if (category === "Modern AI") {
+                return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469h-4a3.374 3.374 0 00-1.125-2.429l-.547-.547z"></path></svg>`;
+            } else if (category === "Five Big Ideas") {
+                return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>`;
+            } else {
+                return `<svg class="${sizeClass}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z"></path></svg>`;
+            }
+        }
+
+        // --- SCREEN ROUTING ENGINE ---
+        function navigateTo(mode) {
+            currentMode = mode;
+            fcFlipped = false;
+            
+            const host = document.getElementById('view-host');
+            host.innerHTML = ''; // Clear output
+
+            // Main frame layout refresh
+            const wrapper = document.createElement('div');
+            wrapper.className = 'w-full fade-in';
+
+            if (mode === 'intro') {
+                wrapper.innerHTML = renderIntroScreen();
+            } else if (mode === 'flashcard') {
+                initFlashcardDeck();
+                wrapper.innerHTML = renderFlashcardScreen();
+            } else if (mode === 'match') {
+                initMatchRound(0);
+                wrapper.innerHTML = renderMatchScreen();
+                // Add minor timeout to allow grid rendering before we draw coordinates lines
+                setTimeout(recalculateMatchLines, 100);
+            } else if (mode === 'challenge') {
+                initChallenge();
+                wrapper.innerHTML = renderChallengeScreen();
+            } else if (mode === 'mastery') {
+                wrapper.innerHTML = renderMasteryScreen();
+            }
+
+            host.appendChild(wrapper);
+            
+            // Post render action listeners hooks
+            if (mode === 'match') {
+                setupMatchTransitionBanner();
+            }
+        }
+
+        // --- 1. INTROSCREEN RENDERING ---
+        function renderIntroScreen() {
+            const hasProgress = (mastered.size > 0 || matchFirstTryScore > 0 || challengeScore > 0);
+            
+            return `
+                <div class="max-w-4xl mx-auto py-8 px-4 font-sans">
+                    <div class="text-center mb-10">
+                        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 mb-3 font-display">
+                            AI Vocabulary Studio
+                        </h1>
+                        <p class="text-lg font-medium text-slate-500 max-w-2xl mx-auto">
+                            RING AI Fundamentals
+                        </p>
                     </div>
 
-                    <div class="mode-cards">
-                        <div class="mode-card" onclick="navTo('s2-flashcard')">
-                            <span class="mode-icon">📇</span>
-                            <div class="mode-title">FLASHCARD</div>
-                            <p class="mode-desc">Active recall study with term, definition, and practical examples.</p>
-                            <span class="mode-stats">35 Terms • Study Mode</span>
-                        </div>
-                        <div class="mode-card" onclick="navTo('s3-match')">
-                            <span class="mode-icon">🔗</span>
-                            <div class="mode-title">MATCH</div>
-                            <p class="mode-desc">Connect terms to their definitions across 5 curated rounds.</p>
-                            <span class="mode-stats">35 Pairs • Rapid Match</span>
-                        </div>
-                        <div class="mode-card" onclick="navTo('s4-challenge')">
-                            <span class="mode-icon">⚡</span>
-                            <div class="mode-title">CHALLENGE</div>
-                            <p class="mode-desc">Apply your knowledge to complex real-world AI scenarios.</p>
-                            <span class="mode-stats">15 Scenarios • Scored Mode</span>
-                        </div>
+                    <div class="text-slate-600 text-[15px] leading-relaxed bg-slate-50 border border-slate-200 rounded-2xl p-6 md:p-8 mb-12 shadow-sm">
+                        <p class="mb-4 font-medium text-slate-800">
+                            Success in artificial intelligence starts with owning its language.
+                        </p>
+                        <p>
+                            Whether you are evaluating deepfakes, designing intelligent systems, or analyzing sensory perception, possessing a razor-sharp lexicon is non-negotiable. This custom studio is designed to build fluid retrieval and application of <strong>35 pivotal concepts</strong>. Choose a study mode below to explore cards, race against definitions, or test your reasoning in simulated scenarios.
+                        </p>
                     </div>
-                </div>
-            </section>
 
-            <!-- S2: Flashcards -->
-            <section id="s2-flashcard" class="hidden">
-                <div class="mode-top-bar">
-                    <a class="back-link" onclick="navTo('s1-intro')">← EXIT MODE</a>
-                    <span class="mode-display-title">FLASHCARD STUDIO</span>
-                    <span id="fc-progress" class="heading-font">Card 1 / 35</span>
-                </div>
-
-                <div class="flashcard-container" id="fc-container">
-                    <div class="flashcard" id="fc-card">
-                        <div class="flashcard-front">
-                            <div class="concept-icon" id="fc-icon-front"></div>
-                            <h2 class="term-display" id="fc-term">AI Model</h2>
-                            <div class="flip-hint">Click or Space to flip</div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Mode 1: Flashcard -->
+                        <div onclick="navigateTo('flashcard')" 
+                             class="group flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 md:p-8 cursor-pointer shadow-sm hover:shadow-md hover:border-neutral-900 transition-all duration-200 hover:-translate-y-1">
+                            <div class="bg-slate-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-slate-100">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">FLASHCARD</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                                Active recall study with term, definition, and practical examples.
+                            </p>
+                            <div class="mt-auto space-y-3">
+                                <div class="inline-block border text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider bg-blue-50 text-blue-700 border-blue-100">
+                                    35 Terms • Study Mode
+                                </div>
+                                <div class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                                    ${mastered.size > 0 ? `${mastered.size}/35 Mastered` : 'Not Started'}
+                                </div>
+                            </div>
                         </div>
-                        <div class="flashcard-back">
-                            <div class="def-label">Definition</div>
-                            <p class="def-text" id="fc-def">Definition text goes here...</p>
-                            <div class="example-box">
-                                <div class="example-label">Real-World Example</div>
-                                <p class="example-text" id="fc-example">Example text goes here...</p>
+
+                        <!-- Mode 2: Match -->
+                        <div onclick="navigateTo('match')" 
+                             class="group flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 md:p-8 cursor-pointer shadow-sm hover:shadow-md hover:border-neutral-900 transition-all duration-200 hover:-translate-y-1">
+                            <div class="bg-slate-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-slate-100">
+                                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">MATCH</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                                Connect terms to their definitions across 5 curated rounds.
+                            </p>
+                            <div class="mt-auto space-y-3">
+                                <div class="inline-block border text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider bg-purple-50 text-purple-700 border-purple-100">
+                                    35 Pairs • Rapid Match
+                                </div>
+                                <div class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                                    ${matchFirstTryScore > 0 ? `Best Score: ${matchFirstTryScore}/35` : 'Not Played'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mode 3: Challenge -->
+                        <div onclick="navigateTo('challenge')" 
+                             class="group flex flex-col h-full bg-white border border-slate-200 rounded-3xl p-6 md:p-8 cursor-pointer shadow-sm hover:shadow-md hover:border-neutral-900 transition-all duration-200 hover:-translate-y-1">
+                            <div class="bg-slate-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-xs border border-slate-100">
+                                <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold tracking-wider text-slate-900 mb-2 font-display">CHALLENGE</h3>
+                            <p class="text-sm text-slate-500 leading-relaxed mb-6 flex-grow">
+                                Apply your knowledge to complex real-world AI scenarios.
+                            </p>
+                            <div class="mt-auto space-y-3">
+                                <div class="inline-block border text-[11px] font-bold px-3 py-1 rounded-full text-center w-full uppercase tracking-wider bg-amber-50 text-amber-700 border-amber-100">
+                                    15 Scenarios • Scored Mode
+                                </div>
+                                <div class="text-xs text-center text-slate-400 font-semibold uppercase tracking-wider">
+                                    ${challengeScore > 0 ? `Best Score: ${challengeScore}/15` : 'Not Scored'}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="rating-buttons" id="fc-rating-ui">
-                    <button class="btn btn-outline" onclick="flashcardRating('review')">🔁 Review Again</button>
-                    <button class="btn btn-black" onclick="flashcardRating('got-it')">✅ Got It</button>
-                </div>
-
-                <div class="nav-row">
-                    <button class="btn btn-outline" onclick="flashcardPrev()">Prev</button>
-                    <button class="btn btn-outline" onclick="flashcardNext()">Next</button>
-                    <button class="btn btn-outline" onclick="flashcardShuffle()">Shuffle</button>
-                </div>
-            </section>
-
-            <!-- S3: Match Mode -->
-            <section id="s3-match" class="hidden">
-                <div class="mode-top-bar">
-                    <a class="back-link" onclick="navTo('s1-intro')">← EXIT MODE</a>
-                    <span class="mode-display-title">MATCHING PRESSURE</span>
-                    <span id="match-score-ui" class="heading-font">0 / 35</span>
-                </div>
-
-                <h3 id="match-round-title" style="margin-bottom: 2.5rem; text-align: center; font-family: 'Space Grotesk'; text-transform: uppercase; font-size: 14px;">Round 1 of 5</h3>
-
-                <div class="match-grid">
-                    <svg id="match-svg"></svg>
-                    <div class="match-col" id="match-left"></div>
-                    <div class="match-col" id="match-right"></div>
-                </div>
-
-                <div id="round-complete-ui" class="hidden" style="text-align: center; margin-top: 4rem;">
-                    <h2 style="margin-bottom: 2rem; font-family: 'Space Grotesk';">Round Complete</h2>
-                    <button class="btn btn-black" id="btn-next-round" style="margin: 0 auto; min-width: 200px;">CONTINUE →</button>
-                </div>
-            </section>
-
-            <!-- S4: Challenge Mode -->
-            <section id="s4-challenge" class="hidden">
-                <div class="mode-top-bar">
-                    <a class="back-link" onclick="navTo('s1-intro')">← EXIT MODE</a>
-                    <span class="mode-display-title">SCENARIO CHALLENGE</span>
-                    <span id="challenge-score-ui" class="heading-font">SCORE: 0 / 0</span>
-                </div>
-
-                <div class="question-card">
-                    <div class="concept-icon" id="q-icon"></div>
-                    <div class="q-text-content">
-                        <div class="q-meta">
-                            <span class="q-num" id="q-counter">QUESTION 1 / 15</span>
-                        </div>
-                        <p class="scenario-text" id="q-scenario">Scenario text goes here?</p>
+                    ${hasProgress ? `
+                    <div class="mt-12 flex justify-center border-t border-slate-100 pt-8">
+                        <button onclick="navigateTo('mastery')"
+                                class="flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3.5 rounded-2xl text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all border border-indigo-600 font-display cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            View Study Mastery Report & Review List
+                        </button>
                     </div>
+                    ` : ''}
                 </div>
-
-                <div class="options-grid" id="q-options"></div>
-
-                <div class="feedback-panel" id="q-feedback">
-                    <div class="feedback-title" id="q-feedback-title">✓ CORRECT</div>
-                    <p class="feedback-text" id="q-feedback-text">Explanation...</p>
-                    <button class="btn btn-black" onclick="challengeNext()">PROCEED TO NEXT QUESTION →</button>
-                </div>
-            </section>
-
-            <!-- S5: Mastery Report -->
-            <section id="s5-mastery" class="hidden">
-                <div style="text-align: center; margin-bottom: 3.5rem;">
-                    <h1 class="title-main">Mastery Report</h1>
-                    <p class="subtitle">Session Overview & Analysis</p>
-                </div>
-
-                <div class="total-mastery-score" id="report-total-percent">0%</div>
-
-                <div class="summary-stats">
-                    <div class="stat-bar-group">
-                        <div class="stat-header"><span>FLASHCARD MASTERY</span> <span id="stat-fc-val">0/35</span></div>
-                        <div class="mastery-track"><div class="mastery-fill" id="stat-fc-bar" style="background: var(--text-primary);"></div></div>
-                    </div>
-                    <div class="stat-bar-group">
-                        <div class="stat-header"><span>MATCH ACCURACY</span> <span id="stat-match-val">0/35</span></div>
-                        <div class="mastery-track"><div class="mastery-fill" id="stat-match-bar" style="background: var(--text-primary);"></div></div>
-                    </div>
-                    <div class="stat-bar-group">
-                        <div class="stat-header"><span>CHALLENGE PERFORMANCE</span> <span id="stat-chal-val">0/15</span></div>
-                        <div class="mastery-track"><div class="mastery-fill" id="stat-chal-bar" style="background: var(--text-primary);"></div></div>
-                    </div>
-                </div>
-
-                <div class="rank-badge-container">
-                    <div class="rank-title" id="rank-name">ANALYZING RESULTS...</div>
-                    <p class="rank-desc" id="rank-desc"></p>
-                </div>
-
-                <div class="review-panel" id="review-panel">
-                    <h3 class="heading-font" style="text-transform: uppercase; font-size: 13px; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 1rem;">Flagged for Further Review</h3>
-                    <ul class="review-list" id="review-list" style="list-style: none; border-top: 1px solid var(--border-default);"></ul>
-                </div>
-
-                <div class="nav-row" style="margin: 4rem 0 2rem;">
-                    <button class="btn btn-black" onclick="navTo('s2-flashcard')">BACK TO STUDY</button>
-                    <button class="btn btn-outline" onclick="navTo('s4-challenge'); resetChallenge();">RETRY CHALLENGE</button>
-                    <button class="btn btn-outline" onclick="navTo('s1-intro')">DONE</button>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <div id="overlay-banner" class="round-banner hidden">
-        <h2 id="overlay-title">ROUND 1</h2>
-        <p id="overlay-subtitle"></p>
-    </div>
-
-    <script>
-        const ICONS = {
-            "Foundations": `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
-            "History of AI": `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-            "Modern AI": `<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-            "Five Big Ideas": `<svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M15.09 14c.18-.19.33-.42.49-.67.38-.58.6-1.27.6-2.01 0-2.21-1.79-4-4-4S8.18 9.11 8.18 11.32c0 .74.22 1.43.6 2.01.16.25.31.48.49.67.57.6 1.09 1.29 1.34 2.15l.07.25h2.64l.07-.25c.25-.86.77-1.55 1.34-2.15z"/></svg>`,
-            "AI Lifecycle": `<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.99 6.57 2.57L21 8M21 3v5h-5"/></svg>`
-        };
-
-        const DATA = {
-            terms: [
-                { id: 0, group: "Foundations", color: "#2563eb", term: "Artificial Intelligence", def: "The theory and development of a computer system's ability to perform tasks that normally require human intelligence", ex: "AI powers voice assistants, recommendation systems, and self-driving vehicles." },
-                { id: 1, group: "Foundations", color: "#2563eb", term: "Algorithm", def: "A set of steps or rules for accomplishing a task or solving a problem", ex: "An algorithm tells a navigation app which roads to take to avoid traffic." },
-                { id: 2, group: "Foundations", color: "#2563eb", term: "Data", def: "The sets of information that provide the foundation for AI systems", ex: "AI learns to recognize cats by studying millions of labeled cat photos — that's data." },
-                { id: 3, group: "Foundations", color: "#2563eb", term: "AI Model", def: "A program that has been trained on a set of data to recognize certain patterns or make certain decisions", ex: "A spam filter is an AI model trained on millions of spam and non-spam emails." },
-                { id: 4, group: "Foundations", color: "#2563eb", term: "Weak AI / Narrow AI", def: "AI systems designed to perform a single specific task or narrow range of tasks", ex: "A chess-playing AI is weak AI — it beats grandmasters at chess but cannot do anything else." },
-                { id: 5, group: "Foundations", color: "#2563eb", term: "Strong AI / AGI", def: "A theoretical type of artificial intelligence that can perform tasks that a human can do with human-like cognitive abilities", ex: "No true Strong AI exists yet — it remains a goal of AI research." },
-                { id: 6, group: "Foundations", color: "#2563eb", term: "ASI / Artificial Superintelligence", def: "A theoretical type of AI that would surpass human intelligence and capabilities", ex: "ASI is hypothetical — if it existed, it could outperform any human at every task." },
-                { id: 7, group: "Foundations", color: "#2563eb", term: "Machine Learning (ML)", def: "A branch of artificial intelligence that focuses on using data and algorithms to enable AI to imitate the way that humans learn, gradually improving its accuracy", ex: "A music app learns your taste by studying which songs you play and skip." },
-                { id: 8, group: "Foundations", color: "#2563eb", term: "Deep Learning (DL)", def: "A subset of ML that uses deep neural networks to analyze data and determine their underlying patterns, information, and connections", ex: "Deep learning powers face recognition by detecting patterns across many layers of pixel data." },
-                { id: 9, group: "Foundations", color: "#2563eb", term: "Neural Network", def: "An ML model inspired by the human brain, consisting of interconnected layers of nodes that process and learn from data to make predictions or decisions", ex: "A neural network for weather prediction connects input nodes (temperature, humidity) to output nodes (rain/no rain." },
-                { id: 10, group: "Foundations", color: "#2563eb", term: "Natural Language", def: "A language that has evolved naturally as a means of communication among people", ex: "English, Spanish, and Mandarin are natural languages — they were never designed by engineers." },
-                { id: 11, group: "Foundations", color: "#2563eb", term: "Natural Language Processing (NLP)", def: "The subset of AI that uses machine learning to enable computers to understand and communicate with human language", ex: "NLP lets chatbots understand 'What is the weather like tomorrow?' as a question about the forecast." },
-                { id: 12, group: "Foundations", color: "#2563eb", term: "AI Robotics", def: "A subset of artificial intelligence that deals with the study of creating intelligent and efficient robots", ex: "AI robotics powers warehouse robots that navigate shelves and pick products without human direction." },
-                { id: 13, group: "Foundations", color: "#2563eb", term: "Computer Vision", def: "The subset of AI enabling computers to process, analyze, and interpret visual inputs such as images and videos", ex: "Computer vision helps self-driving cars identify pedestrians and traffic lights." },
-                { id: 14, group: "Foundations", color: "#2563eb", term: "Expert System", def: "An advanced information system that answers complex questions and solves problems in a specific domain of expertise using rule-based systems", ex: "An expert system used in medicine can recommend diagnoses based on a patient's symptom data." },
-                { id: 15, group: "Foundations", color: "#2563eb", term: "Generative AI", def: "A category of AI systems that produce new content, such as text, images, music, or videos, by learning patterns from existing data", ex: "ChatGPT and DALL-E are generative AI tools that create original text and images." },
-                { id: 16, group: "History of AI", color: "#d97706", term: "Perceptron", def: "A model similar to a brain cell in a brain's neural network that takes multiple inputs, processes them, and produces a single output", ex: "The first perceptron, built in 1957, could learn to classify simple patterns." },
-                { id: 17, group: "History of AI", color: "#d97706", term: "ELIZA Effect", def: "A person's tendency to falsely attribute human thought processes and emotions to an AI system, thus believing that the system is more intelligent than it actually is", ex: "Users of the 1966 ELIZA chatbot often believed it genuinely understood them, though it only matched text patterns." },
-                { id: 18, group: "History of AI", color: "#d97706", term: "Moravec's Paradox", def: "The observation that it is easy to train computers to do things that humans find hard, but it is hard to train them to do things humans find easy", ex: "AI beats chess grandmasters (hard for humans) but struggles to fold laundry (easy for humans)." },
-                { id: 19, group: "Modern AI", color: "#7c3aed", term: "Transformer", def: "A type of AI model that processes and generates human language by determining the meaning of words given the context of the entire sentence", ex: "GPT-4 is built on a transformer that reads your full prompt before responding." },
-                { id: 20, group: "Modern AI", color: "#7c3aed", term: "Large Language Model (LLM)", def: "An AI system trained on vast amounts of information to understand, manipulate, and generate human language by predicting the likelihood of word sequences", ex: "ChatGPT is a large language model trained on billions of web pages and books." },
-                { id: 21, group: "Modern AI", color: "#7c3aed", term: "Multimodal AI", def: "Machine learning models capable of processing information from multiple modalities or types of data", ex: "A multimodal AI can look at a photo and answer a spoken question about it in the same session." },
-                { id: 22, group: "Modern AI", color: "#7c3aed", term: "AI Data Center", def: "A facility that houses the specific IT infrastructure needed to train, deploy, and deliver AI applications and services", ex: "Training a large AI model requires thousands of high-powered GPUs running in an AI data center." },
-                { id: 23, group: "Modern AI", color: "#7c3aed", term: "Quantum Computing", def: "Computing that uses quantum mechanics to solve problems beyond the ability of the most powerful classical computers", ex: "Quantum computers may one day solve optimization problems that would take classical computers thousands of years." },
-                { id: 24, group: "Five Big Ideas", color: "#059669", term: "Sensor", def: "A device that detects events or changes in its environment and sends the information to other electronics", ex: "A robot vacuum uses infrared sensors to detect furniture and avoid collisions." },
-                { id: 25, group: "Five Big Ideas", color: "#059669", term: "Perception", def: "The process of extracting information from sensory signals", ex: "When a self-driving car processes camera images to identify a stop sign, it is using perception." },
-                { id: 26, group: "Five Big Ideas", color: "#059669", term: "Knowledge Representation", def: "The process of structuring information in a form that a computer can understand", ex: "A medical AI stores symptoms and diagnoses in a structured database it can query when analyzing new patients." },
-                { id: 27, group: "Five Big Ideas", color: "#059669", term: "Reasoning", def: "The process of drawing conclusions, making inferences, and solving problems based on information", ex: "An AI uses reasoning to decide the fastest route by comparing traffic, distance, and speed limit data." },
-                { id: 28, group: "Five Big Ideas", color: "#059669", term: "Training Data", def: "The data used to teach or train AI systems", ex: "A facial recognition system is trained using thousands of labeled photos — those photos are its training data." },
-                { id: 29, group: "Five Big Ideas", color: "#059669", term: "AI Transparency", def: "The practice of providing clarity and openness about how artificial intelligence systems are developed, how they make decisions, and how they process data", ex: "A loan AI that explains which factors lowered a person's score demonstrates AI transparency." },
-                { id: 30, group: "AI Lifecycle", color: "#ea580c", term: "AI Lifecycle", def: "The process of moving from a problem to an AI solution", ex: "Building a medical diagnosis AI follows the lifecycle from problem definition through deployment and monitoring." },
-                { id: 31, group: "AI Lifecycle", color: "#ea580c", term: "Iterative Process", def: "An approach to problem-solving and development that involves repeating a series of steps cyclically", ex: "Engineers train a model, test it, discover flaws, retrain with better data, and test again — an iterative process." },
-                { id: 32, group: "AI Lifecycle", color: "#ea580c", term: "Design Stage", def: "The part of the AI lifecycle that defines the problem to solve and prepares the data needed to create the AI", ex: "Collecting and cleaning 500,000 labeled images before training is part of the Design Stage." },
-                { id: 33, group: "AI Lifecycle", color: "#ea580c", term: "Develop Stage", def: "The part of the AI lifecycle that involves creating and evaluating the AI itself", ex: "Training the model and testing whether it reaches 95% accuracy happens in the Develop Stage." },
-                { id: 34, group: "AI Lifecycle", color: "#ea580c", term: "Deploy Stage", def: "The part of the AI lifecycle in which the AI model is made available for use and its performance is monitored", ex: "Releasing the AI to real users and watching for accuracy drops is the Deploy Stage." }
-            ],
-            questions: [
-                { q: "A chess-playing program beats grandmasters but cannot write a poem, drive a car, or hold a conversation. What type of AI is this?", group: "Foundations", options: ["Weak AI / Narrow AI", "Strong AI / AGI", "ASI", "Generative AI"], correct: 0, feedback: "Weak AI is designed for a single task or narrow range of tasks. A chess AI is exceptionally good at chess — and nothing else." },
-                { q: "You ask Siri 'What is the weather like tomorrow?' and it understands your question and reads you the forecast. Which AI subset makes this possible?", group: "Foundations", options: ["AI Robotics", "Natural Language Processing", "Computer Vision", "Expert System"], correct: 1, feedback: "NLP enables computers to understand and communicate in human language. Siri interprets your spoken words using NLP." },
-                { q: "A self-driving car identifies pedestrians, traffic cones, and stop signs from its cameras in real time. Which AI subset is doing this work?", group: "Foundations", options: ["Machine Learning", "NLP", "Computer Vision", "AI Robotics"], correct: 2, feedback: "Computer Vision enables AI to process and interpret visual data from cameras." },
-                { q: "ChatGPT writes essays, DALL-E creates images from descriptions, and Suno composes music from lyrics. What do all three have in common?", group: "Foundations", options: ["Machine Learning", "Expert Systems", "Generative AI", "Computer Vision"], correct: 2, feedback: "Generative AI creates new content — text, images, music, video — by learning patterns from existing data." },
-                { q: "A doctor uses a diagnostic software tool that asks about symptoms and applies a set of medical rules to recommend possible diagnoses. The tool does not learn. What is this?", group: "Foundations", options: ["Machine Learning", "Expert System", "Neural Network", "Deep Learning"], correct: 1, feedback: "Expert systems use pre-programmed rules in a specific domain to answer complex questions." },
-                { q: "Users of an early 1960s chatbot began sharing personal problems with it and felt it truly understood them — even though it was just matching text patterns. What is this?", group: "History of AI", options: ["Moravec's Paradox", "ELIZA Effect", "Turing Test", "Perceptron Bias"], correct: 1, feedback: "The ELIZA Effect describes humans falsely attributing understanding and emotion to AI systems." },
-                { q: "AI easily defeats grandmasters at chess — a task humans find hard. But the same AI fails to fold a shirt — a task any toddler can do. Why?", group: "History of AI", options: ["Weak AI Limitation", "ELIZA Effect", "Moravec's Paradox", "AI Winter"], correct: 2, feedback: "Moravec's Paradox observes that high-level reasoning is often easy for AI, while low-level sensory-motor skills are very difficult." },
-                { q: "Unlike older AI models that processed words one by one, ChatGPT reads your entire message at once before generating a response. This is because it uses which architecture?", group: "Modern AI", options: ["Perceptron", "Expert System", "Transformer", "Decision Tree"], correct: 2, feedback: "The Transformer architecture processes the full context of a sentence simultaneously." },
-                { q: "An AI assistant can hear you describe a photo, look at the photo itself, and then answer your spoken question about it — all in one session. What type of AI is this?", group: "Modern AI", options: ["Large Language Model", "Multimodal AI", "Computer Vision", "AI Robotics"], correct: 1, feedback: "Multimodal AI processes multiple types of data — speech (audio) and image (visual) — simultaneously." },
-                { q: "A robot vacuum detects that it is close to a wall using infrared beams, then turns to avoid a collision. The infrared beam system is the robot's what?", group: "Five Big Ideas", options: ["Perception", "Reasoning", "Sensor", "Training Data"], correct: 2, feedback: "Sensors detect changes in the environment and send that information to the system." },
-                { q: "A medical AI lists the three symptoms that most influenced its diagnosis so that the doctor can verify the reasoning. This is an example of:", group: "Five Big Ideas", options: ["Training Data", "Knowledge Representation", "AI Transparency", "Perception"], correct: 2, feedback: "AI Transparency means providing clarity about how an AI makes decisions." },
-                { q: "An AI stores all medical facts — symptoms, diseases, drug interactions — in a structured database it can search while analyzing a patient. This process is:", group: "Five Big Ideas", options: ["Reasoning", "Perception", "Training Data", "Knowledge Representation"], correct: 3, feedback: "Knowledge Representation structures information so a computer can access and use it efficiently." },
-                { q: "An AI model has been tested and approved. Engineers now deploy it to hospital systems where real doctors use it daily. What stage is this?", group: "AI Lifecycle", options: ["Design Stage", "Develop Stage", "Deploy Stage", "Iterative Process"], correct: 2, feedback: "The Deploy Stage is when the AI is made available for real use and its performance is monitored." },
-                { q: "After testing, engineers find their model only reaches 78% accuracy. They return to collect more training data, retrain the model, and test again. This is a/an:", group: "AI Lifecycle", options: ["AI Lifecycle", "Deploy Stage", "Iterative Process", "Design Stage"], correct: 2, feedback: "An iterative process repeatedly cycles through steps like training and testing to improve outcomes." },
-                { q: "Before building their model, a team spends four weeks gathering 200,000 images, labeling each one, and removing duplicates. Which part of the lifecycle is this?", group: "AI Lifecycle", options: ["Develop Stage", "Deploy Stage", "Design Stage", "Iterative Process"], correct: 2, feedback: "The Design Stage defines the problem and prepares the data before the model is built." }
-            ]
-        };
-
-        const STATE = {
-            flashcard: { deck: [], currentIndex: 0, mastered: new Set(), reviewAgain: new Set(), flipped: false },
-            match: { currentRound: 0, selectedTermId: null, matchedIds: new Set(), score: 0, attempts: {}, roundActive: false },
-            challenge: { currentQuestion: 0, answered: [], score: 0, locked: false },
-            report: { computed: false }
-        };
-
-        window.onload = () => {
-            initFlashcards();
-            initChallenge();
-            
-            window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && !document.getElementById('s2-flashcard').classList.contains('hidden')) {
-                    e.preventDefault();
-                    toggleFlashcard();
-                }
-            });
-        };
-
-        function navTo(screenId) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-            window.scrollTo(0,0);
-            
-            if (screenId === 's3-match') startMatchRound(STATE.match.currentRound);
-            if (screenId === 's5-mastery') generateMasteryReport();
+            `;
         }
 
-        // --- FLASHCARD ---
-        function initFlashcards() {
-            STATE.flashcard.deck = DATA.terms.map(t => t.id);
-            renderFlashcard();
-        }
-
-        function renderFlashcard() {
-            const deck = STATE.flashcard.deck;
-            if (deck.length === 0) return;
-            const termId = deck[STATE.flashcard.currentIndex];
-            const termObj = DATA.terms[termId];
-            STATE.flashcard.flipped = false;
-            document.getElementById('fc-card').classList.remove('flipped');
-            document.getElementById('fc-rating-ui').classList.remove('visible');
-            document.getElementById('fc-term').textContent = termObj.term;
-            document.getElementById('fc-def').textContent = termObj.def;
-            document.getElementById('fc-example').textContent = termObj.ex;
-            document.getElementById('fc-progress').textContent = `Card ${STATE.flashcard.currentIndex + 1} / ${deck.length}`;
-            
-            const iconContainer = document.getElementById('fc-icon-front');
-            iconContainer.innerHTML = ICONS[termObj.group];
-            iconContainer.style.color = termObj.color;
-        }
-
-        function toggleFlashcard() {
-            STATE.flashcard.flipped = !STATE.flashcard.flipped;
-            document.getElementById('fc-card').classList.toggle('flipped');
-            if (STATE.flashcard.flipped) {
-                document.getElementById('fc-rating-ui').classList.add('visible');
-            }
-        }
-
-        document.getElementById('fc-container').onclick = toggleFlashcard;
-
-        function flashcardRating(type) {
-            const currentId = STATE.flashcard.deck[STATE.flashcard.currentIndex];
-            if (type === 'got-it') {
-                STATE.flashcard.mastered.add(currentId);
-                STATE.flashcard.reviewAgain.delete(currentId);
-                flashcardNext();
+        // --- 2. FLASHCARD REGION ---
+        function initFlashcardDeck() {
+            // Unmastered first, otherwise all
+            const unmasteredIds = VOCABULARY_TERMS.map(t => t.id).filter(id => !mastered.has(id));
+            if (unmasteredIds.length > 0) {
+                fcDeck = unmasteredIds;
             } else {
-                STATE.flashcard.reviewAgain.add(currentId);
-                const id = STATE.flashcard.deck.splice(STATE.flashcard.currentIndex, 1)[0];
-                STATE.flashcard.deck.push(id);
-                renderFlashcard();
+                fcDeck = VOCABULARY_TERMS.map(t => t.id);
+            }
+            fcCurrentIndex = 0;
+            fcFlipped = false;
+        }
+
+        function renderFlashcardScreen() {
+            const totalInDeck = fcDeck.length;
+
+            if (totalInDeck === 0) {
+                return `
+                    <div class="max-w-3xl mx-auto py-6 px-4">
+                        <div class="text-center bg-white border border-slate-200 rounded-3xl p-10 md:p-16 shadow-lg max-w-lg mx-auto">
+                            <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
+                                <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-900 mb-3 font-display">Completed the Deck!</h2>
+                            <p class="text-slate-500 leading-relaxed mb-8 text-sm">
+                                You have successfully mastered all active terms in this study block. Click below to reset or visit the report to view your results.
+                            </p>
+                            <div class="flex flex-col sm:flex-row justify-center gap-3">
+                                <button onclick="resetFlashcardMastery()"
+                                        class="px-6 py-3 bg-neutral-900 text-white rounded-xl text-xs font-bold hover:bg-neutral-800 tracking-wider transition-all uppercase flex items-center justify-center gap-2 cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z"></path>
+                                    </svg> Restudy Full List
+                                </button>
+                                <button onclick="navigateTo('mastery')"
+                                        class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold tracking-wider transition-all uppercase flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg> View Mastery Report
+                                </button>
+                                <button onclick="navigateTo('intro')"
+                                        class="px-6 py-3 border border-slate-200 hover:border-slate-800 text-slate-800 rounded-xl text-xs font-bold bg-white tracking-wider transition-all uppercase cursor-pointer">
+                                    Main Menu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const currentId = fcDeck[fcCurrentIndex];
+            const term = VOCABULARY_TERMS.find(t => t.id === currentId);
+
+            const hasMasteredCheck = mastered.has(currentId) ? `
+                <div class="absolute top-6 right-6 text-green-500" title="Mastered">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            ` : '';
+
+            const isFlaggedForReview = (reviewAgain.has(currentId) && !mastered.has(currentId)) ? `
+                <div class="absolute top-6 right-6 text-amber-500" title="Flagged for Review">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+            ` : '';
+
+            return `
+                <div class="max-w-3xl mx-auto py-6 px-3 sm:px-4 font-sans">
+                    <!-- Top row details panel -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                        <button onclick="navigateTo('intro')"
+                                class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg> Exit Mode
+                        </button>
+                        <span class="text-sm font-semibold tracking-wide text-slate-400 font-display text-center">
+                            FLASHCARD STUDIO • <span class="text-slate-800">${mastered.size}/35 mastered</span>
+                        </span>
+                        <span class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5">
+                            Active Card ${fcCurrentIndex + 1} of ${totalInDeck}
+                        </span>
+                    </div>
+
+                    <!-- 3D Card Stage -->
+                    <div onclick="flipFlashcard()" class="w-full relative h-[420px] select-none group cursor-pointer focus:outline-none perspective-1200">
+                        <div id="flashcard-flip-inner" class="w-full h-full relative transition-transform duration-500 transform-style-3d ${fcFlipped ? 'rotate-y-180' : ''}">
+                            
+                            <!-- Card FRONT -->
+                            <div class="absolute inset-0 w-full h-full bg-white border border-slate-200 hover:border-slate-400 group-hover:shadow-md rounded-2xl p-6 sm:p-8 flex flex-col justify-center items-center shadow-xs transition-colors backface-hidden">
+                                <!-- Group Tag indicator badge -->
+                                <div class="absolute top-6 left-6 flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${term.color}"></span>
+                                    <span class="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase font-display">${term.group}</span>
+                                </div>
+                                ${hasMasteredCheck}
+                                ${isFlaggedForReview}
+
+                                <!-- Icon -->
+                                <div class="p-5 rounded-2xl mb-8 flex items-center justify-center shadow-xs text-neutral-800"
+                                     style="background-color: ${term.color}12; color: ${term.color}">
+                                    ${getCategoryIconSvg(term.group, "w-12 h-12")}
+                                </div>
+
+                                <!-- Actual terminology word keyword details -->
+                                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 text-center mb-4 font-display">
+                                    ${term.term}
+                                </h2>
+
+                                <div class="absolute bottom-6 text-slate-400 text-[10px] font-mono tracking-widest uppercase pointer-events-none">
+                                    Click card inside to flip
+                                </div>
+                            </div>
+
+                            <!-- Card BACK -->
+                            <div class="absolute inset-0 w-full h-full bg-white border border-slate-200 group-hover:shadow-md rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs rotate-y-180 overflow-y-auto backface-hidden">
+                                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${term.color}"></span>
+                                        <span class="text-[10px] font-extrabold tracking-widest text-slate-400 uppercase font-display">${term.group}</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-900 font-display">${term.term}</span>
+                                </div>
+
+                                <div class="my-auto py-4 space-y-4 text-left">
+                                    <div>
+                                        <h4 class="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase font-mono mb-1.5">CONCEPT DEFINITION</h4>
+                                        <p class="text-base sm:text-lg font-medium text-slate-800 leading-relaxed">${term.def}</p>
+                                    </div>
+                                    <div class="bg-slate-50 border border-slate-150 rounded-xl p-4">
+                                        <h5 class="text-[10px] font-extrabold text-slate-400 tracking-widest uppercase font-mono mb-1.5">REAL-WORLD APPLICATION</h5>
+                                        <p class="text-xs text-slate-600 leading-relaxed italic">"${term.ex}"</p>
+                                    </div>
+                                </div>
+
+                                <div class="text-center text-slate-400 text-[9px] font-mono tracking-widest uppercase mt-2">
+                                    Click card back to flip front
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Answer flip ratings / instruction cards -->
+                    <div class="min-h-[64px] flex flex-col items-center justify-center mt-6">
+                        <div id="rating-ui" class="flex gap-4 w-full max-w-sm justify-center ${fcFlipped ? '' : 'hidden'}">
+                            <button onclick="submitFlashcardRating(event, 'review')"
+                                    class="flex-1 bg-white hover:bg-slate-50 border border-amber-300 text-amber-700 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:shadow-xs transition-all cursor-pointer">
+                                <svg class="w-3.5 h-3.5 animate-spin-slow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z"></path>
+                                </svg> Review again
+                            </button>
+                            <button onclick="submitFlashcardRating(event, 'got-it')"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white border border-green-600 font-bold px-4 py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg> Got it
+                            </button>
+                        </div>
+                        <div id="flip-hint-block" class="text-xs text-center text-slate-400 flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-lg px-4 py-2 ${fcFlipped ? 'hidden' : ''}">
+                            <span>💡 Tip: You can also study with keyboard. Arrow keys navigate and SPACE flips cards!</span>
+                        </div>
+                    </div>
+
+                    <!-- Back/Fwd Controls -->
+                    <div class="flex gap-2 justify-center items-center py-2 mt-4">
+                        <button onclick="prevFlashcard()" ${totalInDeck <= 1 ? 'disabled' : ''}
+                                class="p-3 border border-slate-200 text-slate-600 hover:text-slate-900 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none transition-all hover:shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button onclick="shuffleFlashcards()"
+                                class="px-5 py-3 border border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider bg-white rounded-xl hover:bg-slate-50 transition-all hover:shadow-xs flex items-center gap-2 cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2a9 9 0 0113.921 5.918M20 20v-5h-.581m0 0a9 9 0 01-13.93-5.917"></path>
+                            </svg> Shuffle
+                        </button>
+                        <button onclick="nextFlashcard()" ${totalInDeck <= 1 ? 'disabled' : ''}
+                                class="p-3 border border-slate-200 text-slate-600 hover:text-slate-900 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none transition-all hover:shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function flipFlashcard() {
+            const el = document.getElementById('flashcard-flip-inner');
+            if (!el) return;
+            fcFlipped = !fcFlipped;
+            if (fcFlipped) {
+                el.classList.add('rotate-y-180');
+                document.getElementById('rating-ui').classList.remove('hidden');
+                document.getElementById('flip-hint-block').classList.add('hidden');
+            } else {
+                el.classList.remove('rotate-y-180');
+                document.getElementById('rating-ui').classList.add('hidden');
+                document.getElementById('flip-hint-block').classList.remove('hidden');
             }
         }
 
-        function flashcardNext() {
-            STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex + 1) % STATE.flashcard.deck.length;
-            renderFlashcard();
-        }
-
-        function flashcardPrev() {
-            STATE.flashcard.currentIndex = (STATE.flashcard.currentIndex - 1 + STATE.flashcard.deck.length) % STATE.flashcard.deck.length;
-            renderFlashcard();
-        }
-
-        function flashcardShuffle() {
-            const deck = STATE.flashcard.deck;
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
+        function nextFlashcard() {
+            if (fcFlipped) {
+                fcFlipped = false;
+                const el = document.getElementById('flashcard-flip-inner');
+                if (el) el.classList.remove('rotate-y-180');
+                setTimeout(() => {
+                    fcCurrentIndex = (fcCurrentIndex + 1) % fcDeck.length;
+                    navigateTo('flashcard');
+                }, 300);
+            } else {
+                fcCurrentIndex = (fcCurrentIndex + 1) % fcDeck.length;
+                navigateTo('flashcard');
             }
-            STATE.flashcard.currentIndex = 0;
-            renderFlashcard();
         }
 
-        // --- MATCH ---
-        const ROUNDS = [
-            [0,1,2,3,4,5,6], [7,8,9,10,11,12,13], [14,15,16,17,18,19,20],
-            [21,22,23,24,25,26,27], [28,29,30,31,32,33,34]
+        function prevFlashcard() {
+            if (fcFlipped) {
+                fcFlipped = false;
+                const el = document.getElementById('flashcard-flip-inner');
+                if (el) el.classList.remove('rotate-y-180');
+                setTimeout(() => {
+                    fcCurrentIndex = (fcCurrentIndex - 1 + fcDeck.length) % fcDeck.length;
+                    navigateTo('flashcard');
+                }, 300);
+            } else {
+                fcCurrentIndex = (fcCurrentIndex - 1 + fcDeck.length) % fcDeck.length;
+                navigateTo('flashcard');
+            }
+        }
+
+        function shuffleFlashcards() {
+            fcFlipped = false;
+            const el = document.getElementById('flashcard-flip-inner');
+            if (el) el.classList.remove('rotate-y-180');
+            
+            setTimeout(() => {
+                const shuffled = [...fcDeck];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                fcDeck = shuffled;
+                fcCurrentIndex = 0;
+                navigateTo('flashcard');
+            }, fcFlipped ? 300 : 0);
+        }
+
+        function resetFlashcardMastery() {
+            mastered.clear();
+            initFlashcardDeck();
+            navigateTo('flashcard');
+        }
+
+        function submitFlashcardRating(event, rating) {
+            if (event) event.stopPropagation(); // Stop flipping the card again
+            
+            const termId = fcDeck[fcCurrentIndex];
+            if (rating === 'got-it') {
+                mastered.add(termId);
+                reviewAgain.delete(termId);
+                
+                // Clear state animation resets card representation
+                const el = document.getElementById('flashcard-flip-inner');
+                if (el) el.classList.remove('rotate-y-180');
+                fcFlipped = false;
+                
+                setTimeout(() => {
+                    const updatedDeck = fcDeck.filter(id => id !== termId);
+                    fcDeck = updatedDeck;
+                    if (fcCurrentIndex >= updatedDeck.length) {
+                        fcCurrentIndex = 0;
+                    }
+                    navigateTo('flashcard');
+                }, 300);
+            } else {
+                reviewAgain.add(termId);
+                mastered.delete(termId);
+                
+                // Keep card in place, just flip it front again to reset Study phase
+                const el = document.getElementById('flashcard-flip-inner');
+                if (el) el.classList.remove('rotate-y-180');
+                fcFlipped = false;
+                
+                setTimeout(() => {
+                    navigateTo('flashcard');
+                }, 300);
+            }
+        }
+
+        // Keyboard navigation helper
+        window.addEventListener('keydown', (e) => {
+            if (currentMode !== 'flashcard') return;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                flipFlashcard();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                if (fcDeck.length > 1) nextFlashcard();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                if (fcDeck.length > 1) prevFlashcard();
+            }
+        });
+
+
+        // --- 3. MATCHING ENGINE ---
+        const MATCH_ROUNDS = [
+            [0, 1, 2, 3, 4, 5, 6],
+            [7, 8, 9, 10, 11, 12, 13],
+            [14, 15, 16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25, 26, 27],
+            [28, 29, 30, 31, 32, 33, 34]
         ];
 
-        function startMatchRound(roundIndex) {
-            const banner = document.getElementById('overlay-banner');
-            const title = document.getElementById('overlay-title');
-            const sub = document.getElementById('overlay-subtitle');
-            title.textContent = `ROUND ${roundIndex + 1}`;
-            sub.textContent = "READY FOR MATCHING";
-            banner.classList.remove('hidden');
-            setTimeout(() => {
-                banner.classList.add('hidden');
-                renderMatchRound(roundIndex);
-            }, 1800);
-        }
-
-        function renderMatchRound(idx) {
-            STATE.match.currentRound = idx;
-            STATE.match.selectedTermId = null;
-            STATE.match.matchedIds = new Set();
-            STATE.match.roundActive = true;
-            document.getElementById('match-round-title').textContent = `Round ${idx + 1} of 5`;
-            document.getElementById('round-complete-ui').classList.add('hidden');
-            const termIndices = ROUNDS[idx];
-            const defIndices = [...termIndices].sort(() => Math.random() - 0.5);
-            const leftCol = document.getElementById('match-left');
-            const rightCol = document.getElementById('match-right');
-            const svg = document.getElementById('match-svg');
-            leftCol.innerHTML = ''; rightCol.innerHTML = ''; svg.innerHTML = '';
-            termIndices.forEach(id => {
-                const t = DATA.terms[id];
-                const el = document.createElement('div');
-                el.className = 'match-item';
-                el.id = `match-term-${id}`;
-                el.innerHTML = `
-                    <div class="concept-icon" style="color: ${t.color}">${ICONS[t.group]}</div>
-                    <span class="match-term">${t.term}</span>
-                `;
-                el.onclick = () => selectMatchTerm(id, el);
-                leftCol.appendChild(el);
-            });
-            defIndices.forEach(id => {
-                const t = DATA.terms[id];
-                const el = document.createElement('div');
-                el.className = 'match-item';
-                el.id = `match-def-${id}`;
-                el.innerHTML = `<p class="match-def">${t.def}</p>`;
-                el.onclick = () => selectMatchDef(id, el);
-                rightCol.appendChild(el);
-            });
-        }
-
-        function selectMatchTerm(id, el) {
-            if (el.classList.contains('matched')) return;
-            document.querySelectorAll('#match-left .match-item').forEach(i => i.classList.remove('selected'));
-            el.classList.add('selected');
-            STATE.match.selectedTermId = id;
-        }
-
-        function selectMatchDef(id, el) {
-            if (el.classList.contains('matched') || STATE.match.selectedTermId === null) return;
-            const termId = STATE.match.selectedTermId;
-            const termEl = document.getElementById(`match-term-${termId}`);
-            STATE.match.attempts[termId] = (STATE.match.attempts[termId] || 0) + 1;
-            if (id === termId) {
-                termEl.classList.remove('selected');
-                termEl.classList.add('matched');
-                el.classList.add('matched');
-                const color = DATA.terms[termId].color;
-                termEl.style.borderColor = color;
-                el.style.borderColor = color;
-                drawMatchLine(termEl, el, color);
-                STATE.match.matchedIds.add(termId);
-                if (STATE.match.attempts[termId] === 1) STATE.match.score++;
-                document.getElementById('match-score-ui').textContent = `${STATE.match.score} / 35`;
-                STATE.match.selectedTermId = null;
-                if (STATE.match.matchedIds.size === 7) setTimeout(endMatchRound, 800);
-            } else {
-                el.classList.add('shake');
-                termEl.classList.add('shake');
-                setTimeout(() => {
-                    el.classList.remove('shake');
-                    termEl.classList.remove('shake');
-                }, 400);
-            }
-        }
-
-        function drawMatchLine(termEl, defEl, color) {
-            const svg = document.getElementById('match-svg');
-            const termRect = termEl.getBoundingClientRect();
-            const defRect = defEl.getBoundingClientRect();
-            const svgRect = svg.getBoundingClientRect();
-            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', termRect.right - svgRect.left);
-            line.setAttribute('y1', termRect.top + termRect.height/2 - svgRect.top);
-            line.setAttribute('x2', defRect.left - svgRect.left);
-            line.setAttribute('y2', defRect.top + defRect.height/2 - svgRect.top);
-            line.setAttribute('stroke', color);
-            line.setAttribute('stroke-width', '3');
-            line.style.opacity = '0';
-            line.style.transition = 'opacity 0.4s ease';
-            svg.appendChild(line);
-            requestAnimationFrame(() => line.style.opacity = '1');
-        }
-
-        function endMatchRound() {
-            if (STATE.match.currentRound < 4) {
-                document.getElementById('round-complete-ui').classList.remove('hidden');
-                document.getElementById('btn-next-round').onclick = () => startMatchRound(STATE.match.currentRound + 1);
-            } else {
-                const btn = document.getElementById('btn-next-round');
-                btn.textContent = "VIEW FULL SUMMARY";
-                document.getElementById('round-complete-ui').classList.remove('hidden');
-                btn.onclick = () => navTo('s5-mastery');
-            }
-        }
-
-        // --- CHALLENGE ---
-        function initChallenge() { renderQuestion(); }
-        function resetChallenge() { STATE.challenge = { currentQuestion: 0, answered: [], score: 0, locked: false }; renderQuestion(); }
-        function renderQuestion() {
-            const qObj = DATA.questions[STATE.challenge.currentQuestion];
-            document.getElementById('challenge-score-ui').textContent = `SCORE: ${STATE.challenge.score} / ${STATE.challenge.answered.length}`;
-            document.getElementById('q-counter').textContent = `QUESTION ${STATE.challenge.currentQuestion + 1} / 15`;
-            document.getElementById('q-scenario').textContent = qObj.q;
+        function initMatchRound(roundIdx) {
+            matchRound = roundIdx;
+            matchSelectedTermId = null;
+            matchMatchedIds = new Set();
+            matchRoundCompleted = false;
+            matchLines = [];
             
-            const iconContainer = document.getElementById('q-icon');
-            iconContainer.innerHTML = ICONS[qObj.group];
-            iconContainer.style.color = DATA.terms.find(t => t.group === qObj.group).color;
-
-            const optionsBox = document.getElementById('q-options');
-            optionsBox.innerHTML = '';
-            qObj.options.forEach((opt, idx) => {
-                const div = document.createElement('div');
-                div.className = 'option-tile';
-                div.textContent = opt;
-                div.onclick = () => checkChallengeAnswer(idx, div);
-                optionsBox.appendChild(div);
-            });
-            document.getElementById('q-feedback').style.display = 'none';
-            STATE.challenge.locked = false;
-        }
-
-        function checkChallengeAnswer(idx, el) {
-            if (STATE.challenge.locked) return;
-            STATE.challenge.locked = true;
-            const qObj = DATA.questions[STATE.challenge.currentQuestion];
-            const isCorrect = idx === qObj.correct;
-            if (isCorrect) {
-                STATE.challenge.score++;
-                el.classList.add('correct');
-                document.getElementById('q-feedback-title').textContent = "✓ CORRECT APPLICATION";
-                document.getElementById('q-feedback-title').style.color = "var(--success)";
-            } else {
-                el.classList.add('incorrect', 'shake');
-                document.querySelectorAll('.option-tile')[qObj.correct].classList.add('correct');
-                document.getElementById('q-feedback-title').textContent = "✗ INCORRECT APPLICATION";
-                document.getElementById('q-feedback-title').style.color = "var(--error)";
+            if (roundIdx === 0) {
+                matchAttempts = {}; // Reset attempts tracker
+                matchFirstTryScore = 0; // Reset main match score
             }
-            STATE.challenge.answered.push({ qIndex: STATE.challenge.currentQuestion, correct: isCorrect });
-            document.getElementById('q-feedback-text').textContent = qObj.feedback;
-            document.getElementById('q-feedback').style.display = 'block';
+
+            const indices = MATCH_ROUNDS[roundIdx];
+            const roundTerms = indices.map(id => VOCABULARY_TERMS.find(t => t.id === id)).filter(Boolean);
+            
+            // Right-side definitions are shuffled
+            matchShuffledDefs = [...roundTerms].sort(() => Math.random() - 0.5);
         }
 
-        function challengeNext() {
-            if (STATE.challenge.currentQuestion < 14) {
-                STATE.challenge.currentQuestion++;
-                renderQuestion();
-            } else { navTo('s5-mastery'); }
-        }
-
-        // --- MASTERY REPORT ---
-        function generateMasteryReport() {
-            const totalTerms = 35;
-            const fcMastered = STATE.flashcard.mastered.size;
-            const matchScore = STATE.match.score;
-            const chalScore = STATE.challenge.score;
-            const combined = Math.round(((fcMastered + matchScore + chalScore) / (totalTerms + totalTerms + 15)) * 100);
-            animateCounter(document.getElementById('report-total-percent'), 0, combined, "%");
-            document.getElementById('stat-fc-val').textContent = `${fcMastered} / 35`;
-            document.getElementById('stat-fc-bar').style.width = (fcMastered / 35 * 100) + "%";
-            document.getElementById('stat-match-val').textContent = `${matchScore} / 35`;
-            document.getElementById('stat-match-bar').style.width = (matchScore / 35 * 100) + "%";
-            document.getElementById('stat-chal-val').textContent = `${chalScore} / 15`;
-            document.getElementById('stat-chal-bar').style.width = (chalScore / 15 * 100) + "%";
-            const rankName = document.getElementById('rank-name');
-            const rankDesc = document.getElementById('rank-desc');
-            const container = document.querySelector('.rank-badge-container');
-            if (combined >= 90) {
-                rankName.textContent = "AI SYSTEMS MASTER";
-                rankDesc.textContent = "Absolute fluency achieved. You have a deep, professional grasp of fundamental AI concepts.";
-                container.style.borderColor = "#000";
-            } else if (combined >= 75) {
-                rankName.textContent = "AI ANALYST";
-                rankDesc.textContent = "Strong foundational knowledge. You can effectively distinguish thematic categories and apply logic to scenarios.";
-            } else if (combined >= 60) {
-                rankName.textContent = "APPRENTICE";
-                rankDesc.textContent = "Developing fluency. Continue practicing with Flashcard mode to solidify theoretical concepts.";
-            } else {
-                rankName.textContent = "EXPLORER";
-                rankDesc.textContent = "Just beginning. Use the 'Review Again' feature in Flashcard mode to build your core knowledge base.";
+        function setupMatchTransitionBanner() {
+            const overlay = document.getElementById('match-intro-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 1600);
             }
-            const list = document.getElementById('review-list');
-            list.innerHTML = '';
-            if (STATE.flashcard.reviewAgain.size === 0) {
-                list.innerHTML = '<li style="color: var(--success); font-weight: 700; padding: 1.5rem 0; text-align: center;">✓ Perfect recall achieved for all 35 terms.</li>';
-            } else {
-                STATE.flashcard.reviewAgain.forEach(id => {
-                    const t = DATA.terms[id];
-                    const li = document.createElement('li');
-                    li.style.display = 'flex'; li.style.justifyContent = 'space-between'; li.style.padding = '1rem 0'; li.style.borderBottom = '1px solid var(--border-default)';
-                    li.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <div style="width: 16px; height: 16px; color: ${t.color}">${ICONS[t.group]}</div>
-                            <span style="font-weight: 500;">${t.term}</span>
+        }
+
+        function renderMatchScreen() {
+            const roundIndices = MATCH_ROUNDS[matchRound];
+            const roundTerms = roundIndices.map(id => VOCABULARY_TERMS.find(t => t.id === id)).filter(Boolean);
+
+            const termItemsHtml = roundTerms.map(term => {
+                const id = term.id;
+                const isMatched = matchMatchedIds.has(id);
+                const isSelected = matchSelectedTermId === id;
+                
+                return `
+                    <div id="match-term-${id}" onclick="selectMatchTerm(${id})"
+                         class="border rounded-xl px-4 py-4 min-h-[76px] flex items-center gap-3 transition-all duration-200 ${
+                             isMatched 
+                                 ? 'bg-slate-50 text-slate-400 border-slate-200 border-dashed opacity-55 cursor-default'
+                                 : isSelected
+                                 ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900 scale-[1.01]'
+                                 : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs cursor-pointer'
+                         }">
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                             style="${!isMatched && !isSelected ? `color: ${term.color}; background-color: ${term.color}15;` : ''}">
+                            ${getCategoryIconSvg(term.group, "w-5 h-5")}
                         </div>
-                        <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: ${t.color};">${t.group}</span>
-                    `;
-                    list.appendChild(li);
-                });
+                        <div>
+                            <span class="font-bold font-display text-sm sm:text-base leading-tight">${term.term}</span>
+                            <div class="text-[9px] font-extrabold tracking-widest uppercase opacity-60 mt-0.5">${term.group}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const defItemsHtml = matchShuffledDefs.map(defItem => {
+                const id = defItem.id;
+                const isMatched = matchMatchedIds.has(id);
+                
+                return `
+                    <div id="match-def-${id}" onclick="selectMatchDef(${id})"
+                         class="border rounded-xl px-5 py-4 min-h-[76px] flex items-center transition-all duration-200 ${
+                             isMatched
+                                 ? 'bg-slate-50 text-slate-400 border-slate-200 border-dashed opacity-55 cursor-default'
+                                 : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs cursor-pointer'
+                         }"
+                         style="${isMatched ? `border-color: ${defItem.color}35` : ''}">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">${defItem.def}</p>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="max-w-4xl mx-auto py-6 px-4 font-sans">
+                    
+                    <!-- Top detail row with score tracking indicator -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                        <button onclick="navigateTo('intro')"
+                                class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg> Exit Mode
+                        </button>
+                        <span class="text-sm font-semibold tracking-wide text-slate-400 font-display">
+                            MATCHING PRESSURE • <span class="text-slate-800">Round ${matchRound + 1} of 5</span>
+                        </span>
+                        <span class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5 font-display uppercase tracking-wider">
+                            First-Try Score: ${matchFirstTryScore}/35
+                        </span>
+                    </div>
+
+                    <!-- Stage area with svg vectors overlay -->
+                    <div id="match-stage-container" class="relative select-none min-h-[500px]">
+                        
+                        <!-- Overlay Canvas -->
+                        <svg id="match-svg-canvas" class="absolute inset-0 pointer-events-none w-full h-full z-10">
+                            <!-- Vector Lines will be drawn in code dynamically -->
+                        </svg>
+
+                        <!-- Content Grid wrapper -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative z-20">
+                            <!-- Left Column (Keywords) -->
+                            <div class="space-y-3.5 flex flex-col justify-start">
+                                <h4 class="text-[10px] sm:text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-2 border-b border-slate-100 pb-2">TERMS</h4>
+                                <div id="match-terms-col" class="space-y-3">
+                                    ${termItemsHtml}
+                                </div>
+                            </div>
+
+                            <!-- Right Column (Definitions) -->
+                            <div class="space-y-3.5 flex flex-col justify-start">
+                                <h4 class="text-[10px] sm:text-xs font-black tracking-widest text-slate-400 uppercase font-mono mb-2 border-b border-slate-100 pb-2">DEFINITIONS</h4>
+                                <div id="match-defs-col" class="space-y-3">
+                                    ${defItemsHtml}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Action Continue Overlay box -->
+                        <div id="match-round-completed-card" class="mt-12 p-8 border border-neutral-900 bg-slate-50 rounded-2xl text-center max-w-md mx-auto shadow-md ${matchRoundCompleted ? '' : 'hidden'}">
+                            <h3 class="text-xl font-bold text-slate-900 mb-2 font-display">Round complete!</h3>
+                            <p class="text-xs text-slate-500 mb-6 font-medium">All 7 connections successfully set. Press below to move forward.</p>
+                            <button onclick="advanceMatchRound()"
+                                    class="w-full bg-neutral-900 text-white font-bold py-3 rounded-xl hover:bg-neutral-800 transition-colors text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg> Continue Session
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Fast Auto-Fade Intro Round Badge Layer -->
+                <div id="match-intro-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 transition-all duration-300 hidden">
+                    <div class="bg-white border-2 border-neutral-900 rounded-3xl p-8 md:p-12 text-center shadow-2xl max-w-md w-full">
+                        <span class="text-[10px] font-extrabold text-indigo-600 tracking-widest uppercase font-mono block mb-2">Curated Challenge</span>
+                        <h2 class="text-3xl font-extrabold text-neutral-900 tracking-tight mb-4 font-display">ROUND ${matchRound + 1}</h2>
+                        <div class="w-16 h-1 bg-neutral-900 mx-auto mb-6"></div>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                            Connect the terminology blocks on the left with their exact definitions on the right. Shakes indicate mismatched links.
+                        </p>
+                        <div class="flex items-center justify-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-widest">
+                            <span class="animate-pulse">● Ready For Matching...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectMatchTerm(id) {
+            if (matchMatchedIds.has(id)) return;
+            matchSelectedTermId = id;
+            navigateToMatchStateRefresh();
+        }
+
+        function selectMatchDef(id) {
+            if (matchSelectedTermId === null || matchMatchedIds.has(id)) return;
+
+            // Increment attempt count
+            matchAttempts[matchSelectedTermId] = (matchAttempts[matchSelectedTermId] || 0) + 1;
+
+            if (id === matchSelectedTermId) {
+                // Correct match!
+                const isFirstTry = matchAttempts[matchSelectedTermId] === 1;
+                if (isFirstTry) {
+                    matchFirstTryScore += 1;
+                }
+
+                matchMatchedIds.add(id);
+                matchSelectedTermId = null;
+
+                // Play audio clip feedback or visually link terms
+                if (matchMatchedIds.size === MATCH_ROUNDS[matchRound].length) {
+                    matchRoundCompleted = true;
+                }
+
+                navigateToMatchStateRefresh();
+            } else {
+                // Shake incorrect matched blocks
+                const activeTermId = matchSelectedTermId;
+                const shakeTermEl = document.getElementById(`match-term-${activeTermId}`);
+                const shakeDefEl = document.getElementById(`match-def-${id}`);
+                
+                if (shakeTermEl) shakeTermEl.classList.add('animate-shake', 'border-red-500', 'text-red-600');
+                if (shakeDefEl) shakeDefEl.classList.add('animate-shake', 'border-red-500', 'text-red-600');
+
+                setTimeout(() => {
+                    if (shakeTermEl) shakeTermEl.classList.remove('animate-shake', 'border-red-500', 'text-red-600');
+                    if (shakeDefEl) shakeDefEl.classList.remove('animate-shake', 'border-red-500', 'text-red-600');
+                }, 500);
+
+                // Unselect Term to try again
+                matchSelectedTermId = null;
+                navigateToMatchStateRefresh();
             }
         }
 
-        function animateCounter(el, start, end, suffix = "") {
-            const duration = 1200;
-            const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                el.textContent = Math.round(start + (end - start) * progress) + suffix;
-                if (progress < 1) requestAnimationFrame(update);
+        function navigateToMatchStateRefresh() {
+            // Instantly update backgrounds / classes of items instead of reloading screen markup which can reset DOM bounding rects
+            const roundTerms = MATCH_ROUNDS[matchRound].map(id => VOCABULARY_TERMS.find(t => t.id === id)).filter(Boolean);
+            
+            // Re-render terms column classes
+            roundTerms.forEach(term => {
+                const el = document.getElementById(`match-term-${term.id}`);
+                if (!el) return;
+                
+                const isMatched = matchMatchedIds.has(term.id);
+                const isSelected = matchSelectedTermId === term.id;
+                
+                el.className = `border rounded-xl px-4 py-4 min-h-[76px] flex items-center gap-3 transition-all duration-200 ${
+                    isMatched 
+                        ? 'bg-slate-50 text-slate-400 border-slate-200 border-dashed opacity-55 cursor-default'
+                        : isSelected
+                        ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-900 scale-[1.01]'
+                        : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs cursor-pointer'
+                }`;
+
+                // Fix icon wrap styles
+                const iconBox = el.querySelector('.shrink-0');
+                if (iconBox) {
+                    if (isMatched) {
+                        iconBox.style = '';
+                        iconBox.className = "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 text-slate-300";
+                    } else if (isSelected) {
+                        iconBox.style = '';
+                        iconBox.className = "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-white/15 text-white";
+                    } else {
+                        iconBox.style = `color: ${term.color}; background-color: ${term.color}15;`;
+                        iconBox.className = "w-9 h-9 rounded-lg flex items-center justify-center shrink-0";
+                    }
+                }
+            });
+
+            // Re-render definitions column classes
+            matchShuffledDefs.forEach(defItem => {
+                const el = document.getElementById(`match-def-${defItem.id}`);
+                if (!el) return;
+                const isMatched = matchMatchedIds.has(defItem.id);
+                
+                el.className = `border rounded-xl px-5 py-4 min-h-[76px] flex items-center transition-all duration-200 ${
+                    isMatched
+                        ? 'bg-slate-50 text-slate-400 border-slate-200 border-dashed opacity-55 cursor-default'
+                        : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs cursor-pointer'
+                }`;
+                el.style = isMatched ? `border-color: ${defItem.color}35` : '';
+            });
+
+            // Toggle score trackers inline
+            const headerScore = document.querySelector('.font-bold.bg-slate-100');
+            if (headerScore) headerScore.textContent = `First-Try Score: ${matchFirstTryScore}/35`;
+
+            // Display completion Card
+            const compCard = document.getElementById('match-round-completed-card');
+            if (compCard) {
+                if (matchRoundCompleted) {
+                    compCard.classList.remove('hidden');
+                } else {
+                    compCard.classList.add('hidden');
+                }
             }
-            requestAnimationFrame(update);
+
+            // Sync visual vector overlay paths
+            recalculateMatchLines();
         }
+
+        function recalculateMatchLines() {
+            const canvas = document.getElementById('match-svg-canvas');
+            const container = document.getElementById('match-stage-container');
+            if (!canvas || !container) return;
+
+            const containerRect = container.getBoundingClientRect();
+            let html = '';
+
+            matchMatchedIds.forEach(id => {
+                const termEl = document.getElementById(`match-term-${id}`);
+                const defEl = document.getElementById(`match-def-${id}`);
+                const term = VOCABULARY_TERMS.find(t => t.id === id);
+
+                if (termEl && defEl && term) {
+                    const tRect = termEl.getBoundingClientRect();
+                    const dRect = defEl.getBoundingClientRect();
+
+                    const x1 = tRect.right - containerRect.left;
+                    const y1 = tRect.top + tRect.height / 2 - containerRect.top;
+                    const x2 = dRect.left - containerRect.left;
+                    const y2 = dRect.top + dRect.height / 2 - containerRect.top;
+
+                    html += `
+                        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                              stroke="${term.color}" stroke-width="3.5" stroke-linecap="round" 
+                              class="drop-shadow-xs" />
+                    `;
+                }
+            });
+
+            canvas.innerHTML = html;
+        }
+
+        function advanceMatchRound() {
+            if (matchRound < MATCH_ROUNDS.length - 1) {
+                initMatchRound(matchRound + 1);
+                const wrapper = document.getElementById('view-host').firstChild;
+                if (wrapper) wrapper.innerHTML = renderMatchScreen();
+                setupMatchTransitionBanner();
+                setTimeout(recalculateMatchLines, 100);
+            } else {
+                // Match session completed. Accumulate metrics!
+                // Trigger auto-flagging of any terms that took multiple choices
+                processMatchScoreSubmission();
+            }
+        }
+
+        function processMatchScoreSubmission() {
+            // Auto-flag any term with attempts > 1
+            Object.entries(matchAttempts).forEach(([termIdStr, count]) => {
+                const id = parseInt(termIdStr, 10);
+                if (count > 1) {
+                    reviewAgain.add(id);
+                    mastered.delete(id); // Remove from mastered
+                }
+            });
+
+            // Redirect smoothly to report
+            navigateTo('mastery');
+        }
+
+        window.addEventListener('resize', () => {
+            if (currentMode === 'match') {
+                recalculateMatchLines();
+            }
+        });
+
+
+        // --- 4. CHALLENGE MODE ENGINE ---
+        function initChallenge() {
+            challengeIndex = 0;
+            challengeSelectedIdx = null;
+            challengeIsLocked = false;
+            challengeAnsweredLog = [];
+            currentChallengeScore = 0;
+        }
+
+        function renderChallengeScreen() {
+            const q = CHALLENGE_QUESTIONS[challengeIndex];
+            const totalQ = CHALLENGE_QUESTIONS.length;
+
+            return `
+                <div class="max-w-3xl mx-auto py-6 px-4 font-sans">
+                    <!-- Progress Bar Header -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-8">
+                        <button onclick="navigateTo('intro')"
+                                class="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-neutral-900 transition-colors uppercase tracking-wider font-display border border-slate-200 hover:border-slate-500 rounded-lg px-3 py-1.5 bg-white cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg> Exit Mode
+                        </button>
+                        <span class="text-sm font-semibold tracking-wide text-slate-400 font-display uppercase">
+                            Scenario Challenge
+                        </span>
+                        <span class="text-xs font-bold bg-slate-100 text-slate-600 rounded-lg px-2.5 py-1.5 font-display">
+                            Progress: ${challengeIndex + 1} of ${totalQ}
+                        </span>
+                    </div>
+
+                    <!-- Question Scenery Box -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden shadow-xs">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                            <div class="p-3 bg-white text-indigo-600 rounded-xl shadow-xs border border-slate-100 flex items-center justify-center">
+                                ${getCategoryIconSvg(q.group, "w-6.5 h-6.5")}
+                            </div>
+                            <div>
+                                <span class="text-[10px] sm:text-xs font-extrabold tracking-widest text-slate-400 uppercase font-mono block">${q.group} CONCEPT</span>
+                                <span class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest font-display block mt-0.5">SCENARIO CHALLENGE</span>
+                            </div>
+                        </div>
+                        <p class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed max-w-2xl">
+                            ${q.q}
+                        </p>
+                    </div>
+
+                    <!-- Multiple Choices Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        ${q.options.map((opt, idx) => {
+                            return `
+                                <div id="challenge-opt-${idx}" onclick="selectChallengeOption(${idx})"
+                                     class="p-5 rounded-2xl border text-sm font-bold font-display leading-snug flex items-center justify-between transition-all shadow-xs border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 cursor-pointer">
+                                    <div class="flex items-center gap-3">
+                                        <span class="opt-label w-6 h-6 rounded-lg text-xs font-extrabold flex items-center justify-center border border-slate-200 text-slate-500 bg-white">
+                                            ${String.fromCharCode(65 + idx)}
+                                        </span>
+                                        <span class="text-sm font-semibold pr-2">${opt}</span>
+                                    </div>
+                                    <div class="icon-holder shrink-0"></div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Evaluation Feedback layer (Auto-Loaded) -->
+                    <div id="challenge-feedback-panel" class="border border-slate-200 bg-white rounded-2xl p-6 shadow-sm mb-6 hidden">
+                        <div id="challenge-feedback-badge-row" class="flex items-center gap-2 mb-4">
+                            <!-- Custom badge goes here -->
+                        </div>
+                        
+                        <div class="flex items-start gap-3 mb-6">
+                            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469h-4a3.374 3.374 0 00-1.125-2.429l-.547-.547z"></path>
+                            </svg>
+                            <p id="challenge-feedback-text" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                                <!-- Explanation sentence -->
+                            </p>
+                        </div>
+
+                        <button onclick="advanceChallenge()"
+                                class="w-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer">
+                            <span id="challenge-btn-label">Next Question</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function selectChallengeOption(idx) {
+            if (challengeIsLocked) return;
+            challengeIsLocked = true;
+            challengeSelectedIdx = idx;
+
+            const q = CHALLENGE_QUESTIONS[challengeIndex];
+            const isCorrect = idx === q.correct;
+
+            if (isCorrect) {
+                currentChallengeScore += 1;
+            }
+
+            challengeAnsweredLog.push({
+                qIndex: challengeIndex,
+                correct: isCorrect,
+                selectedIndex: idx
+            });
+
+            // Update DOM Styles instantly to provide responses feedback list
+            q.options.forEach((opt, oIdx) => {
+                const optEl = document.getElementById(`challenge-opt-${oIdx}`);
+                const label = optEl.querySelector('.opt-label');
+                const iconHolder = optEl.querySelector('.icon-holder');
+
+                if (oIdx === q.correct) {
+                    // Green correct indicator
+                    optEl.className = "p-5 rounded-2xl border text-sm font-bold font-display leading-snug flex items-center justify-between transition-all shadow-xs border-green-600 bg-green-50 text-green-900 ring-1 ring-green-600";
+                    label.className = "opt-label w-6 h-6 rounded-lg text-xs font-extrabold flex items-center justify-center border border-green-200 bg-green-100 text-green-800";
+                    iconHolder.innerHTML = `
+                        <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    `;
+                } else if (oIdx === idx && !isCorrect) {
+                    // Red incorrect selection
+                    optEl.className = "p-5 rounded-2xl border text-sm font-bold font-display leading-snug flex items-center justify-between transition-all shadow-xs border-red-600 bg-red-50 text-red-900 ring-1 ring-red-600";
+                    label.className = "opt-label w-6 h-6 rounded-lg text-xs font-extrabold flex items-center justify-center border border-red-200 bg-red-100 text-red-800";
+                    iconHolder.innerHTML = `
+                        <svg class="w-5 h-5 text-red-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    `;
+                } else {
+                    // Faded options
+                    optEl.className = "p-5 rounded-2xl border text-sm font-bold font-display leading-snug flex items-center justify-between transition-all shadow-xs border-slate-150 bg-white text-slate-400 opacity-60 cursor-default";
+                }
+            });
+
+            // Reveal feedback card panel
+            const fbPanel = document.getElementById('challenge-feedback-panel');
+            const badgeRow = document.getElementById('challenge-feedback-badge-row');
+            const fbText = document.getElementById('challenge-feedback-text');
+            const btnLabel = document.getElementById('challenge-btn-label');
+
+            fbText.textContent = q.feedback;
+            
+            if (isCorrect) {
+                badgeRow.innerHTML = `
+                    <div class="flex items-center gap-1.5 bg-green-50 text-green-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Correct Application
+                    </div>
+                `;
+            } else {
+                badgeRow.innerHTML = `
+                    <div class="flex items-center gap-1.5 bg-red-50 text-red-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg> Incorrect Application
+                    </div>
+                `;
+            }
+
+            if (challengeIndex < CHALLENGE_QUESTIONS.length - 1) {
+                btnLabel.textContent = 'Next Question';
+            } else {
+                btnLabel.textContent = 'View Mastery Report';
+            }
+
+            fbPanel.classList.remove('hidden');
+        }
+
+        function advanceChallenge() {
+            if (challengeIndex < CHALLENGE_QUESTIONS.length - 1) {
+                challengeIndex += 1;
+                challengeSelectedIdx = null;
+                challengeIsLocked = false;
+                
+                // Redraw question screen
+                const wrapper = document.getElementById('view-host').firstChild;
+                if (wrapper) wrapper.innerHTML = renderChallengeScreen();
+            } else {
+                // Scenario Challenge session complete. Record score and auto flag misses
+                processChallengeCompletion();
+            }
+        }
+
+        function processChallengeCompletion() {
+            challengeScore = currentChallengeScore;
+
+            // Auto-flag terms matching any missed diagnostic groups
+            challengeAnsweredLog.forEach(log => {
+                if (!log.correct) {
+                    const group = CHALLENGE_QUESTIONS[log.qIndex].group;
+                    const related = VOCABULARY_TERMS.filter(t => t.group === group);
+                    // Flag the first two related terms of this category
+                    related.slice(0, 2).forEach(term => {
+                        reviewAgain.add(term.id);
+                        mastered.delete(term.id);
+                    });
+                }
+            });
+
+            navigateTo('mastery');
+        }
+
+
+        // --- 5. MASTERY REPORT PANEL ---
+        function renderMasteryScreen() {
+            const totalDenominator = 35 + 35 + 15; // 35 terms flashcard recall + 35 matching recall + 15 multiple choice challenge
+            const numeratorTotal = mastered.size + matchFirstTryScore + challengeScore;
+            const pct = Math.round((numeratorTotal / totalDenominator) * 100);
+
+            // Derive ranks
+            let rankHeading = 'EXPLORER';
+            let rankDesc = "You are just beginning to navigate the foundations of AI. Engage with the active-recall Flashcard mode to unlock deeper levels.";
+            let badgeBackgroundClasses = 'bg-slate-50 border-slate-200 text-slate-700';
+
+            if (pct >= 90) {
+                rankHeading = 'AI SYSTEMS MASTER';
+                rankDesc = "Incredible fluency! You have established a complete, industry-grade understanding of standard models, historical milestones, and product lifecycles.";
+                badgeBackgroundClasses = 'bg-indigo-50 border-indigo-200 text-indigo-700';
+            } else if (pct >= 75) {
+                rankHeading = 'AI ANALYST';
+                rankDesc = "Very strong foundation! You are highly capable of differentiating concepts and using technical logic to evaluate real-world situations.";
+                badgeBackgroundClasses = 'bg-green-50 border-green-200 text-green-700';
+            } else if (pct >= 60) {
+                rankHeading = 'APPRENTICE';
+                rankDesc = "Fluency is expanding. A few structural gaps remain — try to clear definitions in Match mode to optimize your fast-recall speed.";
+                badgeBackgroundClasses = 'bg-amber-50 border-amber-200 text-amber-700';
+            }
+
+            // Flagged items array list rendering
+            let reviewListContent = '';
+            if (reviewAgain.size === 0) {
+                reviewListContent = `
+                    <div class="text-center py-6">
+                        <svg class="w-6 h-6 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <p class="text-xs font-bold text-green-700 uppercase tracking-widest leading-relaxed">
+                            Perfect recall achieved! No terms flagged.
+                        </p>
+                    </div>
+                `;
+            } else {
+                const arr = Array.from(reviewAgain);
+                const listItems = arr.map(id => {
+                    const term = VOCABULARY_TERMS.find(t => t.id === id);
+                    if (!term) return '';
+                    return `
+                        <div class="py-3 sm:py-4 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${term.color}"></span>
+                                <span class="font-bold text-sm text-slate-800 font-display truncate">${term.term}</span>
+                            </div>
+                            <span class="text-[9px] font-extrabold uppercase px-2.5 py-1 rounded-md shrink-0 tracking-wider text-center"
+                                  style="background-color: ${term.color}12; color: ${term.color}">
+                                ${term.group}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+
+                reviewListContent = `
+                    <div class="divide-y divide-slate-100 max-h-80 overflow-y-auto pr-2">
+                        ${listItems}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="max-w-3xl mx-auto py-8 px-4 font-sans">
+                    
+                    <!-- Title -->
+                    <div class="text-center mb-10">
+                        <span class="text-[10px] font-black tracking-widest text-indigo-600 uppercase font-mono bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+                            Fluent Insights
+                        </span>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 mt-3 font-display">
+                            Mastery Report
+                        </h1>
+                        <p class="text-sm font-medium text-slate-400 mt-1.5 font-display">
+                            Session Performance & Terminology Index
+                        </p>
+                    </div>
+
+                    <!-- Fluency Dial -->
+                    <div class="relative flex justify-center mb-10">
+                        <div class="relative flex flex-col justify-center items-center w-40 h-40 bg-white shadow-md rounded-full border border-slate-150">
+                            <span class="text-4xl sm:text-5xl font-black text-neutral-900 font-display tracking-tight">${pct}%</span>
+                            <span class="text-[9px] font-extrabold text-slate-400 tracking-wider uppercase mt-1">Total Fluency</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Stats bar checklist -->
+                    <div class="space-y-6 mb-12">
+                        <!-- Score Recall card -->
+                        <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                    <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">Active Recall Cards</span>
+                                </div>
+                                <span class="text-xs font-extrabold text-slate-800">${mastered.size} / 35 Mastered</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width: ${(mastered.size / 35) * 100}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Score Match recall -->
+                        <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">First-Try Matching Links</span>
+                                </div>
+                                <span class="text-xs font-extrabold text-slate-800">${matchFirstTryScore} / 35 Pairs</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-purple-600 h-full rounded-full transition-all duration-1000" style="width: ${(matchFirstTryScore / 35) * 100}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Score Challenge recall -->
+                        <div class="bg-white border border-slate-150 rounded-2xl p-5 shadow-xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    <span class="text-xs font-bold text-slate-700 font-display uppercase tracking-wider">Scenario Challenge Score</span>
+                                </div>
+                                <span class="text-xs font-extrabold text-slate-800">${challengeScore} / 15 Solved</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-amber-600 h-full rounded-full transition-all duration-1000" style="width: ${(challengeScore / 15) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rank badge dynamic card container -->
+                    <div class="border rounded-2xl p-6 sm:p-8 text-center shadow-xs mb-12 ${badgeBackgroundClasses}">
+                        <svg class="w-8 h-8 mx-auto text-current mb-3 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 100-6 3 3 0 000 6zm0 0v6M9 18l3 3 3-3M5 3s4 1 7 1 7-1 7-1v9c0 4-3 7-7 8c-4-1-7-4-7-8V3z"></path>
+                        </svg>
+                        <h3 class="text-xl font-bold tracking-wider font-display uppercase mb-2">${rankHeading}</h3>
+                        <p class="text-xs sm:text-sm leading-relaxed max-w-lg mx-auto opacity-80">${rankDesc}</p>
+                    </div>
+
+                    <!-- Review lists catalog of flagged elements -->
+                    <div class="border border-slate-200 bg-white rounded-2xl p-6 sm:p-8 shadow-xs mb-12 text-left">
+                        <h3 class="text-xs font-bold text-slate-400 font-mono tracking-widest uppercase border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg> Flagged for Further Review
+                        </h3>
+                        
+                        ${reviewListContent}
+                    </div>
+
+                    <!-- Action control buttons row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="navigateTo('flashcard')"
+                                class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg> Back to study
+                        </button>
+                        <button onclick="retryScenariosChallenge()"
+                                class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89H18v3z"></path>
+                            </svg> Retry challenge
+                        </button>
+                        <button onclick="navigateTo('intro')"
+                                class="bg-neutral-900 border border-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-4 rounded-xl text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg> Reset Menu
+                        </button>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function retryScenariosChallenge() {
+            challengeScore = 0;
+            navigateTo('challenge');
+        }
+
+
+        // --- AUTOMATED INGRESS ON POWERUP ---
+        navigateTo('intro');
     </script>
 </body>
 </html>
