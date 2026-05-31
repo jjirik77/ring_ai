@@ -47,15 +47,17 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 12px 16px;
-            overflow-y: auto;
+            padding: 20px;
+            overflow: hidden;
         }
 
         #app-viewport {
             width: 100%;
-            max-width: 1240px;
+            max-width: 1000px;
+            height: 720px;
+            max-height: calc(100vh - 40px);
             background-color: var(--white);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.1);
             border-radius: 20px;
             display: flex;
             flex-direction: column;
@@ -126,9 +128,12 @@
 
         main {
             flex-grow: 1;
-            padding: 20px 24px;
+            padding: 16px 20px;
             background: var(--slate-50);
-            min-height: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* lets the main container shrink dynamically on smaller viewport heights */
         }
 
         .content-card {
@@ -136,12 +141,53 @@
             border: 1px solid var(--slate-100);
             border-radius: 16px;
             box-shadow: var(--shadow);
-            padding: 24px 32px;
+            padding: 16px 20px;
             width: 100%;
             display: flex;
             flex-direction: column;
             animation: slideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-            min-height: auto;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Split Screen Grid for zero-scrolling */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            align-items: stretch;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .split-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        /* Customizable custom scrollbars for columns and mini panels */
+        .scrollable-panel, .split-col {
+            overflow-y: auto !important;
+            scrollbar-width: thin;
+        }
+
+        .scrollable-panel::-webkit-scrollbar, .split-col::-webkit-scrollbar {
+            width: 5px;
+        }
+        .scrollable-panel::-webkit-scrollbar-track, .split-col::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollable-panel::-webkit-scrollbar-thumb, .split-col::-webkit-scrollbar-thumb {
+            background: var(--slate-300);
+            border-radius: 9999px;
+        }
+        .scrollable-panel::-webkit-scrollbar-thumb:hover, .split-col::-webkit-scrollbar-thumb:hover {
+            background: var(--slate-400);
         }
 
         @keyframes slideIn {
@@ -150,31 +196,31 @@
         }
 
         h2 {
-            font-size: 30px;
+            font-size: 22px;
             color: var(--slate-900);
-            margin-bottom: 8px;
-            font-weight: 800;
+            margin-bottom: 4px;
+            font-weight: 850;
             letter-spacing: -0.03em;
         }
 
         .subtitle {
-            font-size: 13px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 28px;
+            margin-bottom: 12px;
             background-color: var(--slate-100);
             color: var(--slate-700);
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-weight: 700;
             width: fit-content;
         }
 
         p {
-            margin-bottom: 1.2rem;
-            line-height: 1.625;
-            font-size: 15.5px;
+            margin-bottom: 0.6rem;
+            line-height: 1.5;
+            font-size: 14px;
             color: var(--slate-700);
         }
 
@@ -182,14 +228,14 @@
         .module-selection-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 24px;
+            gap: 16px;
+            margin-top: 16px;
         }
 
         .module-card {
             border: 1.5px solid var(--slate-200);
-            border-radius: 14px;
-            padding: 28px;
+            border-radius: 12px;
+            padding: 18px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             background-color: var(--white);
@@ -289,8 +335,8 @@
         .verdict-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         @media (max-width: 768px) {
@@ -309,13 +355,13 @@
         }
 
         .choice-pill {
-            padding: 16px 12px;
+            padding: 10px 12px;
             border: 1.5px solid var(--slate-200);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
             font-weight: 700;
-            font-size: 13.5px;
+            font-size: 13px;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             background: var(--white);
             color: var(--slate-700);
@@ -356,20 +402,56 @@
             opacity: 0.6;
         }
 
+        /* High-fidelity responsive grids for briefings */
+        .briefing-grid-ruling, .briefing-grid-fairuse {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .briefing-grid-ai {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 640px) {
+            .briefing-grid-ruling, .briefing-grid-fairuse {
+                grid-template-columns: 1fr;
+            }
+            .briefing-grid-ai {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hover-card {
+            background: var(--white);
+            border: 1.5px solid var(--slate-200);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hover-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -8px rgba(15, 23, 42, 0.08);
+            border-color: var(--slate-300);
+        }
+
         /* Principle Chips */
         .chip-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .chip {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 9999px;
             background: var(--white);
             border: 1.5px solid var(--slate-300);
-            font-size: 13px;
+            font-size: 12.5px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.15s ease;
@@ -422,8 +504,8 @@
             background: #f8fafc;
             border: 1.5px solid var(--slate-200);
             border-radius: 12px;
-            padding: 24px;
-            margin-top: 24px;
+            padding: 14px;
+            margin-top: 10px;
             display: none;
             border-left: 5px solid var(--slate-300);
         }
@@ -473,37 +555,38 @@
         .match-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 10px;
         }
 
         .match-col {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .match-card {
-            padding: 18px 22px;
+            padding: 12px 18px;
             border: 1.5px solid var(--slate-200);
-            border-radius: 12px;
+            border-radius: 10px;
             background: var(--white);
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 13.5px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            min-height: 84px;
+            min-height: 64px;
             display: flex;
             align-items: center;
             line-height: 1.5;
             position: relative;
+            color: var(--slate-800);
         }
 
         .match-card:hover {
             border-color: var(--primary);
             background: #fbfdff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px -4px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 4px 8px -2px rgba(15, 23, 42, 0.05);
         }
 
         .match-card.selected {
@@ -534,8 +617,8 @@
         /* Matches Results Explainers */
         .precedent-explain-box {
             border-top: 1.5px solid var(--slate-200);
-            margin-top: 32px;
-            padding-top: 24px;
+            margin-top: 16px;
+            padding-top: 12px;
         }
 
         .precedent-explain-item {
@@ -972,289 +1055,732 @@
     <main>
         <!-- SCREEN 1: Introduction and Branching Portal -->
         <div id="screen-intro" class="content-card">
-            <h2>Who Owns This?</h2>
-            <p class="subtitle">Copyright law meets the digital world.</p>
-            
-            <p>Everything you see online was created by someone. Music, photos, videos, writing, code — all of it is protected by copyright law the moment it is created. Copyright gives creators the exclusive right to copy, distribute, and profit from their work.</p>
-            <p style="font-weight: 600; color: var(--slate-900);">Digital technology makes copying nearly effortless and free.</p>
-            <p>Downloading a song, screenshotting an image, sampling a beat, using an AI tool trained on copyrighted art — these acts happen billions of times a day. Some are legal. Some are not. Many exist in a grey zone.</p>
-            
-            <p style="margin-top: 15px; font-weight: 700; color: var(--primary);">Explore Key Terms:</p>
-            <div class="chip-container" id="intro-chip-container">
-                <div class="chip" onclick="showIntroTerm('Copyright', this)">Copyright</div>
-                <div class="chip" onclick="showIntroTerm('Fair Use', this)">Fair Use</div>
-                <div class="chip" onclick="showIntroTerm('Piracy', this)">Piracy</div>
-            </div>
-
-            <div id="term-definition-box">
-                <p id="term-definition-text">Select a term above to see its digital definition.</p>
-            </div>
-
-            <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 24px;">
-                <p style="font-weight: 700; margin-bottom: 12px; color: var(--slate-900);">Select Your Learning Module below to begin:</p>
-                <div class="module-selection-grid">
-                    <div class="module-card" id="module-card-quiz" onclick="selectLearningModule('quiz')">
-                        <div>
-                            <svg style="width: 40px; height: 40px; color: var(--primary); margin-bottom: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                            </svg>
-                            <h3>Copyright Scenario Quiz</h3>
-                            <p>Review seven diverse digital copyright scenarios, issue legal rulings, and match core real-world court cases.</p>
-                        </div>
-                        <div style="font-size: 13.5px; font-weight: 700; color: var(--primary); margin-top: 10px; display: flex; align-items: center; gap: 6px;">Explore Scenario Quiz <span style="font-size: 15px;">→</span></div>
+            <div class="split-grid">
+                <!-- Left side: Core Info & Terms -->
+                <div class="split-col" style="gap: 12px; padding-right: 8px;">
+                    <div>
+                        <h2>Who Owns This?</h2>
+                        <p class="subtitle" style="margin-bottom: 12px;">Copyright meets the digital world.</p>
                     </div>
-                    <div class="module-card" id="module-card-ai" onclick="selectLearningModule('ai')">
-                        <div>
-                            <svg style="width: 40px; height: 40px; color: var(--secondary); margin-bottom: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                            </svg>
-                            <h3>AI Generated Images Case Study</h3>
-                            <p>Analyze active litigation on model training, artistic style copying, and explore ethical choices around AI.</p>
+                    
+                    <p style="font-size: 13.5px; margin-bottom: 8px; line-height: 1.5; color: var(--slate-700);">Every digital design—music, photo, video, text, or code—is automatically copyrighted the moment a human creates it. But digital tools make copying, scraping, and sharing effortless and free.</p>
+                    
+                    <p style="font-size: 13px; font-weight: 600; color: var(--slate-900); margin-bottom: 4px;">Are you ready to advise clients in this gray zone?</p>
+                    
+                    <div style="margin-top: 6px; border-top: 1px solid var(--slate-100); padding-top: 10px; flex-grow: 1; display: flex; flex-direction: column;">
+                        <p style="font-weight: 700; margin-bottom: 8px; color: var(--primary); font-size: 13px;">Explore Consultant Quick Guide:</p>
+                        <div class="chip-container" id="intro-chip-container" style="gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                            <div class="chip" style="font-size: 11px; padding: 4px 10px;" onclick="showIntroTerm('Copyright', this)">Copyright</div>
+                            <div class="chip" style="font-size: 11px; padding: 4px 10px;" onclick="showIntroTerm('Fair Use', this)">Fair Use</div>
+                            <div class="chip" style="font-size: 11px; padding: 4px 10px;" onclick="showIntroTerm('Piracy', this)">Piracy</div>
                         </div>
-                        <div style="font-size: 13.5px; font-weight: 700; color: var(--secondary); margin-top: 10px; display: flex; align-items: center; gap: 6px;">Explore Case Study <span style="font-size: 15px;">→</span></div>
+
+                        <div id="term-definition-box" style="padding: 14px 18px; margin-top: 10px; display: none; border-radius: 10px; border: 1px solid #bfdbfe; border-left: 5px solid var(--primary); background-color: #eff6ff;">
+                            <p id="term-definition-text" style="font-size: 13.5px; line-height: 1.5; color: var(--slate-700); margin: 0;">Select a term above to review its digital definition.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right side: Module Selection -->
+                <div class="split-col" style="gap: 14px; padding-left: 8px;">
+                    <div style="border-left: 3px solid var(--primary); padding-left: 12px;">
+                        <p style="font-weight: 700; margin-bottom: 4px; color: var(--slate-900); font-size: 14px;">Select Learning Route:</p>
+                        <p style="font-size: 12px; color: var(--slate-500); margin-bottom: 0;">Step into active scenarios to earn certificates</p>
+                    </div>
+                    
+                    <div class="module-selection-grid" style="gap: 14px; margin-top: 0; flex-grow: 1; display: flex; flex-direction: column;">
+                        <div class="module-card" id="module-card-quiz" onclick="selectLearningModule('quiz')" style="padding: 20px 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <svg style="width: 28px; height: 28px; color: var(--primary); flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                </svg>
+                                <div>
+                                    <h3 style="font-size: 15px; margin-bottom: 2px;">Copyright Scenario Quiz</h3>
+                                    <p style="font-size: 11.5px; margin-bottom: 0; line-height: 1.4; color: var(--slate-700);">Classroom, parodies, file-sharing, memes. Direct clients, match four factors & core precedents.</p>
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 700; color: var(--primary); margin-top: 8px; display: flex; align-items: center; gap: 4px;">Scenario Quiz Launch <span style="font-size: 12px;">→</span></div>
+                        </div>
+
+                        <div class="module-card" id="module-card-ai" onclick="selectLearningModule('ai')" style="padding: 20px 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <svg style="width: 28px; height: 28px; color: var(--secondary); flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                </svg>
+                                <div>
+                                    <h3 style="font-size: 15px; margin-bottom: 2px;">AI Generated Images Study</h3>
+                                    <p style="font-size: 11.5px; margin-bottom: 0; line-height: 1.4; color: var(--slate-700);">Frontiers of training-data harvesting, machine learning, and style mimicry. Legal & philosophical audit.</p>
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 700; color: var(--secondary); margin-top: 8px; display: flex; align-items: center; gap: 4px;">AI Casework Launch <span style="font-size: 12px;">→</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- SCREEN 2: Quiz Briefing (Module 1 Only) -->
-        <div id="screen-quiz-briefing" class="content-card hidden">
+        <div id="screen-quiz-briefing" class="content-card hidden" style="padding: 16px 20px;">
             <h2>Consultation Briefing</h2>
-            <p class="subtitle">Understand the legal guidelines</p>
-            <p>As a digital rights consultant, you will analyze cases based on core rules and principles. Familiarize yourself with these categories before reviewing cases.</p>
+            <p class="subtitle" style="margin-bottom: 8px;">Understand the legal guidelines</p>
+            <p style="font-size: 13.5px; margin-bottom: 12px; color: var(--slate-700);">As a digital rights consultant, you will analyze cases based on core rules and principles. Familiarize yourself with these categories before reviewing cases.</p>
             
-            <div class="sidebar-layout">
-                <div class="sidebar">
-                    <button class="sidebar-btn active" id="brief-btn-0" onclick="switchBriefingTab(0)">Ruling Types</button>
-                    <button class="sidebar-btn" id="brief-btn-1" onclick="switchBriefingTab(1)">Four Fair Use Factors</button>
+            <div class="sidebar-layout" style="margin-top: 12px; flex-grow: 1; min-height: 0; display: flex; gap: 24px; height: calc(100% - 70px);">
+                <!-- Left Sidebar Navigation -->
+                <div class="sidebar" style="width: 220px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+                    <button class="sidebar-btn active" id="brief-btn-0" style="padding: 12px 14px; font-size: 13px;" onclick="switchBriefingTab(0)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                            </svg>
+                            Ruling Types
+                        </div>
+                    </button>
+                    <button class="sidebar-btn" id="brief-btn-1" style="padding: 12px 14px; font-size: 13px;" onclick="switchBriefingTab(1)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            Four Fair Use Factors
+                        </div>
+                    </button>
                 </div>
-                <div class="sidebar-content">
-                    <div id="brief-tab-0">
-                        <p style="margin-bottom: 12px;"><strong>✅ FAIR USE:</strong> Limited use is valid without authorization. This includes criticism, parody, comment, news reporting, teaching, scholarship, or research.</p>
-                        <p style="margin-bottom: 12px;"><strong>🔵 LICENSED:</strong> Explicit permission was granted. This is typical of creative commons work, authorized distribution, or royalty-free platforms.</p>
-                        <p style="margin-bottom: 12px;"><strong>🚫 PIRACY:</strong> Unauthorized reproduction or distribution of copyrighted material. Financial profit is not required for a violation to occur.</p>
-                        <p style="margin-bottom: 12px;"><strong>⚠️ UNCLEAR:</strong> Set in legal grey areas with no direct court consensus or precedent, especially of newly emerging technologies.</p>
+
+                <!-- Right Sidebar Content Tab Zones in high-fidelity 2x2 grids -->
+                <div class="sidebar-content scrollable-panel" style="flex-grow: 1; overflow-y: auto; padding-right: 6px; height: 100%;">
+                    
+                    <!-- TAB 0: Ruling Types Grid -->
+                    <div id="brief-tab-0" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 style="font-size: 14.5px; font-weight: 800; color: var(--slate-900); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+                            <svg style="width: 18px; height: 18px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                            </svg>
+                            Lawsuit Ruling Types
+                        </h3>
+                        <div class="briefing-grid-ruling">
+                            
+                            <!-- Card 1: Fair Use -->
+                            <div class="hover-card" style="background: rgba(34, 197, 94, 0.03); border: 1.5px solid rgba(34, 197, 94, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #eafaf1; color: #22c55e; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(34,197,94,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #15803d; text-transform: uppercase; letter-spacing: 0.02em;">Fair Use</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Limited use is valid without authorization. This includes critique, commentary, news reporting, teaching, parody, or search indexes.</p>
+                            </div>
+
+                            <!-- Card 2: Licensed -->
+                            <div class="hover-card" style="background: rgba(59, 130, 246, 0.03); border: 1.5px solid rgba(59, 130, 246, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #ebf5ff; color: #3b82f6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(59,130,246,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.02em;">Licensed</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Explicit permission was secured. This is typical of creative commons databases, specific commercial buyouts, or royalty-free platforms.</p>
+                            </div>
+
+                            <!-- Card 3: Piracy -->
+                            <div class="hover-card" style="background: rgba(239, 68, 68, 0.03); border: 1.5px solid rgba(239, 68, 68, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fef2f2; color: #ef4448; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(239,68,68,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.02em;">Piracy</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Unauthorized reproduction or sharing of files. Direct financial gain or commercial scale is not required to establish illegal piracy.</p>
+                            </div>
+
+                            <!-- Card 4: Unclear -->
+                            <div class="hover-card" style="background: rgba(245, 158, 11, 0.03); border: 1.5px solid rgba(245, 158, 11, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fffbeb; color: #f59e0b; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(245,158,11,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #b45309; text-transform: uppercase; letter-spacing: 0.02em;">Unclear</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Grey areas or systemic issues where standard statutes or judicial precedents do not draw clear-cut lines, especially of new technologies.</p>
+                            </div>
+
+                        </div>
                     </div>
-                    <div id="brief-tab-1" class="hidden">
-                        <p style="margin-bottom: 12px;"><strong>⚙️ Transformative Purpose:</strong> Does the work create something new with a distinct purpose, parody, commentary, or character, or just copy the original work?</p>
-                        <p style="margin-bottom: 12px;"><strong>📏 Proportion/Amount:</strong> How much of the original copyrighted work is utilized relative to the whole? Quotes are different from whole chapters.</p>
-                        <p style="margin-bottom: 12px;"><strong>💰 Market Harm:</strong> Does it interfere with the copyright holder's potential market or replace purchases of the original product?</p>
-                        <p style="margin-bottom: 12px;"><strong>🎓 Educational Purpose:</strong> Nonprofit, classroom, or educational environments lean heavily towards fair use compared to commercial endeavors.</p>
+
+                    <!-- TAB 1: Fair Use Factors Grid -->
+                    <div id="brief-tab-1" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 style="font-size: 14.5px; font-weight: 800; color: var(--slate-900); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+                            <svg style="width: 18px; height: 18px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            The Four Fair Use Factors
+                        </h3>
+                        <div class="briefing-grid-fairuse">
+
+                            <!-- Factor 1: Transformative Purpose -->
+                            <div class="hover-card" style="background: rgba(139, 92, 246, 0.03); border: 1.5px solid rgba(139, 92, 246, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #f5f3ff; color: #8b5cf6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(139,92,246,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.02em;">Transformative</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Does the work add a new expression, meaning, or message with custom insight, humor, commentary, parody, or structural adaptation?</p>
+                            </div>
+
+                            <!-- Factor 2: Proportion -->
+                            <div class="hover-card" style="background: rgba(236, 72, 153, 0.03); border: 1.5px solid rgba(236, 72, 153, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fdf2f8; color: #ec4899; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(236,72,153,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #be185d; text-transform: uppercase; letter-spacing: 0.02em;">Proportion</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">How much of the copyrighted origin is used? Extracting a short quote or minor sample is safer than reproducing whole files or central hooks.</p>
+                            </div>
+
+                            <!-- Factor 3: Market Harm -->
+                            <div class="hover-card" style="background: rgba(244, 63, 94, 0.03); border: 1.5px solid rgba(244, 63, 94, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fff1f2; color: #f43f5e; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(244,63,94,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #be123c; text-transform: uppercase; letter-spacing: 0.02em;">Market Harm</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Does the use compete directly with the copyright holder's potential profits or act as a cheaper market substitute for the standard works?</p>
+                            </div>
+
+                            <!-- Factor 4: Education -->
+                            <div class="hover-card" style="background: rgba(20, 184, 166, 0.03); border: 1.5px solid rgba(20, 184, 166, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #e6fffa; color: #20b8a6; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(20,184,166,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.02em;">Education</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;">Nonprofit classroom environments, personal study, or academic research tilt heavily towards fair use compared to commercial business systems.</p>
+                            </div>
+
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
 
         <!-- SCREEN 3: Quiz Cases (Module 1 Only) -->
-        <div id="screen-quiz-cases" class="content-card hidden">
-            <h2 id="quiz-case-title">Case Review</h2>
-            
-            <div class="consultant-instruction">
-                Analyze the scenario below carefully. Issue a verdict and click <strong>one or two</strong> core key legal principles that justify your decision.
-            </div>
-
-            <div id="quiz-case-display">
-                <p id="quiz-case-text" style="font-size: 16px; font-weight: 500; margin-bottom: 24px; color: var(--slate-900); padding: 5px 0;"></p>
-                
-                <div id="quiz-case-input-zone">
-                    <p style="font-size: 12px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; margin-bottom: 8px;">1. Issue Verdict</p>
-                    <div class="verdict-grid">
-                        <div class="choice-pill" id="pill-fair-use" onclick="selectCaseVerdict('fair-use')">✅ FAIR USE</div>
-                        <div class="choice-pill" id="pill-licensed" onclick="selectCaseVerdict('licensed')">🔵 LICENSED</div>
-                        <div class="choice-pill" id="pill-piracy" onclick="selectCaseVerdict('piracy')">🚫 PIRACY</div>
-                        <div class="choice-pill" id="pill-unclear" onclick="selectCaseVerdict('unclear')">⚠️ UNCLEAR</div>
+        <div id="screen-quiz-cases" class="content-card hidden" style="padding: 16px 20px;">
+            <div class="split-grid" style="grid-template-columns: 1fr 1.1fr;">
+                <!-- Left Column: Case details and inputs -->
+                <div class="split-col" style="gap: 12px;">
+                    <div>
+                        <h2 id="quiz-case-title" style="font-size: 20px; line-height: 1.2;">Case Review</h2>
+                        <div class="consultant-instruction" style="padding: 8px 12px; margin-bottom: 10px; font-size: 12.5px; margin-top: 6px;">
+                            Review the scenario. Issue a verdict and select the core principles.
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--slate-50); border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px 18px; min-height: 100px; display: flex; align-items: center; border-left: 4px solid var(--primary); flex-grow: 1;">
+                        <p id="quiz-case-text" style="font-size: 14px; font-weight: 600; margin-bottom: 0; color: var(--slate-900); line-height: 1.5;"></p>
                     </div>
 
-                    <p style="font-size: 12px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; margin-bottom: 8px;">2. Legal Principles (Select 1-2)</p>
-                    <div class="chip-container" id="principle-list">
-                        <div class="chip" id="principle-chip-0" onclick="toggleCasePrinciple('Transformative Use', this)">Transformative Use</div>
-                        <div class="chip" id="principle-chip-1" onclick="toggleCasePrinciple('Proportion', this)">Proportion</div>
-                        <div class="chip" id="principle-chip-2" onclick="toggleCasePrinciple('Market Harm', this)">Market Harm</div>
-                        <div class="chip" id="principle-chip-3" onclick="toggleCasePrinciple('Educational Purpose', this)">Educational Purpose</div>
+                    <div id="quiz-case-input-zone" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em;">1. Issue Verdict Outcome</p>
+                            <div class="verdict-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 4px;">
+                                <div class="choice-pill" style="padding: 10px 8px; font-size: 12px; font-weight: 700;" id="pill-fair-use" onclick="selectCaseVerdict('fair-use')">✅ FAIR USE</div>
+                                <div class="choice-pill" style="padding: 10px 8px; font-size: 12px; font-weight: 700;" id="pill-licensed" onclick="selectCaseVerdict('licensed')">🔵 LICENSED</div>
+                                <div class="choice-pill" style="padding: 10px 8px; font-size: 12px; font-weight: 700;" id="pill-piracy" onclick="selectCaseVerdict('piracy')">🚫 PIRACY</div>
+                                <div class="choice-pill" style="padding: 10px 8px; font-size: 12px; font-weight: 700;" id="pill-unclear" onclick="selectCaseVerdict('unclear')">⚠️ UNCLEAR</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em;">2. Core Supporting Principles (Select 1-2)</p>
+                            <div class="chip-container" id="principle-list" style="gap: 6px; margin-bottom: 6px;">
+                                <div class="chip" style="font-size: 11.5px; padding: 5px 10px;" id="principle-chip-0" onclick="toggleCasePrinciple('Transformative Use', this)">Transformative Use</div>
+                                <div class="chip" style="font-size: 11.5px; padding: 5px 10px;" id="principle-chip-1" onclick="toggleCasePrinciple('Proportion', this)">Proportion</div>
+                                <div class="chip" style="font-size: 11.5px; padding: 5px 10px;" id="principle-chip-2" onclick="toggleCasePrinciple('Market Harm', this)">Market Harm</div>
+                                <div class="chip" style="font-size: 11.5px; padding: 5px 10px;" id="principle-chip-3" onclick="toggleCasePrinciple('Educational Purpose', this)">Educational Purpose</div>
+                            </div>
+                        </div>
+
+                        <button class="btn-emate btn-solid" style="width: 100%; padding: 10px; font-size: 12px;" id="btn-submit-case" disabled onclick="submitCaseRuling()">Submit Case Ruling</button>
                     </div>
 
-                    <button class="btn-emate btn-solid" style="width: 100%; margin-top: 10px;" id="btn-submit-case" disabled onclick="submitCaseRuling()">Submit Case Ruling</button>
+                    <!-- Compact card shown on Left side when reviewed, summarizing status -->
+                    <div id="quiz-case-left-completed" class="hidden" style="background: #f8fafc; border: 1.5px solid var(--slate-200); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                        <p style="font-size: 11px; font-weight: 800; color: var(--slate-500); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">💼 Practice Status</p>
+                        <p style="font-size: 12.5px; margin-bottom: 0; line-height: 1.4; color: var(--slate-700);">Your consultation on this incident has been recorded in the summary scorecard. Use the <strong>Next</strong> button to proceed to other scenarios, or click <strong>Back</strong> to review preceding cases.</p>
+                        <div style="display: flex; gap: 8px; margin-top: 4px;">
+                            <span style="font-size: 11px; background: #e2e8f0; color: #475569; padding: 4px 8px; border-radius: 4px; font-weight: 700;" id="left-verdict-summary"></span>
+                            <span style="font-size: 11px; background: #e2e8f0; color: #475569; padding: 4px 8px; border-radius: 4px; font-weight: 700;" id="left-score-summary"></span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Inline feedback avoids overlay blocking the explanatory text -->
-                <div id="quiz-case-feedback" class="result-panel">
-                    <div class="verdict-badge" id="feedback-verdict-badge">FAIR USE</div>
-                    <h3 id="feedback-match-status" style="margin-bottom: 8px; font-size: 18px; font-weight: 700;"></h3>
-                    <p id="feedback-grading-explanation" style="font-weight: 600; margin-bottom: 12px; font-size: 14px;"></p>
-                    <p id="feedback-case-explanation" style="font-size: 14px; line-height: 1.6; color: var(--slate-700);"></p>
+                <!-- Right Column: Consultant Desk Reference OR Dynamic Feedback -->
+                <div class="split-col scrollable-panel" style="gap: 12px; height: 100%; overflow-y: auto;">
+                    <!-- Static Desk Reference: Hidden when case feedback displays -->
+                    <div id="quiz-case-reference-panel" style="background-color: #fcfdfe; border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 100%;">
+                        <div>
+                            <span style="font-size: 9px; background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">Reference Desk</span>
+                            <h3 style="font-size: 14px; font-weight: 800; color: var(--slate-900); margin-top: 6px; margin-bottom: 2px;">Consultant's Decision Tree</h3>
+                            <p style="font-size: 11.5px; color: var(--slate-500); margin-bottom: 0;">Use our key elements guide to assess liability:</p>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                            <div style="border-left: 3px solid var(--verdict-fair-use); padding-left: 8px;">
+                                <strong style="color: var(--verdict-fair-use);">Fair Use (School, Criticism, Parody)</strong>
+                                <p style="margin: 0; font-size: 11px; color: var(--slate-600); line-height: 1.4;">Allows minor sharing without permission. Parody must transform. Handouts must remain nonprofit classroom limited.</p>
+                            </div>
+                            <div style="border-left: 3px solid var(--verdict-piracy); padding-left: 8px;">
+                                <strong style="color: var(--verdict-piracy);">Piracy (Commercial Overlaps)</strong>
+                                <p style="margin: 0; font-size: 11px; color: var(--slate-600); line-height: 1.4;">Copying substantial files to avoid paying. Replaces normal sales—causing concrete market harm.</p>
+                            </div>
+                            <div style="border-left: 3px solid var(--verdict-licensed); padding-left: 8px;">
+                                <strong style="color: var(--verdict-licensed);">Licensed (Prior Consent)</strong>
+                                <p style="margin: 0; font-size: 11px; color: var(--slate-600); line-height: 1.2;">Explicit creator authorization is present, like Creative Commons Zero (CC0) where permission is pre-granted.</p>
+                            </div>
+                            <div style="border-left: 3px solid var(--verdict-unclear); padding-left: 8px;">
+                                <strong style="color: var(--verdict-unclear);">Unclear (Unsettled Areas)</strong>
+                                <p style="margin: 0; font-size: 11px; color: var(--slate-600); line-height: 1.2;">Abstract elements (style, lore/fanfiction) or brand-new devices where courts lack uniform consensus.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Grading Feedback Panel -->
+                    <div id="quiz-case-feedback" class="result-panel scrollable-panel" style="margin-top: 0; display: none; padding: 14px; height: 100%; border-left: 4px solid var(--slate-300); overflow-y: auto;">
+                        <!-- Managed dynamically via JS -->
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- SCREEN 4: Quiz Precedents (Module 1 Only) -->
-        <div id="screen-quiz-precedents" class="content-card hidden">
-            <h2>Precedent Challenge</h2>
-            <p class="subtitle">Match famous copyright law decisions</p>
-            <p>Click on one legal dispute scenario from the left, and then match it to the direct legal ruling explanation card on the right. Tap matched cards at any time to de-select and change your mind.</p>
-            
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <div id="screen-quiz-precedents" class="content-card hidden" style="padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <div>
+                    <h2>Precedent Challenge</h2>
+                    <p class="subtitle" style="margin-bottom: 0;">Match famous copyright law decisions</p>
+                </div>
                 <button class="btn-emate btn-outline" style="padding: 6px 14px; font-size: 11px;" onclick="resetPrecedentMatches()">Reset Matches</button>
             </div>
+            
+            <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 10px;">Select a legal incident scenario on the left, then select its legal ruling on the right.</p>
 
-            <div class="match-container">
-                <div class="match-col" id="match-left-column"></div>
-                <div class="match-col" id="match-right-column"></div>
+            <div class="scrollable-panel" style="flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-right: 6px;">
+                <div class="match-container" style="gap: 16px; margin-top: 0;">
+                    <div class="match-col" id="match-left-column" style="gap: 8px;"></div>
+                    <div class="match-col" id="match-right-column" style="gap: 8px;"></div>
+                </div>
+
+                <div id="precedent-feedback-area" class="precedent-explain-box hidden" style="margin-top: 12px; padding-top: 12px;">
+                    <h3 style="font-weight: 800; margin-bottom: 8px; font-size: 13.5px; color: var(--slate-900);">Precedent Challenge - Core Solutions Summary:</h3>
+                    <div id="precedent-explain-items-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
             </div>
 
-            <div id="precedent-feedback-area" class="precedent-explain-box hidden">
-                <h3 style="font-weight: 700; margin-bottom: 12px; font-size: 16px; color: var(--slate-900);">Precedent Challenge - Core Solutions Summary:</h3>
-                <div id="precedent-explain-items-list"></div>
-            </div>
-
-            <div style="margin-top: 32px; text-align: center;">
-                <button class="btn-emate btn-solid" id="btn-verify-precedents" disabled onclick="verifyPrecedentMatches()">Verify Matches →</button>
+            <div style="margin-top: 10px; text-align: center;" id="verify-precedent-footer">
+                <button class="btn-emate btn-solid" style="padding: 10px 24px;" id="btn-verify-precedents" disabled onclick="verifyPrecedentMatches()">Verify Matches →</button>
             </div>
         </div>
 
         <!-- SCREEN 5: AI Case Study: Context (Module 2 Only) -->
-        <div id="screen-ai-intro" class="content-card hidden">
-            <h2>AI Generated Images</h2>
-            <p class="subtitle">The active frontiers of digital copyright</p>
-            <p>Generative Artificial Intelligence represents the newest paradigm of digital copyright. Unlike old filesharing tools, these models don't just distribute copies - they extract mathematical rules, visual elements, patterns, or textual traits from original, copyrighted media to synthesize outputs.</p>
-            <p>Lawsuits filed by artists, photographic databases (like Getty Images), and publishers claim that scraping millions of unlicensed images represents active systemic piracy. AI developers claim this represents a transformative process protected as standard fair use of public information.</p>
-            
-            <div class="sidebar-layout">
-                <div class="sidebar" style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="sidebar-btn active" id="ai-btn-0" onclick="switchAILitigationTab(0)">1. Training Scraping</button>
-                    <button class="sidebar-btn" id="ai-btn-1" onclick="switchAILitigationTab(1)">2. Style Mimicry</button>
-                    <button class="sidebar-btn" id="ai-btn-2" onclick="switchAILitigationTab(2)">3. Who Owns AI Art?</button>
-                </div>
-                <div class="sidebar-content" style="background-color: #f8fafc; border: 1.5px solid var(--slate-200); padding: 20px; border-radius: 10px; min-height: 200px;">
-                    <div id="ai-tab-0">
-                        <p style="font-size: 13px; text-transform: uppercase; font-weight: 800; color: var(--secondary); letter-spacing: 0.05em; margin-bottom: 6px;">🚜 THE SCRAPING CONFLICT</p>
-                        <p style="margin-bottom: 12px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Issue:</strong> AI companies crawl the public internet and ingest millions of artists' digital paintings, images, and writings into their server databases to train their models, without asking or paying creators.</p>
-                        <p style="margin-bottom: 0px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Debate:</strong> AI companies claim this is legal "fair use" because the computers just "inspect public pages to learn artistic rules." Creators argue it is industrial-scale piracy because it exploits their hard work without license or revenue sharing.</p>
-                    </div>
-                    <div id="ai-tab-1" class="hidden">
-                        <p style="font-size: 13px; text-transform: uppercase; font-weight: 800; color: var(--secondary); letter-spacing: 0.05em; margin-bottom: 6px;">🎨 STYLE MIMICRY</p>
-                        <p style="margin-bottom: 12px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Issue:</strong> When users prompt an AI with "in the style of [Artist Name]," the model outputs a completely new drawing with the exact aesthetic, color choices, and brush strokes of that artist.</p>
-                        <p style="margin-bottom: 0px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Debate:</strong> Standard copyright law protects specific illustrations, not abstract styles. However, because AI operates at automated, lightning speed, critics say this "style stealing" directly replaces human contracts, threatening drawing careers.</p>
-                    </div>
-                    <div id="ai-tab-2" class="hidden">
-                        <p style="font-size: 13px; text-transform: uppercase; font-weight: 800; color: var(--secondary); letter-spacing: 0.05em; margin-bottom: 6px;">🤖 WHO OWNS THE OUTPUT?</p>
-                        <p style="margin-bottom: 12px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Issue:</strong> If a user inputs a prompt and generates a beautiful digital illustration, does the user own the copyright for that newly outputted picture?</p>
-                        <p style="margin-bottom: 0px; font-size: 14px; line-height: 1.6; color: var(--slate-700);"><strong>The Court Consensus:</strong> US courts and copyright offices have ruled "No." Currently, only <strong>human creators</strong> qualify for copyright protection. If an automated algorithm does the creative heavy lifting, the image is legally "public domain" (anyone can copy or sell it for free).</p>
-                    </div>
-                </div>
+        <div id="screen-ai-intro" class="content-card hidden" style="padding: 16px 20px;">
+            <div style="margin-bottom: 12px;">
+                <h2>AI Generated Images</h2>
+                <p class="subtitle" style="margin-bottom: 0px;">The active frontiers of digital copyright</p>
             </div>
             
-            <div style="margin-top: 18px; padding: 12px; border-radius: 8px; background-color: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: flex-start; gap: 10px;">
-                <svg style="width: 20px; height: 20px; color: var(--verdict-fair-use); flex-shrink: 0; margin-top: 2px;" fill="none" viewBox="0 0 24 24; stroke: currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p style="font-size: 13px; margin: 0; color: #166534; line-height: 1.5; font-weight: 600;">
-                    <strong>Consultant Goal:</strong> In the next steps, you will make professional legal rulings on model training data and style-mimicking prompts. Use these three core concepts as your consulting guidelines! Click "Next" when ready.
-                </p>
+            <p style="font-size: 13.5px; line-height: 1.5; margin-bottom: 14px; color: var(--slate-700);">
+                Generative AI represents a new legal paradigm. Neural models do not copy files directly. Instead, they ingest millions of original illustrations, analyze patterns, and synthesize completely new graphics based on prompts.
+            </p>
+            
+            <div class="sidebar-layout" style="margin-top: 12px; flex-grow: 1; min-height: 0; display: flex; gap: 24px; height: calc(100% - 70px);">
+                <!-- Left Sidebar Navigation -->
+                <div class="sidebar" style="width: 220px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+                    <button class="sidebar-btn active" id="ai-btn-0" style="padding: 12px 14px; font-size: 13px;" onclick="switchAILitigationTab(0)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            1. Training Scraping
+                        </div>
+                    </button>
+                    <button class="sidebar-btn" id="ai-btn-1" style="padding: 12px 14px; font-size: 13px;" onclick="switchAILitigationTab(1)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                            2. Style Mimicry
+                        </div>
+                    </button>
+                    <button class="sidebar-btn" id="ai-btn-2" style="padding: 12px 14px; font-size: 13px;" onclick="switchAILitigationTab(2)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            3. Who Owns the Art?
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Right Sidebar Content Tab Zones in high-fidelity 2-card grids -->
+                <div class="sidebar-content scrollable-panel" style="flex-grow: 1; overflow-y: auto; padding-right: 6px; height: 100%;">
+                    
+                    <!-- TAB 0: Training Scraping -->
+                    <div id="ai-tab-0" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 style="font-size: 14.5px; font-weight: 800; color: var(--slate-900); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+                            <svg style="width: 18px; height: 18px; color: #0ea5e9;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Training Scraping
+                        </h3>
+                        <div class="briefing-grid-ai">
+                            
+                            <!-- Card 1: The Issue -->
+                            <div class="hover-card" style="background: rgba(14, 165, 233, 0.03); border: 1.5px solid rgba(14, 165, 233, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #e0f2fe; color: #0ea5e9; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(14,165,233,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #0369a1; text-transform: uppercase; letter-spacing: 0.02em;">The Issue</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">The Issue:</strong> AI companies crawl the public internet and ingest millions of artists' digital paintings, images, and writings into their server databases to train their models, without asking or paying creators.</p>
+                            </div>
+
+                            <!-- Card 2: The Debate -->
+                            <div class="hover-card" style="background: rgba(14, 165, 233, 0.03); border: 1.5px solid rgba(14, 165, 233, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #e0f2fe; color: #0ea5e9; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(14,165,233,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #0369a1; text-transform: uppercase; letter-spacing: 0.02em;">The Debate</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">The Debate:</strong> AI developers argue this is legal "fair use" for machines to "inspect public pages to learn artistic rules." Creators claim it is industrial-scale piracy because it exploits their hard work without licensing.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TAB 1: Style Mimicry -->
+                    <div id="ai-tab-1" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 style="font-size: 14.5px; font-weight: 800; color: var(--slate-900); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+                            <svg style="width: 18px; height: 18px; color: #db2777;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                            Style Mimicry
+                        </h3>
+                        <div class="briefing-grid-ai">
+                            
+                            <!-- Card 1: The Issue -->
+                            <div class="hover-card" style="background: rgba(219, 39, 119, 0.03); border: 1.5px solid rgba(219, 39, 119, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fce7f3; color: #db2777; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(219,39,119,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #be185d; text-transform: uppercase; letter-spacing: 0.02em;">The Issue</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">The Issue:</strong> When users prompt an AI with "in the style of [Artist Name]," the model outputs a completely new drawing with the exact aesthetic, color choices, and brush strokes of that artist.</p>
+                            </div>
+
+                            <!-- Card 2: The Debate -->
+                            <div class="hover-card" style="background: rgba(219, 39, 119, 0.03); border: 1.5px solid rgba(219, 39, 119, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #fce7f3; color: #db2777; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(219,39,119,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #be185d; text-transform: uppercase; letter-spacing: 0.02em;">The Debate</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">The Debate:</strong> Standard copyright law protects specific illustrations, not abstract styles. However, because AI operates at automated, lightning speed, critics say this "style stealing" replaces active human contracts.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Who Owns AI Art? -->
+                    <div id="ai-tab-2" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+                        <h3 style="font-size: 14.5px; font-weight: 800; color: var(--slate-900); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+                            <svg style="width: 18px; height: 18px; color: #7c3aed;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Who Owns the Art?
+                        </h3>
+                        <div class="briefing-grid-ai">
+                            
+                            <!-- Card 1: The Issue -->
+                            <div class="hover-card" style="background: rgba(124, 58, 237, 0.03); border: 1.5px solid rgba(124, 58, 237, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #ede9fe; color: #7c3aed; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(124,58,237,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.02em;">The Issue</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">The Issue:</strong> If a user inputs a prompt and generates a beautiful digital illustration, does the user own the copyright for that newly outputted picture?</p>
+                            </div>
+
+                            <!-- Card 2: Court Consensus -->
+                            <div class="hover-card" style="background: rgba(124, 58, 237, 0.03); border: 1.5px solid rgba(124, 58, 237, 0.15); display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: #ede9fe; color: #7c3aed; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(124,58,237,0.12);">
+                                        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                        </svg>
+                                    </div>
+                                    <span style="font-weight: 800; font-size: 13.5px; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.02em;">Consensus</span>
+                                </div>
+                                <p style="font-size: 12px; line-height: 1.5; color: var(--slate-700); margin: 0;"><strong style="color: var(--slate-900);">Court Consensus:</strong> US courts and copyright offices have ruled "No." Currently, only <strong>human creators</strong> qualify. AI-generated assets fall directly into the "public domain" (rendered free for anyone to use or copy).</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Consultant Mission Banner always visible -->
+                    <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background-color: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: flex-start; gap: 8px;">
+                        <svg style="width: 16px; height: 16px; color: var(--verdict-fair-use); flex-shrink: 0; margin-top: 1px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p style="font-size: 11.5px; margin: 0; color: #166534; line-height: 1.4; font-weight: 600;">
+                            <strong>Consultant Mission:</strong> In the next steps, you will make professional legal rulings on model training and style-mimicking cases. Use these three master concepts as your consulting guidelines! Click "Next" below to proceed.
+                        </p>
+                    </div>
+
+                </div>
             </div>
         </div>
 
         <!-- SCREEN 6: AI Training Scenario (Module 2 Only) -->
-        <div id="screen-ai-training" class="content-card hidden">
-            <h2>Part A: Training Models</h2>
-            <p class="subtitle">AI Training Phase scraping</p>
-            <p><strong>Scenario:</strong> An AI development company scrap-processed 400 million copyrighted illustrations from standard portfolio and blog websites without securing permission from creators or pay-licensing files. These illustrations are used to configure weights in their generation architecture.</p>
-            
-            <div id="ai-training-question-zone">
-                <p style="font-size: 14px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; margin-bottom: 10.00px;">1. Issue your ruling outcome on model training scraping:</p>
-                <div class="verdict-grid">
-                    <div class="choice-pill" onclick="selectAIVerdict('fair-use', 'training', this)">✅ Fair Use</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('licensed', 'training', this)">🔵 Licensed</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('piracy', 'training', this)">🚫 Piracy</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('unclear', 'training', this)">⚠️ Unclear / Ongoing Litigation</div>
-                </div>
-                <button class="btn-emate btn-solid" style="width: 100%;" id="btn-submit-ai-training" disabled onclick="submitAlVerdict('training')">Submit Ruling</button>
-            </div>
+        <div id="screen-ai-training" class="content-card hidden" style="padding: 16px 20px;">
+            <div class="split-grid" style="grid-template-columns: 1fr 1.15fr;">
+                <!-- Left Column -->
+                <div class="split-col" style="gap: 12px;">
+                    <div>
+                        <h2>Part A: Training Models</h2>
+                        <p class="subtitle" style="margin-bottom: 6px;">AI Training Phase scraping</p>
+                    </div>
 
-            <div id="ai-training-feedback" class="result-panel">
-                <div class="verdict-badge badge-unclear">UNSETTLED LAW</div>
-                <p id="ai-training-feedback-grade" style="font-weight:700; font-size: 15px; margin-bottom: 8px;"></p>
-                <p><strong>Core Analysis:</strong> Training data scraping remains one of the most heavily debated digital copyright topics worldwide. Courts are actively determining if machine reading represents standard "non-reproducing transformative analysis" or mass unsanctioned translation. Major lawsuits are actively resolving this parameter, making the case officially <strong>Unclear and under active litigation</strong>.</p>
+                    <div style="background: var(--slate-50); border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px 18px; border-left: 4px solid var(--secondary); flex-grow: 1; display: flex; align-items: center;">
+                        <p style="font-size: 14px; line-height: 1.5; color: var(--slate-800); margin: 0;">
+                            <strong>Scenario Incident:</strong> An AI development company scrap-processed 400 million copyrighted illustrations from standard portfolio and blog websites without securing permission from creators or pay-licensing files. These illustrations are used to configure weights in their generation architecture.
+                        </p>
+                    </div>
+
+                    <div id="ai-training-question-zone" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em;">1. Issue your ruling outcome on model training scraping:</p>
+                            <div class="verdict-grid" style="grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 6px;">
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('fair-use', 'training', this)">✅ Fair Use</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('licensed', 'training', this)">🔵 Licensed</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('piracy', 'training', this)">🚫 Piracy</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('unclear', 'training', this)">⚠️ Unclear / Ongoing</div>
+                            </div>
+                        </div>
+                        <button class="btn-emate btn-solid" style="width: 100%; padding: 10px;" id="btn-submit-ai-training" disabled onclick="submitAlVerdict('training')">Submit Ruling</button>
+                    </div>
+
+                    <div id="ai-training-left-completed" class="hidden" style="background: #f8fafc; border: 1.5px solid var(--slate-200); border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.4; color: var(--slate-700);">
+                        <p style="font-weight: 800; color: var(--slate-500); text-transform: uppercase; font-size: 10.5px; margin-bottom: 4px; letter-spacing: 0.03em;">💼 Consultation Logged</p>
+                        Your legal decision on this high-stakes AI training scraped case study has been logged. Click <strong>Next</strong> on the footer to proceed to Part B: Style Mimicry.
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="split-col scrollable-panel" style="gap: 10px; height: 100%; overflow-y: auto;">
+                    <!-- Reference -->
+                    <div id="ai-training-reference" style="background-color: #fcfdfe; border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                        <span style="font-size: 9px; background: var(--secondary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; width: fit-content;">Litigation Brief</span>
+                        <h3 style="font-size: 14px; font-weight: 800; color: var(--slate-900);">AI Scraping & Fair Use</h3>
+                        <p style="font-size: 12px; color: var(--slate-500); line-height: 1.4; margin-bottom: 4px;">Assess the case carefully using these parameters:</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px; line-height: 1.4;">
+                            <div style="border-left: 2px solid var(--slate-400); padding-left: 8px;">
+                                <strong>Opt-Out vs Opt-In:</strong> Creative platforms are struggling with whether scrapping is automatic fair use until artists explicitly opt out, or illegal piracy until they opt in.
+                            </div>
+                            <div style="border-left: 2px solid var(--slate-400); padding-left: 8px;">
+                                <strong>Systemic Scale:</strong> Copying one picture for study is fair use. Harvesting 400 million works into database weight vectors changes the scale completely.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Feedback -->
+                    <div id="ai-training-feedback" class="result-panel scrollable-panel" style="margin-top: 0; display: none; padding: 14px; height: 100%; border-left: 4px solid var(--slate-300); overflow-y: auto;">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- SCREEN 7: AI Output Scenario (Module 2 Only) -->
-        <div id="screen-ai-output" class="content-card hidden">
-            <h2>Part B: Stylistic Output</h2>
-            <p class="subtitle">Artistic Style Mimicry</p>
-            <p><strong>Scenario:</strong> An end-user enters the prompt "draw a pristine fantasy forest in the style of Studio Ghibli" into an AI image generator. The machine produces a painting mimicking the painterly animation aesthetic of Ghibli. No direct existing scene elements or assets are mathematically duplicated.</p>
-            
-            <div id="ai-output-question-zone">
-                <p style="font-size: 14px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; margin-bottom: 10px;">1. Issue your ruling outcome on stylistic style mimicry:</p>
-                <div class="verdict-grid">
-                    <div class="choice-pill" onclick="selectAIVerdict('fair-use', 'output', this)">✅ Fair Use</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('licensed', 'output', this)">🔵 Licensed</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('piracy', 'output', this)">🚫 Piracy</div>
-                    <div class="choice-pill" onclick="selectAIVerdict('unclear', 'output', this)">⚠️ Unclear / Ongoing Litigation</div>
-                </div>
-                <button class="btn-emate btn-solid" style="width: 100%;" id="btn-submit-ai-output" disabled onclick="submitAlVerdict('output')">Submit Ruling</button>
-            </div>
+        <div id="screen-ai-output" class="content-card hidden" style="padding: 16px 20px;">
+            <div class="split-grid" style="grid-template-columns: 1fr 1.15fr;">
+                <!-- Left Column -->
+                <div class="split-col" style="gap: 12px;">
+                    <div>
+                        <h2>Part B: Stylistic Output</h2>
+                        <p class="subtitle" style="margin-bottom: 6px;">Artistic Style Mimicry</p>
+                    </div>
 
-            <div id="ai-output-feedback" class="result-panel">
-                <div class="verdict-badge badge-unclear">UNSETTLED LAW</div>
-                <p id="ai-output-feedback-grade" style="font-weight: 700; font-size: 15px; margin-bottom: 8px;"></p>
-                <p><strong>Core Analysis:</strong> Under standard copyright law, <strong>artistic style is NOT copyrightable</strong>; only specific creative expressions and finished works are protected. Generating a new image resembling a specific style generally does not constitute piracy. However, because AI operates on specialized automated mimicking scales, many argue style theft undermines visual creators, making this an active litigation frontier.</p>
+                    <div style="background: var(--slate-50); border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px 18px; border-left: 4px solid var(--secondary); flex-grow: 1; display: flex; align-items: center;">
+                        <p style="font-size: 14px; line-height: 1.5; color: var(--slate-800); margin: 0;">
+                            <strong>Scenario Incident:</strong> An end-user enters the prompt "draw a pristine fantasy forest in the style of Studio Ghibli" into an AI image generator. The machine produces a painting mimicking the painterly animation aesthetic of Ghibli. No direct elements are duplicated.
+                        </p>
+                    </div>
+
+                    <div id="ai-output-question-zone" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em;">1. Issue your ruling outcome on stylistic style mimicry:</p>
+                            <div class="verdict-grid" style="grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 6px;">
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('fair-use', 'output', this)">✅ Fair Use</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('licensed', 'output', this)">🔵 Licensed</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('piracy', 'output', this)">🚫 Piracy</div>
+                                <div class="choice-pill" style="padding: 8px; font-size: 11.5px; font-weight: 700;" onclick="selectAIVerdict('unclear', 'output', this)">⚠️ Unclear / Ongoing</div>
+                            </div>
+                        </div>
+                        <button class="btn-emate btn-solid" style="width: 100%; padding: 10px;" id="btn-submit-ai-output" disabled onclick="submitAlVerdict('output')">Submit Ruling</button>
+                    </div>
+
+                    <div id="ai-output-left-completed" class="hidden" style="background: #f8fafc; border: 1.5px solid var(--slate-200); border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.4; color: var(--slate-700);">
+                        <p style="font-weight: 800; color: var(--slate-500); text-transform: uppercase; font-size: 10.5px; margin-bottom: 4px; letter-spacing: 0.03em;">💼 Consultation Logged</p>
+                        Your legal stance on style mimicry prompts has been logged. Click <strong>Next</strong> on the footer to proceed to Part C: Ethical Perspectives on Generative AI.
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="split-col scrollable-panel" style="gap: 10px; height: 100%; overflow-y: auto;">
+                    <!-- Reference -->
+                    <div id="ai-output-reference" style="background-color: #fcfdfe; border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                        <span style="font-size: 9px; background: var(--secondary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; width: fit-content;">Legal Precedent</span>
+                        <h3 style="font-size: 14px; font-weight: 800; color: var(--slate-900);">Copyright & Artistic Styles</h3>
+                        <p style="font-size: 12px; color: var(--slate-500); line-height: 1.4; margin-bottom: 4px;">Assess the case carefully using these parameters:</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px; line-height: 1.4;">
+                            <div style="border-left: 2px solid var(--slate-400); padding-left: 8px;">
+                                <strong>Styles are Not Protected:</strong> In historic copyright law, specific canvases and lines of code are protected, but abstract styles (e.g. cubism, watercolor styles) cannot be owned.
+                            </div>
+                            <div style="border-left: 2px solid var(--slate-400); padding-left: 8px;">
+                                <strong>Market Substitution:</strong> If AI generators produce Ghibli style illustrations in 5 seconds costing tiny fractions of direct hiring, they replace the artist's client potential.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Feedback -->
+                    <div id="ai-output-feedback" class="result-panel scrollable-panel" style="margin-top: 0; display: none; padding: 14px; height: 100%; border-left: 4px solid var(--slate-300); overflow-y: auto;">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- SCREEN 8: AI Ethical Debate (Module 2 Only) -->
-        <div id="screen-ai-ethics" class="content-card hidden">
-            <h2>Part C: Ethical Perspectives</h2>
-            <p class="subtitle">Ethical opinion poll</p>
-            <p>Even if AI scraping is eventually declared technically "legal" by world judiciaries, the ethical landscape remains deeply polarized. Select the ethical argument that closest matches your philosophical stance as a Digital Consultant:</p>
-            
-            <div class="match-col">
-                <div class="match-card" onclick="selectEthicalStance(0, this)">
-                    <strong>The Aesthetic Influence Stance:</strong> All human &amp; digital artists learn and synthesize styles by observing art. AI models observing illustrations to extract styles are mathematically performing a similar analytical learning process.
+        <div id="screen-ai-ethics" class="content-card hidden" style="padding: 16px 20px;">
+            <div class="split-grid" style="grid-template-columns: 1fr 1.15fr;">
+                <!-- Left Column -->
+                <div class="split-col" style="gap: 12px;">
+                    <div>
+                        <h2>Part C: Ethical Perspectives</h2>
+                        <p class="subtitle" style="margin-bottom: 12px;">Ethical opinion poll</p>
+                    </div>
+                    
+                    <p style="font-size: 13.5px; line-height: 1.5; color: var(--slate-700); margin-bottom: 10px;">
+                        Even if AI scraping is eventually declared technically "legal" by world judiciaries, the ethical landscape remains deeply polarized.
+                    </p>
+                    <p style="font-size: 13px; font-weight: 600; color: var(--slate-800); line-height: 1.5;">
+                        As a professional Digital Consultant, which philosophical framework closest matches your strategic perspective?
+                    </p>
+                    
+                    <!-- Dynamic stance response -->
+                    <div id="ai-ethics-feedback" class="result-panel" style="margin-top: 14px; display: none; padding: 14px; border-left: 4px solid var(--secondary);">
+                        <p style="font-weight: 800; color: var(--secondary); margin-bottom: 6px; font-size: 13px; text-transform: uppercase;">Stance Answer Logged</p>
+                        <p id="ethics-reflection-text" style="font-size: 13.5px; line-height: 1.5; color: var(--slate-700); margin-bottom: 0;"></p>
+                    </div>
                 </div>
-                <div class="match-card" onclick="selectEthicalStance(1, this)">
-                    <strong>The Uncompensated Labor Stance:</strong> AI companies train off billions of artists' files without consent or licensing, utilizing them to construct commercial, directly competing systems that replace creative professionals.
-                </div>
-                <div class="match-card" onclick="selectEthicalStance(2, this)">
-                    <strong>The Scale and Balance Stance:</strong> Small-scale study or non-profit educational research of styled models is acceptable, but mass commercial exploitation demands robust opt-in structures and licensing pipelines.
-                </div>
-            </div>
 
-            <div id="ai-ethics-feedback" class="result-panel">
-                <p style="font-weight: 700; color: var(--secondary); margin-bottom: 6px;">Stance Confirmed (1/1 pt for Consultation Analysis)</p>
-                <p id="ethics-reflection-text">You have joined a critical global debate. OPT-IN regulations, fair compensation standards, or royalty pools will likely govern style training parameters in the near future.</p>
+                <!-- Right Column -->
+                <div class="split-col scrollable-panel" style="gap: 10px; height: 100%; overflow-y: auto;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.03em;">Select your philosophical direction:</p>
+                    <div class="match-col" style="gap: 8px;">
+                        <div class="match-card" style="padding: 12px; font-size: 12.5px; min-height: fit-content; line-height: 1.4;" onclick="selectEthicalStance(0, this)">
+                            <strong>Aesthetic Influence Stance:</strong> AI models observing illustrations to learn patterns mathematically resemble human artists studying external styles to hone their own creations.
+                        </div>
+                        <div class="match-card" style="padding: 12px; font-size: 12.5px; min-height: fit-content; line-height: 1.4;" onclick="selectEthicalStance(1, this)">
+                            <strong>Uncompensated Labor Stance:</strong> Scraping complete files without consent to build directly competing commercial systems is a systemized threat to artist livelihoods demanding total bans or heavy regulations.
+                        </div>
+                        <div class="match-card" style="padding: 12px; font-size: 12.5px; min-height: fit-content; line-height: 1.4;" onclick="selectEthicalStance(2, this)">
+                            <strong>Scale and Balance Compromise:</strong> Small non-commercial use is acceptable under standard fair use, but commercial AI operations must adopt robust licensing pools and opt-in frameworks.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- SCREEN 9: Consultant Report Panel (Both Modules) -->
-        <div id="screen-report" class="content-card hidden">
-            <h2>Consultant Analysis Report</h2>
-            <p class="subtitle" id="report-tagline">Evaluation summary of your consultation</p>
+        <div id="screen-report" class="content-card hidden" style="padding: 16px 20px;">
+            <div class="split-grid" style="grid-template-columns: 1fr 1.25fr;">
+                <!-- Left Column: Score certificates and restart selectors -->
+                <div class="split-col" style="gap: 12px;">
+                    <div>
+                        <h2>Consultant Analysis Report</h2>
+                        <p class="subtitle" id="report-tagline" style="margin-bottom: 0px;">Evaluation summary of your consultation</p>
+                    </div>
 
-            <div class="report-grid">
-                <div class="stat-card">
-                    <span class="stat-val" id="final-score-val">0 / 0</span>
-                    <span class="stat-label">Correct Points</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-val" id="final-accuracy-val">0%</span>
-                    <span class="stat-label">Accuracy Percent</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-val" id="final-rank-val">None</span>
-                    <span class="stat-label">Consultant Rank</span>
-                </div>
-            </div>
+                    <div class="report-grid" style="grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px;">
+                        <div class="stat-card" style="padding: 12px 6px;">
+                            <span class="stat-val" style="font-size: 20px;" id="final-score-val">0 / 0</span>
+                            <span class="stat-label" style="font-size: 9px; margin-top: 4px;">Correct Points</span>
+                        </div>
+                        <div class="stat-card" style="padding: 12px 6px;">
+                            <span class="stat-val" style="font-size: 20px;" id="final-accuracy-val">0%</span>
+                            <span class="stat-label" style="font-size: 9px; margin-top: 4px;">Accuracy</span>
+                        </div>
+                        <div class="stat-card" style="padding: 12px 6px;">
+                            <span class="stat-val" style="font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px;" id="final-rank-val">None</span>
+                            <span class="stat-label" style="font-size: 9px; margin-top: 4px;">Advisor Rank</span>
+                        </div>
+                    </div>
 
-            <div id="quiz-missed-cases-container">
-                <h3 class="missed-title">Review of Missed Case Concepts:</h3>
-                <div class="missed-list" id="report-missed-list"></div>
-            </div>
+                    <div style="background: #f8fafc; border: 1.5px solid var(--slate-200); border-radius: 12px; padding: 14px; margin-top: 4px;">
+                        <span style="font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.04em;">Practice Certification Complete</span>
+                        <p style="font-size: 12px; margin-top: 6px; line-height: 1.4; color: var(--slate-700); margin-bottom: 12px;">You have finalized this digital copyright advisory route. Launch another module to keep practicing and sharpen your consultant credentials.</p>
+                        
+                        <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 8px;">Select Practice Route:</p>
+                        <div class="chip-container" style="gap: 8px; margin-bottom: 0;">
+                            <button class="chip" style="font-size: 11px; padding: 6px 12px; font-weight: 700;" onclick="restartToModule('quiz')">Retake Scenario Quiz</button>
+                            <button class="chip" style="font-size: 11px; padding: 6px 12px; font-weight: 700;" onclick="restartToModule('ai')">Evaluate AI Case Study</button>
+                        </div>
+                    </div>
+                </div>
 
-            <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 24px;">
-                <p style="font-weight: 700; font-size: 14px; color: var(--slate-700); text-transform: uppercase; margin-bottom: 12px;">Review Complete. Select another path to practice further:</p>
-                <div class="chip-container">
-                    <button class="chip" onclick="restartToModule('quiz')">Retake Copyright Scenario Quiz</button>
-                    <button class="chip" onclick="restartToModule('ai')">Evaluate AI Generated Images Study</button>
+                <!-- Right Column: Cases audit list -->
+                <div class="split-col scrollable-panel" id="quiz-missed-cases-container" style="gap: 10px; height: 100%; overflow-y: auto; padding-right: 6px;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--slate-500); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.03em;">Review of Missed Case Concepts:</p>
+                    <div class="missed-list" id="report-missed-list" style="gap: 8px; margin-bottom: 0;"></div>
                 </div>
             </div>
         </div>
@@ -1357,7 +1883,7 @@
             explanation: "Downloading whole commercial albums replaces sales, directly causing severe market harm. Copying a complete musical suite cannot satisfy fair use claims under the proportion criteria, and 'personal convenience' is not a validated legal exception." 
         },
         { 
-            text: "A student uses a photograph from Unsplash — a platform where photographers publish images under the Creative Commons Zero license. They include it in a school project submitted to their teacher.", 
+            text: "A student finds a photograph from Unsplash — a platform where photographers publish images under the Creative Commons Zero license. They include it in a school project submitted to their teacher.", 
             ruling: "licensed", 
             primaryPrinciples: [], 
             issue: "Do you need to prove a Fair Use exception if the creator has already published their photo under a generous, free Creative Commons Zero (CC0) license?",
@@ -1575,7 +2101,11 @@
         if (savedState) {
             // Already submitted feedback mode
             inputZone.classList.add('hidden');
-            feedbackPanel.classList.add('visible');
+            document.getElementById('quiz-case-left-completed').classList.remove('hidden');
+            document.getElementById('left-verdict-summary').innerText = "Verdict: " + savedState.verdict.toUpperCase().replace('-', ' ');
+            document.getElementById('left-score-summary').innerText = "Score: " + savedState.scoreEarned + " / 2 pts";
+            document.getElementById('quiz-case-reference-panel').style.display = 'none';
+            feedbackPanel.style.display = 'block';
             
             const selectedVerdict = savedState.verdict;
             const verdictPillsMap = {
@@ -1729,7 +2259,9 @@
         } else {
             // Active answering input mode
             inputZone.classList.remove('hidden');
-            feedbackPanel.classList.remove('visible');
+            document.getElementById('quiz-case-left-completed').classList.add('hidden');
+            document.getElementById('quiz-case-reference-panel').style.display = 'flex';
+            feedbackPanel.style.display = 'none';
             
             selectedCaseVerdict = null;
             selectedCasePrinciples = [];
@@ -1968,11 +2500,13 @@
     function submitAlVerdict(zone) {
         submittedAILawsuits[zone] = true;
         document.getElementById(`btn-submit-ai-${zone}`).classList.add('hidden');
+        document.getElementById(`ai-${zone}-question-zone`).classList.add('hidden');
+        document.getElementById(`ai-${zone}-left-completed`).classList.remove('hidden');
+        document.getElementById(`ai-${zone}-reference`).style.display = 'none';
         
         const userChoice = selectedAILawsuits[zone];
         const feedbackEl = document.getElementById(`ai-${zone}-feedback`);
-        
-        feedbackEl.classList.add('visible');
+        feedbackEl.style.display = 'block';
         
         const isCorrect = (userChoice === 'unclear');
         if (isCorrect) {
@@ -2172,6 +2706,7 @@
         }
     }
 
+    // Back button progression sequence
     function handleBackAction() {
         // Go back scenario-by-scenario inside cases
         if (activePath[currentStepIndex] === 'quiz-cases' && currentCaseIdx > 0) {
@@ -2277,7 +2812,7 @@
                 }
             });
 
-            // Precedents check
+            // Precedents check (Precedence matches metrics)
             PRECEDENTS_DATA.forEach((item, idx) => {
                 const userMatch = activatedMatches[idx];
                 if (userMatch !== item.match) {
@@ -2336,6 +2871,43 @@
         document.getElementById('reset-modal').classList.remove('active');
     }
 
+    function resetAllPanelVisibilities() {
+        // Module 1 Case Decisions Panels
+        const caseCompleted = document.getElementById('quiz-case-left-completed');
+        if (caseCompleted) caseCompleted.classList.add('hidden');
+        const caseRef = document.getElementById('quiz-case-reference-panel');
+        if (caseRef) caseRef.style.display = 'flex';
+        const caseFeedback = document.getElementById('quiz-case-feedback');
+        if (caseFeedback) {
+            caseFeedback.style.display = 'none';
+            caseFeedback.innerHTML = '';
+        }
+
+        // Module 2 AI Panels
+        const trainingCompleted = document.getElementById('ai-training-left-completed');
+        if (trainingCompleted) trainingCompleted.classList.add('hidden');
+        const trainingRef = document.getElementById('ai-training-reference');
+        if (trainingRef) trainingRef.style.display = 'flex';
+        const trainingFeedback = document.getElementById('ai-training-feedback');
+        if (trainingFeedback) {
+            trainingFeedback.style.display = 'none';
+            trainingFeedback.innerHTML = '';
+        }
+
+        const outputCompleted = document.getElementById('ai-output-left-completed');
+        if (outputCompleted) outputCompleted.classList.add('hidden');
+        const outputRef = document.getElementById('ai-output-reference');
+        if (outputRef) outputRef.style.display = 'flex';
+        const outputFeedback = document.getElementById('ai-output-feedback');
+        if (outputFeedback) {
+            outputFeedback.style.display = 'none';
+            outputFeedback.innerHTML = '';
+        }
+
+        const ethicsFeedback = document.getElementById('ai-ethics-feedback');
+        if (ethicsFeedback) ethicsFeedback.classList.remove('visible');
+    }
+
     function confirmResetApp() {
         closeResetModal();
         
@@ -2389,33 +2961,17 @@
             chip.className = 'chip';
         });
         
-        // Hide submittals
+        // Hide submittals & reset state cards
+        resetAllPanelVisibilities();
+        
         const inputZone = document.getElementById('quiz-case-input-zone');
         if (inputZone) inputZone.classList.remove('hidden');
-        const feedbackPanel = document.getElementById('quiz-case-feedback');
-        if (feedbackPanel) {
-            feedbackPanel.classList.remove('visible');
-            feedbackPanel.innerHTML = '';
-        }
         
         const aiTrainingQuestionZone = document.getElementById('ai-training-question-zone');
         if (aiTrainingQuestionZone) aiTrainingQuestionZone.classList.remove('hidden');
-        const aiTrainingFeedback = document.getElementById('ai-training-feedback');
-        if (aiTrainingFeedback) {
-            aiTrainingFeedback.classList.remove('visible');
-            aiTrainingFeedback.innerHTML = '';
-        }
         
         const aiOutputQuestionZone = document.getElementById('ai-output-question-zone');
         if (aiOutputQuestionZone) aiOutputQuestionZone.classList.remove('hidden');
-        const aiOutputFeedback = document.getElementById('ai-output-feedback');
-        if (aiOutputFeedback) {
-            aiOutputFeedback.classList.remove('visible');
-            aiOutputFeedback.innerHTML = '';
-        }
-        
-        const aiEthicsFeedback = document.getElementById('ai-ethics-feedback');
-        if (aiEthicsFeedback) aiEthicsFeedback.classList.remove('visible');
         
         document.querySelectorAll('#screen-ai-training .choice-pill').forEach(el => {
             el.className = 'choice-pill';
@@ -2474,6 +3030,8 @@
         
         selectedAILawsuits = { training: null, output: null, ethics: null };
         submittedAILawsuits = { training: false, output: false, ethics: false };
+        
+        resetAllPanelVisibilities();
         
         // Rebuild interfaces
         setupMatchingUI();
