@@ -365,13 +365,13 @@
                     </div>
 
                     <!-- System Path Decision Banner -->
-                    <div class="p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-xl shadow-xs flex items-center gap-2.5">
+                    <div id="system-path-decision-left" class="p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-xl shadow-xs flex items-center gap-2.5">
                         <div class="p-1.5 bg-[#2563eb] text-white rounded-lg shrink-0">
                             <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         </div>
                         <div class="min-w-0 flex-1">
                             <span class="text-[8px] font-mono font-bold text-blue-700 uppercase tracking-widest block leading-none mb-0.5">System Path Decision</span>
-                            <div id="scen-calculated-path-txt" class="text-xs sm:text-sm font-extrabold font-display text-slate-950 leading-tight">PATH A: Maintain trajectory</div>
+                            <div id="scen-calculated-path-txt-left" class="text-xs sm:text-sm font-extrabold font-display text-slate-950 leading-tight">PATH A: Maintain trajectory</div>
                         </div>
                     </div>
 
@@ -1119,23 +1119,35 @@
                 ${calculationTrace}
             `;
 
-            document.getElementById('scen-calculated-path-txt').innerText = projectedPath === 'PATH_A' 
+            const decisionText = projectedPath === 'PATH_A' 
                 ? "PATH A: Retain original trajectory (Impact Obstacles)" 
                 : "PATH B: Active Swerve Action (Swerve into Collision)";
+
+            const pathTxtLeft = document.getElementById('scen-calculated-path-txt-left');
+            if (pathTxtLeft) pathTxtLeft.innerText = decisionText;
 
             // Generate user-friendly dynamic causal explanation of the path decision
             let explanation = "";
             if (scenarioIdx === 0) {
                 const r1 = STATE.selectedRules[0];
                 const r4 = STATE.selectedRules[3];
-                if (r1 === 'protect_passengers' || r4 === 'protect_always') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em> or your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the autopilot retains its course (PATH A) to prioritize cabin occupant safety.`;
-                } else if (r1 === 'minimize_casualties' || r4 === 'minimize') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em> or <em>"Follow the Numbers"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
+                if (r1 === 'protect_passengers' && r4 === 'protect_always') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em> <strong>and</strong> your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the autopilot retains its course (PATH A) to prioritize cabin occupant safety.`;
+                } else if (r1 === 'protect_passengers') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em>, the autopilot retains its course (PATH A) to prioritize cabin occupant safety.`;
+                } else if (r4 === 'protect_always') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the autopilot retains its course (PATH A) to prioritize cabin occupant safety.`;
+                } else if ((r1 === 'minimize_casualties' || r1 === 'prioritize_external') && r4 === 'minimize') {
+                    const r1Text = r1 === 'minimize_casualties' ? `<em>"Minimize Total Harm"</em>` : `<em>"Protect the Most Vulnerable"</em>`;
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to ${r1Text} <strong>and</strong> your Quantitative Ratios rule is set to <em>"Follow the Numbers"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
+                } else if (r1 === 'minimize_casualties') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
                 } else if (r1 === 'prioritize_external') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your priority is to <em>"Protect the Most Vulnerable"</em>, the vehicle swerves (PATH B) to shield the exposed pedestrians, as they have no structural protection.`;
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect the Most Vulnerable"</em>, the vehicle swerves (PATH B) to shield the exposed pedestrians, as they have no structural protection.`;
+                } else if (r4 === 'minimize') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Quantitative Ratios rule is set to <em>"Follow the Numbers"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
                 } else if (r4 === 'protect_5to1') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your <em>"High-Ratio Threshold (5-to-1)"</em> requires at least 5 pedestrians to be at risk before sacrificing the passenger, and there are only 3, the threshold is not met. The vehicle maintains its course (PATH A).`;
+                    explanation = `<strong>Causal Explanation:</strong> Because your Quantitative Ratios rule is set to <em>"High-Ratio Threshold (5-to-1)"</em>, which requires at least 5 pedestrians to be at risk before sacrificing the passenger, and there are only 3, the threshold is not met. The vehicle maintains its course (PATH A).`;
                 } else {
                     explanation = `<strong>Causal Explanation:</strong> Default fallback logic. The autopilot maintains course (PATH A) to prioritize cabin occupant safety.`;
                 }
@@ -1146,17 +1158,32 @@
                 const r4 = STATE.selectedRules[3];
 
                 if (r2 === 'jaywalk_penalty') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em>, the vehicle remains on course (PATH A) because the children crossed illegally (jaywalking), preferring to protect occupants in unexpected situations.`;
-                } else if (r1 === 'protect_passengers' || r4 === 'protect_always') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em>, the car maintains course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
-                } else if (r3 === 'prioritize_children') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Protect Children First"</em>, the vehicle actively swerves (PATH B) to prioritize the lives of the 5 schoolchildren.`;
-                } else if (r3 === 'expectancy') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Prioritize Remaining Life Years"</em>, the vehicle swerves (PATH B) to prioritize the children's young age and longer projected lifespans.`;
-                } else if (r2 === 'swerve_always' || r1 === 'minimize_casualties' || r4 === 'minimize' || r1 === 'prioritize_external') {
-                    explanation = `<strong>Causal Explanation:</strong> Because your rules prioritize protecting pedestrians regardless of legality, or minimizing total casualties (5 children vs 2 passengers), the vehicle triggers an emergency swerve (PATH B).`;
+                    if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em> <strong>and</strong> your priority is configured to protect passengers, the vehicle remains on course (PATH A). The legal boundary takes precedence since the children crossed illegally (jaywalking).`;
+                    } else if (r3 === 'prioritize_children' || r3 === 'expectancy') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em>, the legal penalty override takes precedence over demographic preferences, keeping the vehicle on course (PATH A) because the children crossed illegally (jaywalking).`;
+                    } else {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em>, the vehicle remains on course (PATH A) because the children crossed illegally (jaywalking), preferring to protect occupants in unexpected situations.`;
+                    }
                 } else {
-                    explanation = `<strong>Causal Explanation:</strong> Default fallback. The autopilot maintains course (PATH A) to prioritize cabin occupants.`;
+                    // Not jaywalk penalty (meaning swerve always or other)
+                    if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to protect passengers, the vehicle stays on course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
+                    } else if (r3 === 'prioritize_children' && r1 === 'minimize_casualties') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em> <strong>and</strong> your Demographic rule is set to <em>"Protect Children First"</em>, the vehicle actively swerves (PATH B) to prioritize the lives of the 5 schoolchildren over the 2 passengers.`;
+                    } else if (r3 === 'prioritize_children') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Protect Children First"</em>, the vehicle actively swerves (PATH B) to prioritize the lives of the 5 schoolchildren.`;
+                    } else if (r3 === 'expectancy') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Prioritize Remaining Life Years"</em>, the vehicle swerves (PATH B) to prioritize the children's young age and longer projected lifespans.`;
+                    } else if (r1 === 'minimize_casualties') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em>, the vehicle triggers an emergency swerve (PATH B) to save the larger group (5 children vs 2 passengers).`;
+                    } else if (r1 === 'prioritize_external') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect the Most Vulnerable"</em>, the vehicle triggers an emergency swerve (PATH B) to protect the exposed children who have no structural protection.`;
+                    } else if (r4 === 'minimize') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Quantitative Ratios rule is set to <em>"Follow the Numbers"</em>, the vehicle triggers an emergency swerve (PATH B) to protect the larger group of people.`;
+                    } else {
+                        explanation = `<strong>Causal Explanation:</strong> Default fallback. The autopilot maintains course (PATH A) to prioritize cabin occupants.`;
+                    }
                 }
             } else if (scenarioIdx === 2) {
                 const r5 = STATE.selectedRules[4];
@@ -1182,6 +1209,7 @@
             const explBox = document.getElementById('decision-explanation-box');
             const prePanel = document.getElementById('pre-simulation-panel');
             const postPanel = document.getElementById('post-simulation-panel');
+            const decisionLeft = document.getElementById('system-path-decision-left');
 
             if (isSimulated) {
                 explBox.classList.remove('hidden');
@@ -1191,6 +1219,8 @@
                 reflectionPanel.classList.remove('hidden');
                 runBtn.classList.add('hidden');
                 nextBtn.classList.remove('hidden');
+
+                if (decisionLeft) decisionLeft.classList.add('hidden');
 
                 const chosenRes = scenario.results[projectedPath];
                 document.getElementById('scen-success-result-txt').innerText = chosenRes.text;
@@ -1273,6 +1303,8 @@
                     <svg class="w-4 h-4 fill-white animate-pulse" viewBox="0 0 24 24" stroke="currentColor"><path d="m7 4 12 8-12 8V4z" /></svg>
                     Run Physics Simulation
                 `;
+
+                if (decisionLeft) decisionLeft.classList.remove('hidden');
             }
         }
 
