@@ -344,23 +344,30 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch flex-1">
                 <!-- Sandbox Canvas with Vehicle Overlay -->
                 <!-- Overflow-visible added so that road elements appear to run gorgeously beyond the card layout boundaries! -->
-                <div class="lg:col-span-6 bg-slate-100 border border-slate-300 rounded-3xl relative overflow-hidden h-[275px] lg:h-[440px] max-h-[460px] min-h-0 flex flex-col items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-300 perspective-frame">
-                    
-                    <div class="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                        <span id="scen-loc-tag" class="text-[9px] font-mono font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md border border-slate-300 shadow-sm">
-                            LOC: DOWNTOWN
-                        </span>
-                        <span id="scen-speed-tag" class="text-[9px] font-mono font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md border border-slate-300 shadow-sm animate-pulse">
-                            VELOCITY: 35 MPH
-                        </span>
+                <div class="lg:col-span-6 flex flex-col gap-4">
+                    <div class="w-full bg-slate-100 border border-slate-300 rounded-3xl relative overflow-hidden h-[275px] lg:h-[440px] max-h-[460px] min-h-0 flex flex-col items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-300 perspective-frame">
+                        
+                        <div class="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
+                            <span id="scen-loc-tag" class="text-[9px] font-mono font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md border border-slate-300 shadow-sm">
+                                LOC: DOWNTOWN
+                            </span>
+                            <span id="scen-speed-tag" class="text-[9px] font-mono font-bold tracking-wider text-slate-900 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md border border-slate-300 shadow-sm animate-pulse">
+                                VELOCITY: 35 MPH
+                            </span>
+                        </div>
+     
+                        <!-- Sandbox SVG Highway Area - isometric-3d styles applied for extreme fidelity and modern look -->
+                        <div class="w-full h-full relative isometric-3d overflow-hidden" id="sandbox-svg-container">
+                            <!-- Filled dynamically by JS renderSandboxSVG -->
+                        </div>
+     
+                        <div id="impact-overlay" class="absolute inset-0 bg-rose-600/20 pointer-events-none transition-opacity duration-150 opacity-0 z-20"></div>
                     </div>
- 
-                    <!-- Sandbox SVG Highway Area - isometric-3d styles applied for extreme fidelity and modern look -->
-                    <div class="w-full h-full relative isometric-3d overflow-hidden" id="sandbox-svg-container">
-                        <!-- Filled dynamically by JS renderSandboxSVG -->
+
+                    <!-- Casual Explanation Window -->
+                    <div id="decision-explanation-box" class="p-4 bg-indigo-50 border border-indigo-200 rounded-2xl text-indigo-950 text-xs sm:text-[13px] leading-relaxed font-sans font-medium hidden">
+                        <!-- Dynamic description here -->
                     </div>
- 
-                    <div id="impact-overlay" class="absolute inset-0 bg-rose-600/20 pointer-events-none transition-opacity duration-150 opacity-0 z-20"></div>
                 </div>
  
                 <!-- Logic Output Details Panel -->
@@ -385,6 +392,7 @@
                                  <svg class="w-4 h-4 text-[#2563eb] fill-blue-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                  <span id="scen-calculated-path-txt" class="font-display">PATH A: Maintain trajectory</span>
                              </div>
+
                         </div>
  
                         <!-- Simulation Stats Outcomes Panel -->
@@ -455,7 +463,7 @@
                                     </div>
                                 </div>
                             </div>
- 
+                            
                             <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                                 <span class="text-[10px] font-mono font-bold text-slate-900 uppercase tracking-wider block mb-1">Moral & Juridical Commentary</span>
                                 <p id="scen-quote-txt" class="text-xs text-slate-950 leading-relaxed font-semibold italic p-1.5">"The analysis"</p>
@@ -585,51 +593,51 @@
           {
             id: 0,
             title: "Rule 1: General Priority",
-            desc: "When a collision is entirely unavoidable, what represents the vehicle's primary objective?",
+            desc: "When a crash is completely unavoidable, what should be the vehicle's main priority?",
             options: [
-              { id: "protect_passengers", title: "Occupant Protection", text: "Prioritize the safety of the occupants inside the vehicle cabin above all else." },
-              { id: "minimize_casualties", title: "Utilitarian Calculation", text: "Minimize total human casualties mathematically, weighting all people equally." },
-              { id: "prioritize_external", title: "External Vulnerability Focus", text: "Prioritize vulnerable road users outside the vehicle, swerving to avoid pedestrians who lack structural shielding." }
+              { id: "protect_passengers", title: "Protect Passengers First", text: "Prioritize the safety of the people inside the vehicle above all else." },
+              { id: "minimize_casualties", title: "Minimize Total Harm", text: "Choose the path that leads to the fewest total injuries or casualties, treating everyone equally." },
+              { id: "prioritize_external", title: "Protect the Most Vulnerable", text: "Prioritize people outside the vehicle (like pedestrians or cyclists) who have no structural protection." }
             ]
           },
           {
             id: 1,
             title: "Rule 2: Pedestrian Interaction",
-            desc: "How does the autonomous pilot factor the legal status of pedestrians inside the path?",
+            desc: "How should the autopilot handle the legal status of pedestrians in its path?",
             options: [
-              { id: "swerve_always", title: "Vulnerable User Rights", text: "Protect pedestrians in all traffic situations, regardless of their compliance with roadway laws." },
-              { id: "count_lives", title: "Scale-Neutral Fairness", text: "Ignore legal status; make traction decisions based solely on minimizing total expected casualties." },
-              { id: "jaywalk_penalty", title: "Legality & Responsibility Focus", text: "Maintain trajectory if pedestrians are actively jaywalking or violating traffic signals, to avoid routing occupants into unapproved hazards." }
+              { id: "swerve_always", title: "Protect Pedestrians Always", text: "Protect pedestrians in all situations, regardless of whether they are crossing the street legally." },
+              { id: "count_lives", title: "Focus Only on Saving Lives", text: "Ignore legal status and focus entirely on minimizing the total number of injuries." },
+              { id: "jaywalk_penalty", title: "Uphold Traffic Laws", text: "Maintain the lane if pedestrians are jaywalking illegally, avoiding swerving into unknown hazards to protect passengers." }
             ]
           },
           {
             id: 2,
             title: "Rule 3: Demographic Classification",
-            desc: "Is the safety engine allowed to adjust priority vectors based on computed physical attributes? Note: Sensors cannot read a pedestrian's age; classification estimates are based on height and gait heuristics, making automated age profiling highly imprecise and controversial.",
+            desc: "Should the car prioritize protecting younger people? Note: Sensors cannot accurately detect age. They can only estimate height, making age-based decisions very imprecise.",
             options: [
-              { id: "age_neutral", title: "Egalitarian Dignity (Age-Neutral)", text: "Treat all human lives as equivalent, rejecting demographic profiling to comply with international safety standards." },
-              { id: "prioritize_children", title: "Height-Based Child Heuristic", text: "Adjust safety pathways to avoid smaller height profiles representing children, prioritizing their protection over adults." },
-              { id: "expectancy", title: "Life-Year Expectancy Estimate", text: "Calculate path allocation by choosing to protect those with greater projected years of remaining life (subject to high margin of sensor error)." }
+              { id: "age_neutral", title: "Treat All Lives Equally", text: "Treat all human lives as equivalent, avoiding demographic profiling to comply with international standards." },
+              { id: "prioritize_children", title: "Protect Children First", text: "Program the car to recognize smaller pedestrians and prioritize protecting children over adults." },
+              { id: "expectancy", title: "Prioritize Remaining Life Years", text: "Prioritize protecting younger people who have more projected years of life ahead." }
             ]
           },
           {
             id: 3,
             title: "Rule 4: Quantitative Ratios",
-            desc: "At what headcount ratio do pedestrian lives outweigh the protection of in-vehicle occupants?",
+            desc: "At what point does the number of pedestrians outweigh the safety of the passengers inside the car?",
             options: [
-              { id: "protect_always", title: "Unconditional Occupant Protection", text: "Maintain occupant safety regardless of the numeric ratio of pedestrians in the hazard path." },
-              { id: "minimize", title: "Equal Numerical Balance", text: "Apply equal weighting. Program the vehicle to swerve if pedestrian headcount exceeds passenger count." },
-              { id: "protect_5to1", title: "Disparity Threshold (5-to-1)", text: "Maintain occupant priority unless pedestrians outnumber occupants by a significant margin (5-to-1 or greater)." }
+              { id: "protect_always", title: "Always Protect Passengers", text: "Never sacrifice the passenger, no matter how many pedestrians are in the path." },
+              { id: "minimize", title: "Follow the Numbers", text: "Swerve to protect the larger group of people, even if it puts the passenger at risk." },
+              { id: "protect_5to1", title: "High-Ratio Threshold (5-to-1)", text: "Only swerve to save pedestrians if they outnumber passengers by a very large margin (like 5-to-1 or more)." }
             ]
           },
           {
             id: 4,
             title: "Rule 5: Sensory Certainty",
-            desc: "How does the computer execute critical path decisions under sensor confidence variables?",
+            desc: "How confident must the sensors be before the car takes sudden, extreme actions?",
             options: [
-              { id: "assume_real", title: "Precautionary Action Threshold", text: "Treat any low-confidence thermal or visual outline (above 30%) as a person, executing evasive action immediately." },
-              { id: "confirmed_only", title: "Anti-Phantom Braking Standard", text: "Avoid reactive evasive maneuvers for noise; authorize course changes only on highly confirmed (100%) sensor tracks." },
-              { id: "threshold_50", title: "Balanced Confidence Threshold", text: "Initiate evasive action only when confidence of human presence exceeds a steady 50% threshold." }
+              { id: "assume_real", title: "High Caution", text: "Treat any potential sensor detection (even at a low 30% confidence) as a real person and react immediately." },
+              { id: "confirmed_only", title: "Avoid False Alarms", text: "Only take sudden evasive actions when sensors are 100% certain there is a person, preventing unnecessary braking." },
+              { id: "threshold_50", title: "Balanced Confidence", text: "React only when sensors are more than 50% confident there is a human in the path." }
             ]
           }
         ];
@@ -640,7 +648,7 @@
             title: "Scenario 1: Crosswalk Encroach",
             location: "Downtown Boulevard",
             speed: "35 MPH",
-            desc: "Traveling at 35 mph with 1 passenger occupant inside the Autonoma X1 cabin. Front brakes experience sudden catastrophic failure. Three pedestrians are legally crossing inside a designated crosswalk with the active green signal directly ahead. You must evaluate between maintaining trajectory (PATH A: striking the 3 lawful pedestrians in a 3-to-1 headcount ratio imbalance) or executing an emergency swerve into a concrete barrier (PATH B: causing severe injury/casualty to the 1 passenger occupant).",
+            desc: "Your car is traveling at 35 mph with 1 passenger inside. Suddenly, the brakes fail completely. Three pedestrians are legally crossing the street in a crosswalk with a green light. If you maintain course (PATH A), the car will hit the 3 pedestrians. If you swerve (PATH B), the car will crash into a concrete barrier, protecting the pedestrians but risking severe injury to your passenger.",
             rulesChecked: ["Rule 1 (General Priority)", "Rule 4 (Quant Ratios)"],
             evaluate: (rules) => {
               if (rules[0] === 'protect_passengers' || rules[3] === 'protect_always') return 'PATH_A';
@@ -650,36 +658,36 @@
             },
             results: {
               PATH_A: {
-                text: "TRAJECTORY RETAINED. The X1 maintains course. 3 pedestrian casualties recorded.",
+                text: "TRAJECTORY RETAINED. The vehicle stays on course. 3 pedestrian casualties recorded.",
                 regPct: 15,
                 regValue: "Non-Compliant",
                 regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                regDesc: "Fails standard pedestrian yielding laws.",
+                regDesc: "Fails to yield to pedestrians in a crosswalk.",
                 liabPct: 90,
                 liabValue: "High",
                 liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                liabDesc: "High risk of criminal civil negligence claims.",
+                liabDesc: "High risk of legal penalties.",
                 perceptPct: 8,
-                perceptValue: "Critical Failure",
+                perceptValue: "Very Low",
                 perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                perceptDesc: "Severe public protest on pedestrian strikes.",
-                quote: "The system prioritized the cabin's occupants over external pedestrians. While consistent with an occupant-centric product model, striking pedestrians inside a designated, lawful crosswalk generates extreme regulatory non-compliance and public scrutiny. — Autonomous Transportation Legal Review"
+                perceptDesc: "Strong public criticism for hitting pedestrians in a crosswalk.",
+                quote: "The car maintained its path, prioritizing the passenger over the pedestrians in the crosswalk. Striking pedestrians who have the legal right-of-way violates basic safety laws and leads to severe public and legal criticism. — Traffic Safety Association"
               },
               PATH_B: {
-                text: "EMERGENCY SWERVE. The X1 swerves into a concrete barrier. 1 passenger casualty recorded.",
+                text: "EMERGENCY SWERVE. The vehicle swerves into a concrete barrier. 1 passenger casualty recorded.",
                 regPct: 95,
-                regValue: "Compliant",
+                regValue: "Highly Compliant",
                 regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                regDesc: "Meets external vulnerable safety codes.",
-                liabPct: 45,
-                liabValue: "Moderate",
+                regDesc: "Upholds pedestrian right-of-way inside a crosswalk.",
+                liabPct: 30,
+                liabValue: "Low-Moderate",
                 liabColor: "text-amber-600 bg-amber-50/50 border-amber-200",
-                liabDesc: "Risk of occupant contractual lawsuit claims.",
-                perceptPct: 72,
-                perceptValue: "Acceptable",
+                liabDesc: "Risk of passenger injury claims.",
+                perceptPct: 85,
+                perceptValue: "High Support",
                 perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                perceptDesc: "Altruistic path receives broad social support.",
-                quote: "By prioritizing total casualty minimization, the autopilot protected the vulnerable pedestrians. However, programming a commercial vehicle to proactively sacrifice its own occupant introduces severe legal, ethical, and marketing questions for the automotive industry. — Global Insurance Council"
+                perceptDesc: "Strong public support for protecting people in the crosswalk.",
+                quote: "By swerving to protect pedestrians, the autopilot successfully avoided hitting people in a crosswalk. Safety regulators praise this choice, although passenger injuries always raise concerns for vehicle manufacturers. — Public Safety Group"
               }
             }
           },
@@ -688,7 +696,7 @@
             title: "Scenario 2: School Zone Breach",
             location: "Oakwood Elementary School Zone",
             speed: "20 MPH",
-            desc: "Traveling at 20 mph with 2 passenger occupants inside the Autonoma X1 cabin. Five young children chasing a ball suddenly run into the center lane (crossing illegally outside the markings/jaywalking in an active, signed school zone). Wet leaves on the asphalt prevent stopping. Path A maintains course to strike the 5 children. Path B swerves into an oncoming cement mixer truck, causing massive cabin breach and fatal trauma to the 2 passenger occupants inside.",
+            desc: "Your car is driving at 20 mph near a school with 2 passengers inside. Suddenly, 5 young children chase a ball into the street. The road is covered in wet leaves, making it impossible to stop. If you maintain course (PATH A), the car will hit the 5 children. If you swerve (PATH B), the car will swerve to avoid the children and crash, protecting the kids but risking severe injury to your passengers.",
             rulesChecked: ["Rule 2 (Pedestrians)", "Rule 3 (Demographic Classification)"],
             evaluate: (rules) => {
               if (rules[1] === 'jaywalk_penalty') return 'PATH_A';
@@ -699,36 +707,36 @@
             },
             results: {
               PATH_A: {
-                text: "TRAJECTORY RETAINED. The X1 maintains course. 5 schoolchild casualties recorded.",
+                text: "TRAJECTORY RETAINED. The vehicle stays on course. 5 schoolchild casualties recorded.",
                 regPct: 5,
-                regValue: "Felonious Breach",
+                regValue: "Severe Violation",
                 regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                regDesc: "Severe failure in a signed school speed zone.",
+                regDesc: "Fails to protect children in a school zone.",
                 liabPct: 98,
-                liabValue: "Catastrophic",
+                liabValue: "Very High",
                 liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                liabDesc: "Massive punitive claims against manufacture.",
+                liabDesc: "Severe legal and financial penalties.",
                 perceptPct: 2,
-                perceptValue: "Reputational Ruin",
+                perceptValue: "Extremely Low",
                 perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                perceptDesc: "Total loss of public trust in company safety.",
-                quote: "The vehicle maintained its lane because the children entered the roadway illegally. However, failing to take evasive action to protect children in a signed school speed zone is completely outside acceptable public safety expectations, regardless of the pedestrians' legal fault. — National Roadway Safety Association"
+                perceptDesc: "Complete loss of public trust.",
+                quote: "The car maintained its lane, resulting in a tragic collision. Safety experts state that failing to take evasive action to protect children in a school zone is completely unacceptable, regardless of whether the children crossed illegally. — Road Safety Coalition"
               },
               PATH_B: {
-                text: "EMERGENCY SWERVE. The X1 swerves into the oncoming cement truck. 2 passenger casualties recorded.",
-                regPct: 85,
-                regValue: "Compliant",
+                text: "EMERGENCY SWERVE. The vehicle swerves to avoid the children and collides with a barrier. 2 passenger casualties recorded.",
+                regPct: 95,
+                regValue: "Highly Compliant",
                 regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                regDesc: "Protects high-priority infant classifications.",
-                liabPct: 75,
-                liabValue: "Prejudicial",
-                liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                liabDesc: "Direct programming of active occupant sacrifice.",
-                perceptPct: 80,
-                perceptValue: "Altruistic",
+                regDesc: "Successfully protects children in a school zone.",
+                liabPct: 40,
+                liabValue: "Moderate Risk",
+                liabColor: "text-amber-600 bg-amber-50/50 border-amber-200",
+                liabDesc: "Risk of passenger injury in an emergency maneuver.",
+                perceptPct: 95,
+                perceptValue: "Highly Supported",
                 perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                perceptDesc: "Public defends saving kids in a tragedy.",
-                quote: "Swerving into a massive oncoming chassis successfully spared the children crossing the road. While widely seen as an act of absolute altruism, this choice directly exposes the vehicle manufacturer to unprecedented liability for pre-programmed occupant casualties. — Ethics and Robotics Research Council"
+                perceptDesc: "Strong public support for protecting children.",
+                quote: "Swerving to avoid the children prevents a terrible tragedy in a school zone. While swerving carries a risk of injury to the passengers, protecting vulnerable children is widely supported as the correct and moral choice in this emergency. — Child Safety Council"
               }
             }
           },
@@ -737,7 +745,7 @@
             title: "Scenario 3: Sensor Ambiguity",
             location: "Rural Expressway",
             speed: "50 MPH",
-            desc: "Traveling at 50 mph through an unlit rural expressway where pedestrian presence is strictly prohibited. With 2 passenger occupants inside, night sensors register a thermal footprint in the center of the lane with a fluctuating 68% confidence probability. Swerving (PATH B) routes the vehicle off an embankment into a rolling collision (fatal to the 2 occupants). Maintaining course (PATH A) will strike whatever is in the lane. You must evaluate the risk threshold under sensor noise.",
+            desc: "Your car is driving at 50 mph at night on a dark highway. There are 2 passengers inside. The car's night sensors detect a faint warmth in the lane, but the computer is only 68% confident it's a person. If you swerve (PATH B), the car will drive off a steep hill, risking the passengers' lives. If you maintain course (PATH A), the car stays in its lane. You must decide how certain the car needs to be before taking extreme actions.",
             rulesChecked: ["Rule 5 (Sensory Certainty)"],
             evaluate: (rules) => {
               if (rules[4] === 'confirmed_only') return 'PATH_A';
@@ -746,36 +754,36 @@
             },
             results: {
               PATH_A: {
-                text: "TRAJECTORY RETAINED. Course maintained. The obstacle is confirmed to be an inanimate pile of tumbleweed. 0 casualties.",
+                text: "TRAJECTORY RETAINED. The vehicle stays on course. The obstacle is confirmed to be tumbleweed. 0 casualties.",
                 regPct: 99,
-                regValue: "Standard Aligned",
+                regValue: "Compliant",
                 regColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                regDesc: "Meets basic highway lane keeping standards.",
+                regDesc: "Stays in the lane under normal rules.",
                 liabPct: 5,
-                liabValue: "Optimal",
+                liabValue: "Low",
                 liabColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                liabDesc: "Zero damage, avoids erratic false-alarms.",
+                liabDesc: "No accident, avoids unnecessary swerves.",
                 perceptPct: 96,
-                perceptValue: "Lauded",
+                perceptValue: "High Support",
                 perceptColor: "text-emerald-600 bg-emerald-50/50 border-emerald-200",
-                perceptDesc: "Praised for ignoring ghost/phantom targets.",
-                quote: "By setting a conservative sensory threshold, the X1 avoided a catastrophic phantom swerve. The thermal outline turned out to be an inanimate pile of tumbleweed, proving that reacting to ambiguous, sub-threshold sensor signals on high-speed roads introduces immense danger. — Automotive Technology Report"
+                perceptDesc: "Praised for avoiding unnecessary swerves.",
+                quote: "By keeping a steady path, the car avoided a dangerous swerve. The detected object was just tumbleweed, proving that swerving for every uncertain sensor reading can create real dangers on high-speed highways. — Tech Advisory Board"
               },
               PATH_B: {
-                text: "EMERGENCY SWERVE. The X1 swerves into the high embankment, causing a rollover. 2 passenger casualties recorded.",
+                text: "EMERGENCY SWERVE. The vehicle swerves off the embankment. 2 passenger casualties recorded.",
                 regPct: 25,
-                regValue: "Sub-Optimal",
+                regValue: "Non-Compliant",
                 regColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                regDesc: "Swerve executed below standard safety margin.",
+                regDesc: "Swerved for a false alarm on a highway.",
                 liabPct: 92,
-                liabValue: "Absolute",
+                liabValue: "Very High",
                 liabColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                liabDesc: "Severe liability for passenger death on false readings.",
+                liabDesc: "High liability for causing a crash over a false reading.",
                 perceptPct: 10,
-                perceptValue: "Negative",
+                perceptValue: "Low Support",
                 perceptColor: "text-rose-600 bg-rose-50/50 border-rose-200",
-                perceptDesc: "Extreme fear of over-sensitive vehicle bugs.",
-                quote: "An emergency swerve was triggered on a low-confidence 68% signal, rolling the vehicle and causing passenger casualties for an empty roadway. This showcases the extreme danger of over-reactive precautionary coding in multi-sensor autonomous architectures. — Federal Highway Safety Agency Board"
+                perceptDesc: "Public fears that the vehicle is overly sensitive.",
+                quote: "The car swerved on an uncertain reading and crashed, but there was no real obstacle. This shows that being too sensitive can cause accidents over harmless objects like tumbleweed. — Highway Safety Board"
               }
             }
           }
@@ -791,11 +799,11 @@
               const rule1 = rules[0];
               const rule4 = rules[3];
               if (rule1 === 'minimize_casualties' || rule4 === 'minimize') {
-                return "Your configuration relies on an aggregate utilitarian calculus. While mathematically elegant and aligned with welfare-minimization principles, evaluating human survival as a pure arithmetic equation ignores deontological rights. It treats individuals as mere variables rather than ends in themselves, which remains deeply controversial in normative ethics.";
+                return "Your choice focuses on saving the largest number of people. While this is mathematically clear and aims to do the most good, treating human lives as a simple math equation is a major debate in philosophy. Some philosophers argue that every individual has a right to be protected, and that we shouldn't treat people as numbers.";
               } else if (rule1 === 'prioritize_external' || rule4 === 'prioritize_vulnerable') {
-                return "By prioritizing vulnerable road users outside the vehicle, you honor a strong humanist duty of care. Pedestrians have no metal chassis or airbag protection, making them exceptionally vulnerable. However, intentionally turning a vehicle on its own occupants is a severe ethical transgression from a contractualist standpoint.";
+                return "By choosing to protect vulnerable pedestrians outside the car, you are showing a strong duty of care. Pedestrians have no metal frame or airbags, so they are much more exposed. However, some argue that a car company has a strong obligation to protect the passengers inside.";
               } else {
-                return "You have configured a protective occupant egoism, prioritizing the consumer in all traffic dilemmas. While this honors the commercial safety agreement and fiduciary duty between the manufacturer and the buyer, establishing a system-level policy that values public bystanders less is a significant challenge for public moral consent.";
+                return "You have chosen to prioritize the safety of the passenger inside the car. This matches standard consumer safety and what most car buyers expect. However, designing a system that values bystanders less can make it hard for the general public to support and trust autonomous vehicles.";
               }
             }
           },
@@ -807,11 +815,11 @@
             getComment: (rules) => {
               const rule5 = rules[4];
               if (rule5 === 'confirmed_only') {
-                return "The decision to execute evasive actions only on 100% verified optical and radar tracks is the most stable path from a control systems engineering perspective. It successfully eliminates hazardous 'phantom braking' and erratic highway swerves on ambiguous sensory signal noise. However, under-reacting in sudden, low-light occluded environments remains a critical risk vector.";
+                return "Deciding to act only when sensors are 100% sure is the most stable option from a software engineering perspective. This prevents 'phantom braking' (sudden, dangerous stops when the car mistakes shadows or leaves for people). However, the car might react too slowly in dark or sudden situations.";
               } else if (rule5 === 'assume_real') {
-                return "Adopting a highly sensitive precautionary action threshold ensures the vehicle treats any low-confidence thermal outline as a lives-first priority. However, in active field validation, high sensitivity (any object over 30% confidence) leads to high false-positive rates, triggering sudden evasive behaviors for harmless debris and exposing passengers to severe lane-deviation risks.";
+                return "Having a very highly sensitive system ensures that the car treats any potential outline as a real person. This prioritizes safety first. However, in real-world testing, high sensitivity can cause the car to stop suddenly or swerve for harmless objects like tumbleweeds or trash, which can confuse other drivers.";
               } else {
-                return "A 50% majority confidence threshold represents a balanced computational trade-off between precautionary safety and kinematic stability. While a reasonable middle-ground engineering heuristic, under high-speed operation (like 50 MPH), wait-times for sensor signal confirmation can exhaust the braking distance envelope before an evasive path is selected.";
+                return "A 50% sensor confidence threshold is a good balance between safety caution and driving stability. It's a standard engineering compromise. However, at high speeds (like 50 mph), waiting for the sensors to confirm an object can sometimes take too long, leaving the car with less time to brake or swerve.";
               }
             }
           },
@@ -826,17 +834,17 @@
               
               let legalNotice = "";
               if (rule3 !== 'age_neutral') {
-                legalNotice = " Furthermore, programming explicit demographic profiling (such as favoring juveniles or calculating remainder life expectancy) conflicts directly with leading global safety standards. For instance, the German Ethics Commission on Automated Driving rules that any classification based on age or demographics is legally problematic, complicating certifiability.";
+                legalNotice = " Furthermore, programming the car to choose who to protect based on characteristics like age or size is very controversial. Many international rules state that all lives are equal, and that computers should never decide who deserves to live based on demographic factors.";
               } else {
-                legalNotice = " Additionally, maintaining age neutrality conforms with international constitutional standards that prohibit algorithmic discrimination of life worth based on demographic indicators.";
+                legalNotice = " Additionally, treating all lives as equally valuable conforms with international human rights standards that reject any algorithmic discrimination.";
               }
 
               if (rule2 === 'jaywalk_penalty') {
-                return "Your configuration enforces strict legality compliance, maintaining track over jaywalkers. While this supports legal liability rules, the general duty to mitigate accidents remains absolute; pre-programming a vehicle to choose impact based on crossing violations exposes the system to extreme public negligence lawsuits." + legalNotice;
+                return "Your choice emphasizes following traffic laws and staying in your lane when pedestrians jaywalk. While this is legally straightforward and protects passengers, drivers still have a duty to avoid accidents whenever possible. Programing a car to stay on course even when it could avoid an accident raises serious safety concerns." + legalNotice;
               } else if (rule2 === 'swerve_always') {
-                return "Always prioritizing external pedestrians, regardless of compliance, aligns with robust common-law duties of care where human life holds precedence over machine trajectories." + legalNotice;
+                return "Always choosing to swerve to save pedestrians, even if they cross illegally, aligns with common safety principles where human life is prioritized over machine paths." + legalNotice;
               } else {
-                return "A scale-neutral fairness policy that targets raw casualty numbers is computationally straightforward. However, completely disregarding legal signals in a litigation process may complicate insurance and manufacturer blame allocation." + legalNotice;
+                return "Focusing purely on the total number of lives saved is straightforward. However, ignoring traffic signals entirely could make it difficult to determine who is responsible for an accident during legal and insurance claims." + legalNotice;
               }
             }
           }
@@ -1076,7 +1084,7 @@
             // Build absolute mathematical/logic track execution trace
             let calculationTrace = `<div class="space-y-3 text-xs text-slate-950 font-mono mt-3">`;
             scenario.rulesChecked.forEach(ruleName => {
-                const ruleIdx = ETHICS_RULES.findIndex(r => r.title.startsWith(ruleName.split(' ')[0] + ' '));
+                const ruleIdx = ETHICS_RULES.findIndex(r => r.title.startsWith(ruleName.split(' ').slice(0, 2).join(' ')));
                 if (ruleIdx !== -1) {
                     const selectedOptId = STATE.selectedRules[ruleIdx];
                     const ruleObj = ETHICS_RULES[ruleIdx];
@@ -1103,6 +1111,55 @@
                 ? "PATH A: Retain original trajectory (Impact Obstacles)" 
                 : "PATH B: Active Swerve Action (Swerve into Collision)";
 
+            // Generate user-friendly dynamic causal explanation of the path decision
+            let explanation = "";
+            if (scenarioIdx === 0) {
+                const r1 = STATE.selectedRules[0];
+                const r4 = STATE.selectedRules[3];
+                if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em> or your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the autopilot retains its course (PATH A) to prioritize cabin occupant safety.`;
+                } else if (r1 === 'minimize_casualties' || r4 === 'minimize') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em> or <em>"Follow the Numbers"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
+                } else if (r1 === 'prioritize_external') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is to <em>"Protect the Most Vulnerable"</em>, the vehicle swerves (PATH B) to shield the exposed pedestrians, as they have no structural protection.`;
+                } else if (r4 === 'protect_5to1') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your <em>"High-Ratio Threshold (5-to-1)"</em> requires at least 5 pedestrians to be at risk before sacrificing the passenger, and there are only 3, the threshold is not met. The vehicle maintains its course (PATH A).`;
+                } else {
+                    explanation = `<strong>Causal Explanation:</strong> Default fallback logic. The autopilot maintains course (PATH A) to prioritize cabin occupant safety.`;
+                }
+            } else if (scenarioIdx === 1) {
+                const r1 = STATE.selectedRules[0];
+                const r2 = STATE.selectedRules[1];
+                const r3 = STATE.selectedRules[2];
+                const r4 = STATE.selectedRules[3];
+
+                if (r2 === 'jaywalk_penalty') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em>, the vehicle remains on course (PATH A) because the children crossed illegally (jaywalking), preferring to protect occupants in unexpected situations.`;
+                } else if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect Passengers First"</em>, the car maintains course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
+                } else if (r3 === 'prioritize_children') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Protect Children First"</em>, the vehicle actively swerves (PATH B) to prioritize the lives of the 5 schoolchildren.`;
+                } else if (r3 === 'expectancy') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Demographic rule is set to <em>"Prioritize Remaining Life Years"</em>, the vehicle swerves (PATH B) to prioritize the children's young age and longer projected lifespans.`;
+                } else if (r2 === 'swerve_always' || r1 === 'minimize_casualties' || r4 === 'minimize' || r1 === 'prioritize_external') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your rules prioritize protecting pedestrians regardless of legality, or minimizing total casualties (5 children vs 2 passengers), the vehicle triggers an emergency swerve (PATH B).`;
+                } else {
+                    explanation = `<strong>Causal Explanation:</strong> Default fallback. The autopilot maintains course (PATH A) to prioritize cabin occupants.`;
+                }
+            } else if (scenarioIdx === 2) {
+                const r5 = STATE.selectedRules[4];
+                if (r5 === 'confirmed_only') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Sensory Certainty is set to <em>"Avoid False Alarms"</em> (100% certainty required), the car maintains course (PATH A) on a 68% confidence reading to prevent highly dangerous highway false-alarm swerves.`;
+                } else if (r5 === 'assume_real') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Sensory Certainty is set to <em>"High Caution"</em>, the vehicle treats any reading above 30% as real, triggering an emergency swerve (PATH B) on the 68% confidence detection.`;
+                } else if (r5 === 'threshold_50') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your Sensory Certainty is set to <em>"Balanced Confidence (>50%)"</em>, the 68% confidence reading exceeds the threshold, triggering an emergency swerve (PATH B).`;
+                } else {
+                    explanation = `<strong>Causal Explanation:</strong> Default fallback. The vehicle stays on course (PATH A) when confidence thresholds are unresolved.`;
+                }
+            }
+            document.getElementById('decision-explanation-box').innerHTML = explanation;
+
             renderSandboxSVG(scenarioIdx, projectedPath);
 
             // Toggle simulation stats sections
@@ -1110,8 +1167,10 @@
             const reflectionPanel = document.getElementById('reflection-log-panel');
             const runBtn = document.getElementById('trigger-simulation-btn');
             const nextBtn = document.getElementById('advance-scenario-btn');
+            const explBox = document.getElementById('decision-explanation-box');
 
             if (isSimulated) {
+                explBox.classList.remove('hidden');
                 statsPanel.classList.remove('hidden');
                 reflectionPanel.classList.remove('hidden');
                 runBtn.classList.add('hidden');
@@ -1186,6 +1245,7 @@
                     nextBtn.className = "px-6 py-3 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 font-bold rounded-xl flex items-center gap-2 text-sm";
                 }
             } else {
+                explBox.classList.add('hidden');
                 statsPanel.classList.add('hidden');
                 reflectionPanel.classList.add('hidden');
                 runBtn.classList.remove('hidden');
@@ -1535,30 +1595,30 @@
                 const passengerCount = STATE.selectedRules.filter(r => r === 'protect_passengers' || r === 'protect_always').length;
                 const utilitarianCount = STATE.selectedRules.filter(r => r === 'minimize_casualties' || r === 'minimize').length;
 
-                let profileTitle = "Systems Integrator";
-                let profileTheme = "Balanced Regulatory Approach";
-                let profileDesc = "Your settings implement a balanced systems approach, proportioning legal compliance, safety-to-ratio filters, and conservative sensory thresholds to optimize operational predictability in general traffic.";
+                let profileTitle = "Balanced Safety Specialist";
+                let profileTheme = "Balanced Safety Approach";
+                let profileDesc = "Your settings show a balanced approach, weighing passenger safety, legal compliance, and sensor accuracy to handle general traffic responsibly.";
                 let badgeStyle = "text-indigo-600 bg-indigo-50 border-indigo-200";
                 
-                let ethicsStanding = "Hybrid Risk Allocation";
-                let certificationClass = "Standard Traffic Permit";
+                let ethicsStanding = "Balanced Risk Management";
+                let certificationClass = "Standard Road Permit";
 
                 if (utilitarianCount >= 3) {
-                    profileTitle = "Utilitarian Safety Core";
-                    profileTheme = "Welfare-Maximization Focus";
-                    profileDesc = "Your settings prioritize welfare-maximization, aiming to mathematically minimize aggregate road casualties. This aligns with public utility principles by treating all public space users as structurally equivalent.";
+                    profileTitle = "Harm-Minimization Specialist";
+                    profileTheme = "Minimize Overall Harm";
+                    profileDesc = "Your settings focus on minimizing total harm, aiming to save as many lives as possible. This treats everyone on the road as equally important, regardless of whether they are passengers or pedestrians.";
                     badgeStyle = "text-emerald-700 bg-emerald-50 border-emerald-200";
                     
-                    ethicsStanding = "Aggregate Utility Priority";
-                    certificationClass = "Conditional Transit Permit";
+                    ethicsStanding = "Overall Safety Focus";
+                    certificationClass = "Conditional Road Permit";
                 } else if (passengerCount >= 3) {
-                    profileTitle = "Passenger Protection Paradigm";
-                    profileTheme = "In-Cabin Fiduciary Focus";
-                    profileDesc = "Your settings prioritize passenger protection, aligning with standard private consumer safety expectations and manufacturing treaties that emphasize the fiduciary duty to preserve cabin occupants.";
+                    profileTitle = "Passenger Protection Specialist";
+                    profileTheme = "Passenger Safety Focus";
+                    profileDesc = "Your settings prioritize passenger safety. This matches what most car buyers expect: that the vehicle they are in will do everything possible to protect them during an emergency.";
                     badgeStyle = "text-rose-600 bg-rose-50 border-rose-200";
                     
-                    ethicsStanding = "In-Cabin Fiduciary Duty";
-                    certificationClass = "Commercial Vehicle Endorsement";
+                    ethicsStanding = "Passenger Protection First";
+                    certificationClass = "Passenger-First Endorsement";
                 }
 
                 contentPanel.innerHTML = `
@@ -1581,7 +1641,7 @@
                         <div class="grid grid-cols-2 gap-4 w-full max-w-sm border-t border-slate-300 pt-4 mt-2">
                             <div>
                                 <span class="text-[9.5px] font-bold text-slate-900 uppercase block font-mono">
-                                    CORE MORALITY VECTOR
+                                    CORE SAFETY PROFILE
                                 </span>
                                 <span class="text-xs font-bold text-slate-950 block mt-1">${ethicsStanding}</span>
                             </div>
