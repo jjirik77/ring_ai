@@ -810,7 +810,7 @@
             getComment: (rules) => {
               const rule1 = rules[0];
               const rule4 = rules[3];
-              if (rule1 === 'minimize_casualties' || rule4 === 'minimize') {
+              if (rule1 === 'minimize_casualties' || (rule4 === 'minimize' && rule1 !== 'protect_passengers')) {
                 return "Your choice focuses on saving the largest number of people. While this is mathematically clear and aims to do the most good, treating human lives as a simple math equation is a major debate in philosophy. Some philosophers argue that every individual has a right to be protected, and that we shouldn't treat people as numbers.";
               } else if (rule1 === 'prioritize_external' || rule4 === 'prioritize_vulnerable') {
                 return "By choosing to protect vulnerable pedestrians outside the car, you are showing a strong duty of care. Pedestrians have no metal frame or airbags, so they are much more exposed. However, some argue that a car company has a strong obligation to protect the passengers inside.";
@@ -1140,8 +1140,12 @@
                 } else if ((r1 === 'minimize_casualties' || r1 === 'prioritize_external') && r4 === 'minimize') {
                     const r1Text = r1 === 'minimize_casualties' ? `<em>"Minimize Total Harm"</em>` : `<em>"Protect the Most Vulnerable"</em>`;
                     explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to ${r1Text} <strong>and</strong> your Quantitative Ratios rule is set to <em>"Follow the Numbers"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
+                } else if (r1 === 'minimize_casualties' && r4 === 'protect_5to1') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger. <br/><span class="text-[11px] text-slate-500 block mt-1"><em>Note: Rule 4 (5-to-1 Threshold) would normally hold here (3 < 5), but Rule 1 (General Priority) takes precedence in the evaluation order.</em></span>`;
                 } else if (r1 === 'minimize_casualties') {
                     explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em>, the vehicle swerves (PATH B) to save the 3 pedestrians, accepting the injury risk to the single passenger.`;
+                } else if (r1 === 'prioritize_external' && r4 === 'protect_5to1') {
+                    explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect the Most Vulnerable"</em>, the vehicle swerves (PATH B) to shield the exposed pedestrians, as they have no structural protection. <br/><span class="text-[11px] text-slate-500 block mt-1"><em>Note: Rule 4 (5-to-1 Threshold) would normally hold here (3 < 5), but Rule 1 (General Priority) takes precedence in the evaluation order.</em></span>`;
                 } else if (r1 === 'prioritize_external') {
                     explanation = `<strong>Causal Explanation:</strong> Because your priority is set to <em>"Protect the Most Vulnerable"</em>, the vehicle swerves (PATH B) to shield the exposed pedestrians, as they have no structural protection.`;
                 } else if (r4 === 'minimize') {
@@ -1158,8 +1162,12 @@
                 const r4 = STATE.selectedRules[3];
 
                 if (r2 === 'jaywalk_penalty') {
-                    if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                    if (r1 === 'protect_passengers' && r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em> <strong>and</strong> your priority and Quantitative Ratios are configured to protect passengers, the vehicle remains on course (PATH A). The legal boundary takes precedence since the children crossed illegally (jaywalking).`;
+                    } else if (r1 === 'protect_passengers') {
                         explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em> <strong>and</strong> your priority is configured to protect passengers, the vehicle remains on course (PATH A). The legal boundary takes precedence since the children crossed illegally (jaywalking).`;
+                    } else if (r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em> <strong>and</strong> your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the vehicle remains on course (PATH A). The legal boundary takes precedence since the children crossed illegally (jaywalking).`;
                     } else if (r3 === 'prioritize_children' || r3 === 'expectancy') {
                         explanation = `<strong>Causal Explanation:</strong> Because your Pedestrian Interaction rule is set to <em>"Uphold Traffic Laws"</em>, the legal penalty override takes precedence over demographic preferences, keeping the vehicle on course (PATH A) because the children crossed illegally (jaywalking).`;
                     } else {
@@ -1167,8 +1175,12 @@
                     }
                 } else {
                     // Not jaywalk penalty (meaning swerve always or other)
-                    if (r1 === 'protect_passengers' || r4 === 'protect_always') {
+                    if (r1 === 'protect_passengers' && r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to protect passengers <strong>and</strong> your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the vehicle stays on course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
+                    } else if (r1 === 'protect_passengers') {
                         explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to protect passengers, the vehicle stays on course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
+                    } else if (r4 === 'protect_always') {
+                        explanation = `<strong>Causal Explanation:</strong> Because your Quantitative Ratios rule is set to <em>"Always Protect Passengers"</em>, the vehicle stays on course (PATH A) to prevent passengers from colliding with a concrete barrier.`;
                     } else if (r3 === 'prioritize_children' && r1 === 'minimize_casualties') {
                         explanation = `<strong>Causal Explanation:</strong> Because your priority is configured to <em>"Minimize Total Harm"</em> <strong>and</strong> your Demographic rule is set to <em>"Protect Children First"</em>, the vehicle actively swerves (PATH B) to prioritize the lives of the 5 schoolchildren over the 2 passengers.`;
                     } else if (r3 === 'prioritize_children') {
