@@ -320,6 +320,7 @@
       margin-top: auto;
       border-top: 1px solid #f1f5f9;
       padding-top: 0.75rem;
+      margin-bottom: 1.5rem;
     }
 
     /* Panels & Cards */
@@ -519,9 +520,11 @@
     .rules-container {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-      min-height: 170px;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+      min-height: 80px;
+      max-height: 105px;
+      overflow-y: auto;
     }
 
     .rule-item {
@@ -645,12 +648,14 @@
     .sandbox-preview {
       background-color: var(--bg-dark);
       border-radius: var(--radius-sm);
-      padding: 1.1rem;
+      padding: 0.75rem;
       font-family: var(--font-mono);
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: #94a3b8;
       overflow-x: auto;
-      min-height: 200px;
+      min-height: 100px;
+      max-height: 125px;
+      overflow-y: auto;
     }
 
     .sandbox-list {
@@ -682,18 +687,21 @@
     .reference-content {
       padding: 0.5rem;
       background-color: white;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
       display: none;
     }
 
     .reference-content.active {
-      display: block;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
     }
 
     .trait-desc-item {
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.15rem;
+      line-height: 1.3;
     }
 
     .trait-desc-name {
@@ -1148,7 +1156,60 @@
     .reflection-form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
+    }
+
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      align-items: stretch;
+      margin-bottom: 0.25rem;
+    }
+
+    .reflection-grid .question-block {
+      padding: 0.45rem 0.6rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .reflection-grid .question-title {
+      font-size: 0.68rem;
+      line-height: 1.3;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: var(--bg-dark);
+    }
+
+    .reflection-grid .opt-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+    }
+
+    .reflection-grid .opt-label {
+      padding: 0.3rem 0.4rem;
+      font-size: 0.64rem;
+      gap: 0.25rem;
+      border-radius: 4px;
+      line-height: 1.2;
+    }
+
+    .reflection-grid .opt-label input {
+      margin-top: 0.05rem;
+    }
+
+    .reflection-grid .explanation-box {
+      margin-top: 0.3rem;
+      padding: 0.3rem 0.4rem;
+      font-size: 0.62rem;
+      line-height: 1.25;
     }
 
     .question-block {
@@ -1194,6 +1255,39 @@
       background-color: var(--primary-light);
     }
 
+    .opt-label.correct {
+      border-color: var(--success) !important;
+      background-color: var(--success-light) !important;
+      color: #166534 !important;
+    }
+
+    .opt-label.incorrect {
+      border-color: var(--error) !important;
+      background-color: var(--error-light) !important;
+      color: #991b1b !important;
+    }
+
+    .explanation-box {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .explanation-box.correct {
+      background-color: var(--success-light);
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .explanation-box.incorrect {
+      background-color: var(--error-light);
+      border: 1px solid #fecdd3;
+      color: #991b1b;
+    }
+
     .opt-label input {
       margin-top: 0.15rem;
     }
@@ -1214,14 +1308,30 @@
       border-color: var(--primary);
     }
 
+    .reflection-textarea.error-input {
+      border-color: var(--error) !important;
+      background-color: var(--error-light) !important;
+    }
+
     .reflection-success-msg {
       background-color: #f0fdf4;
       border: 1px solid #bbf7d0;
-      padding: 0.5rem;
+      padding: 0.75rem 1rem;
       border-radius: var(--radius-sm);
       color: #166534;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
       display: none;
+    }
+
+    .reflection-error-msg {
+      background-color: #fff1f2;
+      border: 1px solid #fecdd3;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      color: #991b1b;
+      margin-top: 0.75rem;
+      display: none;
+      line-height: 1.5;
     }
 
     /* History */
@@ -1465,9 +1575,9 @@
                 <div class="trait-desc-item"><span class="trait-desc-name">Gills:</span> Unique to <strong>Fish</strong>. Direct indicator.</div>
                 <div class="trait-desc-item"><span class="trait-desc-name">Fur:</span> Unique to <strong>Mammals</strong>. High accuracy.</div>
                 <div class="trait-desc-item"><span class="trait-desc-name">Live Birth:</span> Highly diagnostic for <strong>Mammals</strong>.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Beak:</span> Strong for <strong>Birds</strong>, but watch out for exceptions (Platypus).</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Wings &amp; Fins:</span> Multi-class traits. Some bats have wings; cetaceans (whales/dolphins) have fins. High error if evaluated too broadly.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Aquatic, Land, Warm-blooded, Lays Eggs:</span> Environment traits. Overgeneralizing on these causes heavy bias.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Beak:</span> Strong for <strong>Birds</strong> (except Platypus).</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Wings &amp; Fins:</span> Multi-class. Bats have wings; cetaceans have fins.</div>
+                <div class="trait-desc-item" style="grid-column: span 2;"><span class="trait-desc-name">Environment (Aquatic, Land, Warm-blooded, Lays Eggs):</span> Shared ecological traits. Overgeneralizing causes model bias.</div>
               </div>
             </div>
           </div>
@@ -1683,60 +1793,74 @@
           <p class="subtitle">Demonstrate your understanding of machine learning logic, data bias, and open-world generalization challenges.</p>
         </div>
 
-        <div style="max-width: 680px; margin: 0 auto;">
+        <div style="max-width: 920px; margin: 0 auto; width: 100%;">
           <!-- Reflection Quiz Form -->
           <div class="panel">
             <span class="panel-title" style="display: block; margin-bottom: 0.5rem;">Interactive Classroom Reflection</span>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">Demonstrate your understanding of machine learning logic and data bias.</p>
 
-            <form class="reflection-form" id="reflection-form" onsubmit="submitReflection(event)">
-              <div class="question-block">
-                <div class="question-title">1. Why did the simple, flawed rules model (IF Aquatic THEN Fish) misclassify the Humpback Whale and Emperor Penguin?</div>
-                <div class="opt-container">
-                  <label class="opt-label" id="q1-opt1-label">
-                    <input type="radio" name="q1" value="a" required onchange="handleRadioSelect('q1', 'q1-opt1-label')">
-                    <span>The model's training dataset was broken or corrupted.</span>
-                  </label>
-                  <label class="opt-label" id="q1-opt2-label">
-                    <input type="radio" name="q1" value="b" onchange="handleRadioSelect('q1', 'q1-opt2-label')">
-                    <span>"Aquatic" is a shared ecological environment, not a unique physiological diagnostic.</span>
-                  </label>
-                  <label class="opt-label" id="q1-opt3-label">
-                    <input type="radio" name="q1" value="c" onchange="handleRadioSelect('q1', 'q1-opt3-label')">
-                    <span>The rules sequence evaluated Mammalian parameters before Fish parameters.</span>
-                  </label>
+            <div class="reflection-form" id="reflection-form">
+              <div class="reflection-grid">
+                <!-- Question 1 -->
+                <div class="question-block" id="q1-block">
+                  <div class="question-title">1. Why did the simple, flawed rules model (IF Aquatic THEN Fish) misclassify the Humpback Whale and Emperor Penguin? <span id="q1-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
+                  <div class="opt-container">
+                    <label class="opt-label" id="q1-opt1-label">
+                      <input type="radio" name="q1" value="a" onchange="handleRadioSelect('q1', 'q1-opt1-label', 'a')">
+                      <span>The model's training dataset was broken or corrupted.</span>
+                    </label>
+                    <label class="opt-label" id="q1-opt2-label">
+                      <input type="radio" name="q1" value="b" onchange="handleRadioSelect('q1', 'q1-opt2-label', 'b')">
+                      <span>"Aquatic" is a shared ecological environment, not a unique physiological diagnostic.</span>
+                    </label>
+                    <label class="opt-label" id="q1-opt3-label">
+                      <input type="radio" name="q1" value="c" onchange="handleRadioSelect('q1', 'q1-opt3-label', 'c')">
+                      <span>The rules sequence evaluated Mammalian parameters before Fish parameters.</span>
+                    </label>
+                  </div>
+                  <div class="explanation-box" id="q1-explanation" style="display: none;"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-block" id="q2-block">
+                  <div class="question-title">2. How does the "Galapagos Tortoise" (unfamiliar reptile) illustrate open-world AI bias? <span id="q2-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
+                  <div class="opt-container">
+                    <label class="opt-label" id="q2-opt1-label">
+                      <input type="radio" name="q2" value="a" onchange="handleRadioSelect('q2', 'q2-opt1-label', 'a')">
+                      <span>The system correctly classified it as a mammal since it resides on land.</span>
+                    </label>
+                    <label class="opt-label" id="q2-opt2-label">
+                      <input type="radio" name="q2" value="b" onchange="handleRadioSelect('q2', 'q2-opt2-label', 'b')">
+                      <span>Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</span>
+                    </label>
+                    <label class="opt-label" id="q2-opt3-label">
+                      <input type="radio" name="q2" value="c" onchange="handleRadioSelect('q2', 'q2-opt3-label', 'c')">
+                      <span>The algorithm automatically created a "Reptile" class on the fly.</span>
+                    </label>
+                  </div>
+                  <div class="explanation-box" id="q2-explanation" style="display: none;"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-block" id="q3-block">
+                  <div class="question-title">3. What is the primary purpose of using a separate, independent "Testing Dataset" in machine learning? <span id="q3-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
+                  <div class="opt-container">
+                    <label class="opt-label" id="q3-opt1-label">
+                      <input type="radio" name="q3" value="a" onchange="handleRadioSelect('q3', 'q3-opt1-label', 'a')">
+                      <span>To generate additional heuristic rules automatically.</span>
+                    </label>
+                    <label class="opt-label" id="q3-opt2-label">
+                      <input type="radio" name="q3" value="b" onchange="handleRadioSelect('q3', 'q3-opt2-label', 'b')">
+                      <span>To evaluate how well the model generalizes to completely unseen specimens and ensure it hasn't just memorized the training data.</span>
+                    </label>
+                    <label class="opt-label" id="q3-opt3-label">
+                      <input type="radio" name="q3" value="c" onchange="handleRadioSelect('q3', 'q3-opt3-label', 'c')">
+                      <span>To increase the model's confidence scores by repeating the same training samples.</span>
+                    </label>
+                  </div>
+                  <div class="explanation-box" id="q3-explanation" style="display: none;"></div>
                 </div>
               </div>
-
-              <div class="question-block">
-                <div class="question-title">2. How does the "Galapagos Tortoise" (unfamiliar reptile) illustrate open-world AI bias?</div>
-                <div class="opt-container">
-                  <label class="opt-label" id="q2-opt1-label">
-                    <input type="radio" name="q2" value="a" required onchange="handleRadioSelect('q2', 'q2-opt1-label')">
-                    <span>The system correctly classified it as a mammal since it resides on land.</span>
-                  </label>
-                  <label class="opt-label" id="q2-opt2-label">
-                    <input type="radio" name="q2" value="b" onchange="handleRadioSelect('q2', 'q2-opt2-label')">
-                    <span>Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</span>
-                  </label>
-                  <label class="opt-label" id="q2-opt3-label">
-                    <input type="radio" name="q2" value="c" onchange="handleRadioSelect('q2', 'q2-opt3-label')">
-                    <span>The algorithm automatically created a "Reptile" class on the fly.</span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="question-block">
-                <div class="question-title">3. Explanatory Statement: How do diverse datasets, rule order, and independent test data prevent algorithm bias?</div>
-                <textarea class="reflection-textarea" id="essay-response" placeholder="Type your structured explanation here (minimum 10 words)..." required minlength="10"></textarea>
-              </div>
-
-              <button class="btn" style="width: 100%;" type="submit">Submit Reflection Answers</button>
-            </form>
-
-            <div class="reflection-success-msg" id="reflection-success-msg">
-              <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.15rem;">Reflection Submitted Successfully!</strong>
-              <p style="font-size: 0.7rem; line-height: 1.35;" id="reflection-feedback-text">Excellent analysis. You correctly determined that shared traits cause overgeneralization, and that closed taxonomies lead to forced low-confidence bias. Use independent testing data to find gaps, and keep refining your classification program!</p>
             </div>
           </div>
         </div>
@@ -2650,21 +2774,49 @@
       document.getElementById(`bar-${className}-acc`).style.width = `${percentage}%`;
     }
 
-    function handleRadioSelect(qName, labelId) {
+    function handleRadioSelect(qName, labelId, val) {
+      // Clear previous styles/states for this question
       const groupLabels = document.querySelectorAll(`[id^="${qName}-opt"]`);
-      groupLabels.forEach(l => l.classList.remove('selected'));
-      document.getElementById(labelId).classList.add('selected');
-    }
+      groupLabels.forEach(l => {
+        l.classList.remove('selected');
+        l.classList.remove('correct');
+        l.classList.remove('incorrect');
+      });
 
-    function submitReflection(event) {
-      event.preventDefault();
-      const essayValue = document.getElementById('essay-response').value.trim();
-      if (essayValue.split(/\s+/).length < 10) {
-        alert("Please write a complete answer (at least 10 words) in the text box before submitting.");
-        return;
+      const selectedLabel = document.getElementById(labelId);
+      selectedLabel.classList.add('selected');
+
+      const explanation = document.getElementById(`${qName}-explanation`);
+      const status = document.getElementById(`${qName}-status`);
+
+      if (explanation) {
+        explanation.style.display = 'block';
+        if (val === 'b') {
+          selectedLabel.classList.add('correct');
+          if (status) status.innerHTML = ' <span style="color: var(--success); font-size: 0.7rem;">✅ Correct</span>';
+          explanation.className = "explanation-box correct";
+          if (qName === 'q1') {
+            explanation.innerHTML = "<strong>✅ Correct!</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic groups (e.g., whales and fish are both aquatic). Relying on them as top-level shortcuts causes severe misclassifications.";
+          } else if (qName === 'q2') {
+            explanation.innerHTML = "<strong>✅ Correct!</strong> Since the heuristic rule model only knows Fish, Bird, and Mammal classes, it is forced to select one of those predefined options even when presented with a reptile (out-of-distribution specimen), leading to forced system bias.";
+          } else if (qName === 'q3') {
+            explanation.innerHTML = "<strong>✅ Correct!</strong> Testing on independent, completely unseen cases is the primary scientific method for verifying whether an algorithm has generalized to broader concepts or merely memorized/overfitted the training data.";
+          }
+        } else {
+          selectedLabel.classList.add('incorrect');
+          const correctLabel = document.getElementById(`${qName}-opt2-label`);
+          if (correctLabel) correctLabel.classList.add('correct');
+          if (status) status.innerHTML = ' <span style="color: var(--error); font-size: 0.7rem;">❌ Incorrect</span>';
+          explanation.className = "explanation-box incorrect";
+          if (qName === 'q1') {
+            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic families and cause overgeneralization. Gills or Feathers are unique physiological features. <br><em>Correct: \"Aquatic\" is a shared ecological environment, not a unique physiological diagnostic.</em>";
+          } else if (qName === 'q2') {
+            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Rule-based systems do not dynamically add classes on the fly, and land residence alone does not make a tortoise a mammal. Closed world taxonomies force models to apply pre-existing labels. <br><em>Correct: Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</em>";
+          } else if (qName === 'q3') {
+            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Independent testing data does not generate rules and must never be used in training or simple accuracy repetition. It serves solely to evaluate real out-of-training generalizability. <br><em>Correct: To evaluate how well the model generalizes to completely unseen specimens...</em>";
+          }
+        }
       }
-      document.getElementById('reflection-success-msg').style.display = 'block';
-      document.getElementById('reflection-success-msg').scrollIntoView({ behavior: 'smooth' });
     }
   </script>
 
