@@ -786,6 +786,9 @@
             const submitBtn = document.getElementById('btn-submit');
             const backBtn = document.getElementById('btn-back');
 
+            // Reset label to Next by default (may be overridden to "View Results" inside updateLabUI for the last question)
+            nextBtn.textContent = "Next";
+
             backBtn.style.display = (num === 1) ? 'none' : 'block';
             nextBtn.style.display = (num === 3 || num === 5) ? 'none' : 'block';
             submitBtn.style.display = (num === 3 && !state.labSubmitted) ? 'block' : 'none';
