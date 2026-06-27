@@ -1,0 +1,2672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wildlife Classification Mission</title>
+  <style>
+    /* -------------------------------------------------------------
+       FONT IMPORT & THEME VARIABLES
+       ------------------------------------------------------------- */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* UI Color Palette: Sleek Cobalt & Slate */
+      --bg-main: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-dark: #0f172a;
+      --bg-dark-card: #1e293b;
+
+      --blue-border: #2563eb; /* Cobalt Blue Outer Frame Border */
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      
+      --accent-bird: #0284c7; /* Sky Azure */
+      --accent-bird-light: #f0f9ff;
+      --accent-fish: #0d9488; /* Ocean Teal */
+      --accent-fish-light: #f0fdfa;
+      --accent-mammal: #d97706; /* Amber Bronze */
+      --accent-mammal-light: #fffbeb;
+
+      --error: #e11d48;
+      --error-light: #fff1f2;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #ea580c;
+      --warning-light: #fff7ed;
+
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #f8fafc;
+      --border-color: #cbd5e1;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 24px -4px rgba(37,99,235,0.1);
+
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* -------------------------------------------------------------
+       BLUE-BORDERED INTERACTIVE FRAME (trolley-inspired)
+       ------------------------------------------------------------- */
+    .app-frame {
+      width: 100%;
+      max-width: 980px;
+      height: calc(100vh - 1rem);
+      max-height: 760px;
+      background-color: var(--bg-card);
+      border: 5px solid var(--blue-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* -------------------------------------------------------------
+       INTEGRATED PROGRESS STEPS (Compact Header)
+       ------------------------------------------------------------- */
+    .progress-container {
+      background-color: var(--bg-dark);
+      padding: 0.65rem 1.25rem;
+      border-bottom: 2px solid var(--blue-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      gap: 1.5rem;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 50%;
+      left: 3%;
+      right: 3%;
+      height: 2px;
+      background-color: #334155;
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .progress-line-fill {
+      position: absolute;
+      top: 50%;
+      left: 3%;
+      width: 0%;
+      height: 2px;
+      background-color: #38bdf8;
+      z-index: 1;
+      transform: translateY(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .step-node {
+      position: relative;
+      z-index: 2;
+      background-color: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .step-node.active {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .step-node.completed {
+      background-color: #38bdf8;
+      border-color: #38bdf8;
+      color: #0f172a;
+    }
+
+    .step-label {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #64748b;
+      transition: var(--transition);
+    }
+
+    .step-node.active .step-label {
+      color: #38bdf8;
+    }
+
+    .step-node.completed .step-label {
+      color: #e2e8f0;
+    }
+
+    .btn-restart-header {
+      background-color: transparent;
+      color: #f43f5e;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      padding: 0.25rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    .btn-restart-header:hover {
+      background-color: rgba(244, 63, 94, 0.1);
+      border-color: #f43f5e;
+    }
+
+    /* -------------------------------------------------------------
+       SCENE TRANSITIONS & CONTAINER
+       ------------------------------------------------------------- */
+    .app-content {
+      flex: 1;
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .screen {
+      display: none;
+      animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Typography & General Classes */
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--bg-dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.15rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.75rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      gap: 0.4rem;
+    }
+
+    .btn:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-container-right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: auto;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 0.75rem;
+    }
+
+    /* Panels & Cards */
+    .panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 0.5rem;
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--bg-dark);
+    }
+
+    /* -------------------------------------------------------------
+       REALISTIC ANIMAL ANALYZER CARD (Modern Specimen Plate)
+       ------------------------------------------------------------- */
+    .animal-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .animal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    /* CSS camera scanner reticle */
+    .animal-visual-plate {
+      height: 135px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #f1f5f9;
+      overflow: hidden;
+    }
+
+    .scanner-reticle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid rgba(15, 23, 42, 0.15);
+      pointer-events: none;
+    }
+
+    .scanner-reticle.top-left { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+    .scanner-reticle.top-right { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+    .scanner-reticle.bottom-left { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+    .scanner-reticle.bottom-right { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+    .specimen-tag {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 0.08rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .specimen-avatar {
+      font-size: 3.5rem;
+      z-index: 2;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12));
+      transition: var(--transition);
+    }
+
+    .animal-card:hover .specimen-avatar {
+      transform: scale(1.1) rotate(2deg);
+    }
+
+    .card-header-badge {
+      align-self: flex-start;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin: 0.6rem 0.6rem 0 0.6rem;
+      letter-spacing: 0.05em;
+    }
+
+    .card-body {
+      padding: 0.75rem 0.85rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--bg-dark);
+      margin-bottom: 0.15rem;
+    }
+
+    .card-difficulty {
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .difficulty-easy { color: var(--success); }
+    .difficulty-medium { color: var(--warning); }
+    .difficulty-hard { color: var(--error); }
+
+    .traits-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .trait-badge {
+      font-size: 0.7rem;
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid #e2e8f0;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .trait-badge:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+
+    .trait-badge.highlighted {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 0 6px rgba(37,99,235,0.25);
+    }
+
+    .card-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background-color: #f8fafc;
+      padding: 0.55rem 0.65rem;
+      border-radius: 4px;
+      border-left: 2.5px solid var(--border-color);
+      margin-top: auto;
+      line-height: 1.4;
+    }
+
+    .training-tab {
+      padding: 0.6rem 0.8rem !important;
+      font-size: 0.8rem !important;
+      border-radius: var(--radius-md) !important;
+    }
+
+    /* -------------------------------------------------------------
+       RULE BUILDER SCREEN
+       ------------------------------------------------------------- */
+    .rule-builder-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .rule-builder-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rules-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      min-height: 170px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      gap: 0.4rem;
+    }
+
+    .rule-expression {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .rule-number {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+      background-color: #e2e8f0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 0.7rem;
+    }
+
+    .rule-kw {
+      font-weight: 700;
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .rule-select {
+      background-color: white;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .rule-select:focus {
+      border-color: var(--primary);
+    }
+
+    .rule-actions {
+      display: flex;
+      gap: 0.2rem;
+    }
+
+    .rule-btn {
+      background-color: white;
+      border: 1px solid var(--border-color);
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+
+    .rule-btn:hover:not(:disabled) {
+      background-color: #f1f5f9;
+      border-color: var(--text-muted);
+    }
+
+    .rule-btn-delete {
+      color: var(--error);
+    }
+
+    .rule-btn-delete:hover:not(:disabled) {
+      background-color: var(--error-light);
+      border-color: var(--error);
+    }
+
+    .btn-add-rule {
+      background-color: transparent;
+      border: 1px dashed var(--primary);
+      color: var(--primary);
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-add-rule:hover {
+      background-color: var(--primary-light);
+    }
+
+    .fallback-rule-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Pseudocode View */
+    .sandbox-preview {
+      background-color: var(--bg-dark);
+      border-radius: var(--radius-sm);
+      padding: 1.1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #94a3b8;
+      overflow-x: auto;
+      min-height: 200px;
+    }
+
+    .sandbox-list {
+      list-style: none;
+    }
+
+    .sandbox-list-item {
+      line-height: 1.45;
+    }
+
+    /* Accordion */
+    .rules-reference-drawer {
+      margin-top: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .reference-title {
+      background-color: #f8fafc;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .reference-content {
+      padding: 0.5rem;
+      background-color: white;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      display: none;
+    }
+
+    .reference-content.active {
+      display: block;
+    }
+
+    .trait-desc-item {
+      margin-bottom: 0.3rem;
+    }
+
+    .trait-desc-name {
+      font-weight: 700;
+      color: var(--bg-dark);
+    }
+
+    /* -------------------------------------------------------------
+       TEST LAB SCREEN
+       ------------------------------------------------------------- */
+    .test-lab-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .test-lab-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .test-simulation-container {
+      background-color: var(--bg-dark);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 250px;
+    }
+
+    .lab-radar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle, rgba(56,189,248,0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .lab-status-bar {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.25rem;
+    }
+
+    .sim-card-display {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sim-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .btn-sim {
+      flex: 1;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+    }
+
+    .eval-card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.6rem;
+      width: 100%;
+      color: #f1f5f9;
+    }
+
+    .eval-card-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+    }
+
+    .eval-card-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .eval-card-difficulty {
+      font-size: 0.6rem;
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
+      font-weight: 700;
+      height: fit-content;
+    }
+
+    .eval-traits {
+      display: flex;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.25rem;
+    }
+
+    .eval-trait-tag {
+      font-size: 0.6rem;
+      background-color: #0f172a;
+      padding: 0.05rem 0.25rem;
+      border-radius: 3px;
+      color: #94a3b8;
+    }
+
+    .eval-trait-tag.active-match {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .lab-logs-panel {
+      background-color: var(--bg-dark);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #1e293b;
+      height: 250px;
+    }
+
+    .logs-header {
+      background-color: #1e293b;
+      padding: 0.6rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .logs-content {
+      flex: 1;
+      padding: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .log-entry {
+      line-height: 1.35;
+    }
+
+    .log-entry.info { color: #94a3b8; }
+    .log-entry.warning { color: #f59e0b; }
+    .log-entry.success { color: #10b981; }
+    .log-entry.error { color: #f43f5e; }
+
+    /* Compact Results Grid */
+    .test-grid-container {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.4rem 0.6rem;
+      background-color: #f8fafc;
+    }
+
+    .test-grid-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.3rem;
+    }
+
+    #test-results-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.3rem;
+    }
+
+    .test-card-compact {
+      background-color: white;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.72rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .test-card-compact.correct {
+      border-left: 3px solid var(--success);
+      background-color: var(--success-light);
+    }
+
+    .test-card-compact.incorrect {
+      border-left: 3px solid var(--error);
+      background-color: var(--error-light);
+    }
+
+    .compact-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      margin-bottom: 0.05rem;
+    }
+
+    .compact-badge-correct { color: var(--success); font-weight: 700; }
+    .compact-badge-incorrect { color: var(--error); font-weight: 700; }
+
+    /* -------------------------------------------------------------
+       DEBUG STUDIO SCREEN
+       ------------------------------------------------------------- */
+    .debug-studio-info {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      color: #166534;
+      margin-bottom: 1.25rem;
+      line-height: 1.45;
+    }
+
+    .debug-switcher-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .debug-switch-btn {
+      padding: 0.45rem 0.85rem;
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .debug-switch-btn:hover {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .debug-switch-btn.active {
+      background-color: var(--error-light);
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .debug-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .debug-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: white;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .debug-card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .debug-metadata {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      background-color: #f8fafc;
+      padding: 0.75rem 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .debug-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .debug-meta-label {
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.15rem;
+    }
+
+    .debug-meta-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .debug-tag-section {
+      margin-top: 0.6rem;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 0.75rem;
+    }
+
+    .debug-tag-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .debug-tag-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .debug-tag-btn {
+      font-size: 0.78rem;
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .debug-tag-btn:hover {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .debug-tag-btn.selected {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .debug-feedback {
+      font-size: 0.85rem;
+      background-color: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      margin-top: 0.6rem;
+      line-height: 1.45;
+    }
+
+    .empty-debug {
+      text-align: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .empty-debug-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 0.5rem;
+    }
+
+    /* -------------------------------------------------------------
+       RESULTS DASHBOARD
+       ------------------------------------------------------------- */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metrics-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .metric-card {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 1.1rem;
+      border-radius: var(--radius-md);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-val {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .accuracy-class-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .accuracy-bar-container {
+      background-color: #e2e8f0;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 0.35rem;
+    }
+
+    .accuracy-bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .accuracy-bar-fish { background-color: var(--accent-fish); }
+    .accuracy-bar-bird { background-color: var(--accent-bird); }
+    .accuracy-bar-mammal { background-color: var(--accent-mammal); }
+
+    .reflection-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .question-block {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 1.1rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .question-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--bg-dark);
+    }
+
+    .opt-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      background-color: white;
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .opt-label:hover {
+      background-color: #f1f5f9;
+    }
+
+    .opt-label.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .opt-label input {
+      margin-top: 0.15rem;
+    }
+
+    .reflection-textarea {
+      width: 100%;
+      min-height: 105px;
+      max-height: 200px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.85rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .reflection-textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .reflection-success-msg {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      color: #166534;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* History */
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .history-item-version {
+      font-weight: 600;
+    }
+
+    .history-item-accuracy {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* -------------------------------------------------------------
+       PERSISTENT LAYOUT FOOTER (Restart Bottom-Left Anchor)
+       ------------------------------------------------------------- */
+    .app-footer {
+      background-color: #f8fafc;
+      border-top: 2px solid var(--blue-border);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .btn-restart {
+      background-color: transparent;
+      color: var(--error);
+      border: 1px solid rgba(225, 29, 72, 0.4);
+      padding: 0.4rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-restart:hover {
+      background-color: var(--error-light);
+      border-color: var(--error);
+    }
+
+    .footer-model-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background-color: #e2e8f0;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- THE BLUE-BORDERED APP FRAME -->
+  <div class="app-frame" id="applet-container">
+    
+    <!-- COMPACT STEP-BY-STEP PROGRESS TRACKER -->
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="progress-line"></div>
+        <div class="progress-line-fill" id="progress-line-fill"></div>
+        
+        <div class="step-node active" id="step-0" onclick="navigateToScreen(0)">
+          1 <span class="step-label">Briefing</span>
+        </div>
+        <div class="step-node" id="step-1" onclick="navigateToScreen(1)">
+          2 <span class="step-label">Training</span>
+        </div>
+        <div class="step-node" id="step-2" onclick="navigateToScreen(2)">
+          3 <span class="step-label">Rules</span>
+        </div>
+        <div class="step-node" id="step-3" onclick="navigateToScreen(3)">
+          4 <span class="step-label">Test Lab</span>
+        </div>
+        <div class="step-node" id="step-4" onclick="navigateToScreen(4)">
+          5 <span class="step-label">Debug</span>
+        </div>
+        <div class="step-node" id="step-5" onclick="navigateToScreen(5)">
+          6 <span class="step-label">Results</span>
+        </div>
+        <div class="step-node" id="step-6" onclick="navigateToScreen(6)">
+          7 <span class="step-label">Reflection</span>
+        </div>
+      </div>
+      <!-- Restart button moved up to the header -->
+      <button class="btn-restart-header" onclick="resetApp()" id="btn-restart-app">Restart</button>
+      
+      <!-- Hidden element to satisfy the JS updating of model version -->
+      <div id="nav-model-ver" style="display: none;">MODEL: v1_active</div>
+    </div>
+
+    <!-- MAIN APP CONTENT PANELS -->
+    <div class="app-content">
+
+      <!-- SCREEN 1: BRIEFING -->
+      <div class="screen active" id="screen-0">
+        <div style="background-color: var(--primary-light); padding: 1.25rem 1.5rem; border-radius: var(--radius-md); border-left: 5px solid var(--primary); margin-bottom: 1.25rem;">
+          <h1 style="color: var(--primary); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.35rem;">Wildlife Classification Mission</h1>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+            Act as an AI wildlife research analyst in a vital protected zone. Your mission is to build and train an automated classifier program that monitors regional biodiversity, classifying species into three critical groups: Fish, Birds, and Mammals.
+          </p>
+        </div>
+
+        <h2 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--bg-dark);">Core Machine Learning Concepts</h2>
+        <div class="grid-2" style="margin-bottom: 1.25rem; gap: 0.85rem;">
+          <div class="panel" style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; min-height: 95px;">
+            <div style="font-size: 1.8rem;">📊</div>
+            <div>
+              <strong style="font-size: 0.9rem; display: block; line-height: 1.3; margin-bottom: 0.15rem;">Training Data</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; display: block;">A set of known, labeled animal records with physical traits used to discover classification patterns.</span>
+            </div>
+          </div>
+          <div class="panel" style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; min-height: 95px;">
+            <div style="font-size: 1.8rem;">🧪</div>
+            <div>
+              <strong style="font-size: 0.9rem; display: block; line-height: 1.3; margin-bottom: 0.15rem;">Testing Data</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; display: block;">Completely unseen animal cases used to independently evaluate how accurately our AI model generalizes.</span>
+            </div>
+          </div>
+          <div class="panel" style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; min-height: 95px;">
+            <div style="font-size: 1.8rem;">📜</div>
+            <div>
+              <strong style="font-size: 0.9rem; display: block; line-height: 1.3; margin-bottom: 0.15rem;">Heuristic Rules</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; display: block;">Sequential logical constraints (IF trait THEN class) used by the classifier to make automated decisions.</span>
+            </div>
+          </div>
+          <div class="panel" style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; min-height: 95px;">
+            <div style="font-size: 1.8rem;">⚖️</div>
+            <div>
+              <strong style="font-size: 0.9rem; display: block; line-height: 1.3; margin-bottom: 0.15rem;">Confidence &amp; Bias</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; display: block;">Confidence tracks system certainty. Overgeneralizing on narrow training sets leads to systemic bias.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="background-color: #faf5ff; border-color: #d8b4fe; padding: 1rem; margin-bottom: 1rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 700; color: #6b21a8; margin-bottom: 0.25rem;">Your Objective</h3>
+          <p style="font-size: 0.8rem; color: #581c87; line-height: 1.45;">
+            Explore the Training Gallery, assemble a rule sequence in the Rule Builder, execute the program against unseen test specimens, analyze and category diagnostic failures in the Debug Studio, and revise your algorithm until the model reaches optimal classification accuracy!
+          </p>
+        </div>
+
+        <div class="btn-container-right" style="margin-top: auto;">
+          <button class="btn" onclick="navigateToScreen(1)">Start Mission &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: TRAINING GALLERY -->
+      <div class="screen" id="screen-1">
+        <div>
+          <h1>1. Training Data Gallery</h1>
+          <p class="subtitle" style="margin-bottom: 0.50rem;">Review labeled training examples grouped into three pages to analyze traits. Click trait badges to track attributes.</p>
+        </div>
+
+        <!-- 3-Part Category Tabs -->
+        <div class="training-category-tabs" id="training-tabs-container" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <button class="training-tab active" id="training-tab-0" onclick="setTrainingPage(0)" style="flex: 1; padding: 0.4rem; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--blue-border); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); background-color: var(--accent-fish-light); color: var(--accent-fish); text-align: center;">
+            🐟 PART 1: FISH SPECIMENS
+          </button>
+          <button class="training-tab" id="training-tab-1" onclick="setTrainingPage(1)" style="flex: 1; padding: 0.4rem; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--blue-border); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); background-color: white; color: var(--text-muted); text-align: center;">
+            🦅 PART 2: BIRD SPECIMENS
+          </button>
+          <button class="training-tab" id="training-tab-2" onclick="setTrainingPage(2)" style="flex: 1; padding: 0.4rem; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--blue-border); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); background-color: white; color: var(--text-muted); text-align: center;">
+            🐻 PART 3: MAMMAL SPECIMENS
+          </button>
+        </div>
+
+        <div class="grid-3" id="training-cards-grid">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="btn-container-right" id="training-nav-buttons">
+          <button class="btn btn-secondary" onclick="navigateToScreen(0)">&larr; Back</button>
+          <button class="btn" onclick="navigateToScreen(2)">Proceed to Rule Builder &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: RULE BUILDER -->
+      <div class="screen" id="screen-2">
+        <div>
+          <h1>2. Sequential Decision Rule Builder</h1>
+          <p class="subtitle">Assemble, prioritize, and structure the sequential logic parameters that power your classifier. First matching filter wins!</p>
+        </div>
+
+        <div class="rule-builder-layout">
+          <!-- Left: Active Rules -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Active Rules Hierarchy</span>
+              <div style="display: flex; gap: 0.25rem;">
+                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="loadFlawedSampleModel()">Load Flawed</button>
+                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="clearRules()">Clear All</button>
+              </div>
+            </div>
+
+            <div class="rules-container" id="rules-container">
+              <!-- Populated dynamically -->
+            </div>
+
+            <button class="btn-add-rule" onclick="addNewRule()">+ Add New Decision Rule</button>
+
+            <div class="fallback-rule-banner">
+              <div>
+                <span class="rule-kw" style="color: var(--accent-mammal);">FALLBACK</span>
+                <span style="font-size: 0.75rem; font-weight: 500; margin-left: 0.3rem;">Predict Mammal (Low Confidence)</span>
+              </div>
+              <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">Sequence End</span>
+            </div>
+
+            <!-- Accordion -->
+            <div class="rules-reference-drawer">
+              <div class="reference-title" onclick="toggleReferenceDrawer()">
+                <span>📘 Field Trait Guide &amp; AI Heuristics</span>
+                <span id="reference-arrow">&#9662;</span>
+              </div>
+              <div class="reference-content" id="reference-content">
+                <div class="trait-desc-item"><span class="trait-desc-name">Feathers:</span> Unique to <strong>Birds</strong>. Excellent diagnostic filter.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Gills:</span> Unique to <strong>Fish</strong>. Direct indicator.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Fur:</span> Unique to <strong>Mammals</strong>. High accuracy.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Live Birth:</span> Highly diagnostic for <strong>Mammals</strong>.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Beak:</span> Strong for <strong>Birds</strong>, but watch out for exceptions (Platypus).</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Wings &amp; Fins:</span> Multi-class traits. Some bats have wings; cetaceans (whales/dolphins) have fins. High error if evaluated too broadly.</div>
+                <div class="trait-desc-item"><span class="trait-desc-name">Aquatic, Land, Warm-blooded, Lays Eggs:</span> Environment traits. Overgeneralizing on these causes heavy bias.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Sandbox Pseudocode -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Model Pseudocode Sandbox</span>
+              </div>
+              <div class="sandbox-preview">
+                <div id="sandbox-ver-badge" style="font-size: 0.65rem; color: #38bdf8; margin-bottom: 0.4rem; font-weight: bold;">model_v1.ts</div>
+                <ul class="sandbox-list" id="sandbox-list">
+                  <!-- Populated dynamically -->
+                </ul>
+              </div>
+            </div>
+
+            <div class="panel" style="background-color: var(--primary-light); border-color: #bfdbfe; color: var(--primary-hover); padding: 0.75rem;">
+              <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.15rem;">Ready to Deploy?</strong>
+              <p style="font-size: 0.7rem; line-height: 1.35;">
+                Deploying will transfer rules to the Test Lab. You will evaluate your sequence on 12 completely unseen wildlife specimens to verify generalizability.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container-right">
+          <button class="btn btn-secondary" onclick="navigateToScreen(1)">&larr; Back</button>
+          <button class="btn" onclick="navigateToScreen(3)">Deploy to Test Lab &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: TEST LAB -->
+      <div class="screen" id="screen-3">
+        <div>
+          <h1>3. Classifier Simulation Test Lab</h1>
+          <p class="subtitle">Deploy your code on 12 unseen test specimens. Examine logs and identify taxonomy exceptions in real-time.</p>
+        </div>
+
+        <div class="test-lab-layout">
+          <!-- Simulation display screen -->
+          <div class="test-simulation-container">
+            <div class="lab-radar"></div>
+            <div class="lab-status-bar">
+              <span>SCANNER ACTIVE</span>
+              <span id="sim-progress-text">SPECIMEN: 0 / 12</span>
+            </div>
+
+            <div class="sim-card-display" id="sim-card-display">
+              <div style="text-align: center; color: #64748b; max-width: 250px;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛰️</div>
+                <strong style="color: #cbd5e1; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Sensors Calibrated</strong>
+                <span style="font-size: 0.7rem; line-height: 1.35; display: block;">Click "Run Single Step" or "Run All" to deploy scanning sensors on test subjects.</span>
+              </div>
+            </div>
+
+            <div class="sim-controls">
+              <button class="btn btn-secondary btn-sim" id="btn-run-step" onclick="runNextTestStep()">Run Single Step</button>
+              <button class="btn btn-sim" id="btn-run-all" onclick="runAllTestsFast()">Run All (Fast)</button>
+            </div>
+          </div>
+
+          <!-- Real-Time Console Logs -->
+          <div class="lab-logs-panel">
+            <div class="logs-header">
+              <span>🖥️ DECISION MATRIX TERMINAL</span>
+              <span id="log-running-indicator" style="color: #64748b;">IDLE</span>
+            </div>
+            <div class="logs-content" id="logs-content">
+              <div class="log-entry info">Terminal booted. Standing by for parameters...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact grid showing summary results of 12 specimens -->
+        <div class="test-grid-container">
+          <span class="test-grid-header">Test Specimens Dataset Matrix</span>
+          <div class="grid-3" id="test-results-grid">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="btn-container-right">
+          <button class="btn btn-secondary" onclick="navigateToScreen(2)">&larr; Back to Rules</button>
+          <button class="btn" id="btn-proceed-to-debug" onclick="navigateToScreen(4)" disabled style="opacity: 0.5; cursor: not-allowed;">Proceed to Debug Studio &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: DEBUG STUDIO -->
+      <div class="screen" id="screen-4">
+        <div>
+          <h1>4. Wildlife AI Debug Studio</h1>
+          <p class="subtitle">Investigate error exceptions. Tag each failure with its biological root cause to train your diagnostic reasoning.</p>
+        </div>
+
+        <div class="debug-studio-info" id="debug-studio-hint">
+          <strong>🔍 Diagnostic Task:</strong> Examine which sequential rules misclassified the specimens. Select the best categorization to reveal feedback.
+        </div>
+
+        <div id="debug-switcher-container" class="debug-switcher-tabs" style="margin-bottom: 0.75rem;"></div>
+
+        <div id="debug-cards-container">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div class="btn-container-right">
+          <button class="btn btn-secondary" onclick="navigateToScreen(3)">&larr; Back to Test Lab</button>
+          <button class="btn btn-secondary" onclick="navigateToScreen(2)">🔧 Modify Rules</button>
+          <button class="btn" onclick="navigateToScreen(5)">Analyze Final Results &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: RESULTS DASHBOARD -->
+      <div class="screen" id="screen-5">
+        <div>
+          <h1>5. Model Performance Metrics</h1>
+          <p class="subtitle">Evaluate overall statistics, accuracy by biological class, and review historic sequence runs.</p>
+        </div>
+
+        <div class="dashboard-layout">
+          <!-- Metrics & Breakdown -->
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="panel">
+              <span class="panel-title" style="display: block; margin-bottom: 0.5rem;">Overall AI Model Metrics</span>
+              
+              <div class="metrics-summary-grid">
+                <div class="metric-card">
+                  <div class="metric-val" id="metric-accuracy">0%</div>
+                  <div class="metric-label">Model Accuracy</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-val" id="metric-version">v1</div>
+                  <div class="metric-label">Active Version</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-val" id="metric-errors">0</div>
+                  <div class="metric-label">Misclassifications</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-val" id="metric-confidence">Low</div>
+                  <div class="metric-label">Confidence Profile</div>
+                </div>
+              </div>
+
+              <!-- Progress bar breakdowns -->
+              <div style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 0.75rem;">
+                <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">Accuracy by Biological Class</strong>
+                
+                <div>
+                  <div class="accuracy-class-row">
+                    <span>Teal Fish Class</span>
+                    <strong id="txt-fish-acc">0/4 (0%)</strong>
+                  </div>
+                  <div class="accuracy-bar-container">
+                    <div class="accuracy-bar-fill accuracy-bar-fish" id="bar-fish-acc"></div>
+                  </div>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                  <div class="accuracy-class-row">
+                    <span>Azure Bird Class</span>
+                    <strong id="txt-bird-acc">0/3 (0%)</strong>
+                  </div>
+                  <div class="accuracy-bar-container">
+                    <div class="accuracy-bar-fill accuracy-bar-bird" id="bar-bird-acc"></div>
+                  </div>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                  <div class="accuracy-class-row">
+                    <span>Mammal Class</span>
+                    <strong id="txt-mammal-acc">0/4 (0%)</strong>
+                  </div>
+                  <div class="accuracy-bar-container">
+                    <div class="accuracy-bar-fill accuracy-bar-mammal" id="bar-mammal-acc"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- History Logs & Retain actions -->
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="panel">
+              <span class="panel-title" style="display: block; margin-bottom: 0.5rem;">Revision Performance History</span>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Track model accuracy updates over sequential runs.</p>
+              <div id="history-container">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 1rem 0;">No model iterations run yet.</div>
+              </div>
+            </div>
+
+            <div class="panel" style="background-color: var(--primary-light); border-color: #bfdbfe;">
+              <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.25rem; color: var(--primary-hover);">Iterative Refinement Action</strong>
+              <p style="font-size: 0.7rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                If your accuracy hasn't peaked, return to the Sequential Rule Builder to rearrange priorities, delete weak traits, and calibrate filters.
+              </p>
+              <button class="btn" style="width: 100%;" onclick="navigateToScreen(2)">🔧 Return &amp; Modify Rules</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container-right" style="margin-top: 1rem;">
+          <button class="btn btn-secondary" onclick="navigateToScreen(4)">&larr; Back to Debug Studio</button>
+          <button class="btn" onclick="navigateToScreen(6)">Proceed to Reflection &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 7: INTERACTIVE REFLECTION -->
+      <div class="screen" id="screen-6">
+        <div>
+          <h1>6. Interactive Classroom Reflection</h1>
+          <p class="subtitle">Demonstrate your understanding of machine learning logic, data bias, and open-world generalization challenges.</p>
+        </div>
+
+        <div style="max-width: 680px; margin: 0 auto;">
+          <!-- Reflection Quiz Form -->
+          <div class="panel">
+            <span class="panel-title" style="display: block; margin-bottom: 0.5rem;">Interactive Classroom Reflection</span>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">Demonstrate your understanding of machine learning logic and data bias.</p>
+
+            <form class="reflection-form" id="reflection-form" onsubmit="submitReflection(event)">
+              <div class="question-block">
+                <div class="question-title">1. Why did the simple, flawed rules model (IF Aquatic THEN Fish) misclassify the Humpback Whale and Emperor Penguin?</div>
+                <div class="opt-container">
+                  <label class="opt-label" id="q1-opt1-label">
+                    <input type="radio" name="q1" value="a" required onchange="handleRadioSelect('q1', 'q1-opt1-label')">
+                    <span>The model's training dataset was broken or corrupted.</span>
+                  </label>
+                  <label class="opt-label" id="q1-opt2-label">
+                    <input type="radio" name="q1" value="b" onchange="handleRadioSelect('q1', 'q1-opt2-label')">
+                    <span>"Aquatic" is a shared ecological environment, not a unique physiological diagnostic.</span>
+                  </label>
+                  <label class="opt-label" id="q1-opt3-label">
+                    <input type="radio" name="q1" value="c" onchange="handleRadioSelect('q1', 'q1-opt3-label')">
+                    <span>The rules sequence evaluated Mammalian parameters before Fish parameters.</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="question-block">
+                <div class="question-title">2. How does the "Galapagos Tortoise" (unfamiliar reptile) illustrate open-world AI bias?</div>
+                <div class="opt-container">
+                  <label class="opt-label" id="q2-opt1-label">
+                    <input type="radio" name="q2" value="a" required onchange="handleRadioSelect('q2', 'q2-opt1-label')">
+                    <span>The system correctly classified it as a mammal since it resides on land.</span>
+                  </label>
+                  <label class="opt-label" id="q2-opt2-label">
+                    <input type="radio" name="q2" value="b" onchange="handleRadioSelect('q2', 'q2-opt2-label')">
+                    <span>Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</span>
+                  </label>
+                  <label class="opt-label" id="q2-opt3-label">
+                    <input type="radio" name="q2" value="c" onchange="handleRadioSelect('q2', 'q2-opt3-label')">
+                    <span>The algorithm automatically created a "Reptile" class on the fly.</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="question-block">
+                <div class="question-title">3. Explanatory Statement: How do diverse datasets, rule order, and independent test data prevent algorithm bias?</div>
+                <textarea class="reflection-textarea" id="essay-response" placeholder="Type your structured explanation here (minimum 10 words)..." required minlength="10"></textarea>
+              </div>
+
+              <button class="btn" style="width: 100%;" type="submit">Submit Reflection Answers</button>
+            </form>
+
+            <div class="reflection-success-msg" id="reflection-success-msg">
+              <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.15rem;">Reflection Submitted Successfully!</strong>
+              <p style="font-size: 0.7rem; line-height: 1.35;" id="reflection-feedback-text">Excellent analysis. You correctly determined that shared traits cause overgeneralization, and that closed taxonomies lead to forced low-confidence bias. Use independent testing data to find gaps, and keep refining your classification program!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container-right" style="margin-top: 1rem;">
+          <button class="btn btn-secondary" onclick="navigateToScreen(5)">&larr; Back to Metrics</button>
+          <button class="btn" onclick="navigateToScreen(2)">🔧 Return &amp; Modify Rules</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- -------------------------------------------------------------
+       JAVASCRIPT APPLICATION ENGINE
+       ------------------------------------------------------------- -->
+  <script>
+    const appState = {
+      currentScreen: 0,
+      modelRules: [],
+      modelVersion: 1,
+      totalRevisions: 0,
+      hasRunTests: false,
+      historyLog: [],
+      
+      testIndex: 0,
+      testResults: [],
+      isSimulating: false,
+      simulationTimeoutId: null,
+
+      debugTags: {} 
+    };
+
+    const STRONG_TRAITS = ["Feathers", "Gills", "Fur", "Live Birth", "Beak", "Scales"];
+
+    const trainingDataset = [
+      { id: "tr1", name: "Orange Clownfish", trueClass: "Fish", difficulty: "Easy", traits: ["Gills", "Fins", "Scales", "Aquatic", "Cold-blooded"], note: "Classic bony fish with scales and gills." },
+      { id: "tr2", name: "Comet Goldfish", trueClass: "Fish", difficulty: "Easy", traits: ["Gills", "Fins", "Scales", "Aquatic", "Cold-blooded"], note: "Freshwater fish showing standard underwater respiratory traits." },
+      { id: "tr3", name: "Atlantic Salmon", trueClass: "Fish", difficulty: "Easy", traits: ["Gills", "Fins", "Scales", "Aquatic", "Cold-blooded"], note: "Migratory fish dependent entirely on gills and fins." },
+      { id: "tr4", name: "Blue Jay", trueClass: "Bird", difficulty: "Easy", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Land"], note: "Common woodland bird with full flight feathers." },
+      { id: "tr5", name: "Bald Eagle", trueClass: "Bird", difficulty: "Easy", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Land"], note: "Apex avian raptor showing distinct wings and beak." },
+      { id: "tr6", name: "Emperor Penguin", trueClass: "Bird", difficulty: "Medium", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Aquatic"], note: "Flightless aquatic bird. Swims but relies on feathers to stay dry." },
+      { id: "tr7", name: "Grizzly Bear", trueClass: "Mammal", difficulty: "Easy", traits: ["Fur", "Warm-blooded", "Live Birth", "Lungs", "Land"], note: "Classic terrestrial mammal showing fur and live birth." },
+      { id: "tr8", name: "Red Fox", trueClass: "Mammal", difficulty: "Easy", traits: ["Fur", "Warm-blooded", "Live Birth", "Lungs", "Land"], note: "Standard land predator. Warm-blooded with dense fur." },
+      { id: "tr9", name: "Bottlenose Dolphin", trueClass: "Mammal", difficulty: "Hard", traits: ["Fins", "Warm-blooded", "Live Birth", "Lungs", "Aquatic"], note: "Aquatic mammal with no fur. It has fins but breathes air and gives birth." }
+    ];
+
+    const testingDataset = [
+      { id: "te1", name: "Great White Shark", trueClass: "Fish", difficulty: "Easy", traits: ["Gills", "Fins", "Scales", "Cold-blooded", "Aquatic"], note: "Apex ocean predator. Breaths via gills, has scales and fins." },
+      { id: "te2", name: "Banded Seahorse", trueClass: "Fish", difficulty: "Medium", traits: ["Gills", "Fins", "Cold-blooded", "Aquatic"], note: "Specialized bony fish without standard scales, but has gills and fins." },
+      { id: "te3", name: "Atlantic Flying Fish", trueClass: "Fish", difficulty: "Hard", traits: ["Gills", "Fins", "Wings", "Cold-blooded", "Aquatic"], note: "Fish with expanded wing-like fins. If rules prioritize wings, it fails!" },
+      { id: "te4", name: "Somali Ostrich", trueClass: "Bird", difficulty: "Medium", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Land"], note: "Giant flightless bird. Cannot fly, but has feathers, wings, and beak." },
+      { id: "te5", name: "Barn Owl", trueClass: "Bird", difficulty: "Easy", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Land"], note: "Nocturnal hunter. Has specialized silent flight feathers." },
+      { id: "te6", name: "Mallard Duck", trueClass: "Bird", difficulty: "Easy", traits: ["Feathers", "Wings", "Beak", "Warm-blooded", "Lays Eggs", "Aquatic", "Land"], note: "Semiaquatic waterfowl showing classic avian biology." },
+      { id: "te7", name: "Mariana Fruit Bat", trueClass: "Mammal", difficulty: "Hard", traits: ["Fur", "Wings", "Warm-blooded", "Live Birth", "Land"], note: "Mammal with wings. If a rule equates wings to bird, it will misclassify!" },
+      { id: "te8", name: "Duck-billed Platypus", trueClass: "Mammal", difficulty: "Hard", traits: ["Fur", "Beak", "Lays Eggs", "Warm-blooded", "Land"], note: "Bizarre mammal with a beak that lays eggs. Overgeneralization trap!" },
+      { id: "te9", name: "Humpback Whale", trueClass: "Mammal", difficulty: "Hard", traits: ["Fins", "Warm-blooded", "Live Birth", "Aquatic"], note: "Giant sea mammal. Has fins, no fur. If 'aquatic/fins = fish' triggers first, it fails!" },
+      { id: "te10", name: "California Sea Lion", trueClass: "Mammal", difficulty: "Medium", traits: ["Fur", "Fins", "Warm-blooded", "Live Birth", "Aquatic", "Land"], note: "Semiaquatic marine mammal with dense fur, lungs, and flippers/fins." },
+      { id: "te11", name: "Timber Wolf", trueClass: "Mammal", difficulty: "Easy", traits: ["Fur", "Warm-blooded", "Live Birth", "Land"], note: "Standard terrestrial mammal with classic predatory fur traits." },
+      { id: "te12", name: "Galapagos Tortoise", trueClass: "Reptile", difficulty: "Hard", traits: ["Scales", "Lays Eggs", "Cold-blooded", "Land"], note: "An unfamiliar reptile out of the 3-class taxonomy, exposing open-world bias." }
+    ];
+
+    const ALL_TRAITS = [
+      "Feathers", "Gills", "Fur", "Live Birth", "Beak", "Scales", 
+      "Wings", "Fins", "Aquatic", "Warm-blooded", "Lays Eggs", "Land"
+    ];
+
+    const CLASSES = ["Fish", "Bird", "Mammal"];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFlawedSampleModel();
+      renderTrainingCards();
+      renderRulesEditor();
+      updateProgressTracker();
+    });
+
+    function navigateToScreen(index) {
+      if (index === 3 && appState.modelRules.length === 0) {
+        alert("Please add at least one classification rule before proceeding to the Test Lab.");
+        return;
+      }
+      if ((index === 4 || index === 5 || index === 6) && !appState.hasRunTests) {
+        alert("Deploy your model and run the simulation in the Test Lab before proceeding.");
+        return;
+      }
+
+      const screens = document.querySelectorAll('.screen');
+      screens.forEach(s => s.classList.remove('active'));
+
+      const targetScreen = document.getElementById(`screen-${index}`);
+      if (targetScreen) {
+        targetScreen.classList.add('active');
+        appState.currentScreen = index;
+      }
+
+      if (index === 1) {
+        if (appState.trainingPage === undefined) {
+          appState.trainingPage = 0;
+        }
+        renderTrainingCards();
+      } else if (index === 2) {
+        renderRulesEditor();
+      } else if (index === 3) {
+        resetTestLabUI();
+      } else if (index === 4) {
+        renderDebugStudio();
+      } else if (index === 5) {
+        renderDashboard();
+      }
+
+      updateProgressTracker();
+    }
+
+    function updateProgressTracker() {
+      const fillPercentage = (appState.currentScreen / 6) * 100;
+      document.getElementById('progress-line-fill').style.width = `${fillPercentage}%`;
+
+      const stepLabels = ["Briefing", "Training", "Rules", "Test Lab", "Debug", "Results", "Reflection"];
+
+      for (let i = 0; i <= 6; i++) {
+        const node = document.getElementById(`step-${i}`);
+        if (!node) continue;
+
+        node.className = 'step-node';
+        if (i < appState.currentScreen) {
+          node.classList.add('completed');
+          node.innerHTML = `&#10003; <span class="step-label">${stepLabels[i]}</span>`; 
+        } else if (i === appState.currentScreen) {
+          node.classList.add('active');
+          node.innerHTML = `${i + 1} <span class="step-label">${stepLabels[i]}</span>`;
+        } else {
+          node.innerHTML = `${i + 1} <span class="step-label">${stepLabels[i]}</span>`;
+        }
+      }
+    }
+
+    function resetApp() {
+      if (confirm("Are you sure you want to restart? Your custom rules and history will be cleared.")) {
+        appState.currentScreen = 0;
+        appState.trainingPage = 0;
+        appState.modelVersion = 1;
+        appState.totalRevisions = 0;
+        appState.hasRunTests = false;
+        appState.historyLog = [];
+        appState.testIndex = 0;
+        appState.testResults = [];
+        appState.isSimulating = false;
+        appState.debugTags = {};
+
+        if (appState.simulationTimeoutId) {
+          clearTimeout(appState.simulationTimeoutId);
+        }
+
+        const refForm = document.getElementById('reflection-form');
+        if (refForm) refForm.reset();
+        
+        const labels = document.querySelectorAll('.opt-label');
+        labels.forEach(l => l.classList.remove('selected'));
+        
+        const successMsg = document.getElementById('reflection-success-msg');
+        if (successMsg) successMsg.style.display = 'none';
+
+        loadFlawedSampleModel();
+        renderTrainingCards();
+        renderRulesEditor();
+        navigateToScreen(0);
+      }
+    }
+
+    function setTrainingPage(pageIndex) {
+      appState.trainingPage = pageIndex;
+      renderTrainingCards();
+    }
+
+    function renderTrainingCards() {
+      const container = document.getElementById('training-cards-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (appState.trainingPage === undefined) {
+        appState.trainingPage = 0;
+      }
+
+      // Update the sub-tabs styling dynamically
+      for (let i = 0; i < 3; i++) {
+        const tab = document.getElementById(`training-tab-${i}`);
+        if (tab) {
+          if (i === appState.trainingPage) {
+            tab.style.fontWeight = '700';
+            tab.style.borderWidth = '2px';
+            if (i === 0) {
+              tab.style.backgroundColor = 'var(--accent-fish-light)';
+              tab.style.borderColor = 'var(--accent-fish)';
+              tab.style.color = 'var(--accent-fish)';
+            } else if (i === 1) {
+              tab.style.backgroundColor = 'var(--accent-bird-light)';
+              tab.style.borderColor = 'var(--accent-bird)';
+              tab.style.color = 'var(--accent-bird)';
+            } else {
+              tab.style.backgroundColor = 'var(--accent-mammal-light)';
+              tab.style.borderColor = 'var(--accent-mammal)';
+              tab.style.color = 'var(--accent-mammal)';
+            }
+          } else {
+            tab.style.backgroundColor = 'white';
+            tab.style.borderColor = 'var(--blue-border)';
+            tab.style.color = 'var(--text-muted)';
+            tab.style.fontWeight = '600';
+            tab.style.borderWidth = '1px';
+          }
+        }
+      }
+
+      // Group the training dataset: Fish are 0-2, Birds are 3-5, Mammals are 6-8
+      const startIdx = appState.trainingPage * 3;
+      const endIdx = startIdx + 3;
+      const pageDataset = trainingDataset.slice(startIdx, endIdx);
+
+      pageDataset.forEach(card => {
+        let classColor = 'var(--accent-mammal)';
+        let classBg = 'var(--accent-mammal-light)';
+        let specCode = `MM-0${card.id.replace('tr','')}`;
+        if (card.trueClass === 'Fish') {
+          classColor = 'var(--accent-fish)';
+          classBg = 'var(--accent-fish-light)';
+          specCode = `FS-0${card.id.replace('tr','')}`;
+        } else if (card.trueClass === 'Bird') {
+          classColor = 'var(--accent-bird)';
+          classBg = 'var(--accent-bird-light)';
+          specCode = `BD-0${card.id.replace('tr','')}`;
+        }
+
+        const cardEl = document.createElement('div');
+        cardEl.className = 'animal-card';
+        cardEl.id = `training-card-${card.id}`;
+
+        let traitsHtml = '';
+        card.traits.forEach(trait => {
+          traitsHtml += `<span class="trait-badge" onclick="toggleTraitHighlight('${card.id}', '${trait}', this)">${trait}</span>`;
+        });
+
+        cardEl.innerHTML = `
+          <div class="animal-visual-plate" style="background: radial-gradient(circle at center, ${classBg} 0%, #ffffff 100%);">
+            <div class="scanner-reticle top-left"></div>
+            <div class="scanner-reticle top-right"></div>
+            <div class="scanner-reticle bottom-left"></div>
+            <div class="scanner-reticle bottom-right"></div>
+            <div class="specimen-tag">${specCode}</div>
+            <div class="specimen-avatar">${getEmojiForAnimal(card.name)}</div>
+          </div>
+          <span class="card-header-badge" style="background-color: ${classBg}; color: ${classColor}; border: 1px solid ${classColor}50;">${card.trueClass}</span>
+          <div class="card-body">
+            <h3 class="card-title">${card.name}</h3>
+            <div class="card-difficulty difficulty-${card.difficulty.toLowerCase()}">Difficulty: ${card.difficulty}</div>
+            <div class="traits-list">${traitsHtml}</div>
+            <div class="card-note">${card.note}</div>
+          </div>
+        `;
+        container.appendChild(cardEl);
+      });
+
+      // Update the sub-navigation controls at the bottom
+      const btnContainer = document.getElementById('training-nav-buttons');
+      if (btnContainer) {
+        if (appState.trainingPage === 0) {
+          btnContainer.innerHTML = `
+            <button class="btn btn-secondary" onclick="navigateToScreen(0)">&larr; Back to Briefing</button>
+            <button class="btn" onclick="setTrainingPage(1)">Part 2: Birds &rarr;</button>
+          `;
+        } else if (appState.trainingPage === 1) {
+          btnContainer.innerHTML = `
+            <button class="btn btn-secondary" onclick="setTrainingPage(0)">&larr; Part 1: Fish</button>
+            <button class="btn" onclick="setTrainingPage(2)">Part 3: Mammals &rarr;</button>
+          `;
+        } else {
+          btnContainer.innerHTML = `
+            <button class="btn btn-secondary" onclick="setTrainingPage(1)">&larr; Part 2: Birds</button>
+            <button class="btn" onclick="navigateToScreen(2)">Proceed to Rule Builder &rarr;</button>
+          `;
+        }
+      }
+    }
+
+    function toggleTraitHighlight(cardId, trait, badgeEl) {
+      badgeEl.classList.toggle('highlighted');
+    }
+
+    function getEmojiForAnimal(name) {
+      const lower = name.toLowerCase();
+      if (lower.includes('clownfish')) return '🐠';
+      if (lower.includes('goldfish')) return '🐟';
+      if (lower.includes('salmon')) return '🐟';
+      if (lower.includes('blue jay')) return '🐦';
+      if (lower.includes('eagle')) return '🦅';
+      if (lower.includes('penguin')) return '🐧';
+      if (lower.includes('bear')) return '🐻';
+      if (lower.includes('fox')) return '🦊';
+      if (lower.includes('dolphin')) return '🐬';
+      if (lower.includes('shark')) return '🦈';
+      if (lower.includes('seahorse')) return '🦄';
+      if (lower.includes('flying fish')) return '🐟';
+      if (lower.includes('ostrich')) return '🦤';
+      if (lower.includes('owl')) return '🦉';
+      if (lower.includes('duck')) return '🦆';
+      if (lower.includes('bat')) return '🦇';
+      if (lower.includes('platypus')) return '🦦';
+      if (lower.includes('whale')) return '🐳';
+      if (lower.includes('sea lion')) return '🦭';
+      if (lower.includes('wolf')) return '🐺';
+      if (lower.includes('tortoise')) return '🐢';
+      return '🐾';
+    }
+
+    function loadFlawedSampleModel() {
+      appState.modelRules = [
+        { trait: "Aquatic", predict: "Fish" },
+        { trait: "Wings", predict: "Bird" },
+        { trait: "Warm-blooded", predict: "Mammal" }
+      ];
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function clearRules() {
+      appState.modelRules = [];
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function addNewRule() {
+      appState.modelRules.push({ trait: "Feathers", predict: "Bird" });
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function deleteRule(idx) {
+      appState.modelRules.splice(idx, 1);
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function moveRule(idx, direction) {
+      const targetIdx = idx + direction;
+      if (targetIdx < 0 || targetIdx >= appState.modelRules.length) return;
+
+      const temp = appState.modelRules[idx];
+      appState.modelRules[idx] = appState.modelRules[targetIdx];
+      appState.modelRules[targetIdx] = temp;
+      
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function updateRuleProperty(idx, prop, value) {
+      appState.modelRules[idx][prop] = value;
+      appState.totalRevisions++;
+      renderRulesEditor();
+    }
+
+    function renderRulesEditor() {
+      const container = document.getElementById('rules-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (appState.modelRules.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 1.5rem; border: 1px dashed var(--border-color); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.8rem;">
+            No rules defined. Add a custom classification rule to begin calibrating your AI!
+          </div>
+        `;
+        renderSandboxPreview();
+        return;
+      }
+
+      appState.modelRules.forEach((rule, idx) => {
+        const ruleItem = document.createElement('div');
+        ruleItem.className = 'rule-item';
+
+        let traitOptions = '';
+        ALL_TRAITS.forEach(t => {
+          traitOptions += `<option value="${t}" ${rule.trait === t ? 'selected' : ''}>${t}</option>`;
+        });
+
+        let classOptions = '';
+        CLASSES.forEach(c => {
+          classOptions += `<option value="${c}" ${rule.predict === c ? 'selected' : ''}>${c}</option>`;
+        });
+
+        ruleItem.innerHTML = `
+          <div class="rule-expression">
+            <span class="rule-number">${idx + 1}</span>
+            <span class="rule-kw">IF</span>
+            <span style="font-weight: 500;">animal has</span>
+            <select class="rule-select" onchange="updateRuleProperty(${idx}, 'trait', this.value)">
+              ${traitOptions}
+            </select>
+            <span class="rule-kw">THEN</span>
+            <span style="font-weight: 500;">classify as</span>
+            <select class="rule-select" onchange="updateRuleProperty(${idx}, 'predict', this.value)">
+              ${classOptions}
+            </select>
+          </div>
+          <div class="rule-actions">
+            <button class="rule-btn" onclick="moveRule(${idx}, -1)" title="Move Up" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>&uarr;</button>
+            <button class="rule-btn" onclick="moveRule(${idx}, 1)" title="Move Down" ${idx === appState.modelRules.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>&darr;</button>
+            <button class="rule-btn rule-btn-delete" onclick="deleteRule(${idx})" title="Delete">&#128465;</button>
+          </div>
+        `;
+        container.appendChild(ruleItem);
+      });
+
+      renderSandboxPreview();
+    }
+
+    function renderSandboxPreview() {
+      const listContainer = document.getElementById('sandbox-list');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      document.getElementById('sandbox-ver-badge').innerText = `model_v${appState.modelVersion}.ts`;
+      document.getElementById('nav-model-ver').innerText = `MODEL: v${appState.modelVersion}_active`;
+
+      if (appState.modelRules.length === 0) {
+        listContainer.innerHTML = `<li class="sandbox-list-item">// Empty model list. System relies solely on default fallbacks.</li>`;
+        return;
+      }
+
+      appState.modelRules.forEach((rule, idx) => {
+        const prefix = idx === 0 ? 'if' : 'else if';
+        listContainer.innerHTML += `
+          <li class="sandbox-list-item">
+            <span style="color: #38bdf8; font-weight:700;">${prefix}</span> 
+            (traits.includes("<span style="color: #f43f5e;">${rule.trait}</span>")) { <br>
+            &nbsp;&nbsp;predict("<span style="color: #f59e0b; font-weight:600;">${rule.predict}</span>"); <br>
+            }
+          </li>
+        `;
+      });
+
+      listContainer.innerHTML += `
+        <li class="sandbox-list-item">
+          <span style="color: #38bdf8; font-weight:700;">else</span> { <br>
+          &nbsp;&nbsp;predict("<span style="color: #94a3b8;">Mammal</span>"); <br>
+          &nbsp;&nbsp;<span style="color: #64748b; font-size: 0.65rem;">// Low Confidence Fallback</span><br>
+          }
+        </li>
+      `;
+    }
+
+    function toggleReferenceDrawer() {
+      const content = document.getElementById('reference-content');
+      const arrow = document.getElementById('reference-arrow');
+      content.classList.toggle('active');
+      arrow.innerHTML = content.classList.contains('active') ? '&#9652;' : '&#9662;';
+    }
+
+    function resetTestLabUI() {
+      appState.testIndex = 0;
+      appState.testResults = [];
+      appState.isSimulating = false;
+      
+      if (appState.simulationTimeoutId) {
+        clearTimeout(appState.simulationTimeoutId);
+      }
+
+      document.getElementById('btn-run-step').disabled = false;
+      document.getElementById('btn-run-all').disabled = false;
+      document.getElementById('btn-proceed-to-debug').disabled = true;
+      document.getElementById('btn-proceed-to-debug').style.opacity = '0.5';
+
+      document.getElementById('sim-progress-text').innerText = `SPECIMEN: 0 / 12`;
+      document.getElementById('log-running-indicator').innerText = 'READY';
+      document.getElementById('log-running-indicator').style.color = 'var(--success)';
+
+      const logContainer = document.getElementById('logs-content');
+      logContainer.innerHTML = `
+        <div class="log-entry info">[v${appState.modelVersion}] System compiled with ${appState.modelRules.length} rules.</div>
+        <div class="log-entry info">Click "Run Single Step" or "Run All" to scan 12 unseen testing animals.</div>
+      `;
+
+      document.getElementById('sim-card-display').innerHTML = `
+        <div style="text-align: center; color: #64748b; max-width: 250px;">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛰️</div>
+          <strong style="color: #cbd5e1; font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Sensors Calibrated</strong>
+          <span style="font-size: 0.7rem; line-height: 1.35; display: block;">Click "Run Single Step" or "Run All" to deploy scanning sensors on test subjects.</span>
+        </div>
+      `;
+
+      renderCompactResultsGrid();
+    }
+
+    function renderCompactResultsGrid() {
+      const container = document.getElementById('test-results-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      testingDataset.forEach((card, idx) => {
+        const compactCard = document.createElement('div');
+        compactCard.className = 'test-card-compact';
+        compactCard.id = `compact-card-${card.id}`;
+
+        const evaluated = appState.testResults[idx];
+
+        if (evaluated) {
+          compactCard.className = `test-card-compact ${evaluated.isCorrect ? 'correct' : 'incorrect'}`;
+          compactCard.innerHTML = `
+            <div class="compact-header">
+              <span>${getEmojiForAnimal(card.name)} ${card.name}</span>
+              ${evaluated.isCorrect ? '<span class="compact-badge-correct">PASS</span>' : '<span class="compact-badge-incorrect">FAIL</span>'}
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:0.2rem; font-size:0.7rem; color:var(--text-muted);">
+              <span>Predict: <strong>${evaluated.prediction}</strong></span>
+              <span>True: ${card.trueClass}</span>
+            </div>
+          `;
+        } else {
+          compactCard.innerHTML = `
+            <div class="compact-header" style="color: var(--text-muted);">
+              <span>${getEmojiForAnimal(card.name)} ${card.name}</span>
+              <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: #a1a1aa;">AWAITING</span>
+            </div>
+          `;
+        }
+        container.appendChild(compactCard);
+      });
+    }
+
+    function evaluateCard(card) {
+      let prediction = null;
+      let triggeringRule = "None (Fallback)";
+      let confidence = "Low";
+
+      for (let i = 0; i < appState.modelRules.length; i++) {
+        const rule = appState.modelRules[i];
+        if (card.traits.includes(rule.trait)) {
+          prediction = rule.predict;
+          triggeringRule = `Rule #${i+1} (IF ${rule.trait})`;
+          confidence = STRONG_TRAITS.includes(rule.trait) ? "High" : "Low";
+          break;
+        }
+      }
+
+      if (!prediction) {
+        prediction = "Mammal";
+        triggeringRule = "Low Confidence Fallback";
+        confidence = "Low";
+      }
+
+      const isCorrect = (prediction === card.trueClass);
+
+      return {
+        prediction,
+        triggeringRule,
+        confidence,
+        isCorrect
+      };
+    }
+
+    function runNextTestStep() {
+      if (appState.testIndex >= testingDataset.length) {
+        completeTestCycle();
+        return;
+      }
+
+      appState.isSimulating = true;
+      document.getElementById('log-running-indicator').innerText = 'RUNNING';
+      document.getElementById('log-running-indicator').style.color = '#f59e0b';
+
+      const card = testingDataset[appState.testIndex];
+      const evaluation = evaluateCard(card);
+      appState.testResults.push(evaluation);
+
+      renderSimCardDisplay(card, evaluation);
+
+      addLogEntry(`Specimen #${appState.testIndex + 1}: ${card.name} [${card.difficulty}]`, 'info');
+      addLogEntry(`Traits: [${card.traits.join(', ')}]`, 'info');
+      addLogEntry(`Filter: ${evaluation.triggeringRule}`, evaluation.triggeringRule.includes('Fallback') ? 'warning' : 'success');
+      addLogEntry(`Prediction: "${evaluation.prediction}" [${evaluation.confidence} confidence]`, 'info');
+
+      if (evaluation.isCorrect) {
+        addLogEntry(`[PASS] Correctly matching verified database taxonomy.`, 'success');
+      } else {
+        addLogEntry(`[FAIL] Class misclassification. Expected: "${card.trueClass}"`, 'error');
+      }
+      addLogEntry(`----------------------------------------`, 'info');
+
+      appState.testIndex++;
+      document.getElementById('sim-progress-text').innerText = `SPECIMEN: ${appState.testIndex} / 12`;
+
+      renderCompactResultsGrid();
+
+      if (appState.testIndex >= testingDataset.length) {
+        completeTestCycle();
+      }
+    }
+
+    function runAllTestsFast() {
+      resetTestLabUI();
+      appState.isSimulating = true;
+      document.getElementById('log-running-indicator').innerText = 'COMPILING';
+
+      addLogEntry(`Batch automated scanner initiated...`, 'info');
+
+      const runBatch = () => {
+        if (appState.testIndex < testingDataset.length) {
+          const card = testingDataset[appState.testIndex];
+          const evaluation = evaluateCard(card);
+          appState.testResults.push(evaluation);
+          
+          if (evaluation.isCorrect) {
+            addLogEntry(`Analyzed "${card.name}": PASS. Predicted: ${evaluation.prediction}`, 'success');
+          } else {
+            addLogEntry(`Analyzed "${card.name}": FAIL. Predicted: ${evaluation.prediction} (True: ${card.trueClass})`, 'error');
+          }
+
+          appState.testIndex++;
+          document.getElementById('sim-progress-text').innerText = `SPECIMEN: ${appState.testIndex} / 12`;
+          renderCompactResultsGrid();
+          appState.simulationTimeoutId = setTimeout(runBatch, 80);
+        } else {
+          renderSimCardDisplay(testingDataset[testingDataset.length - 1], appState.testResults[appState.testResults.length - 1]);
+          completeTestCycle();
+        }
+      };
+
+      runBatch();
+    }
+
+    function renderSimCardDisplay(card, evalRes) {
+      const display = document.getElementById('sim-card-display');
+      if (!display) return;
+
+      const isCorrect = evalRes.isCorrect;
+      const statusColor = isCorrect ? 'var(--success)' : 'var(--error)';
+      const statusText = isCorrect ? 'PASS' : 'FAIL';
+
+      let activeTraitsHtml = '';
+      card.traits.forEach(t => {
+        const isMatch = evalRes.triggeringRule.includes(t);
+        activeTraitsHtml += `<span class="eval-trait-tag ${isMatch ? 'active-match' : ''}">${t}</span>`;
+      });
+
+      display.innerHTML = `
+        <div class="eval-card" style="border-left: 4px solid ${statusColor};">
+          <div class="eval-card-header">
+            <div>
+              <div class="eval-card-name">${getEmojiForAnimal(card.name)} ${card.name}</div>
+              <div style="font-size: 0.65rem; color: #94a3b8; font-family: var(--font-mono); margin-top:0.15rem;">Verified Type: ${card.trueClass}</div>
+            </div>
+            <div class="eval-card-difficulty" style="border: 1px solid ${statusColor}; color: ${statusColor}; background: rgba(0,0,0,0.25);">
+              ${statusText}
+            </div>
+          </div>
+
+          <div class="eval-traits">
+            ${activeTraitsHtml}
+          </div>
+
+          <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.4rem; font-size: 0.75rem;">
+            <div>AI Output Prediction: <strong style="color: white">${evalRes.prediction}</strong></div>
+            <div style="font-size: 0.65rem; color: #94a3b8; font-family: var(--font-mono); margin-top: 0.15rem;">
+              Filter: <span style="color: #38bdf8">${evalRes.triggeringRule}</span> | Conf: <span style="font-weight: 700; color: ${evalRes.confidence === 'High' ? 'var(--success)' : 'var(--warning)'}">${evalRes.confidence}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addLogEntry(text, type) {
+      const logContainer = document.getElementById('logs-content');
+      if (!logContainer) return;
+
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+      
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function completeTestCycle() {
+      appState.isSimulating = false;
+      appState.hasRunTests = true;
+      document.getElementById('log-running-indicator').innerText = 'COMPLETE';
+      document.getElementById('log-running-indicator').style.color = 'var(--success)';
+
+      document.getElementById('btn-run-step').disabled = true;
+      document.getElementById('btn-run-all').disabled = true;
+
+      const debugBtn = document.getElementById('btn-proceed-to-debug');
+      debugBtn.disabled = false;
+      debugBtn.style.opacity = '1';
+      debugBtn.style.cursor = 'pointer';
+
+      const correctCount = appState.testResults.filter(r => r.isCorrect).length;
+      const accuracy = Math.round((correctCount / testingDataset.length) * 100);
+
+      addLogEntry(`========================================`, 'info');
+      addLogEntry(`SIMULATION BATCH COMPLETED SUCCESSFULLY.`, 'success');
+      addLogEntry(`Overall accuracy score: ${correctCount}/${testingDataset.length} (${accuracy}%)`, 'success');
+      addLogEntry(`Proceed to the Debug Studio to categorize classification errors.`, 'info');
+
+      appState.historyLog.push({
+        version: `v${appState.modelVersion}`,
+        accuracy: `${accuracy}%`,
+        correct: correctCount,
+        total: testingDataset.length
+      });
+
+      appState.modelVersion++;
+    }
+
+    const debugFeedbackData = {
+      "Weak Rule": "Excellent diagnostic! This rule was too generic or relied on overlapping traits (like wings or aquatic) instead of exact physiologies.",
+      "Missing Trait": "Great diagnostic work. The classifier lacked access to the fine details needed to divide edge cases (like Bat wings vs Bird wings).",
+      "Ambiguous Case": "Correct assessment. This specimen exhibits overlapping features that clash across standard definitions (like the flightless aquatic Penguin).",
+      "Overgeneralization": "Well determined. Sequential scanning placed this animal in a broad class before it reached specific rules lower in your hierarchy.",
+      "Low Data Variety": "Correct logic. The training set lacked exposure to similar taxonomy configurations, leading to machine learning confusion on the test set."
+    };
+
+    function renderDebugStudio() {
+      const container = document.getElementById('debug-cards-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const switcherContainer = document.getElementById('debug-switcher-container');
+      if (switcherContainer) {
+        switcherContainer.innerHTML = '';
+      }
+
+      const misclassifiedIndices = [];
+      appState.testResults.forEach((res, idx) => {
+        if (!res.isCorrect) {
+          misclassifiedIndices.push(idx);
+        }
+      });
+
+      if (misclassifiedIndices.length === 0) {
+        document.getElementById('debug-studio-hint').style.display = 'none';
+        if (switcherContainer) switcherContainer.style.display = 'none';
+        container.innerHTML = `
+          <div class="empty-debug" style="text-align: center; padding: 1.5rem 1rem;">
+            <div class="empty-debug-title">🎉 Perfect Generalization Achieved!</div>
+            <p style="font-size: 0.8rem; max-width: 500px; margin: 0 auto 1rem auto; color: var(--text-muted);">
+              Outstanding logic. Your sequential rules accurately classified all 12 test species. Your wildlife conservation classifier is fully calibrated with 100% accuracy.
+            </p>
+            <button class="btn" onclick="navigateToScreen(5)">Proceed to Results Dashboard &rarr;</button>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('debug-studio-hint').style.display = 'block';
+      if (switcherContainer) switcherContainer.style.display = 'flex';
+
+      // Keep activeDebugIndex in bounds
+      if (appState.activeDebugIndex === undefined || appState.activeDebugIndex >= misclassifiedIndices.length) {
+        appState.activeDebugIndex = 0;
+      }
+
+      // Render the switcher tabs
+      if (switcherContainer) {
+        misclassifiedIndices.forEach((idx, i) => {
+          const card = testingDataset[idx];
+          const btn = document.createElement('button');
+          btn.className = `debug-switch-btn ${i === appState.activeDebugIndex ? 'active' : ''}`;
+          btn.onclick = () => {
+            appState.activeDebugIndex = i;
+            renderDebugStudio();
+          };
+          btn.innerHTML = `${getEmojiForAnimal(card.name)} ${card.name}`;
+          switcherContainer.appendChild(btn);
+        });
+      }
+
+      // Render ONLY the active misclassified card
+      const activeIdx = misclassifiedIndices[appState.activeDebugIndex];
+      const card = testingDataset[activeIdx];
+      const res = appState.testResults[activeIdx];
+
+      const debugCard = document.createElement('div');
+      debugCard.className = 'debug-card';
+
+      const activeTag = appState.debugTags[card.id] || "";
+
+      let optionsHtml = '';
+      const options = ["Weak Rule", "Missing Trait", "Ambiguous Case", "Overgeneralization", "Low Data Variety"];
+      options.forEach(opt => {
+        const isSelected = activeTag === opt ? "selected" : "";
+        optionsHtml += `
+          <button class="debug-tag-btn ${isSelected}" onclick="tagDebugError('${card.id}', '${opt}')">
+            <span>${opt}</span>
+            ${isSelected ? '<span>&#10003;</span>' : ''}
+          </button>
+        `;
+      });
+
+      let feedbackHtml = '';
+      if (activeTag) {
+        feedbackHtml = `
+          <div class="debug-feedback" style="margin-top: 0.5rem;">
+            <strong>Diagnostic Feedback:</strong> ${debugFeedbackData[activeTag]}
+          </div>
+        `;
+      }
+
+      debugCard.innerHTML = `
+        <div style="background-color: var(--error-light); padding: 0.5rem 0.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #fecdd3;">
+          <strong style="color: var(--error); font-size: 0.85rem;">${getEmojiForAnimal(card.name)} ${card.name}</strong>
+          <span style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted);">ID: ${card.id}</span>
+        </div>
+        <div class="debug-card-body">
+          <div class="debug-metadata">
+            <div class="debug-meta-item">
+              <span class="debug-meta-label">Triggered rule</span>
+              <span class="debug-meta-val" style="color: var(--error); font-family: var(--font-mono); font-size: 0.65rem;">${res.triggeringRule}</span>
+            </div>
+            <div class="debug-meta-item">
+              <span class="debug-meta-label">Predicted Class</span>
+              <span class="debug-meta-val">${res.prediction}</span>
+            </div>
+            <div class="debug-meta-item">
+              <span class="debug-meta-label">True Class</span>
+              <span class="debug-meta-val" style="color: var(--success);">${card.trueClass}</span>
+            </div>
+            <div class="debug-meta-item">
+              <span class="debug-meta-label">Confidence</span>
+              <span class="debug-meta-val">${res.confidence}</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.7rem; color: var(--text-muted); background-color: #f8fafc; padding:0.4rem; border-radius:4px; line-height: 1.35;">
+            <strong>Traits:</strong> ${card.traits.join(', ')}<br>
+            <strong>Biologist Note:</strong> ${card.note}
+          </div>
+
+          <div class="debug-tag-section">
+            <div class="debug-tag-label">Identify Root Cause Categorization:</div>
+            <div class="debug-tag-options">${optionsHtml}</div>
+            ${feedbackHtml}
+          </div>
+        </div>
+      `;
+
+      container.appendChild(debugCard);
+    }
+
+    function tagDebugError(cardId, tag) {
+      appState.debugTags[cardId] = tag;
+      renderDebugStudio();
+    }
+
+    function renderDashboard() {
+      const totalCount = testingDataset.length;
+      const correctCount = appState.testResults.filter(r => r.isCorrect).length;
+      const accuracy = Math.round((correctCount / totalCount) * 100);
+      const errorsCount = totalCount - correctCount;
+
+      const highConfidenceCount = appState.testResults.filter(r => r.confidence === 'High').length;
+      const avgConfidence = highConfidenceCount >= (totalCount / 2) ? 'High' : 'Low';
+
+      document.getElementById('metric-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('metric-version').innerText = `v${appState.modelVersion - 1}`;
+      document.getElementById('metric-errors').innerText = errorsCount;
+      document.getElementById('metric-confidence').innerText = avgConfidence;
+
+      const classesData = {
+        Fish: { correct: 0, total: 0 },
+        Bird: { correct: 0, total: 0 },
+        Mammal: { correct: 0, total: 0 }
+      };
+
+      testingDataset.forEach((card, idx) => {
+        const res = appState.testResults[idx];
+        if (!res) return;
+
+        if (classesData[card.trueClass]) {
+          classesData[card.trueClass].total++;
+          if (res.isCorrect) {
+            classesData[card.trueClass].correct++;
+          }
+        }
+      });
+
+      updateClassMetric('fish', classesData.Fish.correct, classesData.Fish.total);
+      updateClassMetric('bird', classesData.Bird.correct, classesData.Bird.total);
+      updateClassMetric('mammal', classesData.Mammal.correct, classesData.Mammal.total);
+
+      const histContainer = document.getElementById('history-container');
+      if (histContainer) {
+        histContainer.innerHTML = '';
+        const list = document.createElement('ul');
+        list.className = 'history-list';
+
+        appState.historyLog.forEach(run => {
+          list.innerHTML += `
+            <li class="history-item">
+              <span class="history-item-version">Run Model ${run.version}</span>
+              <span class="history-item-accuracy">${run.accuracy} (${run.correct}/${run.total})</span>
+            </li>
+          `;
+        });
+        histContainer.appendChild(list);
+      }
+    }
+
+    function updateClassMetric(className, correct, total) {
+      const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+      document.getElementById(`txt-${className}-acc`).innerText = `${correct}/${total} (${percentage}%)`;
+      document.getElementById(`bar-${className}-acc`).style.width = `${percentage}%`;
+    }
+
+    function handleRadioSelect(qName, labelId) {
+      const groupLabels = document.querySelectorAll(`[id^="${qName}-opt"]`);
+      groupLabels.forEach(l => l.classList.remove('selected'));
+      document.getElementById(labelId).classList.add('selected');
+    }
+
+    function submitReflection(event) {
+      event.preventDefault();
+      const essayValue = document.getElementById('essay-response').value.trim();
+      if (essayValue.split(/\s+/).length < 10) {
+        alert("Please write a complete answer (at least 10 words) in the text box before submitting.");
+        return;
+      }
+      document.getElementById('reflection-success-msg').style.display = 'block';
+      document.getElementById('reflection-success-msg').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
