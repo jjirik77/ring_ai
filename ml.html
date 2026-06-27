@@ -523,8 +523,6 @@
       gap: 0.35rem;
       margin-bottom: 0.4rem;
       min-height: 80px;
-      max-height: 105px;
-      overflow-y: auto;
     }
 
     .rule-item {
@@ -1404,6 +1402,17 @@
       border-radius: 4px;
       letter-spacing: 0.05em;
     }
+
+    @keyframes slideInTop {
+      from {
+        opacity: 0;
+        transform: translateY(-16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1424,19 +1433,22 @@
           2 <span class="step-label">Training</span>
         </div>
         <div class="step-node" id="step-2" onclick="navigateToScreen(2)">
-          3 <span class="step-label">Rules</span>
+          3 <span class="step-label">Assemble</span>
         </div>
         <div class="step-node" id="step-3" onclick="navigateToScreen(3)">
-          4 <span class="step-label">Test Lab</span>
+          4 <span class="step-label">Verify</span>
         </div>
         <div class="step-node" id="step-4" onclick="navigateToScreen(4)">
-          5 <span class="step-label">Debug</span>
+          5 <span class="step-label">Test Lab</span>
         </div>
         <div class="step-node" id="step-5" onclick="navigateToScreen(5)">
-          6 <span class="step-label">Results</span>
+          6 <span class="step-label">Debug</span>
         </div>
         <div class="step-node" id="step-6" onclick="navigateToScreen(6)">
-          7 <span class="step-label">Reflection</span>
+          7 <span class="step-label">Results</span>
+        </div>
+        <div class="step-node" id="step-7" onclick="navigateToScreen(7)">
+          8 <span class="step-label">Reflection</span>
         </div>
       </div>
       <!-- Restart button moved up to the header -->
@@ -1532,17 +1544,17 @@
         </div>
       </div>
 
-      <!-- SCREEN 3: RULE BUILDER -->
+      <!-- SCREEN 3: RULE BUILDER (ASSEMBLE) -->
       <div class="screen" id="screen-2">
         <div>
-          <h1>2. Sequential Decision Rule Builder</h1>
+          <h1>2. Assemble Decision Rules</h1>
           <p class="subtitle">Assemble, prioritize, and structure the sequential logic parameters that power your classifier. First matching filter wins!</p>
         </div>
 
-        <div class="rule-builder-layout">
-          <!-- Left: Active Rules -->
-          <div class="panel">
-            <div class="panel-header">
+        <div style="display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0.75rem;">
+          <!-- Active Rules -->
+          <div class="panel" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+            <div class="panel-header" style="margin-bottom: 0.5rem;">
               <span class="panel-title">Active Rules Hierarchy</span>
               <div style="display: flex; gap: 0.25rem;">
                 <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;" onclick="loadFlawedSampleModel()">Load Flawed</button>
@@ -1550,69 +1562,79 @@
               </div>
             </div>
 
-            <div class="rules-container" id="rules-container">
+            <div class="rules-container" id="rules-container" style="flex: 1; overflow-y: auto; padding-right: 0.25rem;">
               <!-- Populated dynamically -->
             </div>
 
             <button class="btn-add-rule" onclick="addNewRule()">+ Add New Decision Rule</button>
 
-            <div class="fallback-rule-banner">
+            <div class="fallback-rule-banner" style="margin-top: 0.5rem;">
               <div>
                 <span class="rule-kw" style="color: var(--accent-mammal);">FALLBACK</span>
                 <span style="font-size: 0.75rem; font-weight: 500; margin-left: 0.3rem;">Predict Mammal (Low Confidence)</span>
               </div>
               <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">Sequence End</span>
             </div>
-
-            <!-- Accordion -->
-            <div class="rules-reference-drawer">
-              <div class="reference-title" onclick="toggleReferenceDrawer()">
-                <span>📘 Field Trait Guide &amp; AI Heuristics</span>
-                <span id="reference-arrow">&#9662;</span>
-              </div>
-              <div class="reference-content" id="reference-content">
-                <div class="trait-desc-item"><span class="trait-desc-name">Feathers:</span> Unique to <strong>Birds</strong>. Excellent diagnostic filter.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Gills:</span> Unique to <strong>Fish</strong>. Direct indicator.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Fur:</span> Unique to <strong>Mammals</strong>. High accuracy.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Live Birth:</span> Highly diagnostic for <strong>Mammals</strong>.</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Beak:</span> Strong for <strong>Birds</strong> (except Platypus).</div>
-                <div class="trait-desc-item"><span class="trait-desc-name">Wings &amp; Fins:</span> Multi-class. Bats have wings; cetaceans have fins.</div>
-                <div class="trait-desc-item" style="grid-column: span 2;"><span class="trait-desc-name">Environment (Aquatic, Land, Warm-blooded, Lays Eggs):</span> Shared ecological traits. Overgeneralizing causes model bias.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Sandbox Pseudocode -->
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div class="panel">
-              <div class="panel-header">
-                <span class="panel-title">Model Pseudocode Sandbox</span>
-              </div>
-              <div class="sandbox-preview">
-                <div id="sandbox-ver-badge" style="font-size: 0.65rem; color: #38bdf8; margin-bottom: 0.4rem; font-weight: bold;">model_v1.ts</div>
-                <ul class="sandbox-list" id="sandbox-list">
-                  <!-- Populated dynamically -->
-                </ul>
-              </div>
-            </div>
-
-            <div class="panel" style="background-color: var(--primary-light); border-color: #bfdbfe; color: var(--primary-hover); padding: 0.75rem;">
-              <strong style="font-size: 0.8rem; display: block; margin-bottom: 0.15rem;">Ready to Deploy?</strong>
-              <p style="font-size: 0.7rem; line-height: 1.35;">
-                Deploying will transfer rules to the Test Lab. You will evaluate your sequence on 12 completely unseen wildlife specimens to verify generalizability.
-              </p>
-            </div>
           </div>
         </div>
 
-        <div class="btn-container-right">
+        <div class="btn-container-right" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
           <button class="btn btn-secondary" onclick="navigateToScreen(1)">&larr; Back</button>
-          <button class="btn" onclick="navigateToScreen(3)">Deploy to Test Lab &rarr;</button>
+          <button class="btn" onclick="navigateToScreen(3)">Next: Verify Logic &rarr;</button>
         </div>
       </div>
 
-      <!-- SCREEN 4: TEST LAB -->
+      <!-- SCREEN 4: VERIFY LOGIC & SANDBOX -->
       <div class="screen" id="screen-3">
+        <div>
+          <h1>3. Verify Rule Logic &amp; Sandbox</h1>
+          <p class="subtitle">Review the diagnostic field traits and preview the resulting program sequence before live deployment.</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; flex: 1; min-height: 0;">
+          <!-- Top: Heuristics Guide -->
+          <div class="panel" style="padding: 0.75rem; margin-top: 0;">
+            <div class="panel-header" style="margin-bottom: 0.5rem; padding-bottom: 0.35rem; border-bottom: 1px solid #e2e8f0;">
+              <span class="panel-title" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">📘 Field Trait Guide &amp; AI Heuristics</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.5rem; font-size: 0.7rem; line-height: 1.35;">
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid var(--accent-bird);"><span class="trait-desc-name" style="font-weight: 700;">Feathers:</span> Unique to <strong>Birds</strong>. Excellent diagnostic filter.</div>
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid var(--accent-fish);"><span class="trait-desc-name" style="font-weight: 700;">Gills:</span> Unique to <strong>Fish</strong>. Direct indicator.</div>
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid var(--accent-mammal);"><span class="trait-desc-name" style="font-weight: 700;">Fur:</span> Unique to <strong>Mammals</strong>. High accuracy.</div>
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid var(--accent-mammal);"><span class="trait-desc-name" style="font-weight: 700;">Live Birth:</span> Highly diagnostic for <strong>Mammals</strong>.</div>
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid var(--accent-bird);"><span class="trait-desc-name" style="font-weight: 700;">Beak:</span> Strong for <strong>Birds</strong> (except Platypus).</div>
+              <div class="trait-desc-item" style="padding: 0.25rem 0.35rem; background: #f8fafc; border-radius: 4px; border-left: 3px solid #64748b;"><span class="trait-desc-name" style="font-weight: 700;">Wings &amp; Fins:</span> Multi-class. Bats have wings; cetaceans have fins.</div>
+              <div class="trait-desc-item" style="grid-column: span 2; padding: 0.25rem 0.35rem; background: #fffbeb; border-radius: 4px; border-left: 3px solid #f59e0b;"><span class="trait-desc-name" style="font-weight: 700; color: #b45309;">Environment (Aquatic, Land, Warm-blooded, Lays Eggs):</span> Shared ecological traits. Overgeneralizing causes model bias.</div>
+            </div>
+          </div>
+
+          <!-- Bottom: Sandbox Pseudocode -->
+          <div class="panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
+            <div class="panel-header" style="margin-bottom: 0.5rem;">
+              <span class="panel-title">Model Pseudocode Sandbox</span>
+            </div>
+            <div class="sandbox-preview" style="flex: 1; overflow-y: auto;">
+              <div id="sandbox-ver-badge" style="font-size: 0.65rem; color: #38bdf8; margin-bottom: 0.4rem; font-weight: bold;">model_v1.ts</div>
+              <ul class="sandbox-list" id="sandbox-list">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-container-right" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
+          <button class="btn btn-secondary" onclick="navigateToScreen(2)">&larr; Back</button>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="font-size: 0.7rem; line-height: 1.35; color: var(--text-muted); text-align: right; max-width: 350px; background-color: var(--primary-light); padding: 0.35rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid #bfdbfe;">
+              <strong style="color: var(--primary);">Ready to Deploy?</strong> Transfer rules to evaluate sequence on 12 unseen specimens.
+            </div>
+            <button class="btn" onclick="navigateToScreen(4)">Deploy to Test Lab &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: TEST LAB -->
+      <div class="screen" id="screen-4">
         <div>
           <h1>3. Classifier Simulation Test Lab</h1>
           <p class="subtitle">Deploy your code on 12 unseen test specimens. Examine logs and identify taxonomy exceptions in real-time.</p>
@@ -1662,15 +1684,15 @@
         </div>
 
         <div class="btn-container-right">
-          <button class="btn btn-secondary" onclick="navigateToScreen(2)">&larr; Back to Rules</button>
-          <button class="btn" id="btn-proceed-to-debug" onclick="navigateToScreen(4)" disabled style="opacity: 0.5; cursor: not-allowed;">Proceed to Debug Studio &rarr;</button>
+          <button class="btn btn-secondary" onclick="navigateToScreen(3)">&larr; Back to Verify</button>
+          <button class="btn" id="btn-proceed-to-debug" onclick="navigateToScreen(5)" disabled style="opacity: 0.5; cursor: not-allowed;">Proceed to Debug Studio &rarr;</button>
         </div>
       </div>
 
-      <!-- SCREEN 5: DEBUG STUDIO -->
-      <div class="screen" id="screen-4">
+      <!-- SCREEN 6: DEBUG STUDIO -->
+      <div class="screen" id="screen-5">
         <div>
-          <h1>4. Wildlife AI Debug Studio</h1>
+          <h1>5. Wildlife AI Debug Studio</h1>
           <p class="subtitle">Investigate error exceptions. Tag each failure with its biological root cause to train your diagnostic reasoning.</p>
         </div>
 
@@ -1685,16 +1707,16 @@
         </div>
 
         <div class="btn-container-right">
-          <button class="btn btn-secondary" onclick="navigateToScreen(3)">&larr; Back to Test Lab</button>
+          <button class="btn btn-secondary" onclick="navigateToScreen(4)">&larr; Back to Test Lab</button>
           <button class="btn btn-secondary" onclick="navigateToScreen(2)">🔧 Modify Rules</button>
-          <button class="btn" onclick="navigateToScreen(5)">Analyze Final Results &rarr;</button>
+          <button class="btn" onclick="navigateToScreen(6)">Analyze Final Results &rarr;</button>
         </div>
       </div>
 
-      <!-- SCREEN 6: RESULTS DASHBOARD -->
-      <div class="screen" id="screen-5">
+      <!-- SCREEN 7: RESULTS DASHBOARD -->
+      <div class="screen" id="screen-6">
         <div>
-          <h1>5. Model Performance Metrics</h1>
+          <h1>6. Model Performance Metrics</h1>
           <p class="subtitle">Evaluate overall statistics, accuracy by biological class, and review historic sequence runs.</p>
         </div>
 
@@ -1781,15 +1803,15 @@
         </div>
 
         <div class="btn-container-right" style="margin-top: 1rem;">
-          <button class="btn btn-secondary" onclick="navigateToScreen(4)">&larr; Back to Debug Studio</button>
-          <button class="btn" onclick="navigateToScreen(6)">Proceed to Reflection &rarr;</button>
+          <button class="btn btn-secondary" onclick="navigateToScreen(5)">&larr; Back to Debug Studio</button>
+          <button class="btn" onclick="navigateToScreen(7)">Proceed to Reflection &rarr;</button>
         </div>
       </div>
 
-      <!-- SCREEN 7: INTERACTIVE REFLECTION -->
-      <div class="screen" id="screen-6">
+      <!-- SCREEN 8: INTERACTIVE REFLECTION -->
+      <div class="screen" id="screen-7">
         <div>
-          <h1>6. Interactive Classroom Reflection</h1>
+          <h1>7. Interactive Classroom Reflection</h1>
           <p class="subtitle">Demonstrate your understanding of machine learning logic, data bias, and open-world generalization challenges.</p>
         </div>
 
@@ -1799,22 +1821,22 @@
             <span class="panel-title" style="display: block; margin-bottom: 0.5rem;">Interactive Classroom Reflection</span>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">Demonstrate your understanding of machine learning logic and data bias.</p>
 
-            <div class="reflection-form" id="reflection-form">
+            <form class="reflection-form" id="reflection-form" onsubmit="submitReflection(event)">
               <div class="reflection-grid">
                 <!-- Question 1 -->
                 <div class="question-block" id="q1-block">
                   <div class="question-title">1. Why did the simple, flawed rules model (IF Aquatic THEN Fish) misclassify the Humpback Whale and Emperor Penguin? <span id="q1-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
                   <div class="opt-container">
                     <label class="opt-label" id="q1-opt1-label">
-                      <input type="radio" name="q1" value="a" onchange="handleRadioSelect('q1', 'q1-opt1-label', 'a')">
+                      <input type="radio" name="q1" value="a" required onchange="handleRadioSelect('q1', 'q1-opt1-label')">
                       <span>The model's training dataset was broken or corrupted.</span>
                     </label>
                     <label class="opt-label" id="q1-opt2-label">
-                      <input type="radio" name="q1" value="b" onchange="handleRadioSelect('q1', 'q1-opt2-label', 'b')">
+                      <input type="radio" name="q1" value="b" onchange="handleRadioSelect('q1', 'q1-opt2-label')">
                       <span>"Aquatic" is a shared ecological environment, not a unique physiological diagnostic.</span>
                     </label>
                     <label class="opt-label" id="q1-opt3-label">
-                      <input type="radio" name="q1" value="c" onchange="handleRadioSelect('q1', 'q1-opt3-label', 'c')">
+                      <input type="radio" name="q1" value="c" onchange="handleRadioSelect('q1', 'q1-opt3-label')">
                       <span>The rules sequence evaluated Mammalian parameters before Fish parameters.</span>
                     </label>
                   </div>
@@ -1826,15 +1848,15 @@
                   <div class="question-title">2. How does the "Galapagos Tortoise" (unfamiliar reptile) illustrate open-world AI bias? <span id="q2-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
                   <div class="opt-container">
                     <label class="opt-label" id="q2-opt1-label">
-                      <input type="radio" name="q2" value="a" onchange="handleRadioSelect('q2', 'q2-opt1-label', 'a')">
+                      <input type="radio" name="q2" value="a" required onchange="handleRadioSelect('q2', 'q2-opt1-label')">
                       <span>The system correctly classified it as a mammal since it resides on land.</span>
                     </label>
                     <label class="opt-label" id="q2-opt2-label">
-                      <input type="radio" name="q2" value="b" onchange="handleRadioSelect('q2', 'q2-opt2-label', 'b')">
+                      <input type="radio" name="q2" value="b" onchange="handleRadioSelect('q2', 'q2-opt2-label')">
                       <span>Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</span>
                     </label>
                     <label class="opt-label" id="q2-opt3-label">
-                      <input type="radio" name="q2" value="c" onchange="handleRadioSelect('q2', 'q2-opt3-label', 'c')">
+                      <input type="radio" name="q2" value="c" onchange="handleRadioSelect('q2', 'q2-opt3-label')">
                       <span>The algorithm automatically created a "Reptile" class on the fly.</span>
                     </label>
                   </div>
@@ -1846,33 +1868,57 @@
                   <div class="question-title">3. What is the primary purpose of using a separate, independent "Testing Dataset" in machine learning? <span id="q3-status" style="margin-left: 0.5rem; font-weight: bold;"></span></div>
                   <div class="opt-container">
                     <label class="opt-label" id="q3-opt1-label">
-                      <input type="radio" name="q3" value="a" onchange="handleRadioSelect('q3', 'q3-opt1-label', 'a')">
+                      <input type="radio" name="q3" value="a" required onchange="handleRadioSelect('q3', 'q3-opt1-label')">
                       <span>To generate additional heuristic rules automatically.</span>
                     </label>
                     <label class="opt-label" id="q3-opt2-label">
-                      <input type="radio" name="q3" value="b" onchange="handleRadioSelect('q3', 'q3-opt2-label', 'b')">
+                      <input type="radio" name="q3" value="b" onchange="handleRadioSelect('q3', 'q3-opt2-label')">
                       <span>To evaluate how well the model generalizes to completely unseen specimens and ensure it hasn't just memorized the training data.</span>
                     </label>
                     <label class="opt-label" id="q3-opt3-label">
-                      <input type="radio" name="q3" value="c" onchange="handleRadioSelect('q3', 'q3-opt3-label', 'c')">
+                      <input type="radio" name="q3" value="c" onchange="handleRadioSelect('q3', 'q3-opt3-label')">
                       <span>To increase the model's confidence scores by repeating the same training samples.</span>
                     </label>
                   </div>
                   <div class="explanation-box" id="q3-explanation" style="display: none;"></div>
                 </div>
               </div>
-            </div>
+
+              <button class="btn" style="width: 100%; margin-top: 0.75rem;" type="submit">Submit Reflection Answers</button>
+            </form>
           </div>
         </div>
 
-        <div class="btn-container-right" style="margin-top: 1rem;">
-          <button class="btn btn-secondary" onclick="navigateToScreen(5)">&larr; Back to Metrics</button>
-          <button class="btn" onclick="navigateToScreen(2)">🔧 Return &amp; Modify Rules</button>
+        <div class="btn-container-right" style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <button class="btn btn-secondary" onclick="navigateToScreen(6)">&larr; Back to Metrics</button>
+          <button class="btn" style="background-color: var(--error); border-color: var(--error);" onclick="resetApp()">🔄 Restart</button>
         </div>
       </div>
 
     </div>
 
+  </div>
+
+  <!-- CUSTOM RESTART CONFIRMATION MODAL -->
+  <div id="restart-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 1rem;">
+    <div class="panel" style="max-width: 400px; width: 100%; border-top: 4px solid var(--error); animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15), 0 10px 10px -5px rgba(0,0,0,0.1); background-color: white; padding: 1.5rem; border-radius: var(--radius-md);">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; margin-top: 0;">
+        ⚠️ Restart Application?
+      </h3>
+      <p style="font-size: 0.8rem; color: #475569; line-height: 1.45; margin-bottom: 1.25rem;">
+        Are you sure you want to restart? This will clear your custom rule hierarchy, simulation results, and reflection quiz feedback.
+      </p>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button class="btn btn-secondary" onclick="closeRestartModal()" style="font-size: 0.75rem; padding: 0.4rem 0.8rem; margin: 0;">Cancel</button>
+        <button class="btn" onclick="confirmResetApp()" style="background-color: var(--error); border-color: var(--error); font-size: 0.75rem; padding: 0.4rem 0.8rem; margin: 0; color: white;">Yes, Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM NOTIFICATION TOAST -->
+  <div id="toast-notification" style="display: none; position: fixed; top: 1rem; right: 1rem; z-index: 10000; background: #0f172a; color: white; padding: 0.75rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 0.8rem; font-weight: 500; align-items: center; gap: 0.5rem; max-width: 320px; border-left: 4px solid #f59e0b; font-family: var(--font-sans);">
+    <span>⚠️</span>
+    <span id="toast-message" style="line-height: 1.4;">Notification message</span>
   </div>
 
   <!-- -------------------------------------------------------------
@@ -1938,13 +1984,95 @@
       updateProgressTracker();
     });
 
+    // Custom Notification Toast Function
+    let toastTimeoutId = null;
+    function showNotification(message) {
+      const toast = document.getElementById('toast-notification');
+      const msgEl = document.getElementById('toast-message');
+      if (!toast || !msgEl) return;
+
+      msgEl.textContent = message;
+      toast.style.display = 'flex';
+
+      if (toastTimeoutId) {
+        clearTimeout(toastTimeoutId);
+      }
+
+      toastTimeoutId = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
+    // Modal Controls for Restart Button
+    function resetApp() {
+      const modal = document.getElementById('restart-modal');
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeRestartModal() {
+      const modal = document.getElementById('restart-modal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function confirmResetApp() {
+      closeRestartModal();
+      appState.currentScreen = 0;
+      appState.trainingPage = 0;
+      appState.modelVersion = 1;
+      appState.totalRevisions = 0;
+      appState.hasRunTests = false;
+      appState.historyLog = [];
+      appState.testIndex = 0;
+      appState.testResults = [];
+      appState.isSimulating = false;
+      appState.debugTags = {};
+
+      if (appState.simulationTimeoutId) {
+        clearTimeout(appState.simulationTimeoutId);
+      }
+
+      const refForm = document.getElementById('reflection-form');
+      if (refForm) refForm.reset();
+      
+      const labels = document.querySelectorAll('.opt-label');
+      labels.forEach(l => {
+        l.classList.remove('selected');
+        l.classList.remove('correct');
+        l.classList.remove('incorrect');
+      });
+
+      ['q1', 'q2', 'q3'].forEach(q => {
+        const exp = document.getElementById(`${q}-explanation`);
+        if (exp) {
+          exp.style.display = 'none';
+          exp.innerHTML = '';
+        }
+        const stat = document.getElementById(`${q}-status`);
+        if (stat) {
+          stat.innerHTML = '';
+        }
+      });
+      
+      const successMsg = document.getElementById('reflection-success-msg');
+      if (successMsg) successMsg.style.display = 'none';
+
+      loadFlawedSampleModel();
+      renderTrainingCards();
+      renderRulesEditor();
+      navigateToScreen(0);
+    }
+
     function navigateToScreen(index) {
-      if (index === 3 && appState.modelRules.length === 0) {
-        alert("Please add at least one classification rule before proceeding to the Test Lab.");
+      if ((index === 3 || index === 4) && appState.modelRules.length === 0) {
+        showNotification("Please add at least one classification rule before proceeding.");
         return;
       }
-      if ((index === 4 || index === 5 || index === 6) && !appState.hasRunTests) {
-        alert("Deploy your model and run the simulation in the Test Lab before proceeding.");
+      if (index >= 5 && !appState.hasRunTests) {
+        showNotification("Deploy your model and run the simulation in the Test Lab before proceeding.");
         return;
       }
 
@@ -1965,10 +2093,12 @@
       } else if (index === 2) {
         renderRulesEditor();
       } else if (index === 3) {
-        resetTestLabUI();
+        renderRulesEditor(); // Populates rules hierarchy and sandbox
       } else if (index === 4) {
-        renderDebugStudio();
+        resetTestLabUI();
       } else if (index === 5) {
+        renderDebugStudio();
+      } else if (index === 6) {
         renderDashboard();
       }
 
@@ -1976,12 +2106,12 @@
     }
 
     function updateProgressTracker() {
-      const fillPercentage = (appState.currentScreen / 6) * 100;
+      const fillPercentage = (appState.currentScreen / 7) * 100;
       document.getElementById('progress-line-fill').style.width = `${fillPercentage}%`;
 
-      const stepLabels = ["Briefing", "Training", "Rules", "Test Lab", "Debug", "Results", "Reflection"];
+      const stepLabels = ["Briefing", "Training", "Assemble", "Verify", "Test Lab", "Debug", "Results", "Reflection"];
 
-      for (let i = 0; i <= 6; i++) {
+      for (let i = 0; i <= 7; i++) {
         const node = document.getElementById(`step-${i}`);
         if (!node) continue;
 
@@ -1995,39 +2125,6 @@
         } else {
           node.innerHTML = `${i + 1} <span class="step-label">${stepLabels[i]}</span>`;
         }
-      }
-    }
-
-    function resetApp() {
-      if (confirm("Are you sure you want to restart? Your custom rules and history will be cleared.")) {
-        appState.currentScreen = 0;
-        appState.trainingPage = 0;
-        appState.modelVersion = 1;
-        appState.totalRevisions = 0;
-        appState.hasRunTests = false;
-        appState.historyLog = [];
-        appState.testIndex = 0;
-        appState.testResults = [];
-        appState.isSimulating = false;
-        appState.debugTags = {};
-
-        if (appState.simulationTimeoutId) {
-          clearTimeout(appState.simulationTimeoutId);
-        }
-
-        const refForm = document.getElementById('reflection-form');
-        if (refForm) refForm.reset();
-        
-        const labels = document.querySelectorAll('.opt-label');
-        labels.forEach(l => l.classList.remove('selected'));
-        
-        const successMsg = document.getElementById('reflection-success-msg');
-        if (successMsg) successMsg.style.display = 'none';
-
-        loadFlawedSampleModel();
-        renderTrainingCards();
-        renderRulesEditor();
-        navigateToScreen(0);
       }
     }
 
@@ -2608,7 +2705,7 @@
             <p style="font-size: 0.8rem; max-width: 500px; margin: 0 auto 1rem auto; color: var(--text-muted);">
               Outstanding logic. Your sequential rules accurately classified all 12 test species. Your wildlife conservation classifier is fully calibrated with 100% accuracy.
             </p>
-            <button class="btn" onclick="navigateToScreen(5)">Proceed to Results Dashboard &rarr;</button>
+            <button class="btn" onclick="navigateToScreen(6)">Proceed to Results Dashboard &rarr;</button>
           </div>
         `;
         return;
@@ -2774,49 +2871,88 @@
       document.getElementById(`bar-${className}-acc`).style.width = `${percentage}%`;
     }
 
-    function handleRadioSelect(qName, labelId, val) {
-      // Clear previous styles/states for this question
+    function handleRadioSelect(qName, labelId) {
+      // Clear previous selection style for this question group
       const groupLabels = document.querySelectorAll(`[id^="${qName}-opt"]`);
       groupLabels.forEach(l => {
         l.classList.remove('selected');
-        l.classList.remove('correct');
-        l.classList.remove('incorrect');
       });
 
       const selectedLabel = document.getElementById(labelId);
-      selectedLabel.classList.add('selected');
+      if (selectedLabel) selectedLabel.classList.add('selected');
+    }
 
-      const explanation = document.getElementById(`${qName}-explanation`);
-      const status = document.getElementById(`${qName}-status`);
+    function submitReflection(event) {
+      event.preventDefault();
 
-      if (explanation) {
-        explanation.style.display = 'block';
-        if (val === 'b') {
-          selectedLabel.classList.add('correct');
-          if (status) status.innerHTML = ' <span style="color: var(--success); font-size: 0.7rem;">✅ Correct</span>';
-          explanation.className = "explanation-box correct";
-          if (qName === 'q1') {
-            explanation.innerHTML = "<strong>✅ Correct!</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic groups (e.g., whales and fish are both aquatic). Relying on them as top-level shortcuts causes severe misclassifications.";
-          } else if (qName === 'q2') {
-            explanation.innerHTML = "<strong>✅ Correct!</strong> Since the heuristic rule model only knows Fish, Bird, and Mammal classes, it is forced to select one of those predefined options even when presented with a reptile (out-of-distribution specimen), leading to forced system bias.";
-          } else if (qName === 'q3') {
-            explanation.innerHTML = "<strong>✅ Correct!</strong> Testing on independent, completely unseen cases is the primary scientific method for verifying whether an algorithm has generalized to broader concepts or merely memorized/overfitted the training data.";
+      const questions = [
+        {
+          id: 'q1',
+          correctVal: 'b',
+          correctLabelId: 'q1-opt2-label',
+          explanations: {
+            correct: "<strong>✅ Correct!</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic groups (e.g., whales and fish are both aquatic). Relying on them as top-level shortcuts causes severe misclassifications.",
+            incorrect: "<strong>❌ Incorrect.</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic families and cause overgeneralization. Gills or Feathers are unique physiological features. <br><em>Correct: \"Aquatic\" is a shared ecological environment, not a unique physiological diagnostic.</em>"
           }
-        } else {
-          selectedLabel.classList.add('incorrect');
-          const correctLabel = document.getElementById(`${qName}-opt2-label`);
-          if (correctLabel) correctLabel.classList.add('correct');
-          if (status) status.innerHTML = ' <span style="color: var(--error); font-size: 0.7rem;">❌ Incorrect</span>';
-          explanation.className = "explanation-box incorrect";
-          if (qName === 'q1') {
-            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Environment traits like 'Aquatic' or 'Land' are shared across multiple taxonomic families and cause overgeneralization. Gills or Feathers are unique physiological features. <br><em>Correct: \"Aquatic\" is a shared ecological environment, not a unique physiological diagnostic.</em>";
-          } else if (qName === 'q2') {
-            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Rule-based systems do not dynamically add classes on the fly, and land residence alone does not make a tortoise a mammal. Closed world taxonomies force models to apply pre-existing labels. <br><em>Correct: Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</em>";
-          } else if (qName === 'q3') {
-            explanation.innerHTML = "<strong>❌ Incorrect.</strong> Independent testing data does not generate rules and must never be used in training or simple accuracy repetition. It serves solely to evaluate real out-of-training generalizability. <br><em>Correct: To evaluate how well the model generalizes to completely unseen specimens...</em>";
+        },
+        {
+          id: 'q2',
+          correctVal: 'b',
+          correctLabelId: 'q2-opt2-label',
+          explanations: {
+            correct: "<strong>✅ Correct!</strong> Since the heuristic rule model only knows Fish, Bird, and Mammal classes, it is forced to select one of those predefined options even when presented with a reptile (out-of-distribution specimen), leading to forced system bias.",
+            incorrect: "<strong>❌ Incorrect.</strong> Rule-based systems do not dynamically add classes on the fly, and land residence alone does not make a tortoise a mammal. Closed world taxonomies force models to apply pre-existing labels. <br><em>Correct: Closed taxonomies force models to output predefined labels on completely out-of-distribution cases.</em>"
+          }
+        },
+        {
+          id: 'q3',
+          correctVal: 'b',
+          correctLabelId: 'q3-opt2-label',
+          explanations: {
+            correct: "<strong>✅ Correct!</strong> Testing on independent, completely unseen cases is the primary scientific method for verifying whether an algorithm has generalized to broader concepts or merely memorized/overfitted the training data.",
+            incorrect: "<strong>❌ Incorrect.</strong> Independent testing data does not generate rules and must never be used in training or simple accuracy repetition. It serves solely to evaluate real out-of-training generalizability. <br><em>Correct: To evaluate how well the model generalizes to completely unseen specimens...</em>"
           }
         }
-      }
+      ];
+
+      questions.forEach(q => {
+        const qName = q.id;
+        const selectedInput = document.querySelector(`input[name="${qName}"]:checked`);
+        if (!selectedInput) return;
+
+        const val = selectedInput.value;
+        const explanation = document.getElementById(`${qName}-explanation`);
+        const status = document.getElementById(`${qName}-status`);
+
+        // Clear previous correctness styles for this question group
+        const groupLabels = document.querySelectorAll(`[id^="${qName}-opt"]`);
+        groupLabels.forEach(l => {
+          l.classList.remove('correct');
+          l.classList.remove('incorrect');
+        });
+
+        if (explanation) {
+          explanation.style.display = 'block';
+          if (val === q.correctVal) {
+            const correctLabel = document.getElementById(q.correctLabelId);
+            if (correctLabel) correctLabel.classList.add('correct');
+            if (status) status.innerHTML = ' <span style="color: var(--success); font-size: 0.7rem;">✅ Correct</span>';
+            explanation.className = "explanation-box correct";
+            explanation.innerHTML = q.explanations.correct;
+          } else {
+            const selectedLabelId = `${qName}-opt${val === 'a' ? '1' : '3'}-label`;
+            const selectedLabel = document.getElementById(selectedLabelId);
+            if (selectedLabel) selectedLabel.classList.add('incorrect');
+
+            const correctLabel = document.getElementById(q.correctLabelId);
+            if (correctLabel) correctLabel.classList.add('correct');
+
+            if (status) status.innerHTML = ' <span style="color: var(--error); font-size: 0.7rem;">❌ Incorrect</span>';
+            explanation.className = "explanation-box incorrect";
+            explanation.innerHTML = q.explanations.incorrect;
+          }
+        }
+      });
     }
   </script>
 
