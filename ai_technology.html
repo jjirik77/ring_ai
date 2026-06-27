@@ -9,14 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0056b3;
-            --light-blue-bg: #e7f1ff;
-            --teal-accent: #20c997;
-            --text-dark: #212529;
-            --text-muted: #6c757d;
+            --primary-blue: #2563eb;
+            --primary-dark: #1d4ed8;
+            --light-blue-bg: #f8fafc;
+            --teal-accent: #059669;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
             --white: #ffffff;
-            --border-color: #dee2e6;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
             --border-radius: 12px;
         }
 
@@ -28,7 +29,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f1f5f9;
             color: var(--text-dark);
             height: 100vh;
             display: flex;
@@ -38,44 +39,47 @@
         }
 
         #app-container {
-            width: 1024px;
-            height: 768px;
+            width: 940px;
+            height: 620px;
             background-color: var(--light-blue-bg);
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             overflow: hidden;
+            border: 2px solid var(--primary-blue);
+            border-radius: 16px;
         }
 
         header {
-            height: 70px;
+            height: 52px;
             background-color: var(--white);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 24px;
             z-index: 10;
         }
 
         .header-left h1 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--primary-blue);
             font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .progress-dots {
             display: flex;
-            gap: 12px;
+            gap: 8px;
         }
 
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background-color: var(--border-color);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dot.active {
@@ -89,11 +93,12 @@
 
         main {
             flex-grow: 1;
-            padding: 30px;
+            padding: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            overflow: hidden;
         }
 
         .content-card {
@@ -105,11 +110,11 @@
             box-shadow: var(--shadow);
             display: flex;
             overflow: hidden;
-            animation: slideUp 0.4s ease-out;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
+            from { transform: translateY(12px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
@@ -119,76 +124,76 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.4s ease-in;
+            animation: fadeIn 0.3s ease-in;
         }
 
         .sidebar {
-            width: 240px;
-            background-color: #f8f9fa;
+            width: 200px;
+            background-color: #f8fafc;
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 20px 0;
+            padding: 12px 0;
             flex-shrink: 0;
         }
 
         .sidebar-btn {
-            padding: 15px 25px;
+            padding: 10px 20px;
             text-align: left;
             border: none;
             background: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
         }
 
         .sidebar-btn:hover {
-            background-color: #e9ecef;
+            background-color: #f1f5f9;
             color: var(--primary-blue);
         }
 
         .sidebar-btn.active {
-            background-color: #e7f1ff;
+            background-color: #eff6ff;
             color: var(--primary-blue);
             border-left-color: var(--primary-blue);
         }
 
         .sidebar-content {
             flex-grow: 1;
-            padding: 40px;
+            padding: 28px;
             overflow-y: auto;
         }
 
         footer {
-            height: 70px;
+            height: 52px;
             background-color: var(--white);
             border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 24px;
             z-index: 10;
         }
 
         .footer-right {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .btn {
-            padding: 10px 24px;
+            padding: 8px 18px;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.85rem;
             border: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -197,80 +202,82 @@
         }
 
         .btn-primary:hover {
-            background-color: #004494;
+            background-color: var(--primary-dark);
         }
 
         .btn-primary:disabled {
-            background-color: #accbee;
+            background-color: #93c5fd;
             cursor: not-allowed;
         }
 
         .btn-secondary {
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
             border: 1px solid var(--border-color);
             color: var(--text-dark);
         }
 
         .btn-secondary:hover {
-            background-color: #e9ecef;
+            background-color: #f1f5f9;
         }
 
         .tech-brief-card {
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-            font-size: 1.1rem;
-            line-height: 1.5;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 0.92rem;
+            line-height: 1.45;
             color: var(--primary-blue);
             font-weight: 500;
         }
 
         .classification-grid {
             display: grid;
-            gap: 20px;
+            gap: 14px;
         }
 
         .selection-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             display: block;
+            letter-spacing: 0.05em;
         }
 
         .pill-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .pill {
-            padding: 8px 16px;
-            background-color: var(--white);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
             gap: 8px;
         }
 
+        .pill {
+            padding: 6px 12px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .pill svg, .brief-header-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 14px;
+            height: 14px;
             stroke: currentColor;
             fill: none;
-            stroke-width: 2;
+            stroke-width: 2.2;
         }
 
         .pill:hover {
-            background-color: #f1f3f5;
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
         }
 
         .pill.active {
@@ -280,28 +287,37 @@
         }
 
         .feedback-area {
-            margin-top: 25px;
-            padding: 20px;
+            margin-top: 12px;
+            padding: 12px 16px;
             border-radius: 8px;
-            background-color: #e7f1ff;
-            border: 1px solid #cfe2ff;
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
             display: none;
         }
 
         .feedback-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            justify-content: space-between;
+            margin-bottom: 6px;
             font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .feedback-status-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
+            font-size: 0.7rem;
+            padding: 3px 8px;
             border-radius: 4px;
             text-transform: uppercase;
             color: var(--white);
+            font-weight: 700;
+            letter-spacing: 0.02em;
         }
 
         .tax-grid {
@@ -310,44 +326,51 @@
             gap: 2px;
             background-color: var(--border-color);
             border: 2px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
         }
 
         .tax-head {
-            background-color: #f8f9fa;
-            padding: 10px;
+            background-color: #f8fafc;
+            padding: 8px 4px;
             text-align: center;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
+            color: var(--text-dark);
         }
 
         .tax-cell {
             background-color: var(--white);
-            height: 120px;
-            padding: 5px;
+            height: 90px;
+            padding: 4px;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .tax-item {
             font-size: 0.6rem;
-            background-color: #e7f1ff;
-            border-left: 3px solid var(--primary-blue);
+            background-color: #eff6ff;
+            border-left: 2px solid var(--primary-blue);
             padding: 3px;
-            margin-bottom: 2px;
             border-radius: 2px;
+            font-weight: 600;
+            color: var(--primary-blue);
         }
 
         .brief-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
         .brief-header-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background-color: var(--light-blue-bg);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: #eff6ff;
             color: var(--primary-blue);
             display: flex;
             align-items: center;
@@ -355,14 +378,14 @@
         }
 
         .brief-header-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .screen { display: none; width: 100%; height: 100%; }
         .screen.active { display: flex; }
@@ -388,18 +411,18 @@
             <!-- Screen 1: Introduction -->
             <section id="screen-1" class="screen active">
                 <div class="content-card">
-                    <div class="sidebar-content" style="padding: 60px;">
-                        <h2 style="font-size: 2.2rem; color: var(--primary-blue); margin-bottom: 25px;">Welcome, Analyst</h2>
-                        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+                    <div class="sidebar-content" style="padding: 32px;">
+                        <h2 style="font-size: 1.6rem; color: var(--primary-blue); margin-bottom: 14px; font-weight: 700; letter-spacing: -0.02em;">Welcome, Analyst</h2>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
                             Artificial Intelligence is not a single monolith. It is a family of related technologies including Machine Learning, Robotics, NLP, and more.
                         </p>
-                        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px; line-height: 1.6;">
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
                             As an AI Systems Analyst, your mission is to classify 10 real-world AI applications across two dimensions: 
                             the <strong>Subset</strong> powering it, and its <strong>Class</strong> of intelligence.
                         </p>
-                        <div style="background-color: #f8f9fa; padding: 25px; border-radius: 8px; border-left: 5px solid var(--teal-accent);">
-                            <h4 style="margin-bottom: 10px;">Your Objective:</h4>
-                            <ul style="margin-left: 20px; color: var(--text-dark);">
+                        <div style="background-color: #f8fafc; padding: 18px; border-radius: 8px; border-left: 4px solid var(--teal-accent); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">
+                            <h4 style="margin-bottom: 6px; font-weight: 700; font-size: 0.95rem;">Your Objective:</h4>
+                            <ul style="margin-left: 16px; color: var(--text-dark); line-height: 1.5; font-size: 0.9rem;">
                                 <li>Identify which of the 7 AI Subsets is utilized.</li>
                                 <li>Determine if the system is Narrow, Strong, or Superintelligent.</li>
                                 <li>Complete all 10 entries to build the Global Taxonomy Map.</li>
@@ -429,78 +452,82 @@
             <!-- Screen 3: Lab -->
             <section id="screen-3" class="screen">
                 <div class="content-card">
-                    <div class="sidebar-content" style="padding: 40px; display: flex; flex-direction: column;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3 id="lab-item-title" style="color: var(--primary-blue);">Item 01 / 10</h3>
-                            <div id="lab-score-display" style="font-weight: 700; color: var(--teal-accent);">Accuracy: 0%</div>
-                        </div>
-
-                        <div class="tech-brief-card" id="lab-description">Loading brief...</div>
-
-                        <div class="classification-grid">
-                            <div id="subset-group">
-                                <span class="selection-label">Select AI Subset</span>
-                                <div class="pill-group" id="subset-pills">
-                                    <button class="pill" onclick="selectSubset('ML')" data-subset="ML">
-                                        <svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
-                                        Machine Learning
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('DL')" data-subset="DL">
-                                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                                        Deep Learning
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('NLP')" data-subset="NLP">
-                                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                        NLP
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('CV')" data-subset="CV">
-                                        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                        Computer Vision
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('Robot')" data-subset="Robot">
-                                        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4M8 11V9a4 4 0 0 1 8 0v2"></path></svg>
-                                        AI Robotics
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('Expert')" data-subset="Expert">
-                                        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                                        Expert System
-                                    </button>
-                                    <button class="pill" onclick="selectSubset('GenAI')" data-subset="GenAI">
-                                        <svg viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707"></path></svg>
-                                        Generative AI
-                                    </button>
-                                </div>
-                                <div id="multi-subset-msg" style="display:none; color: var(--primary-blue); font-weight: 700; padding: 10px; background: #e7f1ff; border-radius: 4px;">
-                                    This system handles ALL domains — no single subset applies.
-                                </div>
+                    <div class="sidebar-content" style="padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h3 id="lab-item-title" style="color: var(--primary-blue); font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em;">Item 01 / 10</h3>
+                                <div id="lab-score-display" style="font-weight: 700; color: var(--teal-accent); font-size: 0.9rem;">Accuracy: 0%</div>
                             </div>
 
-                            <div>
-                                <span class="selection-label">Classify AI Scope</span>
-                                <div class="pill-group" id="class-pills">
-                                    <button class="pill" onclick="selectClass('Narrow')" data-class="Narrow">
-                                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                                        Narrow AI
-                                    </button>
-                                    <button class="pill" onclick="selectClass('Strong')" data-class="Strong">
-                                        <svg viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.04-2.44V4.5A2.5 2.5 0 0 1 7.5 2h2z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.04-2.44V4.5A2.5 2.5 0 0 0 16.5 2h-2z"></path></svg>
-                                        Strong AI (AGI)
-                                    </button>
-                                    <button class="pill" onclick="selectClass('ASI')" data-class="ASI">
-                                        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-                                        Superintelligence (ASI)
-                                    </button>
+                            <div class="tech-brief-card" id="lab-description">Loading brief...</div>
+
+                            <div class="classification-grid">
+                                <div id="subset-group">
+                                    <span class="selection-label">Select AI Subset</span>
+                                    <div class="pill-group" id="subset-pills">
+                                        <button class="pill" onclick="selectSubset('ML')" data-subset="ML">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v14"/></svg>
+                                            Machine Learning
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('DL')" data-subset="DL">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-10 5 10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                                            Deep Learning
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('NLP')" data-subset="NLP">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                            NLP
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('CV')" data-subset="CV">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/><path d="M5 5h3V2M19 5h-3V2M5 19h3v3M19 19h-3v3"/></svg>
+                                            Computer Vision
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('Robot')" data-subset="Robot">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="8" rx="2" ry="2"/><path d="M12 2v2"/><path d="M5 22v-2"/><path d="M19 22v-2"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 17h8"/></svg>
+                                            AI Robotics
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('Expert')" data-subset="Expert">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9"/><path d="M12 14v1"/></svg>
+                                            Expert System
+                                        </button>
+                                        <button class="pill" onclick="selectSubset('GenAI')" data-subset="GenAI">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z"/></svg>
+                                            Generative AI
+                                        </button>
+                                    </div>
+                                    <div id="multi-subset-msg" style="display:none; color: var(--primary-blue); font-weight: 700; padding: 10px 14px; background: #eff6ff; border-radius: 6px; border: 1px solid #bfdbfe; margin-bottom: 8px; font-size: 0.85rem;">
+                                        This system handles ALL domains — no single subset applies.
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <span class="selection-label">Classify AI Scope</span>
+                                    <div class="pill-group" id="class-pills">
+                                        <button class="pill" onclick="selectClass('Narrow')" data-class="Narrow">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                                            Narrow AI
+                                        </button>
+                                        <button class="pill" onclick="selectClass('Strong')" data-class="Strong">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+                                            Strong AI (AGI)
+                                        </button>
+                                        <button class="pill" onclick="selectClass('ASI')" data-class="ASI">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                            Superintelligence (ASI)
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div id="lab-feedback" class="feedback-area">
                             <div class="feedback-header">
-                                <span id="feedback-icon">✓</span>
-                                <span id="feedback-status">Correct Analysis</span>
-                                <span id="feedback-badges" style="margin-left: auto;"></span>
+                                <div class="feedback-status-group">
+                                    <span id="feedback-icon" style="font-size: 1.1rem; font-weight: bold;">✓</span>
+                                    <span id="feedback-status">Correct Analysis</span>
+                                </div>
+                                <div id="feedback-badges"></div>
                             </div>
-                            <p id="feedback-text" style="font-size: 0.9rem;"></p>
+                            <p id="feedback-text" style="font-size: 0.85rem; line-height: 1.4; color: var(--text-dark);"></p>
                         </div>
                     </div>
                 </div>
@@ -508,8 +535,8 @@
 
             <!-- Screen 4: Taxonomy -->
             <section id="screen-4" class="screen">
-                <div class="content-card" style="flex-direction: column; padding: 30px;">
-                    <h2 style="margin-bottom: 20px; color: var(--primary-blue);">Global AI Taxonomy Map</h2>
+                <div class="content-card" style="flex-direction: column; padding: 20px;">
+                    <h2 style="margin-bottom: 12px; color: var(--primary-blue); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em;">Global AI Taxonomy Map</h2>
                     <div class="tax-grid" id="taxonomy-container">
                         <div class="tax-head">ML</div>
                         <div class="tax-head">DL</div>
@@ -520,7 +547,7 @@
                         <div class="tax-head">GEN AI</div>
                         <div class="tax-head">MULTI</div>
                     </div>
-                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center;">
+                    <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); font-style: italic; text-align: center;">
                         Observation: Current real-world systems classified in this map fall under Narrow AI.
                     </div>
                 </div>
@@ -529,21 +556,21 @@
             <!-- Screen 5: Final Report -->
             <section id="screen-5" class="screen">
                 <div class="content-card">
-                    <div class="sidebar-content" style="text-align: center; display: flex; flex-direction: column; justify-content: center; padding: 60px;">
-                        <h2 style="color: var(--primary-blue); font-size: 2rem; margin-bottom: 40px;">Final Analyst Report</h2>
-                        <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 40px;">
-                            <div style="background-color: #f8f9fa; padding: 30px; border-radius: 12px; width: 200px;">
-                                <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Subset Score</div>
-                                <div id="final-subset-score" style="font-size: 2.5rem; color: var(--primary-blue); font-weight: 700;">0/10</div>
+                    <div class="sidebar-content" style="text-align: center; display: flex; flex-direction: column; justify-content: center; padding: 32px;">
+                        <h2 style="color: var(--primary-blue); font-size: 1.6rem; margin-bottom: 24px; font-weight: 700; letter-spacing: -0.02em;">Final Analyst Report</h2>
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 24px;">
+                            <div style="background-color: #f8fafc; padding: 16px; border-radius: 12px; width: 160px; border: 1px solid var(--border-color);">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">Subset Score</div>
+                                <div id="final-subset-score" style="font-size: 2rem; color: var(--primary-blue); font-weight: 700; margin-top: 4px;">0/10</div>
                             </div>
-                            <div style="background-color: #f8f9fa; padding: 30px; border-radius: 12px; width: 200px;">
-                                <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Class Score</div>
-                                <div id="final-class-score" style="font-size: 2.5rem; color: var(--primary-blue); font-weight: 700;">0/10</div>
+                            <div style="background-color: #f8fafc; padding: 16px; border-radius: 12px; width: 160px; border: 1px solid var(--border-color);">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">Class Score</div>
+                                <div id="final-class-score" style="font-size: 2rem; color: var(--primary-blue); font-weight: 700; margin-top: 4px;">0/10</div>
                             </div>
                         </div>
-                        <div style="max-width: 500px; margin: 0 auto;">
-                            <h4 id="final-rank" style="font-size: 1.5rem; color: var(--teal-accent); margin-bottom: 15px;">Junior Analyst</h4>
-                            <p id="final-pattern-note" style="color: var(--text-muted); line-height: 1.6;"></p>
+                        <div style="max-width: 460px; margin: 0 auto;">
+                            <h4 id="final-rank" style="font-size: 1.25rem; color: var(--teal-accent); margin-bottom: 8px; font-weight: 700;">Junior Analyst</h4>
+                            <p id="final-pattern-note" style="color: var(--text-muted); line-height: 1.5; font-size: 0.9rem;"></p>
                         </div>
                     </div>
                 </div>
@@ -563,17 +590,17 @@
     <script>
         // --- ICONS (Reusable SVG paths) ---
         const ICONS = {
-            ml: `<svg viewBox="0 0 24 24"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>`,
-            dl: `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>`,
-            nlp: `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`,
-            cv: `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
-            robot: `<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4M8 11V9a4 4 0 0 1 8 0v2"></path></svg>`,
-            expert: `<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>`,
-            gen: `<svg viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707"></path></svg>`,
-            narrow: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-            strong: `<svg viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.04-2.44V4.5A2.5 2.5 0 0 1 7.5 2h2z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.04-2.44V4.5A2.5 2.5 0 0 0 16.5 2h-2z"></path></svg>`,
-            asi: `<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`,
-            classes: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>`
+            ml: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v14"/></svg>`,
+            dl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-10 5 10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>`,
+            nlp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+            cv: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/><path d="M5 5h3V2M19 5h-3V2M5 19h3v3M19 19h-3v3"/></svg>`,
+            robot: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="12" x="3" y="8" rx="2" ry="2"/><path d="M12 2v2"/><path d="M5 22v-2"/><path d="M19 22v-2"/><path d="M9 13h.01"/><path d="M15 13h.01"/><path d="M8 17h8"/></svg>`,
+            expert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9"/><path d="M12 14v1"/></svg>`,
+            gen: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5 5 3Z"/><path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z"/></svg>`,
+            narrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+            strong: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>`,
+            asi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+            classes: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.2 7.8-2 4.9-4.9 2-2-4.9 4.9-2z"/></svg>`
         };
 
         const ITEMS = [
@@ -590,14 +617,147 @@
         ];
 
         const BRIEF_DATA = {
-            ml: { id: "ml", title: "Machine Learning (ML)", body: "Systems that improve their performance by learning patterns from data, without being explicitly programmed for each case. <em>Example: Spam filters, credit scoring, Netflix genre categorization.</em>" },
-            dl: { id: "dl", title: "Deep Learning (DL)", body: "A subset of ML using multi-layered neural networks that can learn highly complex patterns — especially from large datasets like images, audio, and text. <em>Example: Face ID, real-time translation, AlphaGo.</em>" },
-            nlp: { id: "nlp", title: "Natural Language Processing (NLP)", body: "AI that understands, interprets, and generates human language — both written and spoken. <em>Example: Chatbots, autocomplete, voice assistants.</em>" },
-            cv: { id: "cv", title: "Computer Vision", body: "AI that interprets and analyzes visual information from images, video, or cameras. <em>Example: Medical imaging diagnosis, self-driving car lane detection.</em>" },
-            robot: { id: "robot", title: "AI Robotics", body: "AI that controls physical machines to perform tasks in the real world, combining sensors, decision-making, and movement. <em>Example: Amazon warehouse robots, surgical robots.</em>" },
-            expert: { id: "expert", title: "Expert Systems", body: "AI that encodes human expert knowledge into a set of rules (if-then logic) to make decisions in a specific domain. <em>Example: Medical diagnosis decision trees, early chess programs.</em>" },
-            gen: { id: "gen", title: "Generative AI", body: "AI that creates new content — text, images, audio, video, code — by learning patterns from vast training datasets. <em>Example: ChatGPT, DALL-E, GitHub Copilot.</em>" },
-            classes: { id: "classes", title: "The Three Classes of AI", body: "<ul><li><strong>Narrow AI:</strong> Designed for one specific task. Cannot generalize. (All current AI).</li><li><strong>Strong AI (AGI):</strong> Hypothetical system with human-level reasoning across all domains.</li><li><strong>ASI:</strong> Hypothetical system surpassing human intelligence in every domain simultaneously.</li></ul>" }
+            ml: { 
+                id: "ml", 
+                title: "Machine Learning (ML)", 
+                desc: "Systems that improve their performance by learning patterns from data, without being explicitly programmed for each case. It relies on mathematical models and algorithms to analyze large datasets (such as viewing history, ratings, and user transactions) to make accurate predictions, recommendations, or classifications.",
+                characteristics: [
+                    { label: "Pattern Recognition", detail: "Automatically detects hidden correlations across millions of data points to predict preferences." },
+                    { label: "Data-Driven Decisions", detail: "Learns and adapts over time as new data is introduced, rather than relying on rigid human-coded rules." },
+                    { label: "Task Scope", detail: "Highly effective for quantitative, structured data predictions." }
+                ],
+                examples: [
+                    "Streaming platform recommendation engines (analyzing historical user behavior to predict what you are most likely to watch next)",
+                    "Spam email filters",
+                    "Credit scoring and risk assessment",
+                    "Predictive machine maintenance"
+                ]
+            },
+            dl: { 
+                id: "dl", 
+                title: "Deep Learning (DL)", 
+                desc: "A specialized, advanced subset of Machine Learning that uses multi-layered artificial neural networks (hence 'deep') to learn highly complex, non-linear patterns from vast amounts of data. It is uniquely capable of processing high-dimensional, unstructured data (like image pixels, raw audio waves, or free-form text) without manual feature engineering.",
+                characteristics: [
+                    { label: "Neural Architectures", detail: "Inspired by the brain's biological structure, passing information through successive hidden layers to extract hierarchical features." },
+                    { label: "Pattern Recognition", detail: "Excels at identifying intricate, subtle visual details or acoustic properties in medical scans or raw waveforms." },
+                    { label: "Scale-Dependent", detail: "Demands substantial computational power (GPUs) and massive training datasets to achieve high classification accuracy." }
+                ],
+                examples: [
+                    "Medical imaging diagnostics (analyzing millions of MRI scans to flag regions that may indicate early-stage tumors)",
+                    "Facial recognition (Face ID) and phone unlocking",
+                    "Real-time speech translation and voice synthesis",
+                    "Deep gameplay systems (AlphaGo)"
+                ]
+            },
+            nlp: { 
+                id: "nlp", 
+                title: "Natural Language Processing (NLP)", 
+                desc: "AI that understands, interprets, parses, and generates human language — both written and spoken. It bridges the gap between human communication and computational data, allowing systems to extract structural context, determine sentiment, and converse naturally.",
+                characteristics: [
+                    { label: "Intent & Sentiment Analysis", detail: "Analyzes text and voice inputs to determine tone (complaints, questions, compliments) and intent." },
+                    { label: "Language Structuring", detail: "Uses tokenization, part-of-speech tagging, and syntactic parsing to convert raw text into structured commands." },
+                    { label: "Speech & Voice Recognition", detail: "Partners speech-to-text algorithms with conversational language modeling to understand and respond to spoken triggers." }
+                ],
+                examples: [
+                    "Customer support email routers (determining intent to forward automatically to specific teams)",
+                    "Voice assistants on smart speakers responding to spoken commands",
+                    "Interactive chatbots",
+                    "Autocomplete and word suggestion engines",
+                    "Machine translation tools"
+                ]
+            },
+            cv: { 
+                id: "cv", 
+                title: "Computer Vision", 
+                desc: "AI that enables computers to 'see' and interpret visual information from digital images, videos, and live camera feeds. It translates raw pixel arrays into structured, actionable data, allowing machines to identify, classify, track, and react to physical objects in their environment.",
+                characteristics: [
+                    { label: "Pixel Processing", detail: "Uses mathematical transformations and filters to detect lines, edges, colors, and spatial layouts." },
+                    { label: "Object Detection & Classification", detail: "Segments and classifies specific visual assets (such as identifying plant species from a photograph or detecting lane lines in real time)." },
+                    { label: "Continuous Analysis", detail: "Operates at high speeds to monitor environmental changes and adjust system responses." }
+                ],
+                examples: [
+                    "Smartphone apps identifying plant or animal species from photos",
+                    "Self-driving car lane-keeping systems (analyzing road markings to stay centered)",
+                    "Security surveillance monitors",
+                    "Automated visual quality inspection systems"
+                ]
+            },
+            robot: { 
+                id: "robot", 
+                title: "AI Robotics", 
+                desc: "The fusion of physical mechanical engineering with artificial intelligence. Unlike traditional, pre-programmed industrial arms that execute static, repetitive motions, AI Robotics relies on continuous sensor feedback and dynamic decision-making to navigate and manipulate the real world autonomously.",
+                characteristics: [
+                    { label: "Sensor-Actuator Loops", detail: "Constantly ingests physical feedback (cameras, LiDAR, proximity sensors) and converts it into physical motor actions." },
+                    { label: "Autonomous Navigation & Pathfinding", detail: "Maps local spaces, calculates optimal trajectories, and dynamically avoids sudden obstacles." },
+                    { label: "Physical Interaction", detail: "Directly grasps, moves, sorts, or operates physical items under varied conditions." }
+                ],
+                examples: [
+                    "Autonomous robots in fulfillment centers navigating warehouse aisles to retrieve packages",
+                    "Smart household robot vacuums",
+                    "Precision surgical robots",
+                    "Self-navigating drone delivery systems"
+                ]
+            },
+            expert: { 
+                id: "expert", 
+                title: "Expert Systems", 
+                desc: "A classic, rule-based paradigm of AI designed to simulate the decision-making ability of a human specialist. Instead of learning patterns statistically from training data, it solves complex problems by applying an 'inference engine' to a vast, curated database of hand-coded 'if-then' logical rules and decision trees.",
+                characteristics: [
+                    { label: "Deterministic Logic", detail: "Operates strictly within pre-programmed logical guidelines; given the same inputs, it always yields the same reasoning." },
+                    { label: "No Dynamic Learning", detail: "Does not discover new patterns or learn dynamically; its expertise is hardcoded manually by certified professionals." },
+                    { label: "High Explainability", detail: "The step-by-step reasoning can be fully audited and traced back to specific logical clauses." }
+                ],
+                examples: [
+                    "Tax preparation software (asking questions and applying IRS regulations to produce completed returns)",
+                    "Medical triage diagnosis decision trees",
+                    "Credit card authorization logic",
+                    "Early computer chess engines"
+                ]
+            },
+            gen: { 
+                id: "gen", 
+                title: "Generative AI", 
+                desc: "Advanced neural network models designed to synthesize and generate entirely new, original content — including written text, digital images, audio, code, or video. Rather than classifying existing files, these systems capture the underlying probabilistic distributions of training data to create novel outputs from simple prompts.",
+                characteristics: [
+                    { label: "Prompt-Driven Creation", detail: "Translates natural language instructions into high-fidelity, context-aware output objects." },
+                    { label: "Creative & Style Adaptation", detail: "Synthesizes original works that mimic specific writing styles, structures (e.g., APA formatting), or artistic genres." },
+                    { label: "Foundation Models", detail: "Powered by deep learning architectures (like Transformers and Diffusion models) trained on massive, internet-scale datasets." }
+                ],
+                examples: [
+                    "AI writing assistants producing original essays or research articles",
+                    "Synthetic image generators (DALL-E, Midjourney)",
+                    "Code generation tools (GitHub Copilot)",
+                    "Voice synthesis platforms"
+                ]
+            },
+            classes: { 
+                id: "classes", 
+                title: "The Three Classes of AI", 
+                desc: "AI capabilities are classified into three distinct evolutionary categories based on their cognitive scope, adaptability, and capacity to generalize across domains:",
+                cards: [
+                    { 
+                        label: "Narrow AI (ANI)", 
+                        sub: "Artificial Narrow Intelligence", 
+                        color: "blue", 
+                        status: "● Active Present Day", 
+                        body: "Designed and trained for a single, highly specific task (e.g., diagnosing tumors, routing emails, or tracking lane lines). It has no general awareness and cannot transfer its skills to any other domain. <strong>All current, real-world AI systems fall under this category.</strong>" 
+                    },
+                    { 
+                        label: "Strong AI (AGI)", 
+                        sub: "Artificial General Intelligence", 
+                        color: "purple", 
+                        status: "● Theoretical Sci-Fi", 
+                        body: "A theoretical system with human-level general cognitive abilities. It can reason, think abstractly, plan, solve problems, and learn new subjects dynamically with no domain limits. <strong>Currently exists only in science fiction</strong> (like an AI managing a spaceship)." 
+                    },
+                    { 
+                        label: "Superintelligence (ASI)", 
+                        sub: "Artificial Superintelligence", 
+                        color: "amber", 
+                        status: "● Hypothetical Future", 
+                        body: "A hypothetical future entity that far surpasses the smartest human minds in every single domain, including creative expression, general wisdom, scientific discovery, and social relationships. <strong>Currently a theoretical concept.</strong>" 
+                    }
+                ]
+            }
         };
 
         let state = {
@@ -681,15 +841,90 @@
                 btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${key}'`));
             });
 
-            container.innerHTML = `
-                <div class="fade-in">
-                    <div class="brief-header">
-                        <div class="brief-header-icon">${ICONS[data.id]}</div>
-                        <h2 style="color: var(--primary-blue);">${data.title}</h2>
+            if (key === 'classes') {
+                container.innerHTML = `
+                    <div class="fade-in" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                        <div class="brief-header" style="margin-bottom: 2px;">
+                            <div class="brief-header-icon">${ICONS.classes}</div>
+                            <h2 style="color: var(--primary-blue); font-weight: 700; font-size: 1.2rem;">${data.title}</h2>
+                        </div>
+                        <p style="font-size: 0.88rem; line-height: 1.45; color: var(--text-dark); margin-bottom: 2px;">${data.desc}</p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 2px;">
+                            ${data.cards.map(card => {
+                                let theme = {};
+                                if (card.color === 'blue') {
+                                    theme = { bg: '#f0f7ff', border: '#bfdbfe', topBorder: '#3b82f6', text: '#1e3a8a', badgeBg: '#dbeafe', badgeText: '#1e40af' };
+                                } else if (card.color === 'purple') {
+                                    theme = { bg: '#f5f3ff', border: '#ddd6fe', topBorder: '#8b5cf6', text: '#4c1d95', badgeBg: '#ede9fe', badgeText: '#5b21b6' };
+                                } else {
+                                    theme = { bg: '#fffbeb', border: '#fde68a', topBorder: '#f59e0b', text: '#78350f', badgeBg: '#fef3c7', badgeText: '#92400e' };
+                                }
+                                return `
+                                    <div style="background-color: ${theme.bg}; border: 1px solid ${theme.border}; border-top: 4px solid ${theme.topBorder}; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; height: 300px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s;">
+                                        <div>
+                                            <h3 style="color: ${theme.text}; font-weight: 700; font-size: 0.88rem; margin-bottom: 1px;">${card.label}</h3>
+                                            <span style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.02em; color: var(--text-muted); display: block; margin-bottom: 6px; font-weight: 600;">${card.sub}</span>
+                                            <p style="font-size: 0.78rem; line-height: 1.35; color: var(--text-dark);">${card.body}</p>
+                                        </div>
+                                        <div style="margin-top: 6px;">
+                                            <span style="background-color: ${theme.badgeBg}; color: ${theme.badgeText}; font-size: 0.64rem; font-weight: 700; padding: 3px 6px; border-radius: 4px; display: inline-block; letter-spacing: 0.02em;">${card.status}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: var(--text-dark);">${data.body}</p>
-                </div>
-            `;
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="fade-in" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                        <div class="brief-header" style="margin-bottom: 2px;">
+                            <div class="brief-header-icon">${ICONS[data.id]}</div>
+                            <h2 style="color: var(--primary-blue); font-weight: 700; font-size: 1.2rem;">${data.title}</h2>
+                        </div>
+                        <p style="font-size: 0.88rem; line-height: 1.45; color: var(--text-dark); margin-bottom: 4px;">${data.desc}</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 2px;">
+                            <!-- Characteristics Box -->
+                            <div style="background-color: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); display: flex; flex-direction: column; height: 260px;">
+                                <h3 style="color: #4c1d95; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #ede9fe; padding-bottom: 4px; flex-shrink: 0;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px; color: #8b5cf6;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    Key Characteristics
+                                </h3>
+                                <div style="overflow-y: auto; flex-grow: 1; padding-right: 2px;">
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+                                        ${data.characteristics.map(c => `
+                                            <li style="font-size: 0.78rem; line-height: 1.35; color: var(--text-dark);">
+                                                <strong style="color: #4c1d95; display: block; margin-bottom: 1px;">• ${c.label}</strong>
+                                                <span style="color: #4b5563;">${c.detail}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Real-World Examples Box -->
+                            <div style="background-color: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); display: flex; flex-direction: column; height: 260px;">
+                                <h3 style="color: #0d9488; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #ccfbf1; padding-bottom: 4px; flex-shrink: 0;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 13px; height: 13px; color: #14b8a6;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    Real-World Examples
+                                </h3>
+                                <div style="overflow-y: auto; flex-grow: 1; padding-right: 2px;">
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 6px;">
+                                        ${data.examples.map(ex => `
+                                            <li style="font-size: 0.78rem; line-height: 1.35; color: var(--text-dark); display: flex; gap: 4px; align-items: flex-start;">
+                                                <span style="color: #14b8a6; font-weight: bold; font-size: 0.9rem; line-height: 0.8; margin-top: 1px;">⚡</span>
+                                                <span style="color: #374151;">${ex}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function updateLabUI() {
@@ -701,31 +936,55 @@
             document.getElementById('lab-item-title').textContent = `Item ${String(state.currentItemIndex + 1).padStart(2, '0')} / 10`;
             document.getElementById('lab-description').textContent = item.desc;
             
-            const currentPoints = state.subsetScore + state.classScore;
+            // Recompute accuracy based on submitted results so far
+            let currentPoints = 0;
+            state.results.forEach(res => {
+                if (res.subCorrect) currentPoints++;
+                if (res.classCorrect) currentPoints++;
+            });
             const totalPossibleActionsSoFar = state.results.length * 2;
             const acc = state.results.length === 0 ? 0 : Math.round((currentPoints / totalPossibleActionsSoFar) * 100);
             document.getElementById('lab-score-display').textContent = `Accuracy: ${acc}%`;
 
-            state.selectedSubset = null;
-            state.selectedClass = null;
-            state.labSubmitted = false;
-            feedback.style.display = 'none';
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = 'block';
-            submitBtn.disabled = true;
-
-            const subsetGrid = document.getElementById('subset-group');
-            const multiMsg = document.getElementById('multi-subset-msg');
-            if (item.subset === "Multi") {
-                subsetGrid.style.display = 'none';
-                multiMsg.style.display = 'block';
-                state.selectedSubset = "Multi";
+            // Check if we already have a saved result for this item
+            const savedResult = state.results[state.currentItemIndex];
+            if (savedResult) {
+                state.selectedSubset = savedResult.selectedSubset;
+                state.selectedClass = savedResult.selectedClass;
+                state.labSubmitted = true;
+                
+                // Show feedback
+                showSubmitFeedback(savedResult);
+                
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'block';
+                if (state.currentItemIndex === 9) {
+                    nextBtn.textContent = "View Results";
+                } else {
+                    nextBtn.textContent = "Next";
+                }
             } else {
-                subsetGrid.style.display = 'block';
-                multiMsg.style.display = 'none';
-            }
+                state.selectedSubset = null;
+                state.selectedClass = null;
+                state.labSubmitted = false;
+                feedback.style.display = 'none';
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+                submitBtn.disabled = true;
 
-            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+                const subsetGrid = document.getElementById('subset-group');
+                const multiMsg = document.getElementById('multi-subset-msg');
+                if (item.subset === "Multi") {
+                    subsetGrid.style.display = 'none';
+                    multiMsg.style.display = 'block';
+                    state.selectedSubset = "Multi";
+                } else {
+                    subsetGrid.style.display = 'block';
+                    multiMsg.style.display = 'none';
+                }
+
+                document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            }
         }
 
         function selectSubset(val) {
@@ -747,7 +1006,8 @@
         }
 
         function checkEnableSubmit() {
-            document.getElementById('btn-submit').disabled = !(state.selectedSubset && state.selectedClass);
+            const submitBtn = document.getElementById('btn-submit');
+            submitBtn.disabled = !(state.selectedSubset && state.selectedClass);
         }
 
         function handleSubmit() {
@@ -760,17 +1020,29 @@
             if (subCorrect) state.subsetScore++;
             if (classCorrect) state.classScore++;
 
-            state.results.push({
+            const resultObj = {
                 item: item,
                 subCorrect,
                 classCorrect,
                 selectedSubset: state.selectedSubset,
                 selectedClass: state.selectedClass
-            });
+            };
+
+            state.results[state.currentItemIndex] = resultObj;
 
             document.getElementById('btn-submit').style.display = 'none';
-            document.getElementById('btn-next').style.display = 'block';
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.style.display = 'block';
+            if (state.currentItemIndex === 9) {
+                nextBtn.textContent = "View Results";
+            } else {
+                nextBtn.textContent = "Next";
+            }
             
+            showSubmitFeedback(resultObj);
+        }
+
+        function showSubmitFeedback(result) {
             const feedback = document.getElementById('lab-feedback');
             const status = document.getElementById('feedback-status');
             const badges = document.getElementById('feedback-badges');
@@ -780,30 +1052,36 @@
             feedback.style.display = 'block';
             feedback.className = 'feedback-area fade-in';
             
-            if (subCorrect && classCorrect) {
-                feedback.style.borderColor = '#cfe2ff';
+            // Apply corresponding pill styles to interactive pills
+            document.querySelectorAll('#subset-pills .pill').forEach(p => {
+                p.classList.toggle('active', p.getAttribute('data-subset') === result.selectedSubset);
+            });
+            document.querySelectorAll('#class-pills .pill').forEach(p => {
+                p.classList.toggle('active', p.getAttribute('data-class') === result.selectedClass);
+            });
+
+            if (result.subCorrect && result.classCorrect) {
+                feedback.style.borderColor = '#bfdbfe';
+                feedback.style.backgroundColor = '#eff6ff';
                 status.textContent = "Analysis Verified";
                 status.style.color = 'var(--primary-blue)';
                 icon.textContent = "✓";
+                icon.style.color = 'var(--primary-blue)';
             } else {
-                feedback.style.borderColor = '#f8d7da';
+                feedback.style.borderColor = '#fca5a5';
+                feedback.style.backgroundColor = '#fef2f2';
                 status.textContent = "Analysis Incomplete";
-                status.style.color = "#842029";
+                status.style.color = "#991b1b";
                 icon.textContent = "!";
+                icon.style.color = '#991b1b';
             }
 
             badges.innerHTML = `
-                <span class="badge" style="background:${subCorrect ? '#20c997' : '#dc3545'}">Subset: ${item.subset}</span>
-                <span class="badge" style="background:${classCorrect ? '#20c997' : '#dc3545'}">Class: ${item.class}</span>
+                <span class="badge" style="background:${result.subCorrect ? '#059669' : '#dc2626'}; margin-right: 4px;">Subset: ${result.item.subset}</span>
+                <span class="badge" style="background:${result.classCorrect ? '#059669' : '#dc2626'}">Class: ${result.item.class}</span>
             `;
 
-            text.textContent = item.expl;
-            
-            if (state.currentItemIndex === 9) {
-                document.getElementById('btn-next').textContent = "View Results →";
-            } else {
-                document.getElementById('btn-next').textContent = "Next Item →";
-            }
+            text.textContent = result.item.expl;
         }
 
         function renderTaxonomy() {
@@ -819,11 +1097,12 @@
                 subsets.forEach(sub => {
                     const cell = document.createElement('div');
                     cell.className = 'tax-cell';
+                    
                     state.results.forEach((res, idx) => {
-                        if (res.item.subset === sub && res.item.class === cls) {
+                        if (res && res.item.subset === sub && res.item.class === cls) {
                             const div = document.createElement('div');
                             div.className = 'tax-item';
-                            div.textContent = `#${String(idx+1).padStart(2, '0')} ${res.item.subset}`;
+                            div.textContent = `#${String(idx+1).padStart(2, '0')} ${res.item.subset === "Multi" ? "MULTI" : res.item.subset}`;
                             cell.appendChild(div);
                         }
                     });
@@ -838,10 +1117,11 @@
             
             const total = state.subsetScore + state.classScore;
             let rank = "Junior Analyst";
-            let note = "Keep building your AI taxonomy fluency.";
-            if (total > 10) { rank = "Systems Analyst"; note = "You're distinguishing the key categories well."; }
-            if (total > 15) { rank = "Senior Analyst"; note = "Strong classification across most subsets."; }
-            if (total >= 19) { rank = "Lead AI Systems Analyst"; note = "Complete taxonomy mastery achieved."; }
+            let note = "Keep building your AI taxonomy and structural mapping fluency.";
+            if (total >= 10) { rank = "Systems Analyst"; note = "You are distinguishing the key structural categories well."; }
+            if (total >= 15) { rank = "Senior Analyst"; note = "Strong classification across most subsets. Great structural deduction."; }
+            if (total >= 19) { rank = "Lead AI Systems Analyst"; note = "Complete taxonomy mastery achieved. Pristine system insight."; }
+            
             document.getElementById('final-rank').textContent = rank;
             document.getElementById('final-pattern-note').textContent = note;
         }
