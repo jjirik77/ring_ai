@@ -6,11 +6,19 @@
     <title>Prediction Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e2e8f0; 
+            background: radial-gradient(circle at 50% 10%, #f1f5f9 0%, #cbd5e1 100%);
+        }
+
+        .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .tooltip {
@@ -21,17 +29,64 @@
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.2s;
             pointer-events: none;
         }
 
         .has-tooltip:hover .tooltip {
             visibility: visible;
             opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
         }
 
+        /* Premium custom slider styling */
         input[type=range] {
-            accent-color: #3b82f6;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 6px;
+            transition: background 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -5px; /* Centers thumb on the track */
+            background-color: #3b82f6;
+            border-radius: 9999px;
+            height: 16px;
+            width: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background-color: #2563eb;
+        }
+        input[type=range]::-moz-range-track {
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 6px;
+        }
+        input[type=range]::-moz-range-thumb {
+            background-color: #3b82f6;
+            border: none;
+            border-radius: 9999px;
+            height: 16px;
+            width: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        input[type=range]::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            background-color: #2563eb;
         }
 
         .quiz-option input[type="radio"]:checked + div {
@@ -50,38 +105,55 @@
         .grid-rows-10 {
             grid-template-rows: repeat(10, minmax(0, 1fr));
         }
+
+        @keyframes pulse-highlight {
+            0%, 100% {
+                outline: 2px solid rgba(59, 130, 246, 0.3);
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+            }
+            50% {
+                outline: 2px solid rgba(59, 130, 246, 0.85);
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            }
+        }
+        .mission-highlight {
+            animation: pulse-highlight 2s ease-in-out infinite;
+            border-radius: 0.75rem;
+            position: relative;
+            z-index: 40;
+        }
     </style>
 </head>
 <body class="h-screen w-screen flex items-center justify-center p-2 md:p-4 overflow-hidden text-slate-900">
 
     <!-- Onboarding Modal -->
-    <div id="onboarding-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300" style="display: none;">
-        <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl transform transition-all mx-4 border border-blue-100">
-            <h2 class="text-2xl font-extrabold text-slate-900 mb-4 tracking-tight" id="tour-title">Welcome to the Lab! 🔬</h2>
+    <div id="onboarding-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 backdrop-blur-md transition-opacity duration-300" style="display: none;">
+        <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full shadow-2xl transform transition-all mx-4 border border-slate-100/80">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight font-display" id="tour-title">Welcome to the Lab! 🔬</h2>
             <p class="text-slate-600 mb-6 leading-relaxed text-sm" id="tour-content">
                 In this simulation, you'll see how AI models handle uncertainty. The grid on the right represents 50 items (emails or patients). Each has a hidden <b>True State</b> and a <b>Probability Score</b> from the AI.
             </p>
-            <div class="flex justify-between items-center mt-8 pt-4 border-t border-slate-100">
+            <div class="flex justify-between items-center mt-8 pt-5 border-t border-slate-100">
                 <div class="flex gap-2" id="tour-dots">
                     <div class="w-2 h-2 rounded-full bg-blue-600"></div>
                     <div class="w-2 h-2 rounded-full bg-slate-200"></div>
                     <div class="w-2 h-2 rounded-full bg-slate-200"></div>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="closeTour()" class="text-slate-500 hover:text-slate-800 text-sm font-semibold px-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-300 rounded">Skip</button>
-                    <button onclick="nextTourStep()" id="btn-tour-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Next</button>
+                    <button onclick="closeTour()" class="text-slate-500 hover:text-slate-800 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-300">Skip</button>
+                    <button onclick="nextTourStep()" id="btn-tour-next" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Next</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- MAIN APP WINDOW -->
-    <div class="w-full max-w-[1280px] h-[95vh] max-h-[820px] min-h-[550px] bg-[#f8fafc] border-[6px] border-blue-500 rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(59,130,246,0.4)] flex flex-col relative overflow-hidden">
+    <div class="w-full max-w-[98vw] xl:max-w-[1540px] h-[95vh] max-h-[920px] min-h-[580px] bg-slate-50 border-2 md:border-[3px] border-blue-500 rounded-2xl md:rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(59,130,246,0.18)] flex flex-col relative overflow-hidden transition-all duration-300">
         
         <!-- Stepper Top Bar -->
-        <div class="bg-white px-4 py-2.5 md:px-6 md:py-3 rounded-xl shadow-sm border border-slate-200 shrink-0 flex items-center justify-between z-10 mx-3 mt-3 md:mx-4 md:mt-4">
-            <button onclick="openTour()" class="hidden md:flex px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 items-center gap-1 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-300">
-                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="bg-white px-4 py-2.5 md:px-6 md:py-3 rounded-2xl shadow-sm border border-slate-200/60 shrink-0 flex items-center justify-between z-10 mx-3 mt-3 md:mx-4 md:mt-4">
+            <button onclick="openTour()" class="hidden md:flex px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200/60 hover:bg-slate-100 items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-300 transition-all">
+                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Tour
             </button>
             
@@ -126,35 +198,180 @@
             </nav>
         </div>
 
-        <!-- ================= PAGE 1: BRIEFING ================= -->
-        <div id="page-1" class="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full h-full overflow-y-auto px-4 py-8">
-            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 w-full text-center">
-                <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                </div>
-                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">Understanding Uncertainty</h1>
-                <p class="text-slate-600 mb-6 leading-relaxed text-sm md:text-base">
-                    Machine Learning models rarely answer with a simple "Yes" or "No". Instead, they calculate a <b>Probability Score</b>. It is up to human designers to decide where to draw the line.
-                </p>
+        <!-- ================= PAGE 1: BRIEFING SLIDES ================= -->
+        <div id="page-1" class="flex-1 flex flex-col items-center justify-center max-w-5xl lg:max-w-6xl mx-auto w-full h-full overflow-y-auto px-4 py-4 md:py-6">
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg border border-slate-200/80 w-full flex flex-col justify-between min-h-[520px] transition-all duration-300">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mb-6">
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                        <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2 text-sm">
-                            <span class="w-2 h-2 rounded-full bg-blue-600"></span> The Threshold
-                        </h3>
-                        <p class="text-xs text-slate-500 leading-relaxed">You will set the <b>Decision Threshold</b>. Any item scoring above your line is flagged. Set it too low, you get false alarms. Set it too high, you miss targets.</p>
+                <!-- Slide Header & Step Indicator -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🔬</span>
+                        <h2 class="text-xs font-black uppercase tracking-wider text-slate-400">Pre-Lab Briefing</h2>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                        <h3 class="font-bold text-slate-800 mb-1 flex items-center gap-2 text-sm">
-                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> The Overlap
-                        </h3>
-                        <p class="text-xs text-slate-500 leading-relaxed">Models aren't perfect. Safe items sometimes look suspicious, and dangerous items sometimes look safe. This mathematical overlap guarantees mistakes.</p>
+                    <!-- Indicator dots -->
+                    <div class="flex items-center gap-2" id="briefing-dots">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 transition-all duration-300" id="brief-dot-1"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" id="brief-dot-2"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" id="brief-dot-3"></span>
                     </div>
                 </div>
 
-                <button onclick="goToPage(2)" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Start Lab: Scenario 1
-                </button>
+                <!-- Slide Content Area (Flex-grow to push navigation down) -->
+                <div class="flex-1 flex flex-col justify-center py-2">
+                    
+                    <!-- BRIEFING SLIDE 1 -->
+                    <div id="briefing-slide-1" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4">
+                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">What is a Decision Threshold?</h1>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                AI models rarely think in pure black and white. Instead of a simple "yes" or "no", they calculate a <b>Probability Score</b> or confidence rating (e.g., <i>"This email has an 85% chance of being spam"</i>).
+                            </p>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                To turn this numerical score into a real-world action, humans must define a <b>Decision Threshold</b>—the specific line where we choose to act.
+                            </p>
+                        </div>
+
+                        <!-- Analogy Card -->
+                        <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl shadow-sm space-y-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🧯</span>
+                                <h3 class="font-bold text-xs text-slate-800 uppercase tracking-wide font-display">Interactive Analogy: The School Smoke Sensor</h3>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Imagine an automated smoke sensor in your school cafeteria. Move the slider below to set the decision threshold and watch how the system reacts!
+                            </p>
+
+                            <!-- Interactive Slider -->
+                            <div class="space-y-3 bg-white p-3.5 rounded-xl border border-slate-200/60 shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Set Sensor Sensitivity</span>
+                                    <span id="brief-thresh-val" class="font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">50% Sensitivity</span>
+                                </div>
+                                <input type="range" id="brief-thresh-slider" min="0" max="100" value="50" oninput="updateBriefingSlider(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust School Smoke Sensor Sensitivity">
+                                <div class="flex justify-between text-[8px] text-slate-400 font-bold uppercase tracking-wider px-1 font-mono">
+                                    <span>0% (Trigger on anything)</span>
+                                    <span>100% (Strict fire only)</span>
+                                </div>
+                            </div>
+
+                            <!-- Live Dynamic Simulator Feedback -->
+                            <div class="p-3.5 rounded-xl border border-blue-100 bg-blue-50/40 flex gap-3 items-start transition-all duration-200" id="brief-feedback-card">
+                                <span class="text-2xl shrink-0" id="brief-feedback-emoji">⚖️</span>
+                                <div class="space-y-0.5">
+                                    <h4 class="font-bold text-xs text-blue-950 font-display" id="brief-feedback-title">Balanced Setting</h4>
+                                    <p class="text-xs leading-relaxed text-slate-600" id="brief-feedback-desc">Select a threshold above to test how the school reacts!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BRIEFING SLIDE 2 -->
+                    <div id="briefing-slide-2" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4">
+                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Meet the Confusion Matrix</h1>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Every threshold decision we make leads to direct, real-world consequences. No AI or automated system is perfectly accurate in every edge case.
+                            </p>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Depending on whether our school smoke alarm rings or stays silent, there are exactly <b>four possible outcomes</b>. These outcomes form a grid called a <b>Confusion Matrix</b>.
+                            </p>
+                        </div>
+
+                        <!-- 2x2 Interactive Explanation Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <!-- True Positive -->
+                            <div class="bg-emerald-50/60 border border-emerald-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
+                                <div class="bg-emerald-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">TP</div>
+                                <div class="space-y-0.5">
+                                    <h3 class="font-bold text-xs text-emerald-950 flex flex-wrap items-center gap-1.5 font-display">True Positive</h3>
+                                    <p class="text-[11px] leading-relaxed text-slate-600">The cafeteria has a <b>real fire</b>, and the alarm rings. Students evacuate safely. 🎉</p>
+                                </div>
+                            </div>
+
+                            <!-- False Positive -->
+                            <div class="bg-red-50/60 border border-red-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
+                                <div class="bg-red-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">FP</div>
+                                <div class="space-y-0.5">
+                                    <h3 class="font-bold text-xs text-red-950 flex flex-wrap items-center gap-1.5 font-display">False Positive</h3>
+                                    <p class="text-[11px] leading-relaxed text-slate-600">It's just <b>burnt toast</b>, but the alarm rings anyway. Students shiver outside. 🙄</p>
+                                </div>
+                            </div>
+
+                            <!-- False Negative -->
+                            <div class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
+                                <div class="bg-amber-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">FN</div>
+                                <div class="space-y-0.5">
+                                    <h3 class="font-bold text-xs text-amber-950 flex flex-wrap items-center gap-1.5 font-display">False Negative</h3>
+                                    <p class="text-[11px] leading-relaxed text-slate-600">The school is <b>on fire</b>, but the alarm stays silent. Extremely dangerous! 😱</p>
+                                </div>
+                            </div>
+
+                            <!-- True Negative -->
+                            <div class="bg-slate-50 border border-slate-200/60 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
+                                <div class="bg-slate-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">TN</div>
+                                <div class="space-y-0.5">
+                                    <h3 class="font-bold text-xs text-slate-900 flex flex-wrap items-center gap-1.5 font-display">True Negative</h3>
+                                    <p class="text-[11px] leading-relaxed text-slate-600">The air is <b>perfectly safe</b>, and the alarm is quiet. Normal school day. 📚</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BRIEFING SLIDE 3 -->
+                    <div id="briefing-slide-3" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4">
+                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Precision vs. Recall Tug-of-War</h1>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Because real-world data overlaps, optimizing a decision model is a perpetual balancing act.
+                            </p>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Prioritizing <b>Precision</b> means you want your positive alerts to be extremely reliable. Prioritizing <b>Recall</b> means you want to catch as many positive cases as possible.
+                            </p>
+                        </div>
+
+                        <!-- Tug of War Simulator -->
+                        <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl shadow-sm space-y-4">
+                            <!-- Toggle Buttons -->
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                <button onclick="selectTugOfWar('precision')" id="btn-tug-precision" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
+                                    🎯 Focus on Precision (Quality)
+                                </button>
+                                <button onclick="selectTugOfWar('recall')" id="btn-tug-recall" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
+                                    📢 Focus on Recall (Coverage)
+                                </button>
+                                <button onclick="selectTugOfWar('balanced')" id="btn-tug-balanced" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-blue-600 border-blue-600 text-white font-black">
+                                    ⚖️ Balanced
+                                </button>
+                            </div>
+
+                            <!-- Seesaw Scale Diagram -->
+                            <div class="h-16 w-full flex items-center justify-center relative bg-white rounded-xl border border-slate-200/40 p-3 shadow-inner">
+                                <div class="absolute bottom-2 w-8 h-8 bg-slate-400 rounded-t-full shadow-inner z-0"></div>
+                                <div class="w-72 h-3 bg-slate-700 rounded-full transition-transform duration-500 origin-center z-10" id="seesaw-bar" style="transform: rotate(0deg);">
+                                    <div class="absolute -top-7 left-3 bg-blue-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow-sm font-mono">Precision</div>
+                                    <div class="absolute -top-7 right-3 bg-amber-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow-sm font-mono">Recall</div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Explanation Box -->
+                            <div class="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-center leading-relaxed text-slate-600 font-medium" id="tug-explanation">
+                                A balanced threshold targets moderate amounts of both mistakes to preserve general performance.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide Footer Navigation -->
+                <div class="border-t border-slate-100 pt-4 flex items-center justify-between shrink-0">
+                    <button onclick="prevBriefingSlide()" id="btn-brief-back" class="px-4 py-2 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none transition-all flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                        Back
+                    </button>
+                    <button onclick="nextBriefingSlide()" id="btn-brief-next" class="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-1.5 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500">
+                        Next
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -167,131 +384,177 @@
                 <!-- LEFT COLUMN: Controls & Matrix -->
                 <div class="w-full md:w-[260px] lg:w-[300px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
                     <!-- Variables Card -->
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 shrink-0">
-                        <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3 flex items-center justify-between">
-                            Variables <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-500">Inputs</span>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 shrink-0">
+                        <h2 class="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-3 flex items-center justify-between font-display">
+                            Variables <span class="bg-slate-50 border border-slate-200/40 px-2 py-0.5 rounded text-slate-500 font-mono text-[8px]">Inputs</span>
                         </h2>
-                        <div class="space-y-3">
+                        <div class="space-y-3.5">
                             <div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <label class="text-[11px] font-bold text-slate-700" id="label-baserate">Prevalence</label>
-                                    <span id="val-baserate" class="text-[10px] font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-bold">10%</span>
+                                    <label class="text-[11px] font-semibold text-slate-700" id="label-baserate">Prevalence</label>
+                                    <span id="val-baserate" class="text-[10px] font-mono bg-slate-50 border border-slate-200/40 px-1.5 py-0.5 rounded text-slate-600 font-bold">10%</span>
                                 </div>
-                                <input type="range" id="input-baserate" min="1" max="50" value="10" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Prevalence Base Rate">
+                                <input type="range" id="input-baserate" min="1" max="50" value="10" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer animate-none" aria-label="Adjust Prevalence Base Rate">
                             </div>
                             <div>
                                 <div class="flex justify-between items-center mb-1">
-                                    <label class="text-[11px] font-bold text-slate-700">Decision Threshold</label>
-                                    <span id="val-threshold" class="text-[10px] font-mono bg-blue-100 px-1.5 py-0.5 rounded text-blue-700 font-bold">0.50</span>
+                                    <label class="text-[11px] font-semibold text-slate-700">Decision Threshold</label>
+                                    <span id="val-threshold" class="text-[10px] font-mono bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded text-blue-600 font-bold">0.50</span>
                                 </div>
-                                <input type="range" id="input-threshold" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Decision Threshold">
+                                <input type="range" id="input-threshold" min="0" max="100" value="50" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer animate-none" aria-label="Adjust Decision Threshold">
                             </div>
                         </div>
                     </div>
 
                     <!-- Performance Matrix Card (Compact) -->
-                    <div class="bg-slate-900 text-white p-3 lg:p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-0">
-                        <div class="flex justify-between items-center mb-2 shrink-0">
-                            <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-500">Confusion Matrix</h2>
-                            <div class="text-[8px] text-slate-400 font-mono bg-slate-800 px-1.5 py-0.5 rounded">N=50</div>
+                    <div class="bg-slate-950 text-slate-100 p-4 rounded-2xl shadow-xl flex-1 flex flex-col min-h-0 border border-slate-800">
+                        <div class="flex justify-between items-center mb-3 shrink-0">
+                            <h2 class="text-[9px] font-bold uppercase tracking-widest text-slate-500 font-display">Confusion Matrix</h2>
+                            <div class="text-[9px] text-slate-400 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">N=50</div>
                         </div>
                         <!-- 2x2 Grid -->
-                        <div class="grid grid-cols-2 gap-1.5 mb-2 shrink-0">
-                            <div class="bg-slate-800 py-1.5 rounded-xl border border-slate-700/50 flex flex-col justify-center items-center">
-                                <div class="text-lg lg:text-xl font-bold text-emerald-400 leading-none mb-0.5" id="mat-tn">0</div>
-                                <div class="text-[7px] lg:text-[8px] uppercase text-slate-400 tracking-wider">True Neg (TN)</div>
+                        <div class="grid grid-cols-2 gap-2 mb-3 shrink-0">
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-col justify-center items-center transition-all duration-300 hover:border-slate-700" id="cell-tn">
+                                <div class="text-xl lg:text-2xl font-bold text-slate-300 font-mono leading-none mb-1" id="mat-tn">0</div>
+                                <div class="text-[8px] uppercase text-slate-400 tracking-wider">True Neg (TN)</div>
                             </div>
-                            <div class="bg-slate-800 py-1.5 rounded-xl border border-red-900/30 flex flex-col justify-center items-center">
-                                <div class="text-lg lg:text-xl font-bold text-red-400 leading-none mb-0.5" id="mat-fp">0</div>
-                                <div class="text-[7px] lg:text-[8px] uppercase text-red-300 tracking-wider font-bold">False Pos (FP)</div>
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-red-950/40 flex flex-col justify-center items-center transition-all duration-300 hover:border-red-900/40" id="cell-fp">
+                                <div class="text-xl lg:text-2xl font-bold text-red-400 font-mono leading-none mb-1" id="mat-fp">0</div>
+                                <div class="text-[8px] uppercase text-red-300 tracking-wider font-semibold">False Pos (FP)</div>
                             </div>
-                            <div class="bg-slate-800 py-1.5 rounded-xl border border-amber-900/30 flex flex-col justify-center items-center">
-                                <div class="text-lg lg:text-xl font-bold text-amber-500 leading-none mb-0.5" id="mat-fn">0</div>
-                                <div class="text-[7px] lg:text-[8px] uppercase text-amber-300 tracking-wider">False Neg (FN)</div>
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-amber-950/40 flex flex-col justify-center items-center transition-all duration-300 hover:border-amber-900/40" id="cell-fn">
+                                <div class="text-xl lg:text-2xl font-bold text-amber-500 font-mono leading-none mb-1" id="mat-fn">0</div>
+                                <div class="text-[8px] uppercase text-amber-400 tracking-wider font-semibold">False Neg (FN)</div>
                             </div>
-                            <div class="bg-slate-800 py-1.5 rounded-xl border border-blue-900/30 flex flex-col justify-center items-center">
-                                <div class="text-lg lg:text-xl font-bold text-blue-400 leading-none mb-0.5" id="mat-tp">0</div>
-                                <div class="text-[7px] lg:text-[8px] uppercase text-blue-300 tracking-wider font-bold">True Pos (TP)</div>
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-blue-950/40 flex flex-col justify-center items-center transition-all duration-300 hover:border-blue-900/40" id="cell-tp">
+                                <div class="text-xl lg:text-2xl font-bold text-blue-400 font-mono leading-none mb-1" id="mat-tp">0</div>
+                                <div class="text-[8px] uppercase text-blue-300 tracking-wider font-semibold">True Pos (TP)</div>
                             </div>
                         </div>
 
                         <!-- Derived Metrics -->
-                        <div class="flex-1 flex flex-col justify-end space-y-1.5 border-t border-slate-800 pt-1.5 min-h-0">
+                        <div class="flex-1 flex flex-col justify-end space-y-2 border-t border-slate-900 pt-3 min-h-0">
                             <div class="flex justify-between items-center group relative cursor-help" tabindex="0">
                                 <div class="flex items-center gap-1.5">
-                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-blue-300">Precision</div>
-                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-blue-300 font-mono">Precision</div>
+                                    <div class="w-3 h-3 rounded-full bg-slate-900 text-slate-500 border border-slate-800 flex items-center justify-center text-[7px] font-bold font-mono">?</div>
                                 </div>
-                                <div id="metric-precision" class="font-mono text-[10px] lg:text-[11px] text-blue-300">0.000</div>
-                                <div id="tooltip-precision" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                                <div id="metric-precision" class="font-mono text-xs text-blue-300 font-bold">0.000</div>
+                                <div id="tooltip-precision" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-900 text-white text-[10px] p-2.5 rounded-xl shadow-lg border border-slate-800 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
                             </div>
                             
                             <div class="flex justify-between items-center group relative cursor-help" tabindex="0">
                                 <div class="flex items-center gap-1.5">
-                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-amber-300">Recall</div>
-                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-amber-300 font-mono">Recall</div>
+                                    <div class="w-3 h-3 rounded-full bg-slate-900 text-slate-500 border border-slate-800 flex items-center justify-center text-[7px] font-bold font-mono">?</div>
                                 </div>
-                                <div id="metric-recall" class="font-mono text-[10px] lg:text-[11px] text-amber-300">0.000</div>
-                                <div id="tooltip-recall" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                                <div id="metric-recall" class="font-mono text-xs text-amber-300 font-bold">0.000</div>
+                                <div id="tooltip-recall" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-900 text-white text-[10px] p-2.5 rounded-xl shadow-lg border border-slate-800 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
                             </div>
 
-                            <div class="flex justify-between items-center pt-1 border-t border-slate-800 mt-1 group relative cursor-help" tabindex="0">
+                            <div class="flex justify-between items-center pt-2.5 border-t border-slate-900 mt-1.5 group relative cursor-help" tabindex="0">
                                 <div class="flex items-center gap-1.5">
-                                    <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest text-emerald-400">Cost Score</div>
-                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[7px] font-bold">?</div>
+                                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-emerald-400 font-mono">Cost Score</div>
+                                    <div class="w-3 h-3 rounded-full bg-slate-900 text-slate-500 border border-slate-800 flex items-center justify-center text-[7px] font-bold font-mono">?</div>
                                 </div>
-                                <div id="metric-cost" class="font-mono text-xs lg:text-sm font-bold text-emerald-400">0</div>
-                                <div id="tooltip-cost" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-700 text-white text-[10px] p-2 rounded shadow-lg opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
+                                <div id="metric-cost" class="font-mono text-sm font-bold text-emerald-400">0</div>
+                                <div id="tooltip-cost" class="absolute bottom-full left-0 mb-2 w-48 bg-slate-900 text-white text-[10px] p-2.5 rounded-xl shadow-lg border border-slate-800 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity pointer-events-none z-10 leading-tight"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CENTER COLUMN: Histogram -->
+                <!-- CENTER COLUMN: Histogram & Scenario Walkthrough -->
                 <div class="flex-1 flex flex-col gap-3 min-h-0 h-full">
-                    <div class="bg-white p-3 lg:p-5 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
-                        <div class="flex justify-between items-start mb-2 shrink-0">
+                    <div class="bg-white p-4 lg:p-6 rounded-2xl shadow-sm border border-slate-200/80 flex-1 flex flex-col min-h-0">
+                        <div class="flex justify-between items-center mb-3 shrink-0">
                             <div>
-                                <span id="lab-scenario-badge" class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[8px] font-bold uppercase tracking-wider mb-1 inline-block">Scenario</span>
-                                <h2 class="text-lg lg:text-xl font-extrabold text-slate-900 leading-none" id="lab-title">Analysis</h2>
+                                <span id="lab-scenario-badge" class="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[8px] font-bold uppercase tracking-wider mb-1 inline-block font-mono">Scenario</span>
+                                <h2 class="text-xl lg:text-2xl font-bold text-slate-900 leading-none font-display" id="lab-title">Analysis</h2>
                             </div>
                         </div>
                         
-                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3 shrink-0 flex items-start gap-2">
-                            <div class="text-sm leading-none mt-0.5">💡</div>
-                            <p id="insight-text" class="text-xs text-slate-600 leading-snug"></p>
+                        <!-- Interactive Walkthrough Scenarios Card -->
+                        <div class="bg-slate-50 border border-slate-200/60 p-4 rounded-2xl mb-3 shrink-0 flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wide font-display">
+                                    <span class="text-sm">🧭</span> Walkthrough Scenarios
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="prevMission()" id="btn-prev-mission" class="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all border border-slate-200/80 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+                                    </button>
+                                    <span id="mission-counter" class="text-[10px] font-mono font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md">1 / 3</span>
+                                    <button onclick="nextMission()" id="btn-next-mission" class="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-all border border-slate-200/80 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tabs for quick selecting missions -->
+                            <div class="flex gap-1 overflow-x-auto no-scrollbar bg-slate-200/40 p-1 rounded-xl border border-slate-200/30" id="mission-tabs-container">
+                                <!-- Generated by JS depending on active scenario -->
+                            </div>
+
+                            <!-- Mission Content & Connection Explainer -->
+                            <div class="bg-white p-3.5 rounded-xl border border-slate-200/60 flex flex-col gap-2 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-bold text-xs text-slate-800 leading-tight font-display" id="mission-title">Mission Title</h3>
+                                    <button onclick="applyMissionPreset()" class="px-2.5 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-bold hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-1 shadow-sm shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500">
+                                        🚀 Apply Preset
+                                    </button>
+                                </div>
+                                <p id="mission-explanation" class="text-[11px] leading-relaxed text-slate-600"></p>
+                                
+                                <!-- Connection Map (Pipeline) -->
+                                <div class="flex flex-wrap md:flex-nowrap items-center justify-between gap-1.5 pt-3 border-t border-slate-100 text-[10px] font-medium text-slate-500 w-full overflow-x-auto no-scrollbar font-mono">
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-200/50 px-2.5 py-1 rounded-lg" id="conn-input">Inputs: -</div>
+                                    <span class="text-slate-300 font-bold shrink-0">➔</span>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-200/50 px-2.5 py-1 rounded-lg" id="conn-dist">Dist: -</div>
+                                    <span class="text-slate-300 font-bold shrink-0">➔</span>
+                                    <div class="flex items-center gap-1 bg-slate-50 border border-slate-200/50 px-2.5 py-1 rounded-lg" id="conn-matrix">Matrix: -</div>
+                                    <span class="text-slate-300 font-bold shrink-0">➔</span>
+                                    <div class="flex items-center gap-1 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-lg text-emerald-800 font-semibold" id="conn-prob">Results: -</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fallback small alert text -->
+                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 mb-2.5 shrink-0 flex items-start gap-1.5 hidden">
+                            <div class="text-xs leading-none mt-0.5">💡</div>
+                            <p id="insight-text" class="text-[10px] text-slate-500 leading-snug"></p>
                         </div>
 
                         <!-- Mirrored Histogram -->
-                        <div class="flex-1 relative min-h-[100px]" id="histogram-container">
-                            <div class="absolute top-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Positives</div>
-                            <div class="absolute bottom-1 left-1 text-[7px] font-bold text-slate-400 uppercase opacity-50 pointer-events-none tracking-tight">Actual Negatives</div>
+                        <div class="flex-1 relative min-h-[110px]" id="histogram-container">
+                            <div class="absolute top-2 left-2 text-[8px] font-bold text-slate-400 uppercase tracking-wider opacity-60 pointer-events-none font-mono">Actual Positives (TP/FN)</div>
+                            <div class="absolute bottom-2 left-2 text-[8px] font-bold text-slate-400 uppercase tracking-wider opacity-60 pointer-events-none font-mono">Actual Negatives (TN/FP)</div>
                             <div class="h-full w-full relative" id="histogram">
-                                 <div id="threshold-line" class="absolute h-full w-0.5 bg-blue-600 z-10 transition-all shadow-[0_0_10px_rgba(37,99,235,0.5)]" style="left: 50%;"></div>
+                                 <div id="threshold-line" class="absolute h-full w-[2px] bg-blue-600 z-10 transition-all shadow-[0_0_12px_rgba(37,99,235,0.8)]" style="left: 50%;"></div>
                             </div>
                         </div>
-                        <div class="flex justify-between text-[8px] text-slate-400 border-t pt-1 uppercase tracking-tighter font-bold shrink-0 mt-1.5">
-                            <span>Score 0.0</span>
-                            <span>Score 1.0</span>
+                        <div class="flex justify-between text-[8px] text-slate-400 border-t border-slate-100 pt-2 uppercase tracking-wider font-semibold font-mono shrink-0 mt-2">
+                            <span>Score 0.0 (Unlikely)</span>
+                            <span>Score 1.0 (Confident)</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- RIGHT COLUMN: Data Grid (Condensed) -->
-                <div class="w-full md:w-[220px] lg:w-[260px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
-                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-200 flex-1 flex flex-col min-h-0">
-                        <div class="flex justify-between items-center mb-2 flex-none">
-                            <h2 class="text-[9px] font-black uppercase tracking-widest text-slate-400">Data Sample</h2>
+                <!-- RIGHT COLUMN: Data Grid (Condensed & Spacious) -->
+                <div class="w-full md:w-[240px] lg:w-[300px] flex flex-col gap-3 shrink-0 min-h-0 h-full">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex-1 flex flex-col min-h-0">
+                        <div class="flex justify-between items-center mb-3 flex-none">
+                            <h2 class="text-[9px] font-bold uppercase tracking-widest text-slate-400 font-display">Data Sample (N=50)</h2>
                         </div>
 
-                        <div class="flex flex-wrap gap-1.5 text-[7px] lg:text-[8px] font-bold uppercase tracking-widest items-center mb-2 flex-none bg-slate-50 p-1.5 rounded-lg border border-slate-100">
-                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-slate-100 border border-slate-200"></span> Neg</div>
-                            <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-amber-300 border border-amber-400"></span> Pos</div>
-                            <div class="flex items-center gap-1 ml-auto"><span class="w-1.5 h-1.5 rounded-full border border-blue-600 bg-white"></span> Flagged</div>
+                        <div class="flex flex-wrap gap-2 text-[8px] font-semibold uppercase tracking-wider items-center mb-3 flex-none bg-slate-50 p-2 rounded-xl border border-slate-200/40 font-mono">
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded bg-slate-100 border border-slate-200/60"></span> Neg</div>
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded bg-amber-300 border border-amber-400/80"></span> Pos</div>
+                            <div class="flex items-center gap-1.5 ml-auto"><span class="w-2 h-2 rounded-full border-2 border-blue-600 bg-white shadow-sm"></span> Flagged</div>
                         </div>
 
                         <div class="flex-1 w-full flex items-start justify-center min-h-0">
-                            <div id="grid-container" class="grid grid-cols-5 grid-rows-10 gap-1 w-full h-full max-h-full" aria-live="polite">
+                            <div id="grid-container" class="grid grid-cols-5 grid-rows-10 gap-1.5 w-full h-full max-h-full" aria-live="polite">
                                 <!-- Items generated by JS -->
                             </div>
                         </div>
@@ -305,7 +568,7 @@
                     <!-- Content swapped via JS -->
                 </div>
                 
-                <button onclick="goToNextLabPage()" id="btn-lab-next" class="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-[220px] lg:w-[260px] py-3 rounded-2xl text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button onclick="goToNextLabPage()" id="btn-lab-next" class="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-[240px] lg:w-[300px] py-3 rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 uppercase tracking-wider">
                     Next Scenario
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
@@ -314,61 +577,61 @@
         </div>
 
         <!-- ================= PAGE 4: KNOWLEDGE CHECK ================= -->
-        <div id="page-4" class="hidden flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full h-full overflow-y-auto px-4 py-8">
-            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 w-full relative">
-                <button onclick="goToPage(1)" class="absolute top-5 right-5 text-slate-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-slate-200 rounded px-2 py-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors">
+        <div id="page-4" class="hidden flex-1 flex flex-col items-center justify-center max-w-5xl lg:max-w-6xl mx-auto w-full h-full overflow-y-auto px-4 py-4 md:py-6">
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg border border-slate-200/80 w-full relative transition-all duration-300">
+                <button onclick="goToPage(1)" class="absolute top-5 right-5 text-slate-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-slate-200 rounded px-2 py-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors font-display">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     Restart
                 </button>
 
-                <div class="flex items-center justify-center w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl mb-5 mx-auto">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="flex items-center justify-center w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl mb-4 mx-auto border border-emerald-100/50">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h2 class="text-2xl font-extrabold text-slate-900 text-center mb-6 tracking-tight">Knowledge Check</h2>
+                <h2 class="text-2xl font-extrabold text-slate-900 text-center mb-6 tracking-tight font-display">Knowledge Check</h2>
 
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="quiz-question" id="q1">
-                        <p class="font-bold text-slate-800 text-sm mb-2">1. In the Medical Scenario, you are looking for a rare disease. Why did we recommend a LOW threshold?</p>
-                        <div class="space-y-1.5">
+                        <p class="font-bold text-slate-800 text-sm mb-3 font-display">1. In the Medical Scenario, you are looking for a rare disease. Why did we recommend a LOW threshold?</p>
+                        <div class="space-y-2">
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="wrong1" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold improves the mathematical precision of the AI.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold improves the mathematical precision of the AI.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="correct" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold maximizes Recall. Missing a sick patient is worse than a false alarm.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold maximizes Recall. Missing a sick patient is worse than a false alarm.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q1" value="wrong2" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">A low threshold eliminates False Positives completely.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">A low threshold eliminates False Positives completely.</div>
                             </label>
                         </div>
-                        <div class="feedback mt-1.5 text-xs hidden px-1"></div>
+                        <div class="feedback mt-2 text-xs hidden px-1 font-medium"></div>
                     </div>
 
                     <div class="quiz-question" id="q2">
-                        <p class="font-bold text-slate-800 text-sm mb-2">2. If an event is extremely rare (like a Base Rate of 1%), what is the most likely error the model will make?</p>
-                        <div class="space-y-1.5">
+                        <p class="font-bold text-slate-800 text-sm mb-3 font-display">2. If an event is extremely rare (like a Base Rate of 1%), what is the most likely error the model will make?</p>
+                        <div class="space-y-2">
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="wrong1" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">It will classify everything as Positive.</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">It will classify everything as Positive.</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="wrong2" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">False Negatives (Missing the rare events).</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">False Negatives (Missing the rare events).</div>
                             </label>
                             <label class="quiz-option cursor-pointer block">
                                 <input type="radio" name="q2" value="correct" class="hidden">
-                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs md:text-sm">False Positives (Flagging safe items by accident simply because there are so many of them).</div>
+                                <div class="p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-xs">False Positives (Flagging safe items by accident simply because there are so many of them).</div>
                             </label>
                         </div>
-                        <div class="feedback mt-1.5 text-xs hidden px-1"></div>
+                        <div class="feedback mt-2 text-xs hidden px-1 font-medium"></div>
                     </div>
-
-                    <button onclick="checkQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-bold shadow-md transition-colors mt-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Check Answers
-                    </button>
                 </div>
+
+                <button onclick="checkQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl text-xs font-bold shadow-md transition-all mt-6 uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-display">
+                    Check Answers
+                </button>
             </div>
         </div>
     </div>
@@ -381,6 +644,145 @@
         let currentPage = 1;
         let currentScenario = 'spam';
         let data = [];
+        let currentBriefingSlide = 1;
+
+        function updateBriefingSlider(val) {
+            const vSpan = document.getElementById('brief-thresh-val');
+            const card = document.getElementById('brief-feedback-card');
+            const emoji = document.getElementById('brief-feedback-emoji');
+            const title = document.getElementById('brief-feedback-title');
+            const desc = document.getElementById('brief-feedback-desc');
+
+            if (vSpan) vSpan.innerText = `${val}% Sensitivity`;
+
+            if (val < 25) {
+                if (card) {
+                    card.className = "mt-4 p-3 rounded-xl border border-red-200 bg-red-50/50 flex gap-3 items-start transition-all duration-200 shadow-sm";
+                }
+                if (emoji) emoji.innerText = "🚨";
+                if (title) {
+                    title.className = "font-bold text-xs text-red-950";
+                    title.innerText = "Extremely Sensitive Setting";
+                }
+                if (desc) desc.innerText = "The cafeteria alarm triggers if anyone sprays deodorant or makes toast. Zero fires are missed (High Recall), but constant false alarms (High False Positives) will make students stand in the cold rain!";
+            } else if (val >= 25 && val <= 75) {
+                if (card) {
+                    card.className = "mt-4 p-3 rounded-xl border border-blue-200 bg-blue-50/50 flex gap-3 items-start transition-all duration-200 shadow-sm";
+                }
+                if (emoji) emoji.innerText = "⚖️";
+                if (title) {
+                    title.className = "font-bold text-xs text-blue-950";
+                    title.innerText = "Balanced Setting";
+                }
+                if (desc) desc.innerText = "An intelligent compromise. The system tolerates toast fumes, but rings aggressively for real fires. You minimize both extreme errors.";
+            } else {
+                if (card) {
+                    card.className = "mt-4 p-3 rounded-xl border border-amber-200 bg-amber-50/50 flex gap-3 items-start transition-all duration-200 shadow-sm";
+                }
+                if (emoji) emoji.innerText = "🧯";
+                if (title) {
+                    title.className = "font-bold text-xs text-amber-950";
+                    title.innerText = "Conservative Setting";
+                }
+                if (desc) desc.innerText = "The alarm only triggers if half the school is already engulfed in thick smoke. Zero false alarms (High Precision), but a real fire might destroy the school before you notice it (Dangerous False Negatives)!";
+            }
+        }
+
+        function prevBriefingSlide() {
+            if (currentBriefingSlide > 1) {
+                currentBriefingSlide--;
+                renderBriefingSlide();
+            }
+        }
+
+        function nextBriefingSlide() {
+            if (currentBriefingSlide < 3) {
+                currentBriefingSlide++;
+                renderBriefingSlide();
+            } else {
+                // Proceed to simulation
+                goToPage(2);
+            }
+        }
+
+        function renderBriefingSlide() {
+            const s1 = document.getElementById('briefing-slide-1');
+            const s2 = document.getElementById('briefing-slide-2');
+            const s3 = document.getElementById('briefing-slide-3');
+            if (!s1 || !s2 || !s3) return;
+
+            // Hide all slides
+            s1.classList.add('hidden');
+            s2.classList.add('hidden');
+            s3.classList.add('hidden');
+
+            // Show active slide
+            document.getElementById(`briefing-slide-${currentBriefingSlide}`).classList.remove('hidden');
+
+            // Update dots
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`brief-dot-${i}`);
+                if (dot) {
+                    if (i === currentBriefingSlide) {
+                        dot.className = "w-4 h-2.5 rounded-full bg-blue-600 transition-all duration-300";
+                    } else {
+                        dot.className = "w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300";
+                    }
+                }
+            }
+
+            // Update Buttons
+            const btnBack = document.getElementById('btn-brief-back');
+            const btnNext = document.getElementById('btn-brief-next');
+
+            if (btnBack) btnBack.disabled = currentBriefingSlide === 1;
+            if (btnNext) {
+                if (currentBriefingSlide === 3) {
+                    btnNext.className = "px-5 py-2.5 bg-green-600 text-white text-xs font-black rounded-xl hover:bg-green-700 active:scale-95 transition-all flex items-center gap-1.5 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500";
+                    btnNext.innerHTML = 'Enter the Prediction Lab 🔬 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>';
+                } else {
+                    btnNext.className = "px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-1.5 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500";
+                    btnNext.innerHTML = 'Next <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>';
+                }
+            }
+
+            // If entering slide 1, trigger briefing slider calculation
+            if (currentBriefingSlide === 1) {
+                const slider = document.getElementById('brief-thresh-slider');
+                if (slider) {
+                    updateBriefingSlider(slider.value);
+                }
+            }
+        }
+
+        function selectTugOfWar(focus) {
+            const btnP = document.getElementById('btn-tug-precision');
+            const btnR = document.getElementById('btn-tug-recall');
+            const btnB = document.getElementById('btn-tug-balanced');
+            const seesaw = document.getElementById('seesaw-bar');
+            const expl = document.getElementById('tug-explanation');
+
+            if (!btnP || !btnR || !btnB || !seesaw || !expl) return;
+
+            // Reset classes
+            btnP.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+            btnR.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+            btnB.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+
+            if (focus === 'precision') {
+                btnP.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-blue-600 bg-blue-600 text-white shadow-sm focus:outline-none";
+                seesaw.style.transform = "rotate(-12deg)";
+                expl.innerHTML = "🎯 <b>High Precision (Strict Policy)</b>: We prioritize high confidence. We only sound the alarm if we are 100% sure. <b>Result</b>: Zero False Positives (no false alarms), but we will miss a few small fires (high False Negatives).";
+            } else if (focus === 'recall') {
+                btnR.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-amber-500 bg-amber-500 text-white shadow-sm focus:outline-none";
+                seesaw.style.transform = "rotate(12deg)";
+                expl.innerHTML = "📢 <b>High Recall (Sensitive Policy)</b>: We prioritize total safety. We catch every single real fire. <b>Result</b>: Zero False Negatives (no missed fires), but we trigger massive False Positives (annoying false alarms).";
+            } else {
+                btnB.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-slate-700 bg-slate-700 text-white shadow-sm focus:outline-none";
+                seesaw.style.transform = "rotate(0deg)";
+                expl.innerHTML = "⚖️ <b>Balanced Compromise</b>: We try to split the difference. We accept a small amount of false alarms and small missed fires to keep the school operating normally.";
+            }
+        }
 
         function goToPage(page) {
             currentPage = page;
@@ -417,6 +819,8 @@
             if (page === 1) {
                 document.getElementById('page-1').classList.remove('hidden');
                 document.getElementById('page-1').classList.add('flex');
+                currentBriefingSlide = 1;
+                renderBriefingSlide();
             } else if (page === 2) {
                 document.getElementById('page-lab').classList.remove('hidden');
                 document.getElementById('page-lab').classList.add('flex');
@@ -578,8 +982,202 @@
             cost: document.getElementById('metric-cost')
         };
 
+        const MISSIONS = {
+            spam: [
+                {
+                    title: "Mission 1: Avoid Blocking Real Emails (High Threshold)",
+                    shortTitle: "High Threshold",
+                    prevalence: 20,
+                    threshold: 80,
+                    explanation: "Set <b>Prevalence to 20%</b> and <b>Threshold to 80% (0.80)</b>. Notice how shifting the blue threshold line to the right of the histogram restricts positive flags. Only extremely confident spam is flagged, so <b>False Positives (FP) drop to 0</b>! This protects safe emails from being blocked, maximizing Precision to 1.000, but increases False Negatives.",
+                    highlights: ['mat-fp', 'metric-precision', 'threshold-line'],
+                    inputs: "20% Prev, 0.80 Thresh",
+                    dist: "Threshold line cut right",
+                    matrix: "FP = 0 (No safe mails blocked)",
+                    prob: "Precision = 1.000 (Perfect Trust)"
+                },
+                {
+                    title: "Mission 2: Catch All Spam (Low Threshold)",
+                    shortTitle: "Low Threshold",
+                    prevalence: 20,
+                    threshold: 30,
+                    explanation: "Set <b>Prevalence to 20%</b> and <b>Threshold to 30% (0.30)</b>. Shifting the line left catches almost all spam, pushing <b>False Negatives (FN) to 0</b> and yielding a <b>perfect Recall of 1.000</b>. However, look at the Confusion Matrix: False Positives skyrocket! Safe emails are blocked, incurring a severe cost penalty.",
+                    highlights: ['mat-fn', 'metric-recall', 'mat-fp', 'metric-cost'],
+                    inputs: "20% Prev, 0.30 Thresh",
+                    dist: "Threshold line cut left",
+                    matrix: "FN = 0, FP spikes",
+                    prob: "Recall = 1.000, Score drops"
+                },
+                {
+                    title: "Mission 3: Base Rate Fallacy (Rare Spam)",
+                    shortTitle: "Rare Spam (2%)",
+                    prevalence: 2,
+                    threshold: 50,
+                    explanation: "Keep <b>Threshold at 50%</b> but lower <b>Prevalence to 2%</b>. Look at the histogram: the bottom half (Actual Negatives) is massive, while the top half (Actual Positives) has almost vanished! Because spam is so rare, even a balanced threshold produces more False Positives (accidental blocks) than True Positives! This is the <b>Base Rate Fallacy</b>.",
+                    highlights: ['metric-precision', 'mat-fp', 'histogram-container'],
+                    inputs: "2% Prev, 0.50 Thresh",
+                    dist: "Huge negative curve",
+                    matrix: "FP > TP (False alarms dominate)",
+                    prob: "Precision plunges drastically"
+                }
+            ],
+            medical: [
+                {
+                    title: "Mission 1: Maximize Recall (Low Threshold)",
+                    shortTitle: "Low Threshold",
+                    prevalence: 5,
+                    threshold: 20,
+                    explanation: "Set <b>Prevalence to 5%</b> and <b>Threshold to 20% (0.20)</b>. In medicine, a missed diagnosis is extremely dangerous. Shifting the threshold line left captures almost all sick patients (<b>Recall reaches 1.000</b>). We accept more False Positives (healthy patients flagged) to avoid the severe -50 point missed disease penalty!",
+                    highlights: ['mat-fn', 'metric-recall', 'metric-cost'],
+                    inputs: "5% Prev, 0.20 Thresh",
+                    dist: "Threshold line cut left",
+                    matrix: "FN = 0 (No missed diseases)",
+                    prob: "Recall = 1.000, Cost protected"
+                },
+                {
+                    title: "Mission 2: Conservative Diagnostics (High Threshold)",
+                    shortTitle: "High Threshold",
+                    prevalence: 5,
+                    threshold: 75,
+                    explanation: "Raise <b>Threshold to 75% (0.75)</b>. Shifting the line right ensures we only flag patients who are definitely sick. While this reduces patient anxiety from false alarms (False Positives drop to 0), it creates critical <b>False Negatives</b>. Missing sick patients triggers the devastating -50 penalty, plunging our Cost Score.",
+                    highlights: ['mat-fn', 'metric-cost', 'threshold-line'],
+                    inputs: "5% Prev, 0.75 Thresh",
+                    dist: "Threshold line cut right",
+                    matrix: "FN spikes, FP = 0",
+                    prob: "Recall drops, Cost plunges"
+                },
+                {
+                    title: "Mission 3: Outbreak Rarity (1% Prevalence)",
+                    shortTitle: "Rare Outbreak (1%)",
+                    prevalence: 1,
+                    threshold: 30,
+                    explanation: "Set <b>Prevalence to 1%</b> and <b>Threshold to 30% (0.30)</b>. When a disease is extremely rare, mass-screening healthy populations produces a massive percentage of False Positives compared to actual positive cases. Even with an accurate test, the sheer number of healthy people means most flags are false alarms.",
+                    highlights: ['grid-container', 'mat-fp', 'metric-precision'],
+                    inputs: "1% Prev, 0.30 Thresh",
+                    dist: "Extremely thin positive curve",
+                    matrix: "FP far exceeds TP",
+                    prob: "Precision is exceptionally low"
+                }
+            ]
+        };
+
+        let currentMissionIndex = 0;
+
+        function renderMissions() {
+            const scenarioMissions = MISSIONS[currentScenario];
+            const mission = scenarioMissions[currentMissionIndex];
+
+            // Render pill tabs
+            const tabsContainer = document.getElementById('mission-tabs-container');
+            if (tabsContainer) {
+                tabsContainer.innerHTML = '';
+                scenarioMissions.forEach((m, idx) => {
+                    const button = document.createElement('button');
+                    button.className = `px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-lg border transition-all shrink-0 focus:outline-none focus:ring-1 focus:ring-blue-400
+                        ${idx === currentMissionIndex 
+                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm font-black' 
+                            : 'bg-white border-blue-200 text-blue-800 hover:bg-blue-50'
+                        }`;
+                    button.innerText = m.shortTitle;
+                    button.onclick = () => selectMission(idx);
+                    tabsContainer.appendChild(button);
+                });
+            }
+
+            // Update details
+            const elCounter = document.getElementById('mission-counter');
+            if (elCounter) elCounter.innerText = `${currentMissionIndex + 1} / ${scenarioMissions.length}`;
+            
+            const elTitle = document.getElementById('mission-title');
+            if (elTitle) elTitle.innerText = mission.title;
+            
+            const elExp = document.getElementById('mission-explanation');
+            if (elExp) elExp.innerHTML = mission.explanation;
+
+            // Connection map
+            const cIn = document.getElementById('conn-input');
+            const cDist = document.getElementById('conn-dist');
+            const cMat = document.getElementById('conn-matrix');
+            const cProb = document.getElementById('conn-prob');
+            
+            if (cIn) cIn.innerHTML = `<span class="opacity-60 font-medium text-[8px]">In:</span> ${mission.inputs}`;
+            if (cDist) cDist.innerHTML = `<span class="opacity-60 font-medium text-[8px]">Dist:</span> ${mission.dist}`;
+            if (cMat) cMat.innerHTML = `<span class="opacity-60 font-medium text-[8px]">Matrix:</span> ${mission.matrix}`;
+            if (cProb) cProb.innerHTML = `<span class="opacity-60 font-medium text-[8px]">Results:</span> ${mission.prob}`;
+
+            // Handle navigation buttons disable state
+            const btnPrev = document.getElementById('btn-prev-mission');
+            const btnNext = document.getElementById('btn-next-mission');
+            if (btnPrev) btnPrev.disabled = currentMissionIndex === 0;
+            if (btnNext) btnNext.disabled = currentMissionIndex === scenarioMissions.length - 1;
+
+            // Apply highlights
+            clearMissionHighlights();
+            mission.highlights.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('mission-highlight');
+                }
+            });
+        }
+
+        function prevMission() {
+            if (currentMissionIndex > 0) {
+                currentMissionIndex--;
+                renderMissions();
+            }
+        }
+
+        function nextMission() {
+            if (currentMissionIndex < MISSIONS[currentScenario].length - 1) {
+                currentMissionIndex++;
+                renderMissions();
+            }
+        }
+
+        function selectMission(idx) {
+            currentMissionIndex = idx;
+            renderMissions();
+        }
+
+        function applyMissionPreset() {
+            const scenarioMissions = MISSIONS[currentScenario];
+            const mission = scenarioMissions[currentMissionIndex];
+
+            elBaserate.value = mission.prevalence;
+            elThreshold.value = mission.threshold;
+
+            // Update baseline display immediately
+            elValBaserate.innerText = `${mission.prevalence}%`;
+            elValThreshold.innerText = (mission.threshold / 100).toFixed(2);
+
+            // Regenerate synthetic data reflecting new prevalence, and render
+            generateData();
+
+            // Re-apply highlights explicitly
+            clearMissionHighlights();
+            mission.highlights.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('mission-highlight');
+                }
+            });
+
+            // Announce to Screen Readers
+            if (elAnnouncer) {
+                elAnnouncer.innerText = `Applied preset: Prevalence set to ${mission.prevalence} percent, Decision Threshold set to ${(mission.threshold/100).toFixed(2)}. ${mission.title}`;
+            }
+        }
+
+        function clearMissionHighlights() {
+            document.querySelectorAll('.mission-highlight').forEach(el => {
+                el.classList.remove('mission-highlight');
+            });
+        }
+
         function setScenario(type) {
             currentScenario = type;
+            currentMissionIndex = 0;
             
             document.getElementById('lab-title').innerText = CONFIG[type].title;
             document.getElementById('label-baserate').innerText = CONFIG[type].baseRateLabel;
@@ -597,6 +1195,7 @@
                 : 'Knowledge Check <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
 
             generateData();
+            renderMissions();
         }
 
         function generateData() {
@@ -629,32 +1228,60 @@
                 else if (!predicted && item.isPositive) stats.fn++;
 
                 const card = document.createElement('div');
-                card.className = `has-tooltip relative w-full h-full rounded border border-slate-200/50 flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200
-                    ${item.isPositive ? 'bg-amber-300' : 'bg-slate-100'}
-                    ${predicted ? 'ring-2 ring-blue-600 ring-offset-1 z-10' : ''}
+                card.className = `has-tooltip relative w-full h-full rounded-xl border flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200
+                    ${item.isPositive ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-slate-50 border-slate-200/60 text-slate-500'}
+                    ${predicted ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md scale-[1.03] z-10' : ''}
                 `;
                 card.tabIndex = 0;
 
                 const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip bg-slate-900 text-white text-[10px] py-1.5 px-2.5 rounded shadow-xl whitespace-nowrap z-50';
+                tooltip.className = 'tooltip bg-slate-950 text-slate-200 text-[10px] py-2 px-3 rounded-xl shadow-xl border border-slate-800 whitespace-nowrap z-50 transition-all';
+                
+                let outcomeLabel = "";
+                let outcomeDesc = "";
+                if (predicted && item.isPositive) {
+                    outcomeLabel = `<span class="text-blue-400 font-bold">TRUE POSITIVE (TP)</span>`;
+                    outcomeDesc = "Correctly Flagged";
+                } else if (predicted && !item.isPositive) {
+                    outcomeLabel = `<span class="text-red-400 font-bold">FALSE POSITIVE (FP)</span>`;
+                    outcomeDesc = "False Alarm!";
+                } else if (!predicted && !item.isPositive) {
+                    outcomeLabel = `<span class="text-slate-400 font-bold">TRUE NEGATIVE (TN)</span>`;
+                    outcomeDesc = "Correctly Ignored";
+                } else {
+                    outcomeLabel = `<span class="text-amber-500 font-bold">FALSE NEGATIVE (FN)</span>`;
+                    outcomeDesc = "Missed Case!";
+                }
+
                 tooltip.innerHTML = `
-                    <div class="font-bold border-b border-slate-700 pb-1 mb-1">ID #${item.id}</div>
-                    Truth: ${item.isPositive ? CONFIG[currentScenario].posTerm : CONFIG[currentScenario].negTerm}<br>
-                    Confidence: ${(item.prob * 100).toFixed(1)}%<br>
-                    Decision: ${predicted ? 'POSITIVE' : 'NEGATIVE'}
+                    <div class="font-bold border-b border-slate-800 pb-1.5 mb-1.5 flex justify-between items-center gap-4">
+                        <span>ID #${item.id}</span>
+                        ${outcomeLabel}
+                    </div>
+                    Truth: <span class="font-semibold text-white">${item.isPositive ? CONFIG[currentScenario].posTerm : CONFIG[currentScenario].negTerm}</span><br>
+                    Confidence Score: <span class="font-mono font-bold text-white">${(item.prob * 100).toFixed(1)}%</span><br>
+                    Status: <span class="font-semibold text-white">${outcomeDesc}</span>
                 `;
 
                 const iconWrapper = document.createElement('div');
-                iconWrapper.className = "flex items-center justify-center w-full h-full relative";
                 
                 if (predicted) {
-                   iconWrapper.innerHTML = `<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${item.isPositive ? 'bg-blue-900' : 'bg-blue-500'} shadow-sm"></div>`;
+                    iconWrapper.className = "flex items-center justify-center w-full h-full relative";
+                    if (item.isPositive) {
+                        // True Positive
+                        iconWrapper.innerHTML = `<div class="w-3 h-3 rounded-full bg-blue-600 shadow-sm border border-blue-400/50"></div>`;
+                    } else {
+                        // False Positive (False Alarm!)
+                        iconWrapper.innerHTML = `<div class="w-3 h-3 rounded-full bg-red-500 shadow-sm border border-red-400/50 animate-pulse"></div>`;
+                    }
                 } else {
                     iconWrapper.innerHTML = CONFIG[currentScenario].icon;
                     if (item.isPositive) {
-                        iconWrapper.classList.add('text-amber-700', 'opacity-60');
+                        // False Negative (Missed Case!)
+                        iconWrapper.className = "flex items-center justify-center w-full h-full relative text-amber-500 opacity-90 font-bold scale-110 transition-transform";
                     } else {
-                        iconWrapper.classList.add('text-slate-400', 'opacity-60');
+                        // True Negative (Correctly Ignored)
+                        iconWrapper.className = "flex items-center justify-center w-full h-full relative text-slate-400 opacity-35 transition-transform";
                     }
                 }
                 
@@ -798,16 +1425,21 @@
         let debounceTimer;
         elBaserate.addEventListener('input', () => {
             clearTimeout(debounceTimer);
+            clearMissionHighlights();
             // Update UI for the value number immediately
             elValBaserate.innerText = `${elBaserate.value}%`;
             debounceTimer = setTimeout(() => generateData(), 150);
         });
         
-        elThreshold.addEventListener('input', () => updateUI(false));
+        elThreshold.addEventListener('input', () => {
+            clearMissionHighlights();
+            updateUI(false);
+        });
         
         // Init
         window.onload = () => {
             goToPage(1);
+            renderBriefingSlide();
         };
     </script>
 </body>
