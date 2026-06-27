@@ -148,10 +148,10 @@
     </div>
 
     <!-- MAIN APP WINDOW -->
-    <div class="w-full max-w-[98vw] xl:max-w-[1540px] h-[95vh] max-h-[920px] min-h-[580px] bg-slate-50 border-2 md:border-[3px] border-blue-500 rounded-2xl md:rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(59,130,246,0.18)] flex flex-col relative overflow-hidden transition-all duration-300">
+    <div class="w-full max-w-[98vw] xl:max-w-[1540px] h-[95vh] max-h-[920px] min-h-[580px] bg-white border-2 md:border-[3px] border-blue-500 rounded-2xl md:rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(59,130,246,0.18)] flex flex-col relative overflow-hidden transition-all duration-300">
         
         <!-- Stepper Top Bar -->
-        <div class="bg-white px-4 py-2.5 md:px-6 md:py-3 rounded-2xl shadow-sm border border-slate-200/60 shrink-0 flex items-center justify-between z-10 mx-3 mt-3 md:mx-4 md:mt-4">
+        <div class="bg-white px-6 py-4 border-b border-slate-100 shrink-0 flex items-center justify-between z-10">
             <button onclick="openTour()" class="hidden md:flex px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200/60 hover:bg-slate-100 items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-300 transition-all">
                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Tour
@@ -199,11 +199,11 @@
         </div>
 
         <!-- ================= PAGE 1: BRIEFING SLIDES ================= -->
-        <div id="page-1" class="flex-1 flex flex-col items-center justify-center max-w-5xl lg:max-w-6xl mx-auto w-full h-full overflow-y-auto px-4 py-4 md:py-6">
-            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg border border-slate-200/80 w-full flex flex-col justify-between min-h-[520px] transition-all duration-300">
+        <div id="page-1" class="flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-6 lg:p-8">
+            <div class="flex-1 flex flex-col justify-between w-full h-full transition-all duration-300">
                 
                 <!-- Slide Header & Step Indicator -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4 shrink-0">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 shrink-0">
                     <div class="flex items-center gap-2">
                         <span class="text-lg">🔬</span>
                         <h2 class="text-xs font-black uppercase tracking-wider text-slate-400">Pre-Lab Briefing</h2>
@@ -217,12 +217,12 @@
                 </div>
 
                 <!-- Slide Content Area (Flex-grow to push navigation down) -->
-                <div class="flex-1 flex flex-col justify-center py-2">
+                <div class="flex-1 flex flex-col justify-center py-1">
                     
                     <!-- BRIEFING SLIDE 1 -->
-                    <div id="briefing-slide-1" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div class="space-y-4">
-                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">What is a Decision Threshold?</h1>
+                    <div id="briefing-slide-1" class="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-center max-w-[1300px] mx-auto w-full">
+                        <div class="space-y-4 md:col-span-5">
+                            <h1 class="text-2xl lg:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">What is a Decision Threshold?</h1>
                             <p class="text-sm text-slate-600 leading-relaxed">
                                 AI models rarely think in pure black and white. Instead of a simple "yes" or "no", they calculate a <b>Probability Score</b> or confidence rating (e.g., <i>"This email has an 85% chance of being spam"</i>).
                             </p>
@@ -232,33 +232,33 @@
                         </div>
 
                         <!-- Analogy Card -->
-                        <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl shadow-sm space-y-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl">🧯</span>
-                                <h3 class="font-bold text-xs text-slate-800 uppercase tracking-wide font-display">Interactive Analogy: The School Smoke Sensor</h3>
+                        <div class="bg-slate-50 border border-slate-200/60 p-5 md:p-6 lg:p-7 rounded-[1.5rem] shadow-sm space-y-4 md:col-span-7 w-full">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-xl lg:text-2xl">🧯</span>
+                                <h3 class="font-black text-xs md:text-sm text-slate-800 uppercase tracking-wide font-display">Interactive Analogy: The School Smoke Sensor</h3>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Imagine an automated smoke sensor in your school cafeteria. Move the slider below to set the decision threshold and watch how the system reacts!
                             </p>
 
                             <!-- Interactive Slider -->
-                            <div class="space-y-3 bg-white p-3.5 rounded-xl border border-slate-200/60 shadow-sm">
+                            <div class="space-y-3 bg-white p-4 md:p-5 rounded-xl border border-slate-200/60 shadow-sm">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Set Sensor Sensitivity</span>
-                                    <span id="brief-thresh-val" class="font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded">50% Sensitivity</span>
+                                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Set Sensor Sensitivity</span>
+                                    <span id="brief-thresh-val" class="font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-md">50% Sensitivity</span>
                                 </div>
-                                <input type="range" id="brief-thresh-slider" min="0" max="100" value="50" oninput="updateBriefingSlider(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust School Smoke Sensor Sensitivity">
-                                <div class="flex justify-between text-[8px] text-slate-400 font-bold uppercase tracking-wider px-1 font-mono">
+                                <input type="range" id="brief-thresh-slider" min="0" max="100" value="50" oninput="updateBriefingSlider(this.value)" class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer focus:outline-none accent-blue-600" aria-label="Adjust School Smoke Sensor Sensitivity">
+                                <div class="flex justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider px-0.5 font-mono">
                                     <span>0% (Trigger on anything)</span>
                                     <span>100% (Strict fire only)</span>
                                 </div>
                             </div>
 
                             <!-- Live Dynamic Simulator Feedback -->
-                            <div class="p-3.5 rounded-xl border border-blue-100 bg-blue-50/40 flex gap-3 items-start transition-all duration-200" id="brief-feedback-card">
+                            <div class="p-4 md:p-5 rounded-xl border border-blue-100 bg-blue-50/40 flex gap-3.5 items-start transition-all duration-200" id="brief-feedback-card">
                                 <span class="text-2xl shrink-0" id="brief-feedback-emoji">⚖️</span>
                                 <div class="space-y-0.5">
-                                    <h4 class="font-bold text-xs text-blue-950 font-display" id="brief-feedback-title">Balanced Setting</h4>
+                                    <h4 class="font-extrabold text-xs md:text-sm text-blue-950 font-display" id="brief-feedback-title">Balanced Setting</h4>
                                     <p class="text-xs leading-relaxed text-slate-600" id="brief-feedback-desc">Select a threshold above to test how the school reacts!</p>
                                 </div>
                             </div>
@@ -266,9 +266,9 @@
                     </div>
 
                     <!-- BRIEFING SLIDE 2 -->
-                    <div id="briefing-slide-2" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div class="space-y-4">
-                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Meet the Confusion Matrix</h1>
+                    <div id="briefing-slide-2" class="hidden grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center max-w-[1300px] mx-auto w-full">
+                        <div class="space-y-4 md:col-span-5">
+                            <h1 class="text-2xl lg:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Meet the Confusion Matrix</h1>
                             <p class="text-sm text-slate-600 leading-relaxed">
                                 Every threshold decision we make leads to direct, real-world consequences. No AI or automated system is perfectly accurate in every edge case.
                             </p>
@@ -278,49 +278,49 @@
                         </div>
 
                         <!-- 2x2 Interactive Explanation Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-7 w-full">
                             <!-- True Positive -->
-                            <div class="bg-emerald-50/60 border border-emerald-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
-                                <div class="bg-emerald-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">TP</div>
+                            <div class="bg-emerald-50/60 border border-emerald-100 p-4 md:p-5 rounded-2xl flex gap-3.5 items-start hover:shadow-md hover:scale-[1.01] hover:border-emerald-200 transition-all duration-300">
+                                <div class="bg-emerald-500 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-xs shrink-0 shadow-sm font-mono">TP</div>
                                 <div class="space-y-0.5">
-                                    <h3 class="font-bold text-xs text-emerald-950 flex flex-wrap items-center gap-1.5 font-display">True Positive</h3>
-                                    <p class="text-[11px] leading-relaxed text-slate-600">The cafeteria has a <b>real fire</b>, and the alarm rings. Students evacuate safely. 🎉</p>
+                                    <h3 class="font-bold text-xs md:text-sm text-emerald-950 flex flex-wrap items-center gap-1.5 font-display">True Positive</h3>
+                                    <p class="text-xs leading-relaxed text-slate-600">The cafeteria has a <b>real fire</b>, and the alarm rings. Students evacuate safely. 🎉</p>
                                 </div>
                             </div>
 
                             <!-- False Positive -->
-                            <div class="bg-red-50/60 border border-red-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
-                                <div class="bg-red-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">FP</div>
+                            <div class="bg-red-50/60 border border-red-100 p-4 md:p-5 rounded-2xl flex gap-3.5 items-start hover:shadow-md hover:scale-[1.01] hover:border-red-200 transition-all duration-300">
+                                <div class="bg-red-500 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-xs shrink-0 shadow-sm font-mono">FP</div>
                                 <div class="space-y-0.5">
-                                    <h3 class="font-bold text-xs text-red-950 flex flex-wrap items-center gap-1.5 font-display">False Positive</h3>
-                                    <p class="text-[11px] leading-relaxed text-slate-600">It's just <b>burnt toast</b>, but the alarm rings anyway. Students shiver outside. 🙄</p>
+                                    <h3 class="font-bold text-xs md:text-sm text-red-950 flex flex-wrap items-center gap-1.5 font-display">False Positive</h3>
+                                    <p class="text-xs leading-relaxed text-slate-600">It's just <b>burnt toast</b>, but the alarm rings anyway. Students shiver outside. 🙄</p>
                                 </div>
                             </div>
 
                             <!-- False Negative -->
-                            <div class="bg-amber-50/60 border border-amber-100 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
-                                <div class="bg-amber-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">FN</div>
+                            <div class="bg-amber-50/60 border border-amber-100 p-4 md:p-5 rounded-2xl flex gap-3.5 items-start hover:shadow-md hover:scale-[1.01] hover:border-amber-200 transition-all duration-300">
+                                <div class="bg-amber-500 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-xs shrink-0 shadow-sm font-mono">FN</div>
                                 <div class="space-y-0.5">
-                                    <h3 class="font-bold text-xs text-amber-950 flex flex-wrap items-center gap-1.5 font-display">False Negative</h3>
-                                    <p class="text-[11px] leading-relaxed text-slate-600">The school is <b>on fire</b>, but the alarm stays silent. Extremely dangerous! 😱</p>
+                                    <h3 class="font-bold text-xs md:text-sm text-amber-950 flex flex-wrap items-center gap-1.5 font-display">False Negative</h3>
+                                    <p class="text-xs leading-relaxed text-slate-600">The school is <b>on fire</b>, but the alarm stays silent. Extremely dangerous! 😱</p>
                                 </div>
                             </div>
 
                             <!-- True Negative -->
-                            <div class="bg-slate-50 border border-slate-200/60 p-3.5 rounded-2xl flex gap-3 items-start hover:shadow-md transition-shadow">
-                                <div class="bg-slate-500 text-white rounded-xl px-2 py-1 font-bold text-xs shrink-0 shadow-sm font-mono">TN</div>
+                            <div class="bg-slate-50 border border-slate-200/60 p-4 md:p-5 rounded-2xl flex gap-3.5 items-start hover:shadow-md hover:scale-[1.01] hover:border-slate-300 transition-all duration-300">
+                                <div class="bg-slate-500 text-white w-10 h-10 flex items-center justify-center rounded-xl font-black text-xs shrink-0 shadow-sm font-mono">TN</div>
                                 <div class="space-y-0.5">
-                                    <h3 class="font-bold text-xs text-slate-900 flex flex-wrap items-center gap-1.5 font-display">True Negative</h3>
-                                    <p class="text-[11px] leading-relaxed text-slate-600">The air is <b>perfectly safe</b>, and the alarm is quiet. Normal school day. 📚</p>
+                                    <h3 class="font-bold text-xs md:text-sm text-slate-900 flex flex-wrap items-center gap-1.5 font-display">True Negative</h3>
+                                    <p class="text-xs leading-relaxed text-slate-600">The air is <b>perfectly safe</b>, and the alarm is quiet. Normal school day. 📚</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- BRIEFING SLIDE 3 -->
-                    <div id="briefing-slide-3" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                        <div class="space-y-4">
-                            <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Precision vs. Recall Tug-of-War</h1>
+                    <div id="briefing-slide-3" class="hidden grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center max-w-[1300px] mx-auto w-full">
+                        <div class="space-y-4 md:col-span-5">
+                            <h1 class="text-2xl lg:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">Precision vs. Recall Tug-of-War</h1>
                             <p class="text-sm text-slate-600 leading-relaxed">
                                 Because real-world data overlaps, optimizing a decision model is a perpetual balancing act.
                             </p>
@@ -330,31 +330,31 @@
                         </div>
 
                         <!-- Tug of War Simulator -->
-                        <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl shadow-sm space-y-4">
+                        <div class="bg-slate-50 border border-slate-200/60 p-5 md:p-6 lg:p-7 rounded-[1.5rem] shadow-sm space-y-4 md:col-span-7 w-full">
                             <!-- Toggle Buttons -->
                             <div class="flex flex-wrap gap-2 justify-center">
-                                <button onclick="selectTugOfWar('precision')" id="btn-tug-precision" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
+                                <button onclick="selectTugOfWar('precision')" id="btn-tug-precision" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
                                     🎯 Focus on Precision (Quality)
                                 </button>
-                                <button onclick="selectTugOfWar('recall')" id="btn-tug-recall" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
+                                <button onclick="selectTugOfWar('recall')" id="btn-tug-recall" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50">
                                     📢 Focus on Recall (Coverage)
                                 </button>
-                                <button onclick="selectTugOfWar('balanced')" id="btn-tug-balanced" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-blue-600 border-blue-600 text-white font-black">
+                                <button onclick="selectTugOfWar('balanced')" id="btn-tug-balanced" class="px-3.5 py-2 rounded-xl text-xs font-black border border-slate-700 bg-slate-700 text-white shadow-sm focus:outline-none">
                                     ⚖️ Balanced
                                 </button>
                             </div>
 
                             <!-- Seesaw Scale Diagram -->
-                            <div class="h-16 w-full flex items-center justify-center relative bg-white rounded-xl border border-slate-200/40 p-3 shadow-inner">
-                                <div class="absolute bottom-2 w-8 h-8 bg-slate-400 rounded-t-full shadow-inner z-0"></div>
-                                <div class="w-72 h-3 bg-slate-700 rounded-full transition-transform duration-500 origin-center z-10" id="seesaw-bar" style="transform: rotate(0deg);">
-                                    <div class="absolute -top-7 left-3 bg-blue-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow-sm font-mono">Precision</div>
-                                    <div class="absolute -top-7 right-3 bg-amber-500 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow-sm font-mono">Recall</div>
+                            <div class="h-20 w-full flex items-center justify-center relative bg-white rounded-2xl border border-slate-200/40 p-4 shadow-inner">
+                                <div class="absolute bottom-2.5 w-9 h-9 bg-slate-400 rounded-t-full shadow-inner z-0"></div>
+                                <div class="w-72 h-3 bg-slate-700 rounded-full transition-transform duration-500 origin-center z-10 relative" id="seesaw-bar" style="transform: rotate(0deg);">
+                                    <div class="absolute -top-7.5 left-3.5 bg-blue-500 text-white font-bold text-[9px] px-2 py-0.5 rounded shadow-sm font-mono">Precision</div>
+                                    <div class="absolute -top-7.5 right-3.5 bg-amber-500 text-white font-bold text-[9px] px-2 py-0.5 rounded shadow-sm font-mono">Recall</div>
                                 </div>
                             </div>
 
                             <!-- Dynamic Explanation Box -->
-                            <div class="bg-white p-3.5 rounded-xl border border-slate-200 text-xs text-center leading-relaxed text-slate-600 font-medium" id="tug-explanation">
+                            <div class="bg-white p-3.5 md:p-4 rounded-xl border border-slate-200 text-xs text-center leading-relaxed text-slate-600 font-semibold" id="tug-explanation">
                                 A balanced threshold targets moderate amounts of both mistakes to preserve general performance.
                             </div>
                         </div>
@@ -376,7 +376,7 @@
         </div>
 
         <!-- ================= PAGE 2 & 3: BENTO LAB ================= -->
-        <div id="page-lab" class="hidden flex-1 w-full h-full flex-col gap-3 min-h-0 p-3 md:p-4 overflow-hidden">
+        <div id="page-lab" class="hidden flex-1 w-full h-full flex-col gap-3 min-h-0 p-3 md:p-4 overflow-hidden bg-slate-50/80">
             
             <!-- TOP ROW: Controls, Histogram, Grid -->
             <div class="flex-1 flex flex-col md:flex-row gap-3 min-h-0">
@@ -577,9 +577,9 @@
         </div>
 
         <!-- ================= PAGE 4: KNOWLEDGE CHECK ================= -->
-        <div id="page-4" class="hidden flex-1 flex flex-col items-center justify-center max-w-5xl lg:max-w-6xl mx-auto w-full h-full overflow-y-auto px-4 py-4 md:py-6">
-            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg border border-slate-200/80 w-full relative transition-all duration-300">
-                <button onclick="goToPage(1)" class="absolute top-5 right-5 text-slate-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-slate-200 rounded px-2 py-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors font-display">
+        <div id="page-4" class="hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-6 md:p-8 lg:p-10 relative">
+            <div class="flex-1 flex flex-col justify-between w-full h-full transition-all duration-300">
+                <button onclick="goToPage(1)" class="absolute top-6 right-6 text-slate-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-slate-200 rounded px-2 py-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors font-display">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     Restart
                 </button>
@@ -765,20 +765,20 @@
             if (!btnP || !btnR || !btnB || !seesaw || !expl) return;
 
             // Reset classes
-            btnP.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
-            btnR.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
-            btnB.className = "px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+            btnP.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+            btnR.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
+            btnB.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold border transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white border-blue-200 text-blue-800 hover:bg-blue-50";
 
             if (focus === 'precision') {
-                btnP.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-blue-600 bg-blue-600 text-white shadow-sm focus:outline-none";
+                btnP.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-black border border-blue-600 bg-blue-600 text-white shadow-sm focus:outline-none";
                 seesaw.style.transform = "rotate(-12deg)";
                 expl.innerHTML = "🎯 <b>High Precision (Strict Policy)</b>: We prioritize high confidence. We only sound the alarm if we are 100% sure. <b>Result</b>: Zero False Positives (no false alarms), but we will miss a few small fires (high False Negatives).";
             } else if (focus === 'recall') {
-                btnR.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-amber-500 bg-amber-500 text-white shadow-sm focus:outline-none";
+                btnR.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-black border border-amber-500 bg-amber-500 text-white shadow-sm focus:outline-none";
                 seesaw.style.transform = "rotate(12deg)";
                 expl.innerHTML = "📢 <b>High Recall (Sensitive Policy)</b>: We prioritize total safety. We catch every single real fire. <b>Result</b>: Zero False Negatives (no missed fires), but we trigger massive False Positives (annoying false alarms).";
             } else {
-                btnB.className = "px-3 py-1.5 rounded-xl text-xs font-black border border-slate-700 bg-slate-700 text-white shadow-sm focus:outline-none";
+                btnB.className = "px-4 py-2.5 rounded-xl text-xs md:text-sm font-black border border-slate-700 bg-slate-700 text-white shadow-sm focus:outline-none";
                 seesaw.style.transform = "rotate(0deg)";
                 expl.innerHTML = "⚖️ <b>Balanced Compromise</b>: We try to split the difference. We accept a small amount of false alarms and small missed fires to keep the school operating normally.";
             }
